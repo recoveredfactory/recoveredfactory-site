@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@theme {
+  --color-cream: #faf6e9;
+}
+
+@layer base {
+  body {
+    @apply bg-cream text-slate-900 antialiased;
+  }
+}

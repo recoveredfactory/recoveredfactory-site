@@ -1,0 +1,10 @@
+{
+  "name": "@recoveredfactory/config",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./tsconfig.base.json": "./tsconfig.base.json",
+    "./eslint.cjs": "./eslint.cjs",
+    "./prettier.cjs": "./prettier.cjs"
+  }
+}
