@@ -25,13 +25,13 @@
         <label class="sr-only" for="subscribe-email">{m.subscribe_title()}</label>
         <div class="relative">
           <input
-            class="w-full border border-slate-900/15 bg-white/90 px-5 py-4 pr-32 text-base text-slate-800 placeholder:text-slate-400 shadow-sm"
+            class="w-full border border-slate-900/15 bg-white/90 px-5 py-4 pr-36 text-lg text-slate-800 placeholder:text-slate-400 shadow-sm"
             id="subscribe-email"
             placeholder={m.subscribe_placeholder()}
             type="email"
           />
           <a
-            class="absolute right-2 top-1/2 -translate-y-1/2 bg-fern px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-fern-strong hover:text-white"
+            class="absolute right-1 top-1/2 -translate-y-1/2 bg-fern-strong px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-fern"
             href={data.portal.upgradeUrl}
           >
             {m.subscribe_button()}
