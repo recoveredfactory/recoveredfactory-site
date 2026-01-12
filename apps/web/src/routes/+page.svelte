@@ -40,53 +40,37 @@
       </form>
     </section>
 
-    <section class="space-y-6">
-      <div class="flex items-end justify-between">
-        <div>
-          <p class="text-xs uppercase tracking-[0.3em] text-slate-500">
-            {m.latest_heading()}
-          </p>
-          <h2 class="font-display text-3xl font-semibold tracking-tight text-slate-900">
-            {m.latest_subtitle()}
-          </h2>
-        </div>
-        <a
-          class="text-xs uppercase tracking-[0.3em] text-slate-500 transition hover:text-slate-900"
-          href={localizeHref('/writing')}
-        >
-          {m.nav_writing()}
-        </a>
-      </div>
-
+    <section class="space-y-10">
       {#if data.posts.length === 0}
         <div class="border border-dashed border-slate-900/20 bg-white/50 p-8">
           <p class="text-sm text-slate-600">{m.no_posts()}</p>
         </div>
       {:else}
-        <ul class="grid gap-8 md:grid-cols-2">
+        <ul class="grid gap-12">
           {#each data.posts as post}
-            <li
-              class="overflow-hidden border border-slate-900/10 bg-white/70 shadow-sm transition hover:-translate-y-0.5 hover:shadow-md"
-            >
+            <li class="space-y-6">
               {#if post.feature_image}
-                <a href={localizeHref(`/writing/${post.slug}`)}>
+                <a
+                  class="mx-auto block max-w-2xl"
+                  href={localizeHref(`/writing/${post.slug}`)}
+                >
                   <img
                     alt={post.title}
-                    class="h-48 w-full object-cover"
+                    class="w-full"
                     loading="lazy"
                     src={post.feature_image}
                   />
                 </a>
               {/if}
-              <div class="flex flex-col gap-3 p-6">
+              <div class="mx-auto max-w-2xl space-y-3 text-center">
                 <a
-                  class="font-display text-2xl font-semibold tracking-tight text-slate-900 transition hover:text-slate-700"
+                  class="font-display text-3xl font-semibold tracking-tight text-slate-900 transition hover:text-slate-700"
                   href={localizeHref(`/writing/${post.slug}`)}
                 >
                   {post.title}
                 </a>
                 {#if post.excerpt}
-                  <p class="text-sm text-slate-600">{post.excerpt}</p>
+                  <p class="text-base text-slate-600">{post.excerpt}</p>
                 {/if}
                 {#if post.published_at}
                   <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
