@@ -5,6 +5,8 @@ Monorepo scaffold for a custom SvelteKit site deployed with SST and backed by Gh
 ## Structure
 
 - `apps/web` — SvelteKit site
+- `apps/web/messages` — Paraglide message sources (en/es)
+- `apps/web/project.inlang` — Paraglide project config
 - `packages/ghost` — Ghost Content API + member status helpers
 - `packages/config` — shared eslint/prettier/tsconfig defaults
 - `sst.config.ts` — SST v3 infrastructure config
@@ -15,7 +17,7 @@ Monorepo scaffold for a custom SvelteKit site deployed with SST and backed by Gh
    ```bash
    pnpm install
    ```
-2. Create a `.env` at repo root (ignored by git):
+2. Create a `.env` in `apps/web` (ignored by git):
    ```bash
    GHOST_CONTENT_API_URL=https://members.recoveredfactory.net
    GHOST_CONTENT_API_KEY=your_content_key
@@ -71,6 +73,14 @@ If your Ghost setup uses a different members endpoint or requires extra headers:
 ## Content API usage
 
 The writing route (`/writing/[slug]`) fetches posts via the Ghost Content API server-side and returns CDN-friendly caching headers.
+Posts are filtered by a language tag per locale (expected tag slugs: `lang-en` and `lang-es`). Keep those tags hidden in Ghost so they don't appear on public pages.
+
+## Paraglide i18n
+
+- Message sources live in `apps/web/messages` (`en.json`, `es.json`).
+- The Paraglide project lives in `apps/web/project.inlang`.
+- Client/server hooks are wired in `apps/web/src/hooks.ts` and `apps/web/src/hooks.server.ts`.
+- Use `m.*` from `$lib/paraglide/messages` for non-Ghost UI strings.
 
 ## Deploy with SST
 

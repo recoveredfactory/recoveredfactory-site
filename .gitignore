@@ -2,6 +2,7 @@ node_modules
 .svelte-kit
 dist
 build
+.pnpm-store
 .env
 .env.*
 .DS_Store

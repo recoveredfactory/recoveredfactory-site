@@ -14,6 +14,7 @@
     "@recoveredfactory/ghost": "workspace:*"
   },
   "devDependencies": {
+    "@inlang/paraglide-js": "^2.0.0",
     "@tailwindcss/vite": "^4.1.18",
     "@sveltejs/adapter-node": "^5.0.0",
     "@sveltejs/kit": "^2.5.0",

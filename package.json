@@ -6,13 +6,14 @@
   "scripts": {
     "dev": "pnpm -C apps/web dev",
     "dev:sst": "sst dev",
-    "build": "pnpm -r build",
+    "build": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide && pnpm -r build",
     "build:web": "pnpm -C apps/web build",
     "lint": "pnpm -C apps/web lint",
     "format": "pnpm -C apps/web format",
     "deploy": "sst deploy"
   },
   "devDependencies": {
-    "sst": "^3.0.0"
+    "sst": "^3.0.0",
+    "@inlang/paraglide-js": "^2.8.0"
   }
 }

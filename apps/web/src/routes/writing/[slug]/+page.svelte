@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { m } from '$lib/paraglide/messages';
+
   const { data } = $props();
 </script>
 
@@ -9,7 +11,9 @@
 <main class="min-h-dvh px-6 py-12 sm:px-10 lg:px-16">
   <article class="mx-auto max-w-3xl space-y-8">
     <header class="space-y-4">
-      <p class="text-xs uppercase tracking-[0.35em] text-slate-500">Writing</p>
+      <p class="text-xs uppercase tracking-[0.35em] text-slate-500">
+        {m.writing_label()}
+      </p>
       <h1 class="text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
         {data.post.title}
       </h1>
@@ -24,7 +28,7 @@
             day: 'numeric',
           })}
           {#if data.post.reading_time}
-            · {data.post.reading_time} min read
+            · {m.reading_time({ minutes: data.post.reading_time })}
           {/if}
         </p>
       {/if}
