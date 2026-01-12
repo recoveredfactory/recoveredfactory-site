@@ -10,31 +10,33 @@
 </svelte:head>
 
 <main class="min-h-dvh px-6 py-12 sm:px-10 lg:px-16">
-  <div class="mx-auto flex max-w-5xl flex-col gap-10">
-    <section class="space-y-6">
+  <div class="mx-auto flex max-w-6xl flex-col gap-10">
+    <section class="space-y-6 text-center">
       <h1 class="font-display text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
         {m.hero_title()}
       </h1>
-      <p class="max-w-2xl text-base text-slate-600">
+      <p class="mx-auto max-w-2xl text-base text-slate-600">
         {m.hero_subtitle()}
       </p>
     </section>
 
     <section>
-      <form class="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <form class="mx-auto w-full lg:max-w-[75%]">
         <label class="sr-only" for="subscribe-email">{m.subscribe_title()}</label>
-        <input
-          class="w-full border border-slate-900/10 bg-white/90 px-4 py-2 text-sm text-slate-800 placeholder:text-slate-400 shadow-sm"
-          id="subscribe-email"
-          placeholder={m.subscribe_placeholder()}
-          type="email"
-        />
-        <a
-          class="inline-flex items-center justify-center bg-fern px-5 py-2 text-sm font-semibold text-slate-900 transition hover:bg-fern-strong hover:text-white"
-          href={data.portal.upgradeUrl}
-        >
-          {m.subscribe_button()}
-        </a>
+        <div class="relative">
+          <input
+            class="w-full border border-slate-900/15 bg-white/90 px-5 py-4 pr-32 text-base text-slate-800 placeholder:text-slate-400 shadow-sm"
+            id="subscribe-email"
+            placeholder={m.subscribe_placeholder()}
+            type="email"
+          />
+          <a
+            class="absolute right-2 top-1/2 -translate-y-1/2 bg-fern px-4 py-2 text-sm font-semibold text-slate-900 transition hover:bg-fern-strong hover:text-white"
+            href={data.portal.upgradeUrl}
+          >
+            {m.subscribe_button()}
+          </a>
+        </div>
       </form>
     </section>
 
