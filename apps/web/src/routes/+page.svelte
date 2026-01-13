@@ -40,7 +40,7 @@
       </form>
     </section>
 
-    <section class="space-y-10">
+    <section class="space-y-16">
       {#if data.posts.length === 0}
         <div class="border border-dashed border-slate-900/20 bg-white/50 p-8">
           <p class="text-sm text-slate-600">{m.no_posts()}</p>
@@ -51,7 +51,7 @@
             <li class="space-y-6">
               {#if post.feature_image}
                 <a
-                  class="mx-auto block max-w-2xl"
+                  class="mx-auto block max-w-xl"
                   href={localizeHref(`/writing/${post.slug}`)}
                 >
                   <img
