@@ -54,7 +54,6 @@ Required for the web app (wired in `sst.config.ts`):
 - `apps/web/src/lib/server/requireMember.ts` is the guard used by paid routes.
 
 Examples:
-- `apps/web/src/routes/bench-notes/+page.server.ts` (paid-only page)
 - `apps/web/src/routes/downloads/report.pdf/+server.ts` (paid-only download)
 - `apps/web/src/routes/api/member-status/+server.ts` (public status endpoint, rate-limited)
 

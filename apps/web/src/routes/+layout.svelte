@@ -14,7 +14,7 @@
 <div class="min-h-dvh">
   <header class="border-b border-slate-900/10 bg-cream/80">
     <div
-      class="mx-auto flex max-w-5xl items-center justify-between px-6 py-5 sm:px-10"
+      class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5 sm:px-10 lg:px-16"
     >
       <a
         class="font-display text-2xl font-semibold tracking-tight text-slate-900"
