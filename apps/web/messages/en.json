@@ -1,6 +1,11 @@
 {
   "$schema": "https://inlang.com/schema/inlang-message-format",
   "site_name": "Recovered Factory",
+  "nav_about": "About",
+  "nav_signin": "Sign in",
+  "nav_subscribe": "Subscribe",
+  "nav_menu_open_aria": "Open navigation menu",
+  "nav_menu_close_aria": "Close navigation menu",
   "nav_writing": "Writing",
   "nav_bench": "Bench notes",
   "hero_kicker": "Recovered Factory",
@@ -25,5 +30,10 @@
   "locale_en_short": "EN",
   "locale_es_short": "ES",
   "locale_en_aria": "Switch to English",
-  "locale_es_aria": "Switch to Spanish"
+  "locale_es_aria": "Switch to Spanish",
+  "post_read_in_spanish": "Read it in Spanish",
+  "post_read_in_english": "Read it in English",
+  "footer_copyright": "© {year} {name}",
+  "footer_lettering_credit": "Lettering by TK",
+  "footer_powered_by": "Powered by"
 }

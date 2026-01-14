@@ -1,41 +1,47 @@
-import { defineConfig } from "sst";
-import * as sst from "sst";
+/// <reference path="./.sst/platform/config.d.ts" />
 
-export default defineConfig({
-  app(input) {
+const ROOT_DOMAIN = "recoveredfactory.net";
+const PROD_DOMAIN = "cms--prod.recoveredfactory.net";
+const STAGE_DOMAIN = "cms--stage.recoveredfactory.net";
+
+export default $config({
+  app() {
     return {
       name: "recoveredfactory-ghost",
+      home: "aws",
       region: "us-east-1",
     };
   },
   async run() {
+    const stage = $app.stage;
+    const siteDomain =
+      stage === "prod" ? PROD_DOMAIN : stage === "staging" ? STAGE_DOMAIN : undefined;
+
+    const hostedZone = aws.route53.getZoneOutput({
+      name: ROOT_DOMAIN,
+      privateZone: false,
+    });
+
     const site = new sst.aws.SvelteKit("Web", {
       path: "apps/web",
-      domain: {
-        name: "recoveredfactory.net",
-        // Configure DNS via your provider or Route 53.
-        // Example: dns: sst.aws.dns({ zone: "recoveredfactory.net" })
-      },
+      ...(siteDomain
+        ? {
+            domain: {
+              name: siteDomain,
+              dns: sst.aws.dns({ zone: hostedZone.zoneId }),
+            },
+          }
+        : {}),
       environment: {
-        PUBLIC_SITE_URL: "https://recoveredfactory.net",
-        GHOST_CONTENT_API_URL: process.env.GHOST_CONTENT_API_URL ?? "",
-        GHOST_CONTENT_API_KEY: process.env.GHOST_CONTENT_API_KEY ?? "",
-        GHOST_MEMBER_STATUS_URL: process.env.GHOST_MEMBER_STATUS_URL ?? "",
-        GHOST_PORTAL_SIGNIN_URL:
-          process.env.GHOST_PORTAL_SIGNIN_URL ??
-          "https://members.recoveredfactory.net/#/portal/signin",
-        GHOST_PORTAL_UPGRADE_URL:
-          process.env.GHOST_PORTAL_UPGRADE_URL ??
-          "https://members.recoveredfactory.net/#/portal/signup",
-        GHOST_MEMBER_CACHE_TTL_SECONDS:
-          process.env.GHOST_MEMBER_CACHE_TTL_SECONDS ?? "120",
+        PUBLIC_SITE_URL: siteDomain
+          ? `https://${siteDomain}`
+          : process.env.PUBLIC_SITE_URL ?? "",
       },
     });
 
-    // members.recoveredfactory.net is owned by Ghost(Pro) and should be configured there.
-
     return {
       url: site.url,
+      domain: siteDomain,
     };
   },
 });

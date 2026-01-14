@@ -1,8 +1,14 @@
 <script lang="ts">
   import { m } from '$lib/paraglide/messages';
-  import { localizeHref } from '$lib/paraglide/runtime';
 
   const { data } = $props();
+
+  const formatDate = (value: string) =>
+    new Date(value).toLocaleDateString(undefined, {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+    });
 </script>
 
 <svelte:head>
@@ -48,43 +54,19 @@
       {:else}
         <ul class="grid gap-12">
           {#each data.posts as post}
-            <li class="space-y-6">
-              {#if post.feature_image}
-                <a
-                  class="mx-auto block max-w-xl"
-                  href={localizeHref(`/writing/${post.slug}`)}
-                >
-                  <img
-                    alt={post.title}
-                    class="w-full"
-                    loading="lazy"
-                    src={post.feature_image}
-                  />
-                </a>
+            <li class="mx-auto max-w-2xl space-y-4 text-center">
+              <a
+                class="font-display text-3xl font-semibold tracking-tight text-slate-900 transition hover:text-slate-700"
+                href={`/${data.lang}/blog/${post.slug}`}
+              >
+                {post.meta.title}
+              </a>
+              <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                {formatDate(post.meta.date)}
+              </p>
+              {#if post.meta.description}
+                <p class="text-base text-slate-600">{post.meta.description}</p>
               {/if}
-              <div class="mx-auto max-w-2xl space-y-3 text-center">
-                <a
-                  class="font-display text-3xl font-semibold tracking-tight text-slate-900 transition hover:text-slate-700"
-                  href={localizeHref(`/writing/${post.slug}`)}
-                >
-                  {post.title}
-                </a>
-                {#if post.excerpt}
-                  <p class="text-base text-slate-600">{post.excerpt}</p>
-                {/if}
-                {#if post.published_at}
-                  <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
-                    {new Date(post.published_at).toLocaleDateString(undefined, {
-                      year: 'numeric',
-                      month: 'short',
-                      day: 'numeric',
-                    })}
-                    {#if post.reading_time}
-                      · {m.reading_time({ minutes: post.reading_time })}
-                    {/if}
-                  </p>
-                {/if}
-              </div>
             </li>
           {/each}
         </ul>

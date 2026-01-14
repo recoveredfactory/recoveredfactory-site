@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Space+Grotesk:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Rock+Salt&family=Space+Grotesk:wght@400;500;600&display=swap");
 @import "tailwindcss";
 
 @theme {
@@ -6,6 +6,7 @@
   --color-fern: #7bc974;
   --color-fern-strong: #4a8f43;
   --color-fern-soft: #e4f0dc;
+  --font-brand: "Rock Salt", cursive;
   --font-display: "EB Garamond", serif;
   --font-body: "Space Grotesk", sans-serif;
 }

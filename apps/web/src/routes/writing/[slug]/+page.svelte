@@ -11,6 +11,16 @@
 <main class="min-h-dvh px-6 py-12 sm:px-10 lg:px-16">
   <article class="mx-auto max-w-3xl space-y-8">
     <header class="space-y-4">
+      {#if data.alternate}
+        <a
+          class="text-xs font-semibold uppercase tracking-[0.3em] text-fern-strong transition hover:text-fern-strong/80"
+          href={data.alternate.href}
+        >
+          {data.alternate.locale === 'es'
+            ? m.post_read_in_spanish()
+            : m.post_read_in_english()}
+        </a>
+      {/if}
       <p class="text-xs uppercase tracking-[0.35em] text-slate-500">
         {m.writing_label()}
       </p>
@@ -40,4 +50,24 @@
       {@html data.post.html ?? ''}
     </div>
   </article>
+
+  <section class="mx-auto mt-16 w-full max-w-3xl pb-8">
+    <form class="mx-auto w-full lg:max-w-[75%]" id="subscribe">
+      <label class="sr-only" for="post-subscribe-email">{m.subscribe_title()}</label>
+      <div class="relative">
+        <input
+          class="w-full border border-slate-900/15 bg-white/90 px-5 py-4 pr-36 text-lg text-slate-800 placeholder:text-slate-400 shadow-sm"
+          id="post-subscribe-email"
+          placeholder={m.subscribe_placeholder()}
+          type="email"
+        />
+        <button
+          class="absolute right-1 top-1/2 -translate-y-1/2 bg-fern-strong px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-fern"
+          type="button"
+        >
+          {m.subscribe_button()}
+        </button>
+      </div>
+    </form>
+  </section>
 </main>
