@@ -3,6 +3,7 @@ id: "recovered-factory-intro"
 title: "Recovered Factory: a small origin story"
 date: "2025-01-15"
 description: "Why this project exists and how we want it to feel."
+previewImage: "/images/recovered-factory.jpg"
 tags:
   - "studio"
   - "newsletter"

@@ -1,3 +1,5 @@
+import postCrosswalkData from './postCrosswalk.json';
+
 export type CrosswalkLocale = 'en' | 'es';
 
 export type PostCrosswalkEntry = {
@@ -5,16 +7,7 @@ export type PostCrosswalkEntry = {
   es: string;
 };
 
-const postCrosswalk: PostCrosswalkEntry[] = [
-  {
-    en: 'introducing-recovered-factory',
-    es: 'presentamos-recovered-factory',
-  },
-  {
-    en: 'coming-soon',
-    es: 'proximamente',
-  },
-];
+const postCrosswalk = postCrosswalkData as PostCrosswalkEntry[];
 
 export const getCrosswalkEntry = (slug: string) =>
   postCrosswalk.find((entry) => entry.en === slug || entry.es === slug) ?? null;

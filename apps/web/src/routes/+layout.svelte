@@ -56,7 +56,7 @@
           aria-expanded={menuOpen}
           aria-label={menuOpen ? m.nav_menu_close_aria() : m.nav_menu_open_aria()}
           class="inline-flex h-10 w-10 items-center justify-center border border-slate-900/10 text-slate-700 transition hover:border-slate-900/40 hover:text-slate-900"
-          on:click={() => (menuOpen = !menuOpen)}
+          onclick={() => (menuOpen = !menuOpen)}
           type="button"
         >
           <span class="sr-only">
@@ -93,14 +93,14 @@
             <a
               class="font-display transition hover:text-slate-600 lg:hidden"
               href={aboutHref}
-              on:click={() => (menuOpen = false)}
+              onclick={() => (menuOpen = false)}
             >
               {m.nav_about()}
             </a>
             <a
               class="font-display text-fern-strong transition hover:text-fern lg:hidden"
               href={subscribeHref}
-              on:click={() => (menuOpen = false)}
+              onclick={() => (menuOpen = false)}
             >
               {m.nav_subscribe()}
             </a>
@@ -115,7 +115,7 @@
               }`}
               data-sveltekit-reload
               href={getLocaleHref('en')}
-              on:click={() => (menuOpen = false)}
+              onclick={() => (menuOpen = false)}
             >
               {m.locale_en_short()}
             </a>
@@ -128,7 +128,7 @@
               }`}
               data-sveltekit-reload
               href={getLocaleHref('es')}
-              on:click={() => (menuOpen = false)}
+              onclick={() => (menuOpen = false)}
             >
               {m.locale_es_short()}
             </a>

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { getResizedImageUrl } from '$lib/images';
+
   const { data } = $props();
 </script>
 
@@ -23,6 +25,16 @@
       <ul class="space-y-8">
         {#each data.posts as post}
           <li class="space-y-2">
+            {#if post.meta.previewImage}
+              <a class="block" href={`/${data.lang}/blog/${post.slug}`}>
+                <img
+                  alt={post.meta.title}
+                  class="w-full"
+                  loading="lazy"
+                  src={getResizedImageUrl(post.meta.previewImage, { width: 1200 })}
+                />
+              </a>
+            {/if}
             <a
               class="font-display text-2xl font-semibold text-slate-900 transition hover:text-slate-700"
               href={`/${data.lang}/blog/${post.slug}`}

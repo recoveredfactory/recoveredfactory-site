@@ -5,6 +5,11 @@
 
 declare module "sst" {
   export interface Resource {
+    "ImageResizerFn": {
+      "name": string
+      "type": "sst.aws.Function"
+      "url": string
+    }
     "Web": {
       "type": "sst.aws.SvelteKit"
       "url": string

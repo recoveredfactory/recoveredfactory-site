@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { getResizedImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
 
   const { data } = $props();
@@ -55,6 +56,16 @@
         <ul class="grid gap-12">
           {#each data.posts as post}
             <li class="mx-auto max-w-2xl space-y-4 text-center">
+              {#if post.meta.previewImage}
+                <a class="block" href={`/${data.lang}/blog/${post.slug}`}>
+                  <img
+                    alt={post.meta.title}
+                    class="w-full"
+                    loading="lazy"
+                    src={getResizedImageUrl(post.meta.previewImage, { width: 1200 })}
+                  />
+                </a>
+              {/if}
               <a
                 class="font-display text-3xl font-semibold tracking-tight text-slate-900 transition hover:text-slate-700"
                 href={`/${data.lang}/blog/${post.slug}`}

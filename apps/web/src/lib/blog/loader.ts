@@ -7,6 +7,7 @@ export type BlogMeta = {
   title: string;
   date: string;
   description?: string;
+  previewImage?: string;
   tags?: string[];
   lang: Lang;
 };

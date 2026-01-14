@@ -1,10 +1,15 @@
 <script lang="ts">
   import { getPost } from '$lib/blog/loader';
   import { SITE_URL } from '$lib/config';
+  import { getResizedImageUrl } from '$lib/images';
 
   const { data } = $props();
 
   const post = $derived(getPost(data.lang, data.slug));
+  const previewImage = $derived(post?.meta.previewImage ?? null);
+  const previewImageUrl = $derived(
+    previewImage ? getResizedImageUrl(previewImage, { width: 1600 }) : null,
+  );
   const canonical = $derived(
     new URL(`/${data.lang}/blog/${data.slug}`, SITE_URL).href,
   );
@@ -23,6 +28,11 @@
     <title>{post.meta.title}</title>
     {#if post.meta.description}
       <meta name="description" content={post.meta.description} />
+    {/if}
+    {#if previewImageUrl}
+      <meta property="og:image" content={previewImageUrl} />
+      <meta name="twitter:card" content="summary_large_image" />
+      <meta name="twitter:image" content={previewImageUrl} />
     {/if}
   {/if}
   <link rel="canonical" href={canonical} />

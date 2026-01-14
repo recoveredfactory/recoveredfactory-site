@@ -7,3 +7,5 @@ build
 .env.*
 .DS_Store
 .sst
+apps/web/static/images/*
+!apps/web/static/images/.gitignore
