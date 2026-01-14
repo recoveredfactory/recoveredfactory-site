@@ -1,12 +1,16 @@
 import type { ComponentType } from 'svelte';
 import type { Lang } from '$lib/i18n';
 
+export type ContentType = 'post' | 'page';
+
 export type BlogMeta = {
   id?: string;
   canonicalId?: string;
+  type?: ContentType;
   title: string;
   date: string;
   description?: string;
+  byline?: string;
   previewImage?: string;
   tags?: string[];
   lang: Lang;
@@ -37,7 +41,7 @@ const modulesByLang = {
   },
 } satisfies Record<Lang, Record<string, BlogModule>>;
 
-const postsByLang = {
+const entriesByLang = {
   en: mapModules(modulesByLang.en, 'en'),
   es: mapModules(modulesByLang.es, 'es'),
 } satisfies Record<Lang, BlogPost[]>;
@@ -49,9 +53,14 @@ function mapModules(modules: Record<string, BlogModule>, lang: Lang): BlogPost[]
     const slug = path.split('/').pop()?.replace(/\.md$/, '') ?? '';
     if (!slug) continue;
 
+    const meta = {
+      ...mod.metadata,
+      type: mod.metadata.type ?? 'post',
+    };
+
     bySlug.set(slug, {
       component: mod.default,
-      meta: mod.metadata,
+      meta,
       slug,
       lang,
     });
@@ -67,11 +76,19 @@ function getCanonicalId(meta: BlogMeta): string | undefined {
 }
 
 export function getPost(lang: Lang, slug: string): BlogPost | null {
-  return postsByLang[lang].find((post) => post.slug === slug) ?? null;
+  const entry = entriesByLang[lang].find((post) => post.slug === slug) ?? null;
+  if (!entry) return null;
+  return entry.meta.type === 'page' ? null : entry;
+}
+
+export function getEntry(lang: Lang, slug: string): BlogPost | null {
+  return entriesByLang[lang].find((post) => post.slug === slug) ?? null;
 }
 
 export function listPosts(lang: Lang): BlogPostSummary[] {
-  return postsByLang[lang].map(({ component: _component, ...rest }) => rest);
+  return entriesByLang[lang]
+    .filter((post) => post.meta.type !== 'page')
+    .map(({ component: _component, ...rest }) => rest);
 }
 
 export function findTranslationSlug(
@@ -79,13 +96,13 @@ export function findTranslationSlug(
   fromSlug: string,
   toLang: Lang,
 ): string | null {
-  const source = getPost(fromLang, fromSlug);
+  const source = getEntry(fromLang, fromSlug);
   if (!source) return null;
 
   const canonicalId = getCanonicalId(source.meta);
   if (!canonicalId) return null;
 
-  const match = postsByLang[toLang].find(
+  const match = entriesByLang[toLang].find(
     (post) => getCanonicalId(post.meta) === canonicalId,
   );
 

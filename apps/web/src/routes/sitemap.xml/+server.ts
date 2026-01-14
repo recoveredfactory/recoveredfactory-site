@@ -6,13 +6,14 @@ const withBase = (path: string) => new URL(path, SITE_URL).href;
 
 export const GET = () => {
   const staticEntries = LANGS.flatMap((lang) => [
+    withBase(`/${lang}`),
     withBase(`/${lang}/blog`),
     withBase(`/${lang}/rss.xml`),
   ]);
 
   const postEntries = LANGS.flatMap((lang) =>
     listPosts(lang).map((post) => ({
-      url: withBase(`/${lang}/blog/${post.slug}`),
+      url: withBase(`/${lang}/${post.slug}`),
       lastmod: post.meta.date,
     })),
   );

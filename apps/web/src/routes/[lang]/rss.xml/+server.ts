@@ -22,7 +22,7 @@ export const GET = ({ params }) => {
 
   const items = posts
     .map((post) => {
-      const url = new URL(`/${lang}/blog/${post.slug}`, SITE_URL).href;
+      const url = new URL(`/${lang}/${post.slug}`, SITE_URL).href;
       const description = post.meta.description
         ? `<description>${escapeXml(post.meta.description)}</description>`
         : '';

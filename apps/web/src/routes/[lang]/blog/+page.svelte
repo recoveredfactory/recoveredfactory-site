@@ -26,7 +26,7 @@
         {#each data.posts as post}
           <li class="space-y-2">
             {#if post.meta.previewImage}
-              <a class="block" href={`/${data.lang}/blog/${post.slug}`}>
+              <a class="block" href={`/${data.lang}/${post.slug}`}>
                 <img
                   alt={post.meta.title}
                   class="w-full"
@@ -37,7 +37,7 @@
             {/if}
             <a
               class="font-display text-2xl font-semibold text-slate-900 transition hover:text-slate-700"
-              href={`/${data.lang}/blog/${post.slug}`}
+              href={`/${data.lang}/${post.slug}`}
             >
               {post.meta.title}
             </a>

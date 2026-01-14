@@ -4,6 +4,8 @@ title: "Fabrica recuperada: un origen breve"
 date: "2025-01-15"
 description: "Por que existe este proyecto y el tono que queremos cuidar."
 previewImage: "/images/recovered-factory.jpg"
+type: "post"
+byline: "Recovered Factory"
 tags:
   - "estudio"
   - "boletin"

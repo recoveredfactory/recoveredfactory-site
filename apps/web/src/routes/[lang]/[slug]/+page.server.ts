@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
-import { findTranslationSlug, getPost } from '$lib/blog/loader';
-import { isLang, type Lang } from '$lib/i18n';
+import { findTranslationSlug, getEntry } from '$lib/blog/loader';
+import { isLang } from '$lib/i18n';
 
 export const load = ({ params }) => {
   const { lang, slug } = params;
@@ -8,16 +8,17 @@ export const load = ({ params }) => {
     throw error(404, 'Not found');
   }
 
-  if (!getPost(lang, slug)) {
+  const entry = getEntry(lang, slug);
+  if (!entry) {
     throw error(404, 'Not found');
   }
 
-  const otherLang: Lang = lang === 'en' ? 'es' : 'en';
+  const otherLang = lang === 'en' ? 'es' : 'en';
   const translatedSlug = findTranslationSlug(lang, slug, otherLang);
 
   return {
     lang,
     slug,
-    switchTo: translatedSlug ? `/${otherLang}/blog/${translatedSlug}` : null,
+    switchTo: translatedSlug ? `/${otherLang}/${translatedSlug}` : null,
   };
 };

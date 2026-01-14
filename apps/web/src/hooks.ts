@@ -3,11 +3,7 @@ import { deLocalizeUrl } from '$lib/paraglide/runtime';
 
 export const reroute: Reroute = (request) => {
 	const url = new URL(request.url);
-	if (
-		/^\/(en|es)\/blog(\/|$)/.test(url.pathname) ||
-		/^\/(en|es)\/rss\.xml$/.test(url.pathname) ||
-		/^\/(en|es)\/?$/.test(url.pathname)
-	) {
+	if (/^\/(en|es)(\/|$)/.test(url.pathname)) {
 		return url.pathname;
 	}
 

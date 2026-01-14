@@ -4,6 +4,8 @@ title: "Recovered Factory: a small origin story"
 date: "2025-01-15"
 description: "Why this project exists and how we want it to feel."
 previewImage: "/images/recovered-factory.jpg"
+type: "post"
+byline: "Recovered Factory"
 tags:
   - "studio"
   - "newsletter"
