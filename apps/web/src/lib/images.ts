@@ -1,5 +1,4 @@
 import { env } from '$env/dynamic/public';
-import { SITE_URL } from '$lib/config';
 
 type ResizeOptions = {
   width?: number;
@@ -28,5 +27,9 @@ export const getResizedImageUrl = (source: string, options: ResizeOptions = {}) 
     return source;
   }
 
-  return new URL(source, SITE_URL).href;
+  if (env.PUBLIC_SITE_URL) {
+    return new URL(source, env.PUBLIC_SITE_URL).href;
+  }
+
+  return source;
 };
