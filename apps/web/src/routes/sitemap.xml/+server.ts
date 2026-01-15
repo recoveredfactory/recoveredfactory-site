@@ -7,7 +7,7 @@ const withBase = (path: string) => new URL(path, SITE_URL).href;
 export const GET = () => {
   const staticEntries = LANGS.flatMap((lang) => [
     withBase(`/${lang}`),
-    withBase(`/${lang}/blog`),
+    withBase(`/${lang}/posts`),
     withBase(`/${lang}/rss.xml`),
   ]);
 

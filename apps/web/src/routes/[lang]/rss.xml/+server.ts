@@ -18,7 +18,7 @@ export const GET = ({ params }) => {
   }
 
   const posts = listPosts(lang);
-  const channelUrl = new URL(`/${lang}/blog`, SITE_URL).href;
+  const channelUrl = new URL(`/${lang}/posts`, SITE_URL).href;
 
   const items = posts
     .map((post) => {

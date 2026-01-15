@@ -5,17 +5,17 @@
 </script>
 
 <svelte:head>
-  <title>Blog</title>
+  <title>Posts</title>
 </svelte:head>
 
 <main class="min-h-dvh px-6 py-12 sm:px-10 lg:px-16">
   <div class="mx-auto flex max-w-4xl flex-col gap-10">
     <header class="space-y-3">
       <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
-        Blog
+        Posts
       </p>
       <h1 class="font-display text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
-        Notes and updates
+        Full archive
       </h1>
     </header>
 
