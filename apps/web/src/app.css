@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Lora:wght@400;500;600&display=swap");
 @import "tailwindcss";
 
 @theme {
@@ -6,8 +6,8 @@
   --color-fern: #7bc974;
   --color-fern-strong: #4a8f43;
   --color-fern-soft: #e4f0dc;
-  --font-brand: "EB Garamond", serif;
-  --font-display: "EB Garamond", serif;
+  --font-brand: "Lora", serif;
+  --font-display: "Lora", serif;
   --font-body: "Inter", sans-serif;
 }
 
