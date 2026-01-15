@@ -41,7 +41,7 @@
     class="sticky top-0 z-40 border-b border-slate-900/10 bg-cream/80 backdrop-blur-md supports-[backdrop-filter]:bg-cream/70"
   >
     <div
-      class="relative mx-auto flex max-w-6xl items-center px-6 pt-2 pb-1 sm:px-10 lg:px-16"
+      class="relative mx-auto flex max-w-6xl items-center px-6 py-4 sm:py-5 sm:px-10 lg:px-16"
     >
       <div class="hidden items-center md:flex">
         <a
@@ -53,12 +53,12 @@
       </div>
       <a
         aria-label={m.site_name()}
-        class="absolute left-1/2 -translate-x-1/2 text-slate-900"
+        class="absolute left-1/2 -translate-x-1/2 text-slate-900 top-0 z-60"
         href={homeHref}
       >
         <img
           alt={m.site_name()}
-          class="h-auto w-44 max-w-full sm:w-56"
+          class="h-auto w-44 max-w-full sm:w-50"
           loading="eager"
           src={getResizedImageUrl('/images/site-logo-001.png', { width: 448 })}
         />
