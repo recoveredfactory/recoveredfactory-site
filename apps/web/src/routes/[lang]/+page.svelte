@@ -28,18 +28,25 @@
     </section>
 
     <section>
-      <form class="mx-auto w-full lg:max-w-[75%]" id="subscribe">
+      <form
+        action="https://app.kit.com/forms/8972189/subscriptions"
+        class="mx-auto w-full lg:max-w-[75%]"
+        id="subscribe"
+        method="post"
+      >
         <label class="sr-only" for="subscribe-email">{m.subscribe_title()}</label>
         <div class="relative">
           <input
             class="w-full border border-slate-900/15 bg-white/90 px-5 py-4 pr-36 text-lg text-slate-800 placeholder:text-slate-400 shadow-sm"
             id="subscribe-email"
+            name="email_address"
             placeholder={m.subscribe_placeholder()}
             type="email"
           />
+          <input name="fields[lang]" type="hidden" value={data.lang} />
           <button
             class="absolute right-1 top-1/2 -translate-y-1/2 bg-fern-strong px-4 py-3.5 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern"
-            type="button"
+            type="submit"
           >
             {m.subscribe_button()}
           </button>
