@@ -47,7 +47,7 @@
       </form>
     </section>
 
-    <section class="space-y-16">
+    <section class="mx-auto w-full max-w-5xl space-y-16">
       {#if data.posts.length === 0}
         <div class="border border-dashed border-slate-900/20 bg-white/50 p-8">
           <p class="text-sm text-slate-600">{m.no_posts()}</p>
@@ -55,29 +55,33 @@
       {:else}
         <ul class="grid gap-12">
           {#each data.posts as post}
-            <li class="mx-auto max-w-2xl space-y-4 text-center">
+            <li class="grid gap-4 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] md:items-center md:gap-6">
               {#if post.meta.previewImage}
-                <a class="block" href={`/${data.lang}/${post.slug}`}>
+                <a class="block w-[85%] max-w-[360px]" href={`/${data.lang}/${post.slug}`}>
                   <img
                     alt={post.meta.title}
-                    class="w-full"
+                    class="aspect-square w-full object-cover"
                     loading="lazy"
-                    src={getResizedImageUrl(post.meta.previewImage, { width: 1200 })}
+                    src={getResizedImageUrl(post.meta.previewImage, { width: 900 })}
                   />
                 </a>
+              {:else}
+                <div></div>
               {/if}
-              <a
-                class="font-display text-3xl font-semibold tracking-tight text-slate-900 transition hover:text-slate-700"
-                href={`/${data.lang}/${post.slug}`}
-              >
-                {post.meta.title}
-              </a>
-              <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
-                {formatDate(post.meta.date)}
-              </p>
-              {#if post.meta.description}
-                <p class="text-base text-slate-600">{post.meta.description}</p>
-              {/if}
+              <div class="max-w-xl space-y-4 text-center md:text-left">
+                <a
+                  class="font-display text-4xl font-semibold tracking-tight text-slate-900 transition hover:text-slate-700 sm:text-5xl"
+                  href={`/${data.lang}/${post.slug}`}
+                >
+                  {post.meta.title}
+                </a>
+                <p class="pt-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                  By {post.meta.byline || m.site_name()} · {formatDate(post.meta.date)}
+                </p>
+                {#if post.meta.description}
+                  <p class="text-lg text-slate-600">{post.meta.description}</p>
+                {/if}
+              </div>
             </li>
           {/each}
         </ul>
