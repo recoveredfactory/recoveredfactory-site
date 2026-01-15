@@ -55,14 +55,17 @@
       {:else}
         <ul class="grid gap-12">
           {#each data.posts as post}
-            <li class="grid gap-4 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] md:items-center md:gap-6">
+            <li class="grid gap-4 md:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)] md:items-center md:gap-6">
               {#if post.meta.previewImage}
-                <a class="block w-[85%] max-w-[360px]" href={`/${data.lang}/${post.slug}`}>
+                <a
+                  class="block w-[85%] max-w-[320px] justify-self-center md:justify-self-start"
+                  href={`/${data.lang}/${post.slug}`}
+                >
                   <img
                     alt={post.meta.title}
                     class="aspect-square w-full object-cover"
                     loading="lazy"
-                    src={getResizedImageUrl(post.meta.previewImage, { width: 900 })}
+                    src={getResizedImageUrl(post.meta.previewImage, { width: 720 })}
                   />
                 </a>
               {:else}
