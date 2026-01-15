@@ -16,7 +16,7 @@
   <title>{m.site_name()}</title>
 </svelte:head>
 
-<main class="min-h-dvh px-6 py-12 sm:px-10 lg:px-16">
+<main class="min-h-dvh mt-12 px-6 py-12 sm:px-10 lg:px-16">
   <div class="mx-auto flex max-w-6xl flex-col gap-10">
     <section class="space-y-6 text-center">
       <h1 class="font-display text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
@@ -38,7 +38,7 @@
             type="email"
           />
           <button
-            class="absolute right-1 top-1/2 -translate-y-1/2 bg-fern-strong px-4 py-3.5 text-sm font-semibold text-white transition hover:bg-fern"
+            class="absolute right-1 top-1/2 -translate-y-1/2 bg-fern-strong px-4 py-3.5 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern"
             type="button"
           >
             {m.subscribe_button()}

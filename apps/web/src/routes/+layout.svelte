@@ -45,7 +45,7 @@
     >
       <div class="hidden items-center md:flex">
         <a
-          class="border border-fern-strong/40 bg-fern-soft/70 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-fern-strong transition hover:border-fern-strong hover:bg-fern-soft"
+          class="bg-fern-strong px-2.5 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern"
           href={subscribeHref}
         >
           {m.nav_subscribe()}
@@ -194,7 +194,7 @@
   <footer class="border-t border-slate-900/10 bg-cream/80">
     <div class="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-8 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-10 lg:px-16">
       <p>{m.footer_copyright({ year: currentYear, name: m.site_name() })}</p>
-      <p>{m.footer_lettering_credit()}</p>
+      <p>{@html m.footer_lettering_credit()}</p>
     </div>
   </footer>
 </div>
