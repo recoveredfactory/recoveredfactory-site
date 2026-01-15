@@ -1,6 +1,7 @@
 <script lang="ts">
   import '../app.css';
   import { page } from '$app/stores';
+  import { getResizedImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
   import { deLocalizeHref, getLocale, localizeHref } from '$lib/paraglide/runtime';
   import { getCrosswalkEntry, type CrosswalkLocale } from '$lib/postCrosswalk';
@@ -9,6 +10,7 @@
   let { children } = $props();
 
   let menuOpen = $state(false);
+  let headerHeight = $state(0);
 
   const homeHref = localizeHref('/');
   const donateHref = localizeHref('/donate');
@@ -34,23 +36,38 @@
 </script>
 
 <div class="min-h-dvh">
-  <header class="sticky top-0 z-40 border-b border-slate-900/10 bg-cream/80 backdrop-blur-md supports-[backdrop-filter]:bg-cream/70">
+  <header
+    bind:clientHeight={headerHeight}
+    class="sticky top-0 z-40 border-b border-slate-900/10 bg-cream/80 backdrop-blur-md supports-[backdrop-filter]:bg-cream/70"
+  >
     <div
-      class="mx-auto flex max-w-6xl items-center justify-between px-6 py-5 sm:px-10 lg:px-16"
+      class="relative mx-auto flex max-w-6xl items-center px-6 pt-2 pb-1 sm:px-10 lg:px-16"
     >
-      <a class="font-brand text-xl text-slate-900" href={homeHref}>
-        {m.site_name()}
+      <div class="hidden items-center md:flex">
+        <a
+          class="border border-fern-strong/40 bg-fern-soft/70 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-fern-strong transition hover:border-fern-strong hover:bg-fern-soft"
+          href={subscribeHref}
+        >
+          {m.nav_subscribe()}
+        </a>
+      </div>
+      <a
+        aria-label={m.site_name()}
+        class="absolute left-1/2 -translate-x-1/2 text-slate-900"
+        href={homeHref}
+      >
+        <img
+          alt={m.site_name()}
+          class="h-auto w-44 max-w-full sm:w-56"
+          loading="eager"
+          src={getResizedImageUrl('/images/site-logo-001.png', { width: 448 })}
+        />
+        <span class="sr-only">{m.site_name()}</span>
       </a>
-      <div class="flex items-center gap-3">
+      <div class="ml-auto flex items-center gap-3">
         <nav class="hidden items-center gap-6 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-slate-600 lg:flex">
           <a class="transition hover:text-slate-900" href={donateHref}>
             {m.nav_donate()}
-          </a>
-          <a
-            class="border border-fern-strong/40 bg-fern-soft/70 px-3 py-1 text-fern-strong transition hover:border-fern-strong hover:bg-fern-soft"
-            href={subscribeHref}
-          >
-            {m.nav_subscribe()}
           </a>
         </nav>
         <button
@@ -86,28 +103,12 @@
     </div>
     {#if menuOpen}
       <div
-        class="fixed inset-0 z-50 bg-cream/95 text-slate-900 backdrop-blur-sm"
+        class="fixed inset-x-0 z-50 overflow-y-auto border-t border-slate-900/10 bg-cream text-slate-900"
         id="site-menu"
+        style={`top: ${headerHeight}px; height: calc(100dvh - ${headerHeight}px);`}
         transition:fly={{ y: -12, duration: 220 }}
       >
-        <div class="mx-auto flex h-full max-w-6xl flex-col gap-12 px-6 py-10 sm:px-10 lg:px-16">
-          <div class="flex items-center justify-between">
-            <a class="font-brand text-xl text-slate-900" href={homeHref} onclick={() => (menuOpen = false)}>
-              {m.site_name()}
-            </a>
-            <button
-              aria-label={m.nav_menu_close_aria()}
-              class="inline-flex h-10 w-10 items-center justify-center border border-slate-900/10 text-slate-700 transition hover:border-slate-900/40 hover:text-slate-900"
-              onclick={() => (menuOpen = false)}
-              type="button"
-            >
-              <span class="relative h-4 w-4">
-                <span class="absolute left-0 top-1/2 h-0.5 w-4 -translate-y-1/2 rotate-45 bg-current"></span>
-                <span class="absolute left-0 top-1/2 h-0.5 w-4 -translate-y-1/2 -rotate-45 bg-current"></span>
-              </span>
-            </button>
-          </div>
-
+        <div class="mx-auto flex min-h-full max-w-6xl flex-col gap-12 px-6 py-10 sm:px-10 lg:px-16">
           <div class="flex flex-col gap-6 text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
             <a
               class="font-display transition hover:text-slate-600"
