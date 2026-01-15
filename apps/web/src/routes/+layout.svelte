@@ -11,8 +11,10 @@
   let menuOpen = $state(false);
 
   const homeHref = localizeHref('/');
-  const aboutHref = localizeHref('/about');
+  const donateHref = localizeHref('/donate');
   const subscribeHref = `${homeHref}#subscribe`;
+  const signInHref = localizeHref('/signin');
+  const manageHref = localizeHref('/manage');
   const currentLocale = getLocale();
   const currentYear = new Date().getFullYear();
 
@@ -41,8 +43,8 @@
       </a>
       <div class="flex items-center gap-3">
         <nav class="hidden items-center gap-6 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-slate-600 lg:flex">
-          <a class="transition hover:text-slate-900" href={aboutHref}>
-            {m.nav_about()}
+          <a class="transition hover:text-slate-900" href={donateHref}>
+            {m.nav_donate()}
           </a>
           <a
             class="border border-fern-strong/40 bg-fern-soft/70 px-3 py-1 text-fern-strong transition hover:border-fern-strong hover:bg-fern-soft"
@@ -84,27 +86,75 @@
     </div>
     {#if menuOpen}
       <div
-        class="fixed inset-0 z-30 bg-white pt-24 sm:pt-28 lg:pt-32"
+        class="fixed inset-0 z-50 bg-cream/95 text-slate-900 backdrop-blur-sm"
         id="site-menu"
         transition:fly={{ y: -12, duration: 220 }}
       >
-        <div class="mx-auto flex h-full max-w-6xl flex-col gap-10 px-6 pb-10 text-slate-900 sm:px-10 lg:px-16">
-          <div class="flex flex-col gap-6 text-2xl font-semibold tracking-tight sm:text-3xl lg:text-4xl">
+        <div class="mx-auto flex h-full max-w-6xl flex-col gap-12 px-6 py-10 sm:px-10 lg:px-16">
+          <div class="flex items-center justify-between">
+            <a class="font-brand text-xl text-slate-900" href={homeHref} onclick={() => (menuOpen = false)}>
+              {m.site_name()}
+            </a>
+            <button
+              aria-label={m.nav_menu_close_aria()}
+              class="inline-flex h-10 w-10 items-center justify-center border border-slate-900/10 text-slate-700 transition hover:border-slate-900/40 hover:text-slate-900"
+              onclick={() => (menuOpen = false)}
+              type="button"
+            >
+              <span class="relative h-4 w-4">
+                <span class="absolute left-0 top-1/2 h-0.5 w-4 -translate-y-1/2 rotate-45 bg-current"></span>
+                <span class="absolute left-0 top-1/2 h-0.5 w-4 -translate-y-1/2 -rotate-45 bg-current"></span>
+              </span>
+            </button>
+          </div>
+
+          <div class="flex flex-col gap-6 text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
             <a
-              class="font-display transition hover:text-slate-600 lg:hidden"
-              href={aboutHref}
+              class="font-display transition hover:text-slate-600"
+              href={donateHref}
               onclick={() => (menuOpen = false)}
             >
-              {m.nav_about()}
+              {m.nav_donate()}
             </a>
             <a
-              class="font-display text-fern-strong transition hover:text-fern lg:hidden"
+              class="font-display text-fern-strong transition hover:text-fern"
               href={subscribeHref}
               onclick={() => (menuOpen = false)}
             >
               {m.nav_subscribe()}
             </a>
           </div>
+
+          <div class="grid gap-8 border-t border-slate-900/10 pt-8 text-sm sm:grid-cols-2">
+            <div class="space-y-3">
+              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+                {m.menu_members_title()}
+              </p>
+              <div class="flex flex-col gap-2 text-sm font-semibold uppercase tracking-[0.25em] text-slate-700">
+                <a
+                  class="transition hover:text-slate-900"
+                  href={signInHref}
+                  onclick={() => (menuOpen = false)}
+                >
+                  {m.nav_signin()}
+                </a>
+                <a
+                  class="transition hover:text-slate-900"
+                  href={manageHref}
+                  onclick={() => (menuOpen = false)}
+                >
+                  {m.menu_manage_subscription()}
+                </a>
+              </div>
+            </div>
+            <div class="space-y-3">
+              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+                {m.menu_about_title()}
+              </p>
+              <p class="text-sm text-slate-600">{m.menu_about_blurb()}</p>
+            </div>
+          </div>
+
           <div class="flex items-center gap-2">
             <a
               aria-label={m.locale_en_aria()}
