@@ -16,10 +16,10 @@
   <title>{m.site_name()}</title>
 </svelte:head>
 
-<main class="min-h-dvh mt-12 px-6 py-12 sm:px-10 lg:px-16">
-  <div class="mx-auto flex max-w-6xl flex-col gap-10">
-    <section class="space-y-6 text-center">
-      <h1 class="font-display text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
+<main class="min-h-dvh mt-8 px-6 py-10 sm:mt-12 sm:py-12 sm:px-10 lg:px-16">
+  <div class="mx-auto flex max-w-6xl flex-col gap-8 sm:gap-10">
+    <section class="space-y-4 pb-6 text-center sm:pb-8">
+      <h1 class="font-display text-3xl font-semibold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
         {m.hero_title()}
       </h1>
       <p class="mx-auto max-w-2xl text-base text-slate-600">
@@ -35,9 +35,9 @@
         method="post"
       >
         <label class="sr-only" for="subscribe-email">{m.subscribe_title()}</label>
-        <div class="relative">
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:justify-center sm:gap-2">
           <input
-            class="w-full border border-slate-900/15 bg-white/90 px-5 py-4 pr-36 text-lg text-slate-800 placeholder:text-slate-400 shadow-sm"
+            class="w-full border border-slate-900/15 bg-white/90 px-4 py-3 text-base text-slate-800 placeholder:text-slate-400 shadow-sm sm:max-w-[28rem] sm:flex-none"
             id="subscribe-email"
             name="email_address"
             placeholder={m.subscribe_placeholder()}
@@ -45,7 +45,7 @@
           />
           <input name="fields[lang]" type="hidden" value={data.lang} />
           <button
-            class="absolute right-1 top-1/2 -translate-y-1/2 bg-fern-strong px-4 py-3.5 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern"
+            class="bg-fern-strong px-5 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
             type="submit"
           >
             {m.subscribe_button()}
@@ -54,7 +54,7 @@
       </form>
     </section>
 
-    <section class="mx-auto w-full max-w-5xl space-y-16">
+    <section class="mx-auto mt-10 w-full max-w-5xl space-y-16 sm:mt-12">
       {#if data.posts.length === 0}
         <div class="border border-dashed border-slate-900/20 bg-white/50 p-8">
           <p class="text-sm text-slate-600">{m.no_posts()}</p>
@@ -64,13 +64,10 @@
           {#each data.posts as post}
             <li class="grid gap-4 md:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)] md:items-center md:gap-6">
               {#if post.meta.previewImage}
-                <a
-                  class="block w-[85%] max-w-[320px] justify-self-center md:justify-self-start"
-                  href={`/${data.lang}/${post.slug}`}
-                >
+                <a class="block w-full" href={`/${data.lang}/${post.slug}`}>
                   <img
                     alt={post.meta.title}
-                    class="aspect-square w-full object-cover"
+                    class="w-full h-auto"
                     loading="lazy"
                     src={getResizedImageUrl(post.meta.previewImage, { width: 720 })}
                   />
@@ -80,7 +77,7 @@
               {/if}
               <div class="max-w-xl space-y-4 text-center md:text-left">
                 <a
-                  class="font-display text-4xl font-semibold tracking-tight text-slate-900 transition hover:text-slate-700 sm:text-5xl"
+                  class="font-display text-3xl font-semibold tracking-tight text-slate-900 transition hover:text-slate-700 sm:text-5xl lg:text-6xl"
                   href={`/${data.lang}/${post.slug}`}
                 >
                   {post.meta.title}

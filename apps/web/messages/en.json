@@ -14,8 +14,8 @@
   "nav_writing": "Writing",
   "nav_bench": "Bench notes",
   "hero_kicker": "Recovered Factory",
-  "hero_title": "A public journalism workshop.",
-  "hero_subtitle": "Dispatches, field notes, and experiments from the factory floor.",
+  "hero_title": "A public data journalism workshop.",
+  "hero_subtitle": "Dispatches, field notes, and experiments from David Eads and Tory Lysik.",
   "subscribe_title": "Get new work in your inbox.",
   "subscribe_placeholder": "jamie@example.com",
   "subscribe_button": "Subscribe",
@@ -38,7 +38,8 @@
   "locale_es_aria": "Switch to Spanish",
   "post_read_in_spanish": "Read it in Spanish",
   "post_read_in_english": "Read it in English",
+  "post_subscribe_heading": "Subscribe for dispatches from our public workshop",
   "footer_copyright": "© {year} {name}",
-  "footer_lettering_credit": "Lettering by TK",
+  "footer_lettering_credit": "Lettering by <a href=https://www.instagram.com/suku_mix/>@suku_mix</a>",
   "footer_powered_by": "Powered by"
 }

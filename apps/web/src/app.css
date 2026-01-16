@@ -2,10 +2,12 @@
 @import "tailwindcss";
 
 @theme {
-  --color-cream: #faf6e9;
-  --color-fern: #7bc974;
-  --color-fern-strong: #4a8f43;
+  --color-cream: #f3f1e9;
+  --color-fern: #d81f48;
+  --color-fern-strong: #e8244f;
   --color-fern-soft: #e4f0dc;
+  --color-link: #c95918;
+  --color-donate: #2fb26a;
   --font-brand: "Lora", serif;
   --font-display: "Lora", serif;
   --font-body: "Inter", sans-serif;

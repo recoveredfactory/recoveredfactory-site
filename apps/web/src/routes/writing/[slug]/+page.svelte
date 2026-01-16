@@ -15,7 +15,7 @@
     <header class="space-y-4">
       {#if data.alternate}
         <a
-          class="text-xs font-semibold uppercase tracking-[0.3em] text-fern-strong transition hover:text-fern-strong/80"
+          class="text-xs font-semibold uppercase tracking-[0.3em] text-link transition hover:text-link/80"
           href={data.alternate.href}
         >
           {data.alternate.locale === 'es'
@@ -47,7 +47,7 @@
     </header>
 
     <div
-      class="space-y-6 text-base leading-relaxed text-slate-700 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:tracking-tight [&_p]:text-slate-700 [&_a]:font-medium [&_a]:text-slate-900 [&_a]:underline [&_a]:underline-offset-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_blockquote]:border-l-2 [&_blockquote]:border-slate-300 [&_blockquote]:pl-4"
+      class="space-y-6 text-base leading-relaxed text-slate-700 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:tracking-tight [&_p]:text-slate-700 [&_a]:font-medium [&_a]:text-link [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-link/80 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_blockquote]:border-l-2 [&_blockquote]:border-slate-300 [&_blockquote]:pl-4"
     >
       {@html data.post.html ?? ''}
     </div>

@@ -40,36 +40,29 @@
     bind:clientHeight={headerHeight}
     class="sticky top-0 z-40 border-b border-slate-900/10 bg-cream/80 backdrop-blur-md supports-[backdrop-filter]:bg-cream/70"
   >
-    <div
-      class="relative mx-auto flex max-w-6xl items-center px-6 py-4 sm:py-5 sm:px-10 lg:px-16"
-    >
-      <div class="hidden items-center md:flex">
-        <a
-          class="bg-fern-strong px-2.5 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern"
-          href={subscribeHref}
-        >
-          {m.nav_subscribe()}
-        </a>
-      </div>
-      <a
-        aria-label={m.site_name()}
-        class="absolute left-1/2 -translate-x-1/2 text-slate-900 top-0 z-60"
-        href={homeHref}
-      >
+    <div class="mx-auto flex max-w-6xl items-center px-6 py-3 sm:py-4 sm:px-10 lg:px-16">
+      <a aria-label={m.site_name()} class="text-slate-900" href={homeHref}>
         <img
           alt={m.site_name()}
-          class="h-auto w-44 max-w-full sm:w-50"
+          class="h-auto w-32 max-w-full sm:w-36"
           loading="eager"
-          src={getResizedImageUrl('/images/site-logo-001.png', { width: 448 })}
+          src={getResizedImageUrl('/images/site-logo-001.png', { width: 320 })}
         />
         <span class="sr-only">{m.site_name()}</span>
       </a>
       <div class="ml-auto flex items-center gap-3">
-        <nav class="hidden items-center gap-6 text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-slate-600 lg:flex">
-          <a class="transition hover:text-slate-900" href={donateHref}>
-            {m.nav_donate()}
-          </a>
-        </nav>
+        <a
+          class="hidden bg-fern-strong px-2.5 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern md:inline-flex"
+          href={subscribeHref}
+        >
+          {m.nav_subscribe()}
+        </a>
+        <a
+          class="hidden bg-donate px-2.5 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-donate/90 md:inline-flex"
+          href={donateHref}
+        >
+          {m.nav_donate()}
+        </a>
         <button
           aria-controls="site-menu"
           aria-expanded={menuOpen}
@@ -194,7 +187,9 @@
   <footer class="border-t border-slate-900/10 bg-cream/80">
     <div class="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-8 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-10 lg:px-16">
       <p>{m.footer_copyright({ year: currentYear, name: m.site_name() })}</p>
-      <p>{@html m.footer_lettering_credit()}</p>
+      <p class="text-slate-500 [&_a]:text-link [&_a:hover]:text-link/80">
+        {@html m.footer_lettering_credit()}
+      </p>
     </div>
   </footer>
 </div>

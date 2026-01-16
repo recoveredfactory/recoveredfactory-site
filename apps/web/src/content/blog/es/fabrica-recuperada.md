@@ -12,8 +12,21 @@ tags:
 lang: "es"
 ---
 
+<script>
+  import ResizedImage from '$lib/components/ResizedImage.svelte';
+</script>
+
 Fabrica recuperada nacio como un cuaderno de bocetos, lecturas y pruebas pequenas.
 Queremos un lugar que se sienta calmo, deliberado y un poco terco con el oficio.
+
+<ResizedImage
+  src="/images/brukman-graffiti.jpg"
+  alt="Grafiti en Brukman"
+  width={1200}
+  caption="Grafiti en la fabrica Brukman."
+  figureClass="my-6"
+  class="w-full h-auto"
+/>
 
 Aqui compartimos lo que estamos haciendo, lo que estamos aprendiendo y los rituales
 que sostienen el trabajo. No es un feed. Es una mesa de taller.
