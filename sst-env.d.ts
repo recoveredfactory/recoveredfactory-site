@@ -10,6 +10,22 @@ declare module "sst" {
       "type": "sst.aws.Function"
       "url": string
     }
+    "KIT_API_KEY": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "KIT_API_SECRET": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "STRIPE_SECRET_KEY": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
+    "STRIPE_WEBHOOK_SECRET": {
+      "type": "sst.sst.Secret"
+      "value": string
+    }
     "Web": {
       "type": "sst.aws.SvelteKit"
       "url": string

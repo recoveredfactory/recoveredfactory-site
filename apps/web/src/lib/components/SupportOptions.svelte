@@ -6,9 +6,10 @@
   type SupportOptionsProps = {
     source?: string;
     variant?: 'modal' | 'inline' | 'page';
+    prefillEmail?: string;
   };
 
-  const { source = 'modal', variant = 'modal' } = $props<SupportOptionsProps>();
+  const { source = 'modal', variant = 'modal', prefillEmail } = $props<SupportOptionsProps>();
 
   const options = [
     {
@@ -33,6 +34,18 @@
 
   const isInline = variant === 'inline';
   const isPage = variant === 'page';
+
+  const buildSupportHref = (href: string) => {
+    const trimmed = prefillEmail?.trim();
+    if (!trimmed) return href;
+    try {
+      const url = new URL(href);
+      url.searchParams.set('prefilled_email', trimmed);
+      return url.toString();
+    } catch {
+      return href;
+    }
+  };
 
   const handleClick = (id: string) => {
     trackEvent('support_click', { level: id, source });
@@ -62,7 +75,7 @@
     {#each options as option}
       <a
         class="rounded border border-slate-900/10 bg-white px-4 py-4 text-center transition hover:border-slate-900/30 hover:bg-white/90"
-        href={option.href}
+        href={buildSupportHref(option.href)}
         onclick={() => handleClick(option.id)}
         rel="noopener noreferrer"
         target="_blank"

@@ -34,6 +34,8 @@
 
   let status = $state<'idle' | 'loading' | 'success' | 'error'>('idle');
   let errorMessage = $state('');
+  let emailValue = $state('');
+  let supportEmail = $state('');
 
   const inputId = `${id}-email`;
   const isLocked = $derived(status === 'loading' || status === 'success');
@@ -47,6 +49,7 @@
 
     const form = event.currentTarget as HTMLFormElement;
     const formData = new FormData(form);
+    const submittedEmail = String(formData.get('email_address') ?? '').trim();
     formData.set('lang', lang);
     formData.set('fields[lang]', lang);
     formData.set('source', source);
@@ -67,6 +70,8 @@
         throw new Error(payload?.error || m.subscribe_error());
       }
       status = 'success';
+      supportEmail = submittedEmail;
+      emailValue = '';
       form.reset();
     } catch (err) {
       status = 'error';
@@ -86,6 +91,7 @@
   <div class={layoutClass}>
     <input
       aria-label={m.subscribe_title()}
+      bind:value={emailValue}
       class={inputClass}
       disabled={isLocked}
       id={inputId}
@@ -112,7 +118,7 @@
       {m.subscribe_success()}
     </p>
     <div class="mt-6" in:fade={{ duration: 250 }}>
-      <SupportOptions source={source} variant="inline" />
+      <SupportOptions prefillEmail={supportEmail} source={source} variant="inline" />
     </div>
   {:else if status === 'error'}
     <p class="mt-3 text-center text-sm text-red-600" role="alert" in:fade={{ duration: 200 }}>

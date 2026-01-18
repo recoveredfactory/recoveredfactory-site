@@ -1,7 +1,8 @@
 /// <reference path="./.sst/platform/config.d.ts" />
 
 const ROOT_DOMAIN = "recoveredfactory.net";
-const PROD_DOMAIN = "cms--prod.recoveredfactory.net";
+const PROD_DOMAIN = ROOT_DOMAIN;
+const WWW_DOMAIN = `www.${ROOT_DOMAIN}`;
 const STAGE_DOMAIN = "cms--stage.recoveredfactory.net";
 
 export default $config({
@@ -40,6 +41,11 @@ export default $config({
       name: ROOT_DOMAIN,
       privateZone: false,
     });
+
+    const stripeSecretKey = new sst.Secret("STRIPE_SECRET_KEY");
+    const stripeWebhookSecret = new sst.Secret("STRIPE_WEBHOOK_SECRET");
+    const kitApiKey = new sst.Secret("KIT_API_KEY");
+    const kitApiSecret = new sst.Secret("KIT_API_SECRET");
 
     if (stage === "prod") {
       const kitRecords = [
@@ -97,6 +103,7 @@ export default $config({
         ? {
             domain: {
               name: siteDomain,
+              redirects: siteDomain === ROOT_DOMAIN ? [WWW_DOMAIN] : [],
               dns: sst.aws.dns({ zone: hostedZone.zoneId }),
             },
           }
@@ -106,6 +113,16 @@ export default $config({
           ? `https://${siteDomain}`
           : process.env.PUBLIC_SITE_URL ?? "",
         PUBLIC_IMAGE_RESIZER_URL: resizer.url,
+        STRIPE_SECRET_KEY: stripeSecretKey.value,
+        STRIPE_WEBHOOK_SECRET: stripeWebhookSecret.value,
+        STRIPE_PRICE_LEVEL_1: process.env.STRIPE_PRICE_LEVEL_1 ?? "",
+        STRIPE_PRICE_LEVEL_2: process.env.STRIPE_PRICE_LEVEL_2 ?? "",
+        STRIPE_PRICE_ONCE: process.env.STRIPE_PRICE_ONCE ?? "",
+        KIT_API_KEY: kitApiKey.value,
+        KIT_API_SECRET: kitApiSecret.value,
+        KIT_TAG_SUPPORT_LEVEL_1: process.env.KIT_TAG_SUPPORT_LEVEL_1 ?? "",
+        KIT_TAG_SUPPORT_LEVEL_2: process.env.KIT_TAG_SUPPORT_LEVEL_2 ?? "",
+        KIT_TAG_SUPPORTED_ONCE: process.env.KIT_TAG_SUPPORTED_ONCE ?? "",
       },
     });
 
