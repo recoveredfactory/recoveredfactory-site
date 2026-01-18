@@ -1,6 +1,8 @@
 <script lang="ts">
   import '../app.css';
+  import { onMount } from 'svelte';
   import { page } from '$app/stores';
+  import { trackEvent } from '$lib/analytics';
   import { getResizedImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
   import { deLocalizeHref, getLocale, localizeHref } from '$lib/paraglide/runtime';
@@ -13,12 +15,66 @@
   let headerHeight = $state(0);
 
   const homeHref = localizeHref('/');
-  const donateHref = localizeHref('/donate');
-  const subscribeHref = `${homeHref}#subscribe`;
+  const currentLocale = getLocale();
+  const supportHref = `/${currentLocale}/support`;
+  const signupHref = `${homeHref}#signup`;
   const signInHref = localizeHref('/signin');
   const manageHref = localizeHref('/manage');
-  const currentLocale = getLocale();
   const currentYear = new Date().getFullYear();
+  const scrollMarks = [25, 50, 75, 100];
+
+  let lastPath = $state('');
+  let seenScrollMarks = $state(new Set<number>());
+  let scrollTicking = $state(false);
+
+  const getScrollPercent = () => {
+    if (typeof window === 'undefined') return 0;
+    const doc = document.documentElement;
+    const scrollTop = window.scrollY + window.innerHeight;
+    const scrollHeight = Math.max(doc.scrollHeight, window.innerHeight);
+    return Math.min(100, Math.round((scrollTop / scrollHeight) * 100));
+  };
+
+  const trackScrollDepth = () => {
+    if (typeof window === 'undefined') return;
+    const percent = getScrollPercent();
+    scrollMarks.forEach((mark) => {
+      if (percent >= mark && !seenScrollMarks.has(mark)) {
+        seenScrollMarks.add(mark);
+        trackEvent('scroll_depth', { percent: mark, path: lastPath });
+      }
+    });
+  };
+
+  const onScroll = () => {
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(() => {
+      scrollTicking = false;
+      trackScrollDepth();
+    });
+  };
+
+  const toggleMenu = () => {
+    menuOpen = !menuOpen;
+    trackEvent(menuOpen ? 'menu_open' : 'menu_close', { path: $page.url.pathname });
+  };
+
+  const closeMenu = (source?: string) => {
+    if (!menuOpen) return;
+    menuOpen = false;
+    trackEvent('menu_close', { path: $page.url.pathname, source });
+  };
+
+  const trackLanguageSwitch = (locale: string, source: string) => {
+    trackEvent('language_switch', {
+      from: currentLocale,
+      to: locale,
+      source,
+      path: $page.url.pathname,
+    });
+  };
+
 
   const getLocaleHref = (locale: CrosswalkLocale) => {
     const pathWithoutLang = $page.url.pathname.replace(/^\/(en|es)(?=\/|$)/, '');
@@ -33,6 +89,26 @@
     }
     return localizeHref(basePath || '/', { locale });
   };
+
+  $effect(() => {
+    if (typeof window === 'undefined') return;
+    const path = $page.url.pathname;
+    if (path !== lastPath) {
+      lastPath = path;
+      seenScrollMarks = new Set();
+      requestAnimationFrame(trackScrollDepth);
+    }
+  });
+
+  onMount(() => {
+    lastPath = $page.url.pathname;
+    seenScrollMarks = new Set();
+    trackScrollDepth();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+    };
+  });
 </script>
 
 <div class="min-h-dvh">
@@ -53,13 +129,13 @@
       <div class="ml-auto flex items-center gap-3">
         <a
           class="hidden bg-fern-strong px-2.5 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern md:inline-flex"
-          href={subscribeHref}
+          href={signupHref}
         >
           {m.nav_subscribe()}
         </a>
         <a
           class="hidden bg-donate px-2.5 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-donate/90 md:inline-flex"
-          href={donateHref}
+          href={supportHref}
         >
           {m.nav_donate()}
         </a>
@@ -68,7 +144,7 @@
           aria-expanded={menuOpen}
           aria-label={menuOpen ? m.nav_menu_close_aria() : m.nav_menu_open_aria()}
           class="inline-flex h-10 w-10 items-center justify-center border border-slate-900/10 text-slate-700 transition hover:border-slate-900/40 hover:text-slate-900"
-          onclick={() => (menuOpen = !menuOpen)}
+          onclick={toggleMenu}
           type="button"
         >
           <span class="sr-only">
@@ -105,15 +181,15 @@
           <div class="flex flex-col gap-6 text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
             <a
               class="font-display transition hover:text-slate-600"
-              href={donateHref}
-              onclick={() => (menuOpen = false)}
+              href={supportHref}
+              onclick={() => closeMenu('nav')}
             >
               {m.nav_donate()}
             </a>
             <a
               class="font-display text-fern-strong transition hover:text-fern"
-              href={subscribeHref}
-              onclick={() => (menuOpen = false)}
+              href={signupHref}
+              onclick={() => closeMenu('nav')}
             >
               {m.nav_subscribe()}
             </a>
@@ -128,14 +204,14 @@
                 <a
                   class="transition hover:text-slate-900"
                   href={signInHref}
-                  onclick={() => (menuOpen = false)}
+                  onclick={() => closeMenu('nav')}
                 >
                   {m.nav_signin()}
                 </a>
                 <a
                   class="transition hover:text-slate-900"
                   href={manageHref}
-                  onclick={() => (menuOpen = false)}
+                  onclick={() => closeMenu('nav')}
                 >
                   {m.menu_manage_subscription()}
                 </a>
@@ -159,7 +235,10 @@
               }`}
               data-sveltekit-reload
               href={getLocaleHref('en')}
-              onclick={() => (menuOpen = false)}
+              onclick={() => {
+                trackLanguageSwitch('en', 'menu');
+                closeMenu('language');
+              }}
             >
               {m.locale_en_short()}
             </a>
@@ -172,7 +251,10 @@
               }`}
               data-sveltekit-reload
               href={getLocaleHref('es')}
-              onclick={() => (menuOpen = false)}
+              onclick={() => {
+                trackLanguageSwitch('es', 'menu');
+                closeMenu('language');
+              }}
             >
               {m.locale_es_short()}
             </a>
@@ -180,6 +262,7 @@
         </div>
       </div>
     {/if}
+
   </header>
 
   {@render children()}

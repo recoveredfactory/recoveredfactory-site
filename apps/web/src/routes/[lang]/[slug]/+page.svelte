@@ -1,19 +1,27 @@
 <script lang="ts">
+  import { page } from '$app/stores';
+  import { trackEvent } from '$lib/analytics';
   import { getEntry } from '$lib/blog/loader';
+  import SubscribeForm from '$lib/components/SubscribeForm.svelte';
   import { SITE_URL } from '$lib/config';
   import { getResizedImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
-  import { getLocale } from '$lib/paraglide/runtime';
 
   const { data } = $props();
-  const currentLocale = getLocale();
+
+  const toAbsoluteUrl = (value: string) =>
+    /^https?:\/\//i.test(value) ? value : new URL(value, SITE_URL).href;
+  const redirectTo = $derived($page.url.pathname);
 
   const entry = $derived(getEntry(data.lang, data.slug));
   const isPost = $derived(entry?.meta.type !== 'page');
   const byline = $derived(entry?.meta.byline || m.site_name());
+  const defaultOgImage = $derived(
+    toAbsoluteUrl(getResizedImageUrl('/images/site-logo-001.png', { width: 1200 })),
+  );
   const previewImageUrl = $derived(
     entry?.meta.previewImage
-      ? getResizedImageUrl(entry.meta.previewImage, { width: 1600 })
+      ? toAbsoluteUrl(getResizedImageUrl(entry.meta.previewImage, { width: 1600 }))
       : null,
   );
   const canonical = $derived(new URL(`/${data.lang}/${data.slug}`, SITE_URL).href);
@@ -25,19 +33,33 @@
     otherLang === 'es' ? 'Leer en espanol →' : 'Read in English →',
   );
   const EntryComponent = $derived(entry?.component);
+  const ogTitle = $derived(entry?.meta.title || m.site_name());
+  const ogDescription = $derived(entry?.meta.description || m.hero_subtitle());
+  const ogImage = $derived(previewImageUrl || defaultOgImage);
 </script>
 
 <svelte:head>
   {#if entry}
     <title>{entry.meta.title}</title>
-    {#if entry.meta.description}
-      <meta name="description" content={entry.meta.description} />
+    <meta name="description" content={ogDescription} />
+    <meta property="og:site_name" content={m.site_name()} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={ogDescription} />
+    <meta property="og:type" content={isPost ? 'article' : 'website'} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:alt" content={ogTitle} />
+    {#if isPost}
+      <meta
+        property="article:published_time"
+        content={new Date(entry.meta.date).toISOString()}
+      />
+      <meta property="article:author" content={byline} />
     {/if}
-    {#if previewImageUrl}
-      <meta property="og:image" content={previewImageUrl} />
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:image" content={previewImageUrl} />
-    {/if}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={ogDescription} />
+    <meta name="twitter:image" content={ogImage} />
   {/if}
   <link rel="canonical" href={canonical} />
   <link rel="alternate" hreflang={data.lang} href={canonical} />
@@ -70,6 +92,13 @@
           <a
             class="inline-flex items-center text-xs font-semibold uppercase tracking-[0.25em] text-fern-strong transition hover:text-fern-strong/80"
             href={data.switchTo}
+            onclick={() =>
+              trackEvent('language_switch', {
+                from: data.lang,
+                to: otherLang,
+                source: 'post',
+                slug: data.slug,
+              })}
           >
             {switchLabel}
           </a>
@@ -84,33 +113,19 @@
 
       <section class="mt-12 w-full space-y-5">
         <hr class="border-slate-900/10" />
-        <p class="text-sm font-semibold uppercase tracking-[0.2em] text-slate-600">
+        <p class="text-center text-sm font-semibold uppercase tracking-[0.2em] text-slate-600">
           {m.post_subscribe_heading()}
         </p>
-        <form
-          action="https://app.kit.com/forms/8972189/subscriptions"
-          class="w-full"
-          id="post-subscribe"
-          method="post"
-        >
-          <label class="sr-only" for="post-subscribe-email">{m.subscribe_title()}</label>
-          <div class="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:justify-center sm:gap-2">
-            <input
-              class="w-full border border-slate-900/15 bg-white/90 px-5 py-4 text-lg text-slate-800 placeholder:text-slate-400 shadow-sm sm:max-w-[28rem] sm:flex-none"
-              id="post-subscribe-email"
-              name="email_address"
-              placeholder={m.subscribe_placeholder()}
-              type="email"
-            />
-            <input name="fields[lang]" type="hidden" value={currentLocale} />
-            <button
-              class="bg-fern-strong px-5 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
-              type="submit"
-            >
-              {m.subscribe_button()}
-            </button>
-          </div>
-        </form>
+        <SubscribeForm
+          buttonClass="bg-fern-strong px-5 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
+          formClass="w-full"
+          id="post-signup"
+          inputClass="w-full border border-slate-900/15 bg-white/90 px-5 py-4 text-lg text-slate-800 placeholder:text-slate-400 shadow-sm sm:max-w-[28rem] sm:flex-none"
+          lang={data.lang}
+          meta={{ slug: data.slug }}
+          redirectTo={redirectTo}
+          source="post"
+        />
       </section>
     </article>
   </main>

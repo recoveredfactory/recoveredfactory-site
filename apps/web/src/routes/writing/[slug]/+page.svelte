@@ -1,13 +1,47 @@
 <script lang="ts">
+  import { page } from '$app/stores';
+  import SubscribeForm from '$lib/components/SubscribeForm.svelte';
+  import { SITE_URL } from '$lib/config';
+  import { getResizedImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
   import { getLocale } from '$lib/paraglide/runtime';
 
   const { data } = $props();
   const currentLocale = getLocale();
+  const redirectTo = $derived($page.url.pathname);
+  const toAbsoluteUrl = (value: string) =>
+    /^https?:\/\//i.test(value) ? value : new URL(value, SITE_URL).href;
+  const canonical = new URL($page.url.pathname, SITE_URL).href;
+  const ogTitle = data.post.title;
+  const ogDescription = data.post.excerpt || m.hero_subtitle();
+  const ogImage = toAbsoluteUrl(
+    getResizedImageUrl(data.post.feature_image || '/images/site-logo-001.png', {
+      width: 1600,
+    }),
+  );
 </script>
 
 <svelte:head>
-  <title>{data.post.title}</title>
+  <title>{ogTitle}</title>
+  <meta name="description" content={ogDescription} />
+  <meta property="og:site_name" content={m.site_name()} />
+  <meta property="og:title" content={ogTitle} />
+  <meta property="og:description" content={ogDescription} />
+  <meta property="og:type" content="article" />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:alt" content={ogTitle} />
+  {#if data.post.published_at}
+    <meta
+      property="article:published_time"
+      content={new Date(data.post.published_at).toISOString()}
+    />
+  {/if}
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={ogTitle} />
+  <meta name="twitter:description" content={ogDescription} />
+  <meta name="twitter:image" content={ogImage} />
+  <link rel="canonical" href={canonical} />
 </svelte:head>
 
 <main class="min-h-dvh px-6 py-12 sm:px-10 lg:px-16">
@@ -54,29 +88,15 @@
   </article>
 
   <section class="mx-auto mt-16 w-full max-w-3xl pb-8">
-    <form
-      action="https://app.kit.com/forms/8972189/subscriptions"
-      class="mx-auto w-full lg:max-w-[75%]"
-      id="subscribe"
-      method="post"
-    >
-      <label class="sr-only" for="post-subscribe-email">{m.subscribe_title()}</label>
-      <div class="relative">
-      <input
-        class="w-full border border-slate-900/15 bg-white/90 px-5 py-4 pr-36 text-lg text-slate-800 placeholder:text-slate-400 shadow-sm"
-        id="post-subscribe-email"
-        name="email_address"
-        placeholder={m.subscribe_placeholder()}
-        type="email"
-      />
-      <input name="fields[lang]" type="hidden" value={currentLocale} />
-      <button
-        class="absolute right-1 top-1/2 -translate-y-1/2 bg-fern-strong px-4 py-3.5 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern"
-        type="submit"
-      >
-        {m.subscribe_button()}
-      </button>
-      </div>
-    </form>
+    <SubscribeForm
+      formClass="mx-auto w-full lg:max-w-[75%]"
+      id="signup"
+      lang={currentLocale}
+      layoutClass="relative"
+      inputClass="w-full border border-slate-900/15 bg-white/90 px-5 py-4 pr-36 text-lg text-slate-800 placeholder:text-slate-400 shadow-sm"
+      buttonClass="absolute right-1 top-1/2 -translate-y-1/2 bg-fern-strong px-4 py-3.5 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern"
+      redirectTo={redirectTo}
+      source="writing"
+    />
   </section>
 </main>

@@ -1,8 +1,22 @@
 <script lang="ts">
+  import { trackEvent } from '$lib/analytics';
+  import { page } from '$app/stores';
+  import SubscribeForm from '$lib/components/SubscribeForm.svelte';
+  import { SITE_URL } from '$lib/config';
   import { getResizedImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
 
   const { data } = $props();
+
+  const toAbsoluteUrl = (value: string) =>
+    /^https?:\/\//i.test(value) ? value : new URL(value, SITE_URL).href;
+  const canonical = new URL(`/${data.lang}`, SITE_URL).href;
+  const description = m.hero_subtitle();
+  const ogImage = toAbsoluteUrl(
+    getResizedImageUrl('/images/site-logo-001.png', { width: 1200 }),
+  );
+
+  const redirectTo = $derived($page.url.pathname);
 
   const formatDate = (value: string) =>
     new Date(value).toLocaleDateString(undefined, {
@@ -14,6 +28,19 @@
 
 <svelte:head>
   <title>{m.site_name()}</title>
+  <meta name="description" content={description} />
+  <meta property="og:site_name" content={m.site_name()} />
+  <meta property="og:title" content={m.site_name()} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:alt" content={m.site_name()} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={m.site_name()} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
+  <link rel="canonical" href={canonical} />
 </svelte:head>
 
 <main class="min-h-dvh mt-8 px-6 py-10 sm:mt-12 sm:py-12 sm:px-10 lg:px-16">
@@ -28,30 +55,13 @@
     </section>
 
     <section>
-      <form
-        action="https://app.kit.com/forms/8972189/subscriptions"
-        class="mx-auto w-full lg:max-w-[75%]"
-        id="subscribe"
-        method="post"
-      >
-        <label class="sr-only" for="subscribe-email">{m.subscribe_title()}</label>
-        <div class="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:justify-center sm:gap-2">
-          <input
-            class="w-full border border-slate-900/15 bg-white/90 px-4 py-3 text-base text-slate-800 placeholder:text-slate-400 shadow-sm sm:max-w-[28rem] sm:flex-none"
-            id="subscribe-email"
-            name="email_address"
-            placeholder={m.subscribe_placeholder()}
-            type="email"
-          />
-          <input name="fields[lang]" type="hidden" value={data.lang} />
-          <button
-            class="bg-fern-strong px-5 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
-            type="submit"
-          >
-            {m.subscribe_button()}
-          </button>
-        </div>
-      </form>
+      <SubscribeForm
+        formClass="mx-auto w-full lg:max-w-[75%]"
+        id="signup"
+        lang={data.lang}
+        redirectTo={redirectTo}
+        source="home"
+      />
     </section>
 
     <section class="mx-auto mt-10 w-full max-w-5xl space-y-16 sm:mt-12">

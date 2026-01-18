@@ -1,11 +1,35 @@
 <script lang="ts">
+  import { SITE_URL } from '$lib/config';
   import { getResizedImageUrl } from '$lib/images';
+  import { m } from '$lib/paraglide/messages';
 
   const { data } = $props();
+
+  const toAbsoluteUrl = (value: string) =>
+    /^https?:\/\//i.test(value) ? value : new URL(value, SITE_URL).href;
+  const canonical = new URL(`/${data.lang}/posts`, SITE_URL).href;
+  const description = 'Full archive';
+  const ogImage = toAbsoluteUrl(
+    getResizedImageUrl('/images/site-logo-001.png', { width: 1200 }),
+  );
+  const pageTitle = `${m.site_name()} · Posts`;
 </script>
 
 <svelte:head>
-  <title>Posts</title>
+  <title>{pageTitle}</title>
+  <meta name="description" content={description} />
+  <meta property="og:site_name" content={m.site_name()} />
+  <meta property="og:title" content={pageTitle} />
+  <meta property="og:description" content={description} />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:alt" content={m.site_name()} />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
+  <link rel="canonical" href={canonical} />
 </svelte:head>
 
 <main class="min-h-dvh px-6 py-12 sm:px-10 lg:px-16">

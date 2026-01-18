@@ -8,6 +8,7 @@ export const GET = () => {
   const staticEntries = LANGS.flatMap((lang) => [
     withBase(`/${lang}`),
     withBase(`/${lang}/posts`),
+    withBase(`/${lang}/support`),
     withBase(`/${lang}/rss.xml`),
   ]);
 
