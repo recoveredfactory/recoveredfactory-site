@@ -15,18 +15,21 @@
     {
       id: 'monthly_12',
       label: m.support_option_monthly_12(),
+      price: m.support_price_monthly_12(),
       perk: m.support_perk_monthly_12(),
       href: SUPPORT_LINKS.monthly12,
     },
     {
       id: 'monthly_75',
       label: m.support_option_monthly_75(),
+      price: m.support_price_monthly_75(),
       perk: m.support_perk_monthly_75(),
       href: SUPPORT_LINKS.monthly75,
     },
     {
       id: 'one_time',
       label: m.support_option_once(),
+      price: m.support_price_once(),
       perk: m.support_perk_once(),
       href: SUPPORT_LINKS.oneTime,
     },
@@ -71,23 +74,22 @@
     </div>
   {/if}
 
-  <div class={`grid gap-3 ${isInline ? 'sm:grid-cols-3' : 'sm:grid-cols-3'}`}>
+  <div class={`grid gap-4 ${isInline ? 'sm:grid-cols-3' : 'sm:grid-cols-3'}`}>
     {#each options as option}
       <a
-        class="rounded border border-slate-900/10 bg-white px-4 py-4 text-center transition hover:border-slate-900/30 hover:bg-white/90"
+        class="rounded border border-slate-900/10 bg-white px-6 py-6 text-center transition hover:border-slate-900/30 hover:bg-white/90"
         href={buildSupportHref(option.href)}
         onclick={() => handleClick(option.id)}
         rel="noopener noreferrer"
         target="_blank"
       >
-        <p
-          class={`text-sm font-semibold uppercase tracking-[0.2em] text-slate-900 ${
-            isInline ? 'text-[0.7rem]' : ''
-          }`}
-        >
+        <p class="min-h-[3rem] font-display text-lg font-semibold leading-snug text-slate-900 sm:min-h-[3.5rem] sm:text-xl">
           {option.label}
         </p>
-        <p class="mt-2 text-xs text-slate-600">{option.perk}</p>
+        {#if option.price}
+          <p class="mt-1 text-base font-semibold text-slate-800">{option.price}</p>
+        {/if}
+        <p class="mt-3 text-sm text-slate-600">{option.perk}</p>
       </a>
     {/each}
   </div>

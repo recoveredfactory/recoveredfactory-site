@@ -2,6 +2,7 @@
   import { trackEvent } from '$lib/analytics';
   import { page } from '$app/stores';
   import SubscribeForm from '$lib/components/SubscribeForm.svelte';
+  import SupportOptions from '$lib/components/SupportOptions.svelte';
   import { SITE_URL } from '$lib/config';
   import { getResizedImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
@@ -17,6 +18,7 @@
   );
 
   const redirectTo = $derived($page.url.pathname);
+  const isConfirmed = $derived($page.url.searchParams.get('confirmed') === '1');
 
   const formatDate = (value: string) =>
     new Date(value).toLocaleDateString(undefined, {
@@ -54,15 +56,25 @@
       </p>
     </section>
 
-    <section>
-      <SubscribeForm
-        formClass="mx-auto w-full lg:max-w-[75%]"
-        id="signup"
-        lang={data.lang}
-        redirectTo={redirectTo}
-        source="home"
-      />
-    </section>
+    {#if isConfirmed}
+      <section class="mx-auto w-full max-w-3xl rounded border border-slate-900/10 bg-white/70 p-6 text-center sm:p-8">
+        <p class="font-display text-xl font-semibold text-slate-900 sm:text-2xl">
+          {m.subscribe_confirmed()}
+        </p>
+        <div class="my-6 h-px bg-slate-900/10"></div>
+        <SupportOptions source="confirm" variant="inline" />
+      </section>
+    {:else}
+      <section>
+        <SubscribeForm
+          formClass="mx-auto w-full lg:max-w-[75%]"
+          id="signup"
+          lang={data.lang}
+          redirectTo={redirectTo}
+          source="home"
+        />
+      </section>
+    {/if}
 
     <section class="mx-auto mt-10 w-full max-w-5xl space-y-16 sm:mt-12">
       {#if data.posts.length === 0}
@@ -87,7 +99,7 @@
               {/if}
               <div class="max-w-xl space-y-4 text-center md:text-left">
                 <a
-                  class="font-display text-3xl font-semibold tracking-tight text-slate-900 transition hover:text-slate-700 sm:text-5xl lg:text-6xl"
+                  class="font-display text-2xl font-semibold tracking-tight text-slate-900 transition hover:text-slate-700 sm:text-4xl lg:text-5xl"
                   href={`/${data.lang}/${post.slug}`}
                 >
                   {post.meta.title}

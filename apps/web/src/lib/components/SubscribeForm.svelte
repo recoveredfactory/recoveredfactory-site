@@ -110,14 +110,14 @@
     </button>
   </div>
   {#if status === 'success'}
-    <p
-      class="mt-4 text-center text-base font-semibold text-[#323133] sm:text-lg"
-      role="status"
+    <div
+      class="mt-6 rounded border border-slate-900/10 bg-white/70 p-6 text-center sm:p-8"
       in:fade={{ duration: 250 }}
     >
-      {m.subscribe_success()}
-    </p>
-    <div class="mt-6" in:fade={{ duration: 250 }}>
+      <p class="font-display text-xl font-semibold text-slate-900 sm:text-2xl" role="status">
+        {m.subscribe_success()}
+      </p>
+      <div class="my-6 h-px bg-slate-900/10"></div>
       <SupportOptions prefillEmail={supportEmail} source={source} variant="inline" />
     </div>
   {:else if status === 'error'}
