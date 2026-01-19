@@ -17,7 +17,7 @@
   const isPost = $derived(entry?.meta.type !== 'page');
   const byline = $derived(entry?.meta.byline || m.site_name());
   const defaultOgImage = $derived(
-    toAbsoluteUrl(getResizedImageUrl('/images/site-logo-001.png', { width: 1200 })),
+    toAbsoluteUrl(getResizedImageUrl('/images/site-logo-002.png', { width: 1200 })),
   );
   const previewImageUrl = $derived(
     entry?.meta.previewImage
@@ -80,7 +80,7 @@
             <p class="text-lg text-slate-600">{entry.meta.description}</p>
           {/if}
           <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
-            {new Date(entry.meta.date).toLocaleDateString(undefined, {
+            {new Date(entry.meta.date).toLocaleDateString(data.lang, {
               year: 'numeric',
               month: 'long',
               day: 'numeric',

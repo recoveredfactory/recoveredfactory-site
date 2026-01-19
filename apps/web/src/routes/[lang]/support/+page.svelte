@@ -10,7 +10,7 @@
   const pageTitle = $derived(`${m.site_name()} · ${m.nav_donate()}`);
 
   const formatDate = (value: string) =>
-    new Date(value).toLocaleDateString(undefined, {
+    new Date(value).toLocaleDateString(data.lang, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',

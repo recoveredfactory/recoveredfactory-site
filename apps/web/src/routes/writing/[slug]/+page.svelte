@@ -15,7 +15,7 @@
   const ogTitle = data.post.title;
   const ogDescription = data.post.excerpt || m.hero_subtitle();
   const ogImage = toAbsoluteUrl(
-    getResizedImageUrl(data.post.feature_image || '/images/site-logo-001.png', {
+    getResizedImageUrl(data.post.feature_image || '/images/site-logo-002.png', {
       width: 1600,
     }),
   );
@@ -68,7 +68,7 @@
       {/if}
       {#if data.post.published_at}
         <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
-          {new Date(data.post.published_at).toLocaleDateString(undefined, {
+          {new Date(data.post.published_at).toLocaleDateString(currentLocale, {
             year: 'numeric',
             month: 'long',
             day: 'numeric',

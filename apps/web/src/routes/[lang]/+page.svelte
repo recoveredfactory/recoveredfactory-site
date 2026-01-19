@@ -14,14 +14,14 @@
   const canonical = new URL(`/${data.lang}`, SITE_URL).href;
   const description = m.hero_subtitle();
   const ogImage = toAbsoluteUrl(
-    getResizedImageUrl('/images/site-logo-001.png', { width: 1200 }),
+    getResizedImageUrl('/images/site-logo-002.png', { width: 1200 }),
   );
 
   const redirectTo = $derived($page.url.pathname);
   const isConfirmed = $derived($page.url.searchParams.get('confirmed') === '1');
 
   const formatDate = (value: string) =>
-    new Date(value).toLocaleDateString(undefined, {
+    new Date(value).toLocaleDateString(data.lang, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',

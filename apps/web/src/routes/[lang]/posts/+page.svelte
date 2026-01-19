@@ -10,7 +10,7 @@
   const canonical = new URL(`/${data.lang}/posts`, SITE_URL).href;
   const description = 'Full archive';
   const ogImage = toAbsoluteUrl(
-    getResizedImageUrl('/images/site-logo-001.png', { width: 1200 }),
+    getResizedImageUrl('/images/site-logo-002.png', { width: 1200 }),
   );
   const pageTitle = `${m.site_name()} · Posts`;
 </script>
@@ -66,7 +66,7 @@
               {post.meta.title}
             </a>
             <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
-              {new Date(post.meta.date).toLocaleDateString(undefined, {
+              {new Date(post.meta.date).toLocaleDateString(data.lang, {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric',
