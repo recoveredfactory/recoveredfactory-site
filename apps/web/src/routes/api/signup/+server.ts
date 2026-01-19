@@ -49,14 +49,40 @@ export const POST = async ({ request }) => {
     },
   );
 
+  const responseText = await response.text();
   const ok = response.ok || (response.status >= 300 && response.status < 400);
-  if (!ok) {
-    return json({ ok: false, error: 'Sign up failed.' }, { status: 502 });
+  const guard =
+    responseText.includes('ck-recaptcha-challenge') ||
+    responseText.includes('guards-show') ||
+    responseText.includes('Please complete this security check');
+  const success =
+    responseText.includes('subscriptions-success') ||
+    responseText.includes('ckjs:guard:confirmed') ||
+    responseText.includes('Success! Now check your email');
+  const guardActionMatch = guard
+    ? responseText.match(/action="([^"]*\/forms\/guards\/[^"]+)"/)
+    : null;
+  const guardUrl = guardActionMatch
+    ? new URL(guardActionMatch[1], 'https://app.kit.com').href
+    : '';
+
+  if (!ok || guard || !success) {
+    return json(
+      {
+        ok: false,
+        guard,
+        error: guard ? 'Security check required.' : 'Sign up failed.',
+        status: response.status,
+        body: responseText,
+        guardUrl,
+      },
+      { status: guard ? 409 : 502 },
+    );
   }
 
   const wantsJson = request.headers.get('accept')?.includes('application/json');
   if (wantsJson) {
-    return json({ ok: true });
+    return json({ ok: true, status: response.status, body: responseText });
   }
 
   const url = new URL(redirectTarget, request.url);

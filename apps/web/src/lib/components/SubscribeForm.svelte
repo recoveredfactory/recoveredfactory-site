@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { fade } from 'svelte/transition';
+  import { fade, slide } from 'svelte/transition';
   import { trackEvent } from '$lib/analytics';
   import { m } from '$lib/paraglide/messages';
   import SupportOptions from '$lib/components/SupportOptions.svelte';
@@ -32,10 +32,11 @@
     meta = {},
   } = $props<SubscribeFormProps>();
 
-  let status = $state<'idle' | 'loading' | 'success' | 'error'>('idle');
+  let status = $state<'idle' | 'loading' | 'success' | 'error' | 'guard'>('idle');
   let errorMessage = $state('');
   let emailValue = $state('');
   let supportEmail = $state('');
+  let guardUrl = $state('');
 
   const inputId = `${id}-email`;
   const isLocked = $derived(status === 'loading' || status === 'success');
@@ -67,14 +68,23 @@
       });
       const payload = await response.json().catch(() => ({}));
       if (!response.ok || payload?.ok === false) {
+        if (payload?.guard) {
+          guardUrl = payload?.guardUrl || '';
+          status = 'guard';
+          throw new Error(m.subscribe_guard());
+        }
         throw new Error(payload?.error || m.subscribe_error());
       }
       status = 'success';
+      guardUrl = '';
       supportEmail = submittedEmail;
       emailValue = '';
       form.reset();
     } catch (err) {
-      status = 'error';
+      if (status !== 'guard') {
+        status = 'error';
+        guardUrl = '';
+      }
       errorMessage = (err as Error)?.message || m.subscribe_error();
     }
   };
@@ -88,29 +98,29 @@
   onsubmit={handleSubmit}
 >
   <label class={labelClass} for={inputId}>{m.subscribe_title()}</label>
-  <div class={layoutClass}>
-    <input
-      aria-label={m.subscribe_title()}
-      bind:value={emailValue}
-      class={inputClass}
-      disabled={isLocked}
-      id={inputId}
-      name="email_address"
-      placeholder={m.subscribe_placeholder()}
-      type="email"
-    />
-    <input name="fields[lang]" type="hidden" value={lang} />
-    <input name="lang" type="hidden" value={lang} />
-    <input name="source" type="hidden" value={source} />
-    {#if redirectTo}
-      <input name="redirect" type="hidden" value={redirectTo} />
-    {/if}
-    {#if status !== 'success'}
+  {#if status !== 'success' && status !== 'guard'}
+    <div class={layoutClass} transition:slide={{ duration: 220 }}>
+      <input
+        aria-label={m.subscribe_title()}
+        bind:value={emailValue}
+        class={inputClass}
+        disabled={isLocked}
+        id={inputId}
+        name="email_address"
+        placeholder={m.subscribe_placeholder()}
+        type="email"
+      />
+      <input name="fields[lang]" type="hidden" value={lang} />
+      <input name="lang" type="hidden" value={lang} />
+      <input name="source" type="hidden" value={source} />
+      {#if redirectTo}
+        <input name="redirect" type="hidden" value={redirectTo} />
+      {/if}
       <button class={buttonClass} disabled={isLocked} type="submit">
         {m.subscribe_button()}
       </button>
-    {/if}
-  </div>
+    </div>
+  {/if}
   {#if status === 'success'}
     <div
       class="mt-6 rounded border border-slate-900/10 bg-white/70 p-6 text-center sm:p-8"
@@ -126,5 +136,28 @@
     <p class="mt-3 text-center text-sm text-red-600" role="alert" in:fade={{ duration: 200 }}>
       {errorMessage}
     </p>
+  {:else if status === 'guard'}
+    <div class="mt-3 space-y-4 text-center" in:fade={{ duration: 250 }}>
+      <p class="text-sm text-slate-600">{m.subscribe_guard()}</p>
+      {#if guardUrl}
+        <div class="overflow-hidden rounded border border-slate-900/10 bg-white">
+          <iframe
+            class="h-[520px] w-full"
+            src={guardUrl}
+            title={m.subscribe_guard_link()}
+          ></iframe>
+        </div>
+        <p class="text-xs text-slate-500">
+          <a
+            class="font-semibold text-link transition hover:text-link/80"
+            href={guardUrl}
+            rel="noopener noreferrer"
+            target="_blank"
+          >
+            {m.subscribe_guard_link()}
+          </a>
+        </p>
+      {/if}
+    </div>
   {/if}
 </form>

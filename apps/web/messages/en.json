@@ -23,6 +23,8 @@
   "subscribe_button": "Sign up",
   "subscribe_success": "Success! Now check your email to confirm your subscription.",
   "subscribe_confirmed": "You're confirmed. Thanks for signing up.",
+  "subscribe_guard": "Please complete the security check to subscribe.",
+  "subscribe_guard_link": "Complete the security check on Kit",
   "subscribe_error": "Something went wrong. Please try again.",
   "latest_heading": "Latest posts",
   "latest_subtitle": "Recent posts",

@@ -23,6 +23,8 @@
   "subscribe_button": "Regístrate",
   "subscribe_success": "Éxito. Revisa tu correo para confirmar la suscripción.",
   "subscribe_confirmed": "Confirmado. Gracias por registrarte.",
+  "subscribe_guard": "Por favor completa la verificación de seguridad para suscribirte.",
+  "subscribe_guard_link": "Completa la verificación en Kit",
   "subscribe_error": "Algo salió mal. Intenta de nuevo.",
   "latest_heading": "Últimas publicaciones",
   "latest_subtitle": "Publicaciones recientes",
