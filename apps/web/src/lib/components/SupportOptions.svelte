@@ -35,8 +35,8 @@
     },
   ];
 
-  const isInline = variant === 'inline';
-  const isPage = variant === 'page';
+  const isInline = $derived(variant === 'inline');
+  const isPage = $derived(variant === 'page');
 
   const buildSupportHref = (href: string) => {
     const trimmed = prefillEmail?.trim();
@@ -87,7 +87,7 @@
           {option.label}
         </p>
         {#if option.price}
-          <p class="mt-1 text-base font-semibold text-slate-800">{option.price}</p>
+          <p class="mt-0.5 text-base font-semibold text-slate-800 sm:mt-1">{option.price}</p>
         {/if}
         <p class="mt-3 text-sm text-slate-600">{option.perk}</p>
       </a>

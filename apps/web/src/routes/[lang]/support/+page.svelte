@@ -4,9 +4,9 @@
   import { m } from '$lib/paraglide/messages';
 
   const { data } = $props();
-  const canonical = new URL(`/${data.lang}/support`, SITE_URL).href;
-  const description = m.support_subtitle();
-  const pageTitle = `${m.site_name()} · ${m.nav_donate()}`;
+  const canonical = $derived(new URL(`/${data.lang}/support`, SITE_URL).href);
+  const description = $derived(m.support_subtitle());
+  const pageTitle = $derived(`${m.site_name()} · ${m.nav_donate()}`);
 </script>
 
 <svelte:head>
