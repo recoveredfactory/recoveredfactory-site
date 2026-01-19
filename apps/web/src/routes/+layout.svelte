@@ -129,9 +129,9 @@
       <a aria-label={m.site_name()} class="text-slate-900" href={homeHref}>
         <img
           alt={m.site_name()}
-          class="h-auto w-32 max-w-full sm:w-36"
+          class="h-auto w-54 max-w-full sm:w-64"
           loading="eager"
-          src={getResizedImageUrl('/images/site-logo-001.png', { width: 320 })}
+          src={getResizedImageUrl('/images/site-logo-002.png', { width: 320 })}
         />
         <span class="sr-only">{m.site_name()}</span>
       </a>
@@ -210,6 +210,18 @@
                 {m.menu_about_title()}
               </p>
               <p class="text-sm text-slate-600">{m.menu_about_blurb()}</p>
+              <p class="text-sm text-slate-600">
+                Logo by{' '}
+                <a
+                  class="text-link transition hover:text-link/80"
+                  href="https://www.instagram.com/suku_mix/"
+                  rel="noopener noreferrer"
+                  target="_blank"
+                >
+                  @suku_mix
+                </a>
+                .
+              </p>
             </div>
             <div class="space-y-3 py-6 sm:py-0">
               <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
