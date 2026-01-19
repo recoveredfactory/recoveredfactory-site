@@ -211,16 +211,14 @@
               </p>
               <p class="text-sm text-slate-600">{m.menu_about_blurb()}</p>
               <p class="text-sm text-slate-600">
-                Logo by{' '}
-                <a
+                Logo by <a
                   class="text-link transition hover:text-link/80"
                   href="https://www.instagram.com/suku_mix/"
                   rel="noopener noreferrer"
                   target="_blank"
                 >
                   @suku_mix
-                </a>
-                .
+                </a>.
               </p>
             </div>
             <div class="space-y-3 py-6 sm:py-0">
