@@ -28,6 +28,62 @@
     ...rest
   } = $props<ResizedImageProps>();
 
+  const escapeHtml = (value: string) =>
+    value
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+
+  const sanitizeUrl = (value: string) => {
+    const trimmed = value.trim();
+    if (trimmed.startsWith('/')) return trimmed;
+    try {
+      const parsed = new URL(trimmed);
+      if (['http:', 'https:', 'mailto:'].includes(parsed.protocol)) {
+        return parsed.href;
+      }
+    } catch {
+      return '';
+    }
+    return '';
+  };
+
+  const formatInline = (value: string) => {
+    const escaped = escapeHtml(value);
+    return escaped
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/_(.+?)_/g, '<em>$1</em>');
+  };
+
+  const renderMarkdown = (value: string) => {
+    const linkPattern = /\[([^\]]+)\]\(([^)]+)\)/g;
+    let result = '';
+    let lastIndex = 0;
+    let match: RegExpExecArray | null;
+
+    while ((match = linkPattern.exec(value)) !== null) {
+      const [full, text, url] = match;
+      result += formatInline(value.slice(lastIndex, match.index));
+      const safeUrl = sanitizeUrl(url);
+      if (safeUrl) {
+        result += `<a href="${safeUrl}" rel="noopener noreferrer" target="_blank">${formatInline(
+          text,
+        )}</a>`;
+      } else {
+        result += formatInline(text);
+      }
+      lastIndex = match.index + full.length;
+    }
+
+    result += formatInline(value.slice(lastIndex));
+    return result.replace(/\n/g, '<br />');
+  };
+
+  const captionHtml = $derived(caption ? renderMarkdown(caption) : '');
+
   const figureClass = $derived(
     `mx-auto max-w-md${figureClassProp ? ` ${figureClassProp}` : ''}`,
   );
@@ -44,7 +100,11 @@
       class={className}
     />
     {#if caption}
-      <figcaption class={captionClass}>{caption}</figcaption>
+      <figcaption class={captionClass}>{@html captionHtml}</figcaption>
+    {:else if $$slots.default}
+      <figcaption class={captionClass}>
+        <slot></slot>
+      </figcaption>
     {/if}
   </figure>
 {/if}

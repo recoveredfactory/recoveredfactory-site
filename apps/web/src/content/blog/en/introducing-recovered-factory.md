@@ -1,7 +1,7 @@
 ---
 id: "recovered-factory-intro"
 title: "Introducing Recovered Factory"
-date: "2025-01-19"
+date: "2025-01-20"
 description: "Journalists used to unlock data for the public good. In an era of collapse, can that work live outside traditional institutions?"
 previewImage: "/images/brukman-workers.jpg"
 type: "post"
@@ -19,7 +19,7 @@ lang: "en"
   src="/images/brukman-workers.jpg"
   alt="Brukman factory graffiti"
   width={1200}
-  caption="Brukman factory workers."
+  caption="Brukman factory workers. Photo by [Oriana Eliçabe](https://www.flickr.com/photos/orianomada/52179039/), [some rights reserved](https://creativecommons.org/licenses/by-nc-sa/2.0/deed.en)."
   figureClass="my-6"
   class="w-xl h-auto"
 />
