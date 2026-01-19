@@ -39,7 +39,7 @@
   const homeHref = $derived(localizeWithPrefix('/', currentLocale));
   const supportHref = $derived(`/${currentLocale}/support`);
   const signupHref = $derived(`${homeHref}#signup`);
-  const manageHref = 'https://preferences.convertkit.com/subscribers/profile';
+  const manageHref = 'https://app.kit.com/users/login';
   const currentYear = new Date().getFullYear();
   const scrollMarks = [25, 50, 75, 100];
   const projects = [
