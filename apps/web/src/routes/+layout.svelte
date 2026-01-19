@@ -14,10 +14,31 @@
   let menuOpen = $state(false);
   let headerHeight = $state(0);
 
-  const homeHref = localizeHref('/');
-  const currentLocale = getLocale();
-  const supportHref = `/${currentLocale}/support`;
-  const signupHref = `${homeHref}#signup`;
+  const ensureLocalePrefix = (href: string, locale: CrosswalkLocale) => {
+    if (!href.startsWith('/')) return href;
+    const url = new URL(href, 'https://example.com');
+    const path = url.pathname;
+    if (path.startsWith(`/${locale}/`) || path === `/${locale}`) {
+      return `${path}${url.search}${url.hash}`;
+    }
+    if (path.startsWith('/en/') || path.startsWith('/es/')) {
+      return `${path}${url.search}${url.hash}`;
+    }
+    const suffix = path === '/' ? '' : path;
+    return `/${locale}${suffix}${url.search}${url.hash}`;
+  };
+
+  const localizeWithPrefix = (href: string, locale: CrosswalkLocale) =>
+    ensureLocalePrefix(localizeHref(href, { locale }), locale);
+
+  const currentLocale = $derived((() => {
+    const match = $page.url.pathname.match(/^\/(en|es)(?=\/|$)/);
+    if (match) return match[1] as CrosswalkLocale;
+    return getLocale() as CrosswalkLocale;
+  })());
+  const homeHref = $derived(localizeWithPrefix('/', currentLocale));
+  const supportHref = $derived(`/${currentLocale}/support`);
+  const signupHref = $derived(`${homeHref}#signup`);
   const manageHref = 'https://preferences.convertkit.com/subscribers/profile';
   const currentYear = new Date().getFullYear();
   const scrollMarks = [25, 50, 75, 100];
@@ -83,23 +104,6 @@
       path: $page.url.pathname,
     });
   };
-
-  const ensureLocalePrefix = (href: string, locale: CrosswalkLocale) => {
-    if (!href.startsWith('/')) return href;
-    const url = new URL(href, 'https://example.com');
-    const path = url.pathname;
-    if (path.startsWith(`/${locale}/`) || path === `/${locale}`) {
-      return `${path}${url.search}${url.hash}`;
-    }
-    if (path.startsWith('/en/') || path.startsWith('/es/')) {
-      return `${path}${url.search}${url.hash}`;
-    }
-    const suffix = path === '/' ? '' : path;
-    return `/${locale}${suffix}${url.search}${url.hash}`;
-  };
-
-  const localizeWithPrefix = (href: string, locale: CrosswalkLocale) =>
-    ensureLocalePrefix(localizeHref(href, { locale }), locale);
 
   const getLocaleHref = (locale: CrosswalkLocale) => {
     const pathWithoutLang = $page.url.pathname.replace(/^\/(en|es)(?=\/|$)/, '');
