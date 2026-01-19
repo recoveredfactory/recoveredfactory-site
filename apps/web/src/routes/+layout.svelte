@@ -6,7 +6,7 @@
   import { getResizedImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
   import { deLocalizeHref, getLocale, localizeHref } from '$lib/paraglide/runtime';
-  import { getCrosswalkEntry, type CrosswalkLocale } from '$lib/postCrosswalk';
+  import { getAlternatePost, getCrosswalkEntry, type CrosswalkLocale } from '$lib/postCrosswalk';
   import { fly } from 'svelte/transition';
 
   let { children } = $props();
@@ -84,10 +84,12 @@
     });
   };
 
-
   const getLocaleHref = (locale: CrosswalkLocale) => {
     const pathWithoutLang = $page.url.pathname.replace(/^\/(en|es)(?=\/|$)/, '');
     const basePath = deLocalizeHref(pathWithoutLang);
+    if (locale === currentLocale) {
+      return localizeHref(basePath || '/', { locale });
+    }
     const writingMatch = basePath.match(/^\/writing\/([^/]+)$/);
     if (writingMatch) {
       const entry = getCrosswalkEntry(writingMatch[1]);
@@ -95,6 +97,18 @@
         return localizeHref(`/writing/${entry[locale]}`, { locale });
       }
       return localizeHref('/', { locale });
+    }
+    const rootMatch = basePath.match(/^\/([^/]+)$/);
+    if (rootMatch) {
+      const slug = rootMatch[1];
+      const staticRoutes = new Set(['support', 'posts', 'rss.xml']);
+      if (!staticRoutes.has(slug)) {
+        const alt = getAlternatePost(slug, currentLocale as CrosswalkLocale);
+        if (alt) {
+          return localizeHref(`/${alt.slug}`, { locale });
+        }
+        return localizeHref('/', { locale });
+      }
     }
     return localizeHref(basePath || '/', { locale });
   };
