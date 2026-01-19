@@ -24,7 +24,7 @@
   "subscribe_success": "Success! Now check your email to confirm your subscription.",
   "subscribe_confirmed": "You're confirmed. Thanks for signing up.",
   "subscribe_error": "Something went wrong. Please try again.",
-  "latest_heading": "Latest",
+  "latest_heading": "Latest posts",
   "latest_subtitle": "Recent posts",
   "no_posts": "No posts yet.",
   "writing_title": "Writing",
@@ -58,6 +58,6 @@
   "support_perk_once": "Includes: Monthly video calls and other perks to be determined. Supporters will help us decide what to do!",
   "support_institutional": "Contact us for institutional support.",
   "footer_copyright": "© {year} {name}",
-  "footer_lettering_credit": "Lettering by <a href=https://www.instagram.com/suku_mix/>@suku_mix</a>",
+  "footer_lettering_credit": "Logo by <a href=https://www.instagram.com/suku_mix/>@suku_mix</a>",
   "footer_powered_by": "Powered by"
 }

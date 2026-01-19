@@ -76,7 +76,10 @@
       </section>
     {/if}
 
-    <section class="mx-auto mt-10 w-full max-w-5xl space-y-16 sm:mt-12">
+    <section class="mx-auto mt-10 w-full max-w-5xl space-y-8 sm:mt-12">
+      <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+        {m.latest_heading()}
+      </p>
       {#if data.posts.length === 0}
         <div class="border border-dashed border-slate-900/20 bg-white/50 p-8">
           <p class="text-sm text-slate-600">{m.no_posts()}</p>

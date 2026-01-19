@@ -24,7 +24,7 @@
   "subscribe_success": "Éxito. Revisa tu correo para confirmar la suscripción.",
   "subscribe_confirmed": "Confirmado. Gracias por registrarte.",
   "subscribe_error": "Algo salió mal. Intenta de nuevo.",
-  "latest_heading": "Últimas",
+  "latest_heading": "Últimas publicaciones",
   "latest_subtitle": "Publicaciones recientes",
   "no_posts": "Aún no hay publicaciones.",
   "writing_title": "Escritura",
@@ -58,6 +58,6 @@
   "support_perk_once": "Incluye: videollamadas mensuales y otros beneficios por definir. ¡Los apoyos nos ayudarán a decidir qué hacer!",
   "support_institutional": "Contáctanos para apoyo institucional.",
   "footer_copyright": "© {year} {name}",
-  "footer_lettering_credit": "Lettering por TK",
+  "footer_lettering_credit": "Logo por <a href=https://www.instagram.com/suku_mix/>@suku_mix</a>",
   "footer_powered_by": "Con tecnología de"
 }
