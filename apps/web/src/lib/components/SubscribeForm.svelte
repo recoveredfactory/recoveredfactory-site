@@ -38,6 +38,7 @@
   let emailValue = $state('');
   let supportEmail = $state('');
   let guardUrl = $state('');
+  let guardLoadCount = $state(0);
 
   const inputId = `${id}-email`;
   const isLocked = $derived(status === 'loading' || status === 'success');
@@ -71,6 +72,7 @@
       if (!response.ok || payload?.ok === false) {
         if (payload?.guard) {
           guardUrl = payload?.guardUrl || '';
+          guardLoadCount = 0;
           status = 'guard';
           throw new Error(m.subscribe_guard());
         }
@@ -92,12 +94,29 @@
 
   const handleGuardMessage = (event: MessageEvent) => {
     const data = event?.data;
-    if (!data || typeof data !== 'object') return;
-    if ((data as { name?: string }).name !== 'ckjs:guard:confirmed') return;
+    if (!data) return;
+    const messageName =
+      typeof data === 'string'
+        ? data
+        : (data as { name?: string; event?: string; type?: string }).name ||
+          (data as { event?: string }).event ||
+          (data as { type?: string }).type;
+    if (!messageName || !String(messageName).includes('ckjs:guard:confirmed')) return;
     if (status !== 'guard') return;
     status = 'success';
     guardUrl = '';
+    guardLoadCount = 0;
     errorMessage = '';
+  };
+
+  const handleGuardLoad = () => {
+    if (status !== 'guard') return;
+    guardLoadCount += 1;
+    if (guardLoadCount >= 2) {
+      status = 'success';
+      guardUrl = '';
+      errorMessage = '';
+    }
   };
 
   onMount(() => {
@@ -162,6 +181,7 @@
         <div class="overflow-hidden rounded border border-slate-900/10 bg-white">
           <iframe
             class="h-[520px] w-full"
+            onload={handleGuardLoad}
             src={guardUrl}
             title={m.subscribe_guard_link()}
           ></iframe>
