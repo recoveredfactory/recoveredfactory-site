@@ -18,8 +18,7 @@
   const currentLocale = getLocale();
   const supportHref = `/${currentLocale}/support`;
   const signupHref = `${homeHref}#signup`;
-  const signInHref = localizeHref('/signin');
-  const manageHref = localizeHref('/manage');
+  const manageHref = 'https://preferences.convertkit.com/subscribers/profile';
   const currentYear = new Date().getFullYear();
   const scrollMarks = [25, 50, 75, 100];
 
@@ -201,13 +200,6 @@
                 {m.menu_members_title()}
               </p>
               <div class="flex flex-col gap-2 text-sm font-semibold uppercase tracking-[0.25em] text-slate-700">
-                <a
-                  class="transition hover:text-slate-900"
-                  href={signInHref}
-                  onclick={() => closeMenu('nav')}
-                >
-                  {m.nav_signin()}
-                </a>
                 <a
                   class="transition hover:text-slate-900"
                   href={manageHref}
