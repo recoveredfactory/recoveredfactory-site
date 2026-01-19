@@ -105,9 +105,11 @@
     {#if redirectTo}
       <input name="redirect" type="hidden" value={redirectTo} />
     {/if}
-    <button class={buttonClass} disabled={isLocked} type="submit">
-      {m.subscribe_button()}
-    </button>
+    {#if status !== 'success'}
+      <button class={buttonClass} disabled={isLocked} type="submit">
+        {m.subscribe_button()}
+      </button>
+    {/if}
   </div>
   {#if status === 'success'}
     <div
