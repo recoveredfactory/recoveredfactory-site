@@ -84,19 +84,36 @@
     });
   };
 
+  const ensureLocalePrefix = (href: string, locale: CrosswalkLocale) => {
+    if (!href.startsWith('/')) return href;
+    const url = new URL(href, 'https://example.com');
+    const path = url.pathname;
+    if (path.startsWith(`/${locale}/`) || path === `/${locale}`) {
+      return `${path}${url.search}${url.hash}`;
+    }
+    if (path.startsWith('/en/') || path.startsWith('/es/')) {
+      return `${path}${url.search}${url.hash}`;
+    }
+    const suffix = path === '/' ? '' : path;
+    return `/${locale}${suffix}${url.search}${url.hash}`;
+  };
+
+  const localizeWithPrefix = (href: string, locale: CrosswalkLocale) =>
+    ensureLocalePrefix(localizeHref(href, { locale }), locale);
+
   const getLocaleHref = (locale: CrosswalkLocale) => {
     const pathWithoutLang = $page.url.pathname.replace(/^\/(en|es)(?=\/|$)/, '');
     const basePath = deLocalizeHref(pathWithoutLang);
     if (locale === currentLocale) {
-      return localizeHref(basePath || '/', { locale });
+      return localizeWithPrefix(basePath || '/', locale);
     }
     const writingMatch = basePath.match(/^\/writing\/([^/]+)$/);
     if (writingMatch) {
       const entry = getCrosswalkEntry(writingMatch[1]);
       if (entry) {
-        return localizeHref(`/writing/${entry[locale]}`, { locale });
+        return localizeWithPrefix(`/writing/${entry[locale]}`, locale);
       }
-      return localizeHref('/', { locale });
+      return localizeWithPrefix('/', locale);
     }
     const rootMatch = basePath.match(/^\/([^/]+)$/);
     if (rootMatch) {
@@ -105,12 +122,12 @@
       if (!staticRoutes.has(slug)) {
         const alt = getAlternatePost(slug, currentLocale as CrosswalkLocale);
         if (alt) {
-          return localizeHref(`/${alt.slug}`, { locale });
+          return localizeWithPrefix(`/${alt.slug}`, locale);
         }
-        return localizeHref('/', { locale });
+        return localizeWithPrefix('/', locale);
       }
     }
-    return localizeHref(basePath || '/', { locale });
+    return localizeWithPrefix(basePath || '/', locale);
   };
 
   $effect(() => {
