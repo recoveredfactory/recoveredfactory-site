@@ -30,7 +30,7 @@
   );
   const otherLang = $derived(data.lang === 'en' ? 'es' : 'en');
   const switchLabel = $derived(
-    otherLang === 'es' ? 'Leer en espanol →' : 'Read in English →',
+    otherLang === 'es' ? 'Leer en español →' : 'Read in English →',
   );
   const EntryComponent = $derived(entry?.component);
   const ogTitle = $derived(entry?.meta.title || m.site_name());

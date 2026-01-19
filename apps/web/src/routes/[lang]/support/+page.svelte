@@ -33,16 +33,6 @@
 
 <main class="min-h-dvh px-6 py-12 sm:px-10 lg:px-16">
   <div class="mx-auto flex max-w-3xl flex-col gap-10">
-    <section class="space-y-3 text-center">
-      <h1 class="font-display text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-        Why support Recovered Factory?
-      </h1>
-      <p class="text-base text-slate-600">
-        Placeholder copy goes here. We will explain why support matters and how it
-        keeps the workshop going.
-      </p>
-    </section>
-
     <section>
       <SupportOptions source="page" variant="page" />
     </section>
