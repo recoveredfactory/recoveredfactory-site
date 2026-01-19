@@ -25,8 +25,9 @@
     figureClass: figureClassProp,
     caption,
     captionClass = 'mt-2 text-xs text-slate-500',
+    children,
     ...rest
-  } = $props<ResizedImageProps>();
+  } = $props<ResizedImageProps & { children?: import('svelte').Snippet }>();
 
   const escapeHtml = (value: string) =>
     value
@@ -101,9 +102,9 @@
     />
     {#if caption}
       <figcaption class={captionClass}>{@html captionHtml}</figcaption>
-    {:else if $$slots.default}
+    {:else if children}
       <figcaption class={captionClass}>
-        <slot></slot>
+        {@render children()}
       </figcaption>
     {/if}
   </figure>

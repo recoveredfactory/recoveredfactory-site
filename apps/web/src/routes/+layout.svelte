@@ -244,7 +244,9 @@
               <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
                 {m.menu_about_title()}
               </p>
-              <p class="text-sm text-slate-600">{@html m.menu_about_blurb()}</p>
+              <p class="text-sm text-slate-600 [&_a]:text-link [&_a:hover]:text-link/80">
+                {@html m.menu_about_blurb()}
+              </p>
               <p class="text-sm text-slate-600">
                 Logo by <a
                   class="text-link transition hover:text-link/80"
