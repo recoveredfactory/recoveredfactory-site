@@ -72,8 +72,6 @@ export const POST = async ({ request }) => {
         ok: false,
         guard,
         error: guard ? 'Security check required.' : 'Sign up failed.',
-        status: response.status,
-        body: responseText,
         guardUrl,
       },
       { status: guard ? 409 : 502 },
@@ -82,7 +80,7 @@ export const POST = async ({ request }) => {
 
   const wantsJson = request.headers.get('accept')?.includes('application/json');
   if (wantsJson) {
-    return json({ ok: true, status: response.status, body: responseText });
+    return json({ ok: true });
   }
 
   const url = new URL(redirectTarget, request.url);
