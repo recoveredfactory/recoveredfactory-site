@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { fade, slide } from 'svelte/transition';
   import { trackEvent } from '$lib/analytics';
   import { m } from '$lib/paraglide/messages';
@@ -88,6 +89,24 @@
       errorMessage = (err as Error)?.message || m.subscribe_error();
     }
   };
+
+  const handleGuardMessage = (event: MessageEvent) => {
+    const data = event?.data;
+    if (!data || typeof data !== 'object') return;
+    if ((data as { name?: string }).name !== 'ckjs:guard:confirmed') return;
+    if (status !== 'guard') return;
+    status = 'success';
+    guardUrl = '';
+    errorMessage = '';
+  };
+
+  onMount(() => {
+    if (typeof window === 'undefined') return;
+    window.addEventListener('message', handleGuardMessage);
+    return () => {
+      window.removeEventListener('message', handleGuardMessage);
+    };
+  });
 </script>
 
 <form
