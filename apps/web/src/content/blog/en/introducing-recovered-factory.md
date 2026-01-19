@@ -38,7 +38,7 @@ I have spent the past 13 years in traditional journalism organizations, with the
   src="/images/brukman-graffiti.jpg"
   alt="Brukman factory graffiti"
   width={1200}
-  caption="Brukman factory graffiti in Buenos Aires."
+  caption="Brukman factory graffiti in Buenos Aires. Photo by [Brian Zbiger](https://commons.wikimedia.org/wiki/User:Dowcet), [some rights reserved](https://creativecommons.org/licenses/by-sa/2.5)."
   figureClass="my-6"
   class="w-xl h-auto"
 />
@@ -47,13 +47,13 @@ I’m not the first to say it, but having recently been in the trenches, I can a
 
 The rapid growth of the independent creator economy alongside the painful decline of establishment journalism shows how this dynamic has played out in recent years. As [Joy Reid recently put it](https://www.honest-broker.com/p/in-2024-the-tension-between-macroculture), that kind of media is “cooked.” The war [between macroculture and microculture](https://www.honest-broker.com/p/in-2024-the-tension-between-macroculture) that Ted Gioia predicted would break out in 2024 has weakened traditional institutions even further. The [article itself is dying](https://werd.io/is-the-article-dead/), says Ben Werdmuller.
 
-This is especially true for fundamental forms of data journalism, where I have spent my career. Ida B. Wells drew on [data collected by *The Chicago Tribune*](https://www.vox.com/2015/7/16/8979771/ida-b-wells-lynching-data) for her landmark reporting on lynchings. My friend and colleague Rachel Dissell recently found tables of public salaries in early 20th-century newspapers. When the venerable *Chicago Reporter* launched in the early 1970s, it called itself an “information service” and published tables full of critical data.
+This is especially true for fundamental forms of data journalism, where I have spent my career. Ida B. Wells drew on [data collected by *The Chicago Tribune*](https://www.vox.com/2015/7/16/8979771/ida-b-wells-lynching-data) for her landmark reporting on lynchings. My friend and colleague Rachel Dissell recently found tables of public salaries in late 19th-century newspapers. When the venerable *Chicago Reporter* launched in the early 1970s, it called itself an “information service” and published tables full of critical data.
 
 <ResizedImage
   src="/images/post-001-collage.jpg"
   alt="Examples of data journalism from the 1870s - 1970s"
   width={1200}
-  caption="From the 1870s to the 1970s: Cleveland Plain Dealer, 1876; Chicago Tribune, 1895; Chicago Reporter, 1972."
+  caption="Data journalism from the 1870s to the 1970s: Cleveland Plain Dealer, 1876; Chicago Tribune, 1895; Chicago Reporter, 1972."
   figureClass="my-6"
   class="w-full h-auto"
 />

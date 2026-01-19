@@ -39,7 +39,7 @@ He pasado los últimos 13 años en organizaciones periodísticas tradicionales, 
   src="/images/brukman-graffiti.jpg"
   alt="Graffiti de la fábrica Brukman"
   width={1200}
-  caption="Graffiti de la fábrica Brukman en Buenos Aires."
+  caption="Graffiti de la fábrica Brukman en Buenos Aires. Foto por [Brian Zbiger](https://commons.wikimedia.org/wiki/User:Dowcet), [CC-BY-SA](https://creativecommons.org/licenses/by-sa/2.5)."
   figureClass="my-6"
   class="w-xl h-auto"
 />
@@ -48,13 +48,13 @@ No soy el primero en decirlo, pero después de haber estado recientemente en las
 
 El rápido crecimiento de la economía de los creadores independientes, junto con el doloroso declive del periodismo tradicional, muestra cómo se ha desarrollado esta dinámica en los últimos años. Como [dijo recientemente Joy Reid](https://www.honest-broker.com/p/in-2024-the-tension-between-macroculture), ese tipo de medios de comunicación están «acabados». La guerra [entre la macrocultura y la microcultura](https://www.honest-broker.com/p/in-2024-the-tension-between-macroculture) que Ted Gioia predijo que estallaría en 2024 ha debilitado aún más las instituciones tradicionales. El [artículo en sí está muriendo](https://werd.io/is-the-article-dead/), afirma Ben Werdmuller.
 
-Esto es especialmente cierto en el caso de las formas fundamentales del periodismo de datos, en las que he desarrollado mi carrera. Ida B. Wells se basó en [los datos recopilados por *The Chicago Tribune*](https://www.vox.com/2015/7/16/8979771/ida-b-wells-lynching-data) para su histórico reportaje sobre los linchamientos. Mi amiga y colega Rachel Dissell encontró recientemente tablas con los salarios públicos en periódicos de principios del siglo XX. Cuando el venerable *Chicago Reporter* se fundó a principios de la década de 1970, se autodenominó «servicio de información» y publicó tablas repletas de datos críticos.
+Esto es especialmente cierto en el caso de las formas fundamentales del periodismo de datos, en las que he desarrollado mi carrera. Ida B. Wells se basó en [los datos recopilados por The Chicago Tribune](https://www.vox.com/2015/7/16/8979771/ida-b-wells-lynching-data) para su histórico reportaje sobre los linchamientos. Mi amiga y colega Rachel Dissell encontró recientemente tablas con los salarios públicos en periódicos del siglo XIX. Cuando el venerable Chicago Reporter se fundó a principios de la década de 1970, se autodenominó «servicio de información» y publicó tablas repletas de datos críticos.
 
 <ResizedImage
   src="/images/post-001-collage.jpg"
   alt="Ejemplos de periodismo de datos de la década de 1870 a la de 1970"
   width={1200}
-  caption="De la década de 1870 a la de 1970: Cleveland Plain Dealer, 1876; Chicago Tribune, 1895; Chicago Reporter, 1972."
+  caption="Periodismo de datos de la década de 1870 a la de 1970: Cleveland Plain Dealer, 1876; Chicago Tribune, 1895; Chicago Reporter, 1972."
   figureClass="my-6"
   class="w-full h-auto"
 />
