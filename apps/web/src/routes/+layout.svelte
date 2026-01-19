@@ -21,6 +21,16 @@
   const manageHref = 'https://preferences.convertkit.com/subscribers/profile';
   const currentYear = new Date().getFullYear();
   const scrollMarks = [25, 50, 75, 100];
+  const projects = [
+    {
+      name: 'Annual Survey of Public Employment and Payroll Explorer',
+      url: 'https://aspep.grupovisual.org',
+    },
+    {
+      name: 'Lunalimón',
+      url: 'https://lunalimon.co.com',
+    },
+  ];
 
   let lastPath = $state('');
   let seenScrollMarks = $state(new Set<number>());
@@ -177,25 +187,50 @@
         transition:fly={{ y: -12, duration: 220 }}
       >
         <div class="mx-auto flex min-h-full max-w-6xl flex-col gap-12 px-6 py-10 sm:px-10 lg:px-16">
-          <div class="flex flex-col gap-6 text-3xl font-semibold tracking-tight sm:text-4xl lg:text-5xl">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-3">
             <a
-              class="font-display transition hover:text-slate-600"
-              href={supportHref}
-              onclick={() => closeMenu('nav')}
-            >
-              {m.nav_donate()}
-            </a>
-            <a
-              class="font-display text-fern-strong transition hover:text-fern"
+              class="inline-flex items-center justify-center bg-fern-strong px-4 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:text-sm"
               href={signupHref}
               onclick={() => closeMenu('nav')}
             >
               {m.nav_subscribe()}
             </a>
+            <a
+              class="inline-flex items-center justify-center bg-donate px-4 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-donate/90 sm:text-sm"
+              href={supportHref}
+              onclick={() => closeMenu('nav')}
+            >
+              {m.nav_donate()}
+            </a>
           </div>
 
-          <div class="grid gap-8 border-t border-slate-900/10 pt-8 text-sm sm:grid-cols-2">
-            <div class="space-y-3">
+          <div class="grid gap-0 border-t border-slate-900/10 pt-0 text-sm divide-y divide-slate-900/10 sm:grid-cols-2 sm:gap-8 sm:divide-y-0 sm:pt-8">
+            <div class="space-y-3 py-6 sm:py-0">
+              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+                {m.menu_about_title()}
+              </p>
+              <p class="text-sm text-slate-600">{m.menu_about_blurb()}</p>
+            </div>
+            <div class="space-y-3 py-6 sm:py-0">
+              <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
+                {m.menu_projects_title()}
+              </p>
+              <div class="space-y-3">
+                {#each projects as project}
+                  <a
+                    class="block space-y-1 transition hover:text-slate-900"
+                    href={project.url}
+                    onclick={() => closeMenu('nav')}
+                    rel="noopener noreferrer"
+                    target="_blank"
+                  >
+                    <p class="text-sm font-semibold text-slate-900">{project.name}</p>
+                    <p class="text-xs text-slate-500">{project.url}</p>
+                  </a>
+                {/each}
+              </div>
+            </div>
+            <div class="space-y-3 py-6 sm:py-0">
               <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
                 {m.menu_members_title()}
               </p>
@@ -209,47 +244,45 @@
                 </a>
               </div>
             </div>
-            <div class="space-y-3">
+            <div class="space-y-3 py-6 sm:py-0">
               <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
-                {m.menu_about_title()}
+                {m.menu_language_title()}
               </p>
-              <p class="text-sm text-slate-600">{m.menu_about_blurb()}</p>
+              <div class="flex items-center gap-2">
+                <a
+                  aria-label={m.locale_en_aria()}
+                  class={`border px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] transition hover:text-slate-900 ${
+                    currentLocale === 'en'
+                      ? 'border-slate-900/40 text-slate-900'
+                      : 'border-slate-900/15 text-slate-500'
+                  }`}
+                  data-sveltekit-reload
+                  href={getLocaleHref('en')}
+                  onclick={() => {
+                    trackLanguageSwitch('en', 'menu');
+                    closeMenu('language');
+                  }}
+                >
+                  {m.locale_en_short()}
+                </a>
+                <a
+                  aria-label={m.locale_es_aria()}
+                  class={`border px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] transition hover:text-slate-900 ${
+                    currentLocale === 'es'
+                      ? 'border-slate-900/40 text-slate-900'
+                      : 'border-slate-900/15 text-slate-500'
+                  }`}
+                  data-sveltekit-reload
+                  href={getLocaleHref('es')}
+                  onclick={() => {
+                    trackLanguageSwitch('es', 'menu');
+                    closeMenu('language');
+                  }}
+                >
+                  {m.locale_es_short()}
+                </a>
+              </div>
             </div>
-          </div>
-
-          <div class="flex items-center gap-2">
-            <a
-              aria-label={m.locale_en_aria()}
-              class={`border px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] transition hover:text-slate-900 ${
-                currentLocale === 'en'
-                  ? 'border-slate-900/40 text-slate-900'
-                  : 'border-slate-900/15 text-slate-500'
-              }`}
-              data-sveltekit-reload
-              href={getLocaleHref('en')}
-              onclick={() => {
-                trackLanguageSwitch('en', 'menu');
-                closeMenu('language');
-              }}
-            >
-              {m.locale_en_short()}
-            </a>
-            <a
-              aria-label={m.locale_es_aria()}
-              class={`border px-3 py-2 text-xs font-semibold uppercase tracking-[0.3em] transition hover:text-slate-900 ${
-                currentLocale === 'es'
-                  ? 'border-slate-900/40 text-slate-900'
-                  : 'border-slate-900/15 text-slate-500'
-              }`}
-              data-sveltekit-reload
-              href={getLocaleHref('es')}
-              onclick={() => {
-                trackLanguageSwitch('es', 'menu');
-                closeMenu('language');
-              }}
-            >
-              {m.locale_es_short()}
-            </a>
           </div>
         </div>
       </div>
