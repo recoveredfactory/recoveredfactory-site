@@ -182,6 +182,7 @@
           <iframe
             class="h-[520px] w-full"
             onload={handleGuardLoad}
+            sandbox="allow-scripts allow-forms allow-same-origin"
             src={guardUrl}
             title={m.subscribe_guard_link()}
           ></iframe>
