@@ -113,6 +113,18 @@ export default $config({
           ? `https://${siteDomain}`
           : process.env.PUBLIC_SITE_URL ?? "",
         PUBLIC_IMAGE_RESIZER_URL: resizer.url,
+        PUBLIC_SUPPORT_LINK_MONTHLY_12:
+          stage === "prod"
+            ? "https://buy.stripe.com/bJe14oblegwncEAcn2fAc02"
+            : "https://buy.stripe.com/test_9B628semw6lPbMdeKa9IQ00",
+        PUBLIC_SUPPORT_LINK_MONTHLY_75:
+          stage === "prod"
+            ? "https://buy.stripe.com/3cIfZi0GAeofcEAcn2fAc01"
+            : "https://buy.stripe.com/test_7sYaEY3HS7pTdUl7hI9IQ01",
+        PUBLIC_SUPPORT_LINK_ONCE:
+          stage === "prod"
+            ? "https://buy.stripe.com/5kQ8wQble5RJ5c82MsfAc00"
+            : "https://buy.stripe.com/test_4gM28s7Y8dOh4jL31s9IQ02",
         STRIPE_SECRET_KEY: stripeSecretKey.value,
         STRIPE_WEBHOOK_SECRET: stripeWebhookSecret.value,
         STRIPE_PRICE_LEVEL_1: process.env.STRIPE_PRICE_LEVEL_1 ?? "",
