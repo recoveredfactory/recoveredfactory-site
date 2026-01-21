@@ -71,6 +71,24 @@
 {#if entry && EntryComponent}
   <main class="min-h-dvh mt-12 px-6 py-12 sm:px-10 lg:px-16">
     <article class="mx-auto max-w-2xl space-y-8">
+      {#if isPost}
+        <section class="w-full rounded border border-slate-900/10 bg-white/60 p-4 sm:p-5">
+          <p class="mb-3 text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+            {m.post_subscribe_heading()}
+          </p>
+          <SubscribeForm
+            buttonClass="bg-fern-strong px-4 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
+            formClass="w-full"
+            id="post-signup-compact"
+            inputClass="w-full border border-slate-900/15 bg-white/90 px-4 py-2 text-sm text-slate-800 placeholder:text-slate-400 shadow-sm sm:max-w-[22rem] sm:flex-none"
+            lang={data.lang}
+            meta={{ slug: data.slug, placement: 'compact' }}
+            redirectTo={redirectTo}
+            source="post"
+          />
+        </section>
+      {/if}
+
       <header class="space-y-4">
         <h1 class="font-display text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
           {entry.meta.title}
