@@ -6,7 +6,8 @@
   import { getResizedImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
   import { deLocalizeHref, getLocale, localizeHref } from '$lib/paraglide/runtime';
-  import { getAlternatePost, getCrosswalkEntry, type CrosswalkLocale } from '$lib/postCrosswalk';
+  import { getEntry, findTranslationSlug } from '$lib/blog/loader';
+  import type { Lang } from '$lib/i18n';
   import { fly } from 'svelte/transition';
 
   let { children } = $props();
@@ -14,7 +15,7 @@
   let menuOpen = $state(false);
   let headerHeight = $state(0);
 
-  const ensureLocalePrefix = (href: string, locale: CrosswalkLocale) => {
+  const ensureLocalePrefix = (href: string, locale: Lang) => {
     if (!href.startsWith('/')) return href;
     const url = new URL(href, 'https://example.com');
     const path = url.pathname;
@@ -28,13 +29,13 @@
     return `/${locale}${suffix}${url.search}${url.hash}`;
   };
 
-  const localizeWithPrefix = (href: string, locale: CrosswalkLocale) =>
+  const localizeWithPrefix = (href: string, locale: Lang) =>
     ensureLocalePrefix(localizeHref(href, { locale }), locale);
 
   const currentLocale = $derived((() => {
     const match = $page.url.pathname.match(/^\/(en|es)(?=\/|$)/);
-    if (match) return match[1] as CrosswalkLocale;
-    return getLocale() as CrosswalkLocale;
+    if (match) return match[1] as Lang;
+    return getLocale() as Lang;
   })());
   const homeHref = $derived(localizeWithPrefix('/', currentLocale));
   const supportHref = $derived(`/${currentLocale}/support`);
@@ -105,28 +106,23 @@
     });
   };
 
-  const getLocaleHref = (locale: CrosswalkLocale) => {
+  const getLocaleHref = (locale: Lang) => {
     const pathWithoutLang = $page.url.pathname.replace(/^\/(en|es)(?=\/|$)/, '');
     const basePath = deLocalizeHref(pathWithoutLang);
     if (locale === currentLocale) {
       return localizeWithPrefix(basePath || '/', locale);
-    }
-    const writingMatch = basePath.match(/^\/writing\/([^/]+)$/);
-    if (writingMatch) {
-      const entry = getCrosswalkEntry(writingMatch[1]);
-      if (entry) {
-        return localizeWithPrefix(`/writing/${entry[locale]}`, locale);
-      }
-      return localizeWithPrefix('/', locale);
     }
     const rootMatch = basePath.match(/^\/([^/]+)$/);
     if (rootMatch) {
       const slug = rootMatch[1];
       const staticRoutes = new Set(['support', 'posts', 'rss.xml']);
       if (!staticRoutes.has(slug)) {
-        const alt = getAlternatePost(slug, currentLocale as CrosswalkLocale);
-        if (alt) {
-          return localizeWithPrefix(`/${alt.slug}`, locale);
+        const entry = getEntry(currentLocale, slug);
+        if (entry) {
+          const translatedSlug = findTranslationSlug(currentLocale, slug, locale);
+          if (translatedSlug) {
+            return localizeWithPrefix(`/${translatedSlug}`, locale);
+          }
         }
         return localizeWithPrefix('/', locale);
       }
