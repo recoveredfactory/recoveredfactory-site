@@ -11,8 +11,9 @@
 
   const toAbsoluteUrl = (value: string) =>
     /^https?:\/\//i.test(value) ? value : new URL(value, SITE_URL).href;
-  const canonical = new URL(`/${data.lang}`, SITE_URL).href;
-  const description = m.hero_subtitle();
+  const lang = $derived(data.lang);
+  const canonical = $derived(new URL(`/${lang}`, SITE_URL).href);
+  const description = $derived(m.hero_subtitle());
   const ogImage = toAbsoluteUrl(
     getResizedImageUrl('/images/site-logo-002.png', { width: 1200 }),
   );
@@ -21,7 +22,7 @@
   const isConfirmed = $derived($page.url.searchParams.get('confirmed') === '1');
 
   const formatDate = (value: string) =>
-    new Date(value).toLocaleDateString(data.lang, {
+    new Date(value).toLocaleDateString(lang, {
       year: 'numeric',
       month: 'short',
       day: 'numeric',
@@ -102,7 +103,7 @@
               {/if}
               <div class="max-w-xl space-y-4 text-center md:text-left">
                 <a
-                  class="font-display text-2xl font-semibold tracking-tight text-slate-900 transition hover:text-slate-700 sm:text-4xl lg:text-5xl"
+                  class="font-display text-xl font-semibold tracking-tight text-slate-900 transition hover:text-slate-700 sm:text-3xl lg:text-4xl"
                   href={`/${data.lang}/${post.slug}`}
                 >
                   {post.meta.title}

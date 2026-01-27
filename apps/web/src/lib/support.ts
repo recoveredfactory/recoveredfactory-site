@@ -1,8 +1,4 @@
-import {
-  PUBLIC_SUPPORT_LINK_MONTHLY_12,
-  PUBLIC_SUPPORT_LINK_MONTHLY_75,
-  PUBLIC_SUPPORT_LINK_ONCE,
-} from '$env/static/public';
+import { env } from '$env/dynamic/public';
 
 const FALLBACK_LINKS = {
   monthly12: 'https://buy.stripe.com/test_9B628semw6lPbMdeKa9IQ00',
@@ -11,9 +7,9 @@ const FALLBACK_LINKS = {
 };
 
 export const SUPPORT_LINKS = {
-  monthly12: PUBLIC_SUPPORT_LINK_MONTHLY_12 || FALLBACK_LINKS.monthly12,
-  monthly75: PUBLIC_SUPPORT_LINK_MONTHLY_75 || FALLBACK_LINKS.monthly75,
-  oneTime: PUBLIC_SUPPORT_LINK_ONCE || FALLBACK_LINKS.oneTime,
+  monthly12: env.PUBLIC_SUPPORT_LINK_MONTHLY_12 || FALLBACK_LINKS.monthly12,
+  monthly75: env.PUBLIC_SUPPORT_LINK_MONTHLY_75 || FALLBACK_LINKS.monthly75,
+  oneTime: env.PUBLIC_SUPPORT_LINK_ONCE || FALLBACK_LINKS.oneTime,
 };
 
 export const SUPPORT_CONTACT_URL = 'mailto:davideads@recoveredfactory.net';

@@ -1,7 +1,7 @@
 ---
 id: "recovered-factory-intro"
 title: "Introducing Recovered Factory"
-date: "2025-01-20"
+date: "2025-01-19"
 description: "Journalists used to unlock data for the public good. In an era of collapse, can that work live outside traditional institutions?"
 previewImage: "/images/brukman-workers.jpg"
 type: "post"
@@ -47,7 +47,7 @@ I’m not the first to say it, but having recently been in the trenches, I can a
 
 The rapid growth of the independent creator economy alongside the painful decline of establishment journalism shows how this dynamic has played out in recent years. As [Joy Reid recently put it](https://www.honest-broker.com/p/in-2024-the-tension-between-macroculture), that kind of media is “cooked.” The war [between macroculture and microculture](https://www.honest-broker.com/p/in-2024-the-tension-between-macroculture) that Ted Gioia predicted would break out in 2024 has weakened traditional institutions even further. The [article itself is dying](https://werd.io/is-the-article-dead/), says Ben Werdmuller.
 
-This is especially true for fundamental forms of data journalism, where I have spent my career. Ida B. Wells drew on [data collected by *The Chicago Tribune*](https://www.vox.com/2015/7/16/8979771/ida-b-wells-lynching-data) for her landmark reporting on lynchings. My friend and colleague Rachel Dissell recently found tables of public salaries in late 19th-century newspapers. When the venerable *Chicago Reporter* launched in the early 1970s, it called itself an “information service” and published tables full of critical data.
+This is especially true for fundamental forms of data journalism, where I have spent my career. Ida B. Wells drew on [data collected by The Chicago Tribune](https://www.vox.com/2015/7/16/8979771/ida-b-wells-lynching-data) for her landmark reporting on lynchings. My friend and colleague Rachel Dissell recently found tables of public salaries in late 19th-century newspapers. When the venerable Chicago Reporter launched in the early 1970s, it called itself an “information service” and published tables full of critical data.
 
 <ResizedImage
   src="/images/post-001-collage.jpg"
@@ -58,13 +58,13 @@ This is especially true for fundamental forms of data journalism, where I have s
   class="w-full h-auto"
 />
 
-That work has atrophied with the long decline of the field. Cultural authority eroded, economic possibilities shrank, and the center did not hold. Both vision and basic service deteriorated. I find it hard to imagine that the *Chicago Tribune* of today has the resources, insight, or know-how to track every killing by ICE.
+That work has atrophied with the long decline of the field. Cultural authority eroded, economic possibilities shrank, and both vision and basic service deteriorated. It's nearly impossible to imagine that the Chicago Tribune of today has the resources to track every killing by ICE, for example.
 
 How will this kind of unglamorous public-interest journalism survive outside the organizations that once gave it legitimacy, resources, and visibility? Can it be rebuilt? Can it be financially sustainable? How can it balance playing the algorithmic game with resisting the power of the tech companies themselves?
 
 I’m starting this newsletter not because I have sweeping answers or definitive analysis, but because I’m trying to figure out how to keep my public-service data work alive outside the institutions that supported me over the past decade.
 
-Consider this a kind of public workshop where you can drop by to see what my collaborators and I are making. To start, we’ll be joined by Tory Lysik, a recent Columbia graduate and Axios veteran with whom I had the pleasure of contracting at The Marshall Project. She’s helping build tools and edit these posts.
+Consider this a kind of public workshop where you can drop by to see what my collaborators and I are making. To start, we’ll be joined by [Tory Lysik](https://www.tlysik.com/), a recent Columbia graduate and Axios veteran with whom I had the pleasure of contracting at The Marshall Project. She’s helping build tools and edit these posts.
 
 The newsletter will include field notes—discussions of design choices, how we are defining success, and how things perform in the wild. Our projects will include experiments where we invite your input and support and report on what we learn, like hiring influencers to talk about data journalism. We’ll also publish bench notes that offer deep dives into specific techniques, such as building robust data pipelines, modern web mapping, and multilingual products and publications—including this one, which is available in Spanish and English.
 

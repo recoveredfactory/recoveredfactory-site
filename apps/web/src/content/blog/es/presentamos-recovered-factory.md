@@ -1,7 +1,7 @@
 ---
 id: "recovered-factory-intro"
 title: "Presentamos Recovered Factory"
-date: "2025-01-20"
+date: "2025-01-19"
 description: "Los periodistas solían desbloquear datos por el bien público. En una era de colapso, ¿puede esa labor sobrevivir fuera de las instituciones tradicionales?"
 previewImage: "/images/brukman-workers.jpg"
 type: "post"
@@ -59,13 +59,13 @@ Esto es especialmente cierto en el caso de las formas fundamentales del periodis
   class="w-full h-auto"
 />
 
-Esa labor se ha atrofiado con el largo declive del sector. La autoridad cultural se erosionó, las posibilidades económicas se redujeron y el centro no se mantuvo. Tanto la visión como el servicio básico se deterioraron. Me cuesta imaginar que el Chicago Tribune actual tenga los recursos, la perspicacia o los conocimientos necesarios para hacer un seguimiento de todos los asesinatos cometidos por el ICE.
+Ese trabajo se ha atrofiado con el prolongado declive del sector. La autoridad cultural se ha erosionado, las posibilidades económicas se han reducido y tanto la visión como los servicios básicos se han deteriorado. Es casi imposible imaginar que el Chicago Tribune de hoy en día tenga los recursos para hacer un seguimiento de todos los asesinatos cometidos por el ICE, por ejemplo.
 
 ¿Cómo sobrevivirá este tipo de periodismo de interés público, tan poco glamuroso, fuera de las organizaciones que en su día le dieron legitimidad, recursos y visibilidad? ¿Se puede reconstruir? ¿Puede ser financieramente sostenible? ¿Cómo puede equilibrar el juego algorítmico con la resistencia al poder de las propias empresas tecnológicas?
 
 Empiezo este boletín no porque tenga respuestas definitivas o análisis concluyentes, sino porque estoy tratando de averiguar cómo mantener vivo mi trabajo de datos de servicio público fuera de las instituciones que me han apoyado durante la última década.
 
-Considera esto como una especie de taller público al que puedes acudir para ver lo que mis colaboradores y yo estamos haciendo. Para empezar, nos acompañará Tory Lysik, recién graduada de Columbia y veterana de Axios, con quien tuve el placer de trabajar en The Marshall Project. Ella nos está ayudando a crear herramientas y a editar estas publicaciones.
+Considera esto como una especie de taller público al que puedes acudir para ver lo que mis colaboradores y yo estamos haciendo. Para empezar, nos acompañará [Tory Lysik](https://www.tlysik.com/), recién graduada de Columbia y veterana de Axios, con quien tuve el placer de trabajar en The Marshall Project. Ella nos está ayudando a crear herramientas y a editar estas publicaciones.
 
 El boletín incluirá notas de campo: debates sobre las decisiones de diseño, cómo definimos el éxito y cómo funcionan las cosas en la práctica. Nuestros proyectos incluirán experimentos en los que invitaremos a participar y apoyar, e informaremos sobre lo que aprendamos, como contratar a personas influyentes para que hablen sobre el periodismo de datos. También publicaremos notas de trabajo que ofrecerán información detallada sobre técnicas específicas, como la creación de sólidos canales de datos, la cartografía web moderna y los productos y publicaciones multilingües, incluido este, que está disponible en español e inglés.
 

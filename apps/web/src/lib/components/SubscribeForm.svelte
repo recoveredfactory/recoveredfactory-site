@@ -40,7 +40,7 @@
   let guardUrl = $state('');
   let guardLoadCount = $state(0);
 
-  const inputId = `${id}-email`;
+  const inputId = $derived(`${id}-email`);
   const isLocked = $derived(status === 'loading' || status === 'success');
 
   const handleSubmit = async (event: SubmitEvent) => {
