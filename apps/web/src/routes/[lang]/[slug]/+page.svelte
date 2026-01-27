@@ -16,6 +16,12 @@
   const entry = $derived(getEntry(data.lang, data.slug));
   const isPost = $derived(entry?.meta.type !== 'page');
   const byline = $derived(entry?.meta.byline || m.site_name());
+  const editedLabel = $derived(data.lang === 'es' ? 'Editado por' : 'Edited by');
+  const editorsLine = $derived(
+    entry?.meta.editors?.length
+      ? `${editedLabel} ${entry.meta.editors.join(', ')}`
+      : '',
+  );
   const defaultOgImage = $derived(
     toAbsoluteUrl(getResizedImageUrl('/images/site-logo-002.png', { width: 1200 })),
   );
@@ -104,6 +110,9 @@
               day: 'numeric',
             })}
             · {byline}
+            {#if editorsLine}
+              · {editorsLine}
+            {/if}
           </p>
         {/if}
         {#if data.switchTo}

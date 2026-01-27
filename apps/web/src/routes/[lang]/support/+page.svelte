@@ -15,6 +15,7 @@
       month: 'short',
       day: 'numeric',
     });
+  const editedLabel = $derived(data.lang === 'es' ? 'Editado por' : 'Edited by');
 </script>
 
 <svelte:head>
@@ -68,6 +69,9 @@
                 </a>
                 <p class="pt-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
                   By {post.meta.byline || m.site_name()} · {formatDate(post.meta.date)}
+                  {#if post.meta.editors?.length}
+                    · {editedLabel} {post.meta.editors.join(', ')}
+                  {/if}
                 </p>
                 {#if post.meta.description}
                   <p class="text-lg text-slate-600">{post.meta.description}</p>

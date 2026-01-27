@@ -8,6 +8,7 @@
     quality?: number;
     loading?: 'lazy' | 'eager';
     decoding?: 'async' | 'sync' | 'auto';
+    unoptimized?: boolean;
     class?: string;
     figureClass?: string;
     caption?: string;
@@ -21,6 +22,7 @@
     quality,
     loading = 'lazy',
     decoding = 'async',
+    unoptimized = false,
     class: className = 'w-full h-auto',
     figureClass: figureClassProp,
     caption,
@@ -88,13 +90,16 @@
   const figureClass = $derived(
     `mx-auto max-w-md${figureClassProp ? ` ${figureClassProp}` : ''}`,
   );
+  const imageSrc = $derived(
+    unoptimized ? src : getResizedImageUrl(src, { width, quality }),
+  );
 </script>
 
 {#if src}
   <figure class={figureClass}>
     <img
       {...rest}
-      src={getResizedImageUrl(src, { width, quality })}
+      src={imageSrc}
       alt={alt}
       loading={loading}
       decoding={decoding}

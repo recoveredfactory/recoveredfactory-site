@@ -11,6 +11,7 @@ export type BlogMeta = {
   date: string;
   description?: string;
   byline?: string;
+  editors?: string[];
   previewImage?: string;
   tags?: string[];
   lang: Lang;
@@ -50,12 +51,13 @@ function mapModules(modules: Record<string, BlogModule>, lang: Lang): BlogPost[]
   const bySlug = new Map<string, BlogPost>();
 
   for (const [path, mod] of Object.entries(modules)) {
+    if (!mod?.metadata) continue;
     const slug = path.split('/').pop()?.replace(/\.md$/, '') ?? '';
     if (!slug) continue;
 
     const meta = {
       ...mod.metadata,
-      type: mod.metadata.type ?? 'post',
+      type: mod.metadata?.type ?? 'post',
     };
 
     bySlug.set(slug, {
