@@ -15,9 +15,12 @@
   const ogTitle = data.post.title;
   const ogDescription = data.post.excerpt || m.hero_subtitle();
   const ogImage = toAbsoluteUrl(
-    getResizedImageUrl(data.post.feature_image || '/images/site-logo-002.png', {
-      width: 1600,
-    }),
+    getResizedImageUrl(
+      data.post.feature_image || '/images/factory-share--white-bg.png',
+      {
+        width: 1600,
+      },
+    ),
   );
 </script>
 

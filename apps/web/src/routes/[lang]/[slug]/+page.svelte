@@ -23,7 +23,9 @@
       : '',
   );
   const defaultOgImage = $derived(
-    toAbsoluteUrl(getResizedImageUrl('/images/site-logo-002.png', { width: 1200 })),
+    toAbsoluteUrl(
+      getResizedImageUrl('/images/factory-share--white-bg.png', { width: 1200 }),
+    ),
   );
   const previewImageUrl = $derived(
     entry?.meta.previewImage

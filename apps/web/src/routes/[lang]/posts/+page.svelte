@@ -10,7 +10,7 @@
   const canonical = new URL(`/${data.lang}/posts`, SITE_URL).href;
   const description = 'Full archive';
   const ogImage = toAbsoluteUrl(
-    getResizedImageUrl('/images/site-logo-002.png', { width: 1200 }),
+    getResizedImageUrl('/images/factory-share--white-bg.png', { width: 1200 }),
   );
   const pageTitle = `${m.site_name()} · Posts`;
 </script>
