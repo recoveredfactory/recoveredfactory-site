@@ -45,10 +45,16 @@
       {#if data.posts.length === 0}
         <p class="text-sm text-slate-600">{m.no_posts()}</p>
       {:else}
-        <ul class="grid gap-12">
+        <ul class="grid gap-16">
           {#each data.posts as post}
-            <li class="grid gap-4 md:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)] md:items-center md:gap-6">
-              {#if post.meta.previewImage}
+            <li
+              class={`grid gap-4 md:items-center md:gap-6 ${
+                post.meta.previewImage && !post.meta.hidePreview
+                  ? 'md:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)]'
+                  : 'md:grid-cols-1'
+              }`}
+            >
+              {#if post.meta.previewImage && !post.meta.hidePreview}
                 <a class="block w-full" href={`/${data.lang}/${post.slug}`}>
                   <img
                     alt={post.meta.title}
@@ -57,10 +63,14 @@
                     src={getResizedImageUrl(post.meta.previewImage, { width: 720 })}
                   />
                 </a>
-              {:else}
-                <div></div>
               {/if}
-              <div class="max-w-xl space-y-4 text-center md:text-left">
+              <div
+                class={`max-w-xl space-y-4 text-center ${
+                  post.meta.previewImage && !post.meta.hidePreview
+                    ? 'md:text-left'
+                    : 'md:text-center md:mx-auto'
+                }`}
+              >
                 <a
                   class="font-display text-2xl font-semibold tracking-tight text-slate-900 transition hover:text-slate-700 sm:text-4xl lg:text-5xl"
                   href={`/${data.lang}/${post.slug}`}

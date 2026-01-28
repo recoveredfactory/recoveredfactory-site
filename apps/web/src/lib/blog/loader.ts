@@ -13,6 +13,7 @@ export type BlogMeta = {
   byline?: string;
   editors?: string[];
   previewImage?: string;
+  hidePreview?: boolean;
   tags?: string[];
   lang: Lang;
 };

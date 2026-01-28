@@ -46,10 +46,14 @@
     {#if data.posts.length === 0}
       <p class="text-sm text-slate-600">No posts yet.</p>
     {:else}
-      <ul class="space-y-8">
+      <ul class="space-y-12">
         {#each data.posts as post}
-          <li class="space-y-2">
-            {#if post.meta.previewImage}
+          <li
+            class={`space-y-2 ${
+              post.meta.previewImage && !post.meta.hidePreview ? '' : 'md:text-center'
+            }`}
+          >
+            {#if post.meta.previewImage && !post.meta.hidePreview}
               <a class="block" href={`/${data.lang}/${post.slug}`}>
                 <img
                   alt={post.meta.title}
