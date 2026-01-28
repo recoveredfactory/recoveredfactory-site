@@ -1,5 +1,6 @@
 <script lang="ts">
   import { SITE_URL } from '$lib/config';
+  import { formatDate } from '$lib/dates';
   import { getResizedImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
 
@@ -70,7 +71,7 @@
               {post.meta.title}
             </a>
             <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
-              {new Date(post.meta.date).toLocaleDateString(data.lang, {
+              {formatDate(post.meta.date, data.lang, {
                 year: 'numeric',
                 month: 'short',
                 day: 'numeric',

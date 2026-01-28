@@ -4,6 +4,7 @@
   import SubscribeForm from '$lib/components/SubscribeForm.svelte';
   import SupportOptions from '$lib/components/SupportOptions.svelte';
   import { SITE_URL } from '$lib/config';
+  import { formatDate } from '$lib/dates';
   import { getResizedImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
 
@@ -21,12 +22,6 @@
   const redirectTo = $derived($page.url.pathname);
   const isConfirmed = $derived($page.url.searchParams.get('confirmed') === '1');
 
-  const formatDate = (value: string) =>
-    new Date(value).toLocaleDateString(lang, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-    });
   const editedLabel = $derived(lang === 'es' ? 'Editado por' : 'Edited by');
 </script>
 
@@ -120,7 +115,12 @@
                   {post.meta.title}
                 </a>
                 <p class="pt-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                  By {post.meta.byline || m.site_name()} · {formatDate(post.meta.date)}
+                  By {post.meta.byline || m.site_name()} ·{' '}
+                  {formatDate(post.meta.date, lang, {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                  })}
                   {#if post.meta.editors?.length}
                     · {editedLabel} {post.meta.editors.join(', ')}
                   {/if}

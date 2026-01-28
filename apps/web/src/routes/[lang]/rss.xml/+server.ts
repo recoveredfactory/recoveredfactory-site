@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import { listPosts } from '$lib/blog/loader';
 import { SITE_URL } from '$lib/config';
+import { parseDate } from '$lib/dates';
 import { isLang } from '$lib/i18n';
 
 const escapeXml = (value: string) =>
@@ -32,7 +33,7 @@ export const GET = ({ params }) => {
         <title>${escapeXml(post.meta.title)}</title>
         <link>${url}</link>
         <guid>${url}</guid>
-        <pubDate>${new Date(post.meta.date).toUTCString()}</pubDate>
+        <pubDate>${parseDate(post.meta.date).toUTCString()}</pubDate>
         ${description}
       </item>`;
     })

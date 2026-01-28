@@ -1,5 +1,6 @@
 import type { ComponentType } from 'svelte';
 import type { Lang } from '$lib/i18n';
+import { parseDate } from '$lib/dates';
 
 export type ContentType = 'post' | 'page';
 
@@ -70,7 +71,7 @@ function mapModules(modules: Record<string, BlogModule>, lang: Lang): BlogPost[]
   }
 
   return Array.from(bySlug.values()).sort(
-    (a, b) => new Date(b.meta.date).getTime() - new Date(a.meta.date).getTime(),
+    (a, b) => parseDate(b.meta.date).getTime() - parseDate(a.meta.date).getTime(),
   );
 }
 

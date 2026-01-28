@@ -4,6 +4,7 @@
   import { getEntry } from '$lib/blog/loader';
   import SubscribeForm from '$lib/components/SubscribeForm.svelte';
   import { SITE_URL } from '$lib/config';
+  import { formatDate, parseDate } from '$lib/dates';
   import { getResizedImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
 
@@ -60,7 +61,7 @@
     {#if isPost}
       <meta
         property="article:published_time"
-        content={new Date(entry.meta.date).toISOString()}
+        content={parseDate(entry.meta.date).toISOString()}
       />
       <meta property="article:author" content={byline} />
     {/if}
@@ -106,7 +107,7 @@
             <p class="text-lg text-slate-600">{entry.meta.description}</p>
           {/if}
           <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
-            {new Date(entry.meta.date).toLocaleDateString(data.lang, {
+            {formatDate(entry.meta.date, data.lang, {
               year: 'numeric',
               month: 'long',
               day: 'numeric',
