@@ -1,15 +1,17 @@
 ---
 id: "rf-muscle-memory"
 title: "Muscle Memory"
-date: "2025-01-28"
+date: "2026-01-28"
 description: "Journalism’s habits were built for a world that no longer exists. Pretending we can serve everyone equally just hides tradeoffs we’re already making."
 type: "post"
 byline: "David Eads"
 editors:
   - "Tory Lysik"
 tags:
-  - "Field notes"
+  - "field-notes"
 lang: "en"
+previewImage: "/images/factory-default--white-bg.png"
+hidePreview: true
 ---
 
 <script>

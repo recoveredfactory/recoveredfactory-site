@@ -1,7 +1,7 @@
 ---
 id: "rf-muscle-memory"
 title: "Memoria muscular"
-date: "2025-01-28"
+date: "2026-01-28"
 description: "Los hábitos del periodismo se crearon para un mundo que ya no existe. Fingir que podemos servir a todo el mundo por igual solo oculta las concesiones que ya estamos haciendo."
 type: "post"
 byline: "David Eads"
@@ -9,8 +9,10 @@ editors:
   - "Tory Lysik"
   - "Diana Vanessa Riascos-Gamez"
 tags:
-  - "Field notes"
+  - "field-notes"
 lang: "es"
+previewImage: "/images/factory-default--white-bg.png"
+hidePreview: true
 ---
 
 <script>
