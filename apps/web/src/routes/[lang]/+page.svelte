@@ -15,7 +15,7 @@
   const canonical = $derived(new URL(`/${lang}`, SITE_URL).href);
   const description = $derived(m.hero_subtitle());
   const ogImage = toAbsoluteUrl(
-    getResizedImageUrl('/images/site-logo-002.png', { width: 1200 }),
+    getResizedImageUrl('/images/factory-share--white-bg.png', { width: 1200 }),
   );
 
   const redirectTo = $derived($page.url.pathname);

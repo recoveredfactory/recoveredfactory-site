@@ -5,9 +5,14 @@
   import { m } from '$lib/paraglide/messages';
 
   const { data } = $props();
+  const toAbsoluteUrl = (value: string) =>
+    /^https?:\/\//i.test(value) ? value : new URL(value, SITE_URL).href;
   const canonical = $derived(new URL(`/${data.lang}/support`, SITE_URL).href);
   const description = $derived(m.support_subtitle());
   const pageTitle = $derived(`${m.site_name()} · ${m.nav_donate()}`);
+  const ogImage = toAbsoluteUrl(
+    getResizedImageUrl('/images/factory-share--white-bg.png', { width: 1200 }),
+  );
 
   const formatDate = (value: string) =>
     new Date(value).toLocaleDateString(data.lang, {
@@ -26,9 +31,12 @@
   <meta property="og:description" content={description} />
   <meta property="og:type" content="website" />
   <meta property="og:url" content={canonical} />
-  <meta name="twitter:card" content="summary" />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:alt" content={pageTitle} />
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={pageTitle} />
   <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
   <link rel="canonical" href={canonical} />
 </svelte:head>
 
