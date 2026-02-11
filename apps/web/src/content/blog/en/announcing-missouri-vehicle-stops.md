@@ -10,8 +10,7 @@ editors:
 tags:
   - "field-notes"
 lang: "en"
-previewImage: "/images/factory-default--white-bg.png"
-hidePreview: true
+previewImage: "/images/social-meta.png"
 ---
 
 <script>
