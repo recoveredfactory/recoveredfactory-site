@@ -78,3 +78,7 @@ Required for the web app (wired in `sst.config.ts`):
 Domains are wired as:
 - `cms--stage.recoveredfactory.net` for `--stage staging`
 - `recoveredfactory.net` for `--stage prod`
+
+## Integration with email provider (Kit.com)
+
+There is not integration currently. Posts should get a URL and be published before sending emails that reference them ("read on the web"). Email production must be handled separately from web production.
