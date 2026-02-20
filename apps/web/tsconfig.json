@@ -3,6 +3,7 @@
   "compilerOptions": {
     "types": ["svelte"],
     "resolveJsonModule": true,
-    "verbatimModuleSyntax": true
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true
   }
 }

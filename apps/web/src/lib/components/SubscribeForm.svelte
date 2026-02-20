@@ -18,7 +18,7 @@
     meta?: Record<string, unknown>;
   };
 
-  const {
+  let {
     lang,
     source,
     id = 'subscribe',
@@ -31,7 +31,7 @@
     labelClass = 'sr-only',
     redirectTo = '',
     meta = {},
-  } = $props<SubscribeFormProps>();
+  }: SubscribeFormProps = $props();
 
   let status = $state<'idle' | 'loading' | 'success' | 'error' | 'guard'>('idle');
   let errorMessage = $state('');

@@ -3,6 +3,7 @@ import { SITE_URL } from '$lib/config';
 import { LANGS } from '$lib/i18n';
 
 const withBase = (path: string) => new URL(path, SITE_URL).href;
+type SitemapEntry = { url: string; lastmod?: string };
 
 export const GET = () => {
   const staticEntries = LANGS.flatMap((lang) => [
@@ -19,7 +20,7 @@ export const GET = () => {
     })),
   );
 
-  const urls = [
+  const urls: SitemapEntry[] = [
     ...staticEntries.map((url) => ({ url })),
     ...postEntries,
   ];

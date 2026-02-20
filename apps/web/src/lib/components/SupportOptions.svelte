@@ -9,7 +9,7 @@
     prefillEmail?: string;
   };
 
-  const { source = 'modal', variant = 'modal', prefillEmail } = $props<SupportOptionsProps>();
+  let { source = 'modal', variant = 'modal', prefillEmail }: SupportOptionsProps = $props();
 
   const options = [
     {
