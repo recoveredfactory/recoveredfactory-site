@@ -42,6 +42,31 @@ Required for the web app (wired in `sst.config.ts`):
 - Client/server hooks are wired in `apps/web/src/hooks.ts` and `apps/web/src/hooks.server.ts`.
 - Use `m.*` from `$lib/paraglide/messages` for UI strings.
 
+## Post system (MD + mdsvex)
+
+- Post source files live in:
+  - `apps/web/src/content/blog/en/*.md`
+  - `apps/web/src/content/blog/es/*.md`
+- Markdown is compiled with mdsvex (see `apps/web/svelte.config.js`), so post files can include Svelte components.
+- Frontmatter is read in `apps/web/src/lib/blog/loader.ts` and should include:
+  - `id` (or `canonicalId`) for cross-language matching
+  - `title`, `date`, `lang`
+  - optional: `description`, `byline`, `editors`, `previewImage`, `hidePreview`, `tags`, `type`
+- `type` defaults to `post`. If `type: page`, the entry can still render at `/{lang}/{slug}` but is excluded from post listings and RSS.
+
+### How routing works
+
+- `/{lang}` homepage: loads latest posts via `listPosts(lang)` in `apps/web/src/routes/[lang]/+page.server.ts`.
+- `/{lang}/posts`: full archive via `listPosts(lang)` in `apps/web/src/routes/[lang]/posts/+page.server.ts`.
+- `/{lang}/{slug}`: loads any entry via `getEntry(lang, slug)` in `apps/web/src/routes/[lang]/[slug]/+page.server.ts`.
+- `/{lang}/rss.xml`: emits RSS from `listPosts(lang)` in `apps/web/src/routes/[lang]/rss.xml/+server.ts`.
+
+### Translation linking
+
+- Language switching between post slugs uses `findTranslationSlug(fromLang, fromSlug, toLang)`.
+- Matching is done by shared `canonicalId`/`id` (not by slug), so translated slugs can differ by language.
+- If no translated match is found, the UI falls back gracefully (no alternate slug link).
+
 ## Deploy with SST
 
 - Update `sst.config.ts` with your region and DNS preferences.
@@ -52,4 +77,4 @@ Required for the web app (wired in `sst.config.ts`):
 
 Domains are wired as:
 - `cms--stage.recoveredfactory.net` for `--stage staging`
-- `cms--prod.recoveredfactory.net` for `--stage prod`
+- `recoveredfactory.net` for `--stage prod`
