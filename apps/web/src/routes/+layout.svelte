@@ -5,7 +5,7 @@
   import { trackEvent } from '$lib/analytics';
   import { getResizedImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
-  import { deLocalizeHref, getLocale, localizeHref } from '$lib/paraglide/runtime';
+  import { deLocalizeHref, getLocale, localizeHref, setLocale } from '$lib/paraglide/runtime';
   import { getEntry, findTranslationSlug } from '$lib/blog/loader';
   import type { Lang } from '$lib/i18n';
   import { fly } from 'svelte/transition';
@@ -306,6 +306,7 @@
                   data-sveltekit-reload
                   href={getLocaleHref('en')}
                   onclick={() => {
+                    setLocale('en', { reload: false });
                     trackLanguageSwitch('en', 'menu');
                     closeMenu('language');
                   }}
@@ -322,6 +323,7 @@
                   data-sveltekit-reload
                   href={getLocaleHref('es')}
                   onclick={() => {
+                    setLocale('es', { reload: false });
                     trackLanguageSwitch('es', 'menu');
                     closeMenu('language');
                   }}

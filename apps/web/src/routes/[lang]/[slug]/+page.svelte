@@ -7,6 +7,7 @@
   import { formatDate, parseDate } from '$lib/dates';
   import { getResizedImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
+  import { setLocale } from '$lib/paraglide/runtime';
 
   const { data } = $props();
 
@@ -122,13 +123,15 @@
           <a
             class="inline-flex items-center text-xs font-semibold uppercase tracking-[0.25em] text-fern-strong transition hover:text-fern-strong/80"
             href={data.switchTo}
-            onclick={() =>
+            onclick={() => {
+              setLocale(otherLang, { reload: false });
               trackEvent('language_switch', {
                 from: data.lang,
                 to: otherLang,
                 source: 'post',
                 slug: data.slug,
-              })}
+              });
+            }}
           >
             {switchLabel}
           </a>
