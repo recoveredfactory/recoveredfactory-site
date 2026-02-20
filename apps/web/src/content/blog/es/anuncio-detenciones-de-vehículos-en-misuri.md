@@ -1,6 +1,6 @@
 ---
 id: "rf-vsr-announcement"
-title: "Anuncio nuestro sitio de las detenciones de vehículos en Misuri"
+title: "Anunciamos nuestra página web sobre las paradas de vehículos en Misuri"
 date: "2026-02-19"
 description: "Nuestra nueva herramienta desglosa las detenciones de tráfico en Misuri por agencia."
 type: "post"
