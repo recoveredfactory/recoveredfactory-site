@@ -8,7 +8,7 @@
 
   const toAbsoluteUrl = (value: string) =>
     /^https?:\/\//i.test(value) ? value : new URL(value, SITE_URL).href;
-  const canonical = new URL(`/${data.lang}/posts`, SITE_URL).href;
+  const canonical = $derived(new URL(`/${data.lang}/posts`, SITE_URL).href);
   const description = 'Full archive';
   const ogImage = toAbsoluteUrl(
     getResizedImageUrl('/images/factory-share--white-bg.png', { width: 1200 }),
