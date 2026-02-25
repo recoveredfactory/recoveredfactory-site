@@ -27,3 +27,37 @@
     @apply bg-cream font-body text-slate-900 antialiased;
   }
 }
+
+@keyframes workshop-signup-input-pulse {
+  0% {
+    border-color: rgba(148, 163, 184, 0.28);
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 0 0 rgba(249, 215, 120, 0);
+  }
+
+  50% {
+    border-color: rgba(233, 194, 98, 0.78);
+    background-color: rgba(255, 248, 228, 0.96);
+    box-shadow:
+      0 0 0 1px rgba(243, 212, 127, 0.36),
+      0 0 22px 4px rgba(243, 212, 127, 0.48);
+  }
+
+  100% {
+    border-color: rgba(148, 163, 184, 0.28);
+    background-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 0 0 0 0 rgba(249, 215, 120, 0);
+  }
+}
+
+.workshop-signup-input-pulse {
+  animation: workshop-signup-input-pulse 4s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .workshop-signup-input-pulse {
+    animation: none;
+    border-color: rgba(233, 194, 98, 0.55);
+    background-color: rgba(255, 248, 228, 0.93);
+  }
+}

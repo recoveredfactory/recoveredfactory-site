@@ -93,8 +93,11 @@
   };
 
   const getAnchorOffset = () => Math.max(0, Math.round(headerHeight + ANCHOR_OFFSET_GAP));
+  const prefersReducedMotion = () =>
+    typeof window !== 'undefined' &&
+    window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  const scrollToHashTarget = () => {
+  const scrollToHashTarget = (behavior: ScrollBehavior = 'auto') => {
     if (typeof window === 'undefined') return;
     let hash = window.location.hash.slice(1);
     if (!hash) return;
@@ -106,12 +109,26 @@
     const target = document.getElementById(hash);
     if (!target) return;
     const top = target.getBoundingClientRect().top + window.scrollY - getAnchorOffset();
-    window.scrollTo({ top: Math.max(0, top) });
+    window.scrollTo({
+      top: Math.max(0, top),
+      behavior: prefersReducedMotion() ? 'auto' : behavior,
+    });
   };
 
-  const scheduleHashAlignment = () => {
+  const scheduleHashAlignment = (behavior: ScrollBehavior = 'auto') => {
     if (typeof window === 'undefined' || !window.location.hash) return;
-    requestAnimationFrame(() => requestAnimationFrame(scrollToHashTarget));
+    requestAnimationFrame(() => requestAnimationFrame(() => scrollToHashTarget(behavior)));
+  };
+
+  const handleSignupAnchorClick = (event: MouseEvent) => {
+    if (typeof window === 'undefined') return;
+    const onLocaleHome =
+      $page.url.pathname === `/${currentLocale}` || $page.url.pathname === `/${currentLocale}/`;
+    if (!onLocaleHome || window.location.hash !== '#workshop') return;
+
+    event.preventDefault();
+    scheduleHashAlignment('smooth');
+    window.dispatchEvent(new CustomEvent('workshop-anchor-activate'));
   };
 
   const toggleMenu = () => {
@@ -176,7 +193,7 @@
   });
 
   afterNavigate(() => {
-    scheduleHashAlignment();
+    scheduleHashAlignment('smooth');
   });
 
   onMount(() => {
@@ -185,10 +202,11 @@
     trackScrollDepth();
     scheduleHashAlignment();
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('hashchange', scheduleHashAlignment);
+    const onHashChange = () => scheduleHashAlignment('smooth');
+    window.addEventListener('hashchange', onHashChange);
     return () => {
       window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('hashchange', scheduleHashAlignment);
+      window.removeEventListener('hashchange', onHashChange);
     };
   });
 </script>
@@ -212,6 +230,7 @@
         <a
           class="hidden bg-fern-strong px-2.5 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern md:inline-flex"
           href={signupHref}
+          onclick={handleSignupAnchorClick}
         >
           {m.nav_subscribe()}
         </a>
@@ -264,7 +283,10 @@
             <a
               class="inline-flex items-center justify-center bg-fern-strong px-4 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:text-sm"
               href={signupHref}
-              onclick={() => closeMenu('nav')}
+              onclick={(event) => {
+                handleSignupAnchorClick(event);
+                closeMenu('nav');
+              }}
             >
               {m.nav_subscribe()}
             </a>

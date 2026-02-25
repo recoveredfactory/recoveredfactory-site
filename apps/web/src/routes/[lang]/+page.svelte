@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
   import { trackEvent } from '$lib/analytics';
   import { page } from '$app/stores';
   import SubscribeForm from '$lib/components/SubscribeForm.svelte';
@@ -23,6 +24,27 @@
   const isConfirmed = $derived($page.url.searchParams.get('confirmed') === '1');
 
   const editedLabel = $derived(lang === 'es' ? 'Editado por' : 'Edited by');
+  let workshopPulse = $state(false);
+  const homeSignupInputClass = $derived(
+    `w-full border border-slate-900/15 bg-white/90 px-4 py-3 text-base text-slate-800 placeholder:text-slate-400 shadow-sm sm:max-w-[28rem] sm:flex-none ${
+      workshopPulse ? 'workshop-signup-input-pulse' : ''
+    }`,
+  );
+
+  const onWorkshopAnchor = () => {
+    if (typeof window === 'undefined') return;
+    workshopPulse = window.location.hash === '#workshop';
+  };
+
+  onMount(() => {
+    onWorkshopAnchor();
+    window.addEventListener('hashchange', onWorkshopAnchor);
+    window.addEventListener('workshop-anchor-activate', onWorkshopAnchor);
+    return () => {
+      window.removeEventListener('hashchange', onWorkshopAnchor);
+      window.removeEventListener('workshop-anchor-activate', onWorkshopAnchor);
+    };
+  });
 </script>
 
 <svelte:head>
@@ -66,6 +88,7 @@
         <SubscribeForm
           formClass="mx-auto w-full lg:max-w-[75%]"
           id="signup"
+          inputClass={homeSignupInputClass}
           lang={data.lang}
           redirectTo={redirectTo}
           source="home"
