@@ -54,6 +54,11 @@
   animation: workshop-signup-input-pulse 4s ease-in-out infinite;
 }
 
+.workshop-signup-input-pulse:focus,
+.workshop-signup-input-pulse:focus-visible {
+  animation: none;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .workshop-signup-input-pulse {
     animation: none;
