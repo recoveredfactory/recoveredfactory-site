@@ -1,6 +1,7 @@
 <script lang="ts">
   import '../app.css';
   import { onMount } from 'svelte';
+  import { afterNavigate } from '$app/navigation';
   import { page } from '$app/stores';
   import { trackEvent } from '$lib/analytics';
   import { getResizedImageUrl } from '$lib/images';
@@ -40,7 +41,7 @@
   })());
   const homeHref = $derived(localizeWithPrefix('/', currentLocale));
   const supportHref = $derived(`/${currentLocale}/support`);
-  const signupHref = $derived(`${homeHref}#signup`);
+  const signupHref = $derived(`${homeHref}#workshop`);
   const manageHref = 'https://app.kit.com/users/login';
   const currentYear = new Date().getFullYear();
   const scrollMarks = [25, 50, 75, 100];
@@ -91,13 +92,26 @@
     });
   };
 
+  const getAnchorOffset = () => Math.max(0, Math.round(headerHeight + ANCHOR_OFFSET_GAP));
+
   const scrollToHashTarget = () => {
     if (typeof window === 'undefined') return;
-    const hash = window.location.hash.slice(1);
+    let hash = window.location.hash.slice(1);
     if (!hash) return;
-    const target = document.getElementById(decodeURIComponent(hash));
+    try {
+      hash = decodeURIComponent(hash);
+    } catch {
+      return;
+    }
+    const target = document.getElementById(hash);
     if (!target) return;
-    target.scrollIntoView({ block: 'start' });
+    const top = target.getBoundingClientRect().top + window.scrollY - getAnchorOffset();
+    window.scrollTo({ top: Math.max(0, top) });
+  };
+
+  const scheduleHashAlignment = () => {
+    if (typeof window === 'undefined' || !window.location.hash) return;
+    requestAnimationFrame(() => requestAnimationFrame(scrollToHashTarget));
   };
 
   const toggleMenu = () => {
@@ -156,23 +170,25 @@
 
   $effect(() => {
     if (typeof window === 'undefined') return;
-    const anchorOffset = Math.max(0, Math.round(headerHeight + ANCHOR_OFFSET_GAP));
+    const anchorOffset = getAnchorOffset();
     document.documentElement.style.setProperty('--anchor-offset', `${anchorOffset}px`);
-    if (window.location.hash) {
-      requestAnimationFrame(scrollToHashTarget);
-    }
+    scheduleHashAlignment();
+  });
+
+  afterNavigate(() => {
+    scheduleHashAlignment();
   });
 
   onMount(() => {
     lastPath = $page.url.pathname;
     seenScrollMarks = new Set();
     trackScrollDepth();
-    scrollToHashTarget();
+    scheduleHashAlignment();
     window.addEventListener('scroll', onScroll, { passive: true });
-    window.addEventListener('hashchange', scrollToHashTarget);
+    window.addEventListener('hashchange', scheduleHashAlignment);
     return () => {
       window.removeEventListener('scroll', onScroll);
-      window.removeEventListener('hashchange', scrollToHashTarget);
+      window.removeEventListener('hashchange', scheduleHashAlignment);
     };
   });
 </script>

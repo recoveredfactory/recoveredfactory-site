@@ -42,9 +42,9 @@
   <link rel="canonical" href={canonical} />
 </svelte:head>
 
-<main class="min-h-dvh mt-8 px-6 py-10 sm:mt-12 sm:py-12 sm:px-10 lg:px-16">
-  <div class="mx-auto flex max-w-6xl flex-col gap-8 sm:gap-10">
-    <section class="space-y-4 pb-6 text-center sm:pb-8">
+<main class="min-h-dvh mt-8 px-6 sm:mt-12 sm:px-10 lg:px-16">
+  <div class="mx-auto flex max-w-6xl flex-col gap-8 pb-10 sm:gap-10 sm:pb-12">
+    <section class="space-y-4 py-10 text-center sm:py-12" id="workshop">
       <h1 class="font-display text-3xl font-semibold tracking-tight text-slate-900 sm:text-5xl lg:text-6xl">
         {m.hero_title()}
       </h1>

@@ -79,8 +79,8 @@
 </svelte:head>
 
 {#if entry && EntryComponent}
-  <main class="min-h-dvh mt-3 px-6 pt-3 pb-12 sm:px-10 lg:px-16">
-    <article class="mx-auto max-w-2xl space-y-8">
+  <main class="min-h-dvh mt-3 px-6 sm:px-10 lg:px-16">
+    <article class="mx-auto max-w-2xl space-y-8 pt-3 pb-12">
       {#if isPost}
         <section class="mb-16 w-full rounded border border-slate-900/10 bg-white/60 p-4 sm:p-5">
           <p class="mb-3 text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
