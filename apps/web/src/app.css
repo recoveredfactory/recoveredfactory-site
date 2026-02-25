@@ -15,6 +15,14 @@
 }
 
 @layer base {
+  html {
+    scroll-padding-top: var(--anchor-offset, 6rem);
+  }
+
+  :target {
+    scroll-margin-top: var(--anchor-offset, 6rem);
+  }
+
   body {
     @apply bg-cream font-body text-slate-900 antialiased;
   }

@@ -14,6 +14,7 @@
 
   let menuOpen = $state(false);
   let headerHeight = $state(0);
+  const ANCHOR_OFFSET_GAP = 12;
 
   const ensureLocalePrefix = (href: string, locale: Lang) => {
     if (!href.startsWith('/')) return href;
@@ -90,6 +91,15 @@
     });
   };
 
+  const scrollToHashTarget = () => {
+    if (typeof window === 'undefined') return;
+    const hash = window.location.hash.slice(1);
+    if (!hash) return;
+    const target = document.getElementById(decodeURIComponent(hash));
+    if (!target) return;
+    target.scrollIntoView({ block: 'start' });
+  };
+
   const toggleMenu = () => {
     menuOpen = !menuOpen;
     trackEvent(menuOpen ? 'menu_open' : 'menu_close', { path: $page.url.pathname });
@@ -144,13 +154,25 @@
     }
   });
 
+  $effect(() => {
+    if (typeof window === 'undefined') return;
+    const anchorOffset = Math.max(0, Math.round(headerHeight + ANCHOR_OFFSET_GAP));
+    document.documentElement.style.setProperty('--anchor-offset', `${anchorOffset}px`);
+    if (window.location.hash) {
+      requestAnimationFrame(scrollToHashTarget);
+    }
+  });
+
   onMount(() => {
     lastPath = $page.url.pathname;
     seenScrollMarks = new Set();
     trackScrollDepth();
+    scrollToHashTarget();
     window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('hashchange', scrollToHashTarget);
     return () => {
       window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('hashchange', scrollToHashTarget);
     };
   });
 </script>
