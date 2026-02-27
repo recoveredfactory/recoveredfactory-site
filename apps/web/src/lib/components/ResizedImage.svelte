@@ -23,7 +23,7 @@
     loading = 'lazy',
     decoding = 'async',
     unoptimized = false,
-    class: className = 'w-full h-auto',
+    class: classNameProp = '',
     figureClass: figureClassProp,
     caption,
     captionClass = 'mt-2 text-xs text-slate-500',
@@ -96,6 +96,7 @@
   const imageSrc = $derived(
     unoptimized ? src : getResizedImageUrl(src, { width, quality }),
   );
+  const imageClass = $derived(`w-full h-auto${classNameProp ? ` ${classNameProp}` : ''}`);
 </script>
 
 {#if src}
@@ -106,7 +107,7 @@
       alt={alt}
       loading={loading}
       decoding={decoding}
-      class={className}
+      class={imageClass}
     />
     {#if caption}
       <figcaption class={`rf-image-caption ${captionClass}`}>{@html captionHtml}</figcaption>
