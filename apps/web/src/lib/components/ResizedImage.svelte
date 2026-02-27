@@ -86,9 +86,12 @@
   };
 
   const captionHtml = $derived(caption ? renderMarkdown(caption) : '');
-
+  const normalizedFigureClass = $derived((figureClassProp ?? '').trim());
+  const hasCustomMaxWidth = $derived(/\s*!?max-w-[^\s]+/.test(` ${normalizedFigureClass}`));
   const figureClass = $derived(
-    `mx-auto max-w-md${figureClassProp ? ` ${figureClassProp}` : ''}`,
+    `rf-resized-image ${hasCustomMaxWidth ? 'mx-auto' : 'mx-auto max-w-md'}${
+      normalizedFigureClass ? ` ${normalizedFigureClass}` : ''
+    }`,
   );
   const imageSrc = $derived(
     unoptimized ? src : getResizedImageUrl(src, { width, quality }),
@@ -106,11 +109,22 @@
       class={className}
     />
     {#if caption}
-      <figcaption class={captionClass}>{@html captionHtml}</figcaption>
+      <figcaption class={`rf-image-caption ${captionClass}`}>{@html captionHtml}</figcaption>
     {:else if children}
-      <figcaption class={captionClass}>
+      <figcaption class={`rf-image-caption ${captionClass}`}>
         {@render children()}
       </figcaption>
     {/if}
   </figure>
 {/if}
+
+<style>
+  :global(a:has(> figure.rf-resized-image)) {
+    text-decoration: none !important;
+  }
+
+  :global(a > figure .rf-image-caption),
+  :global(a > figure .rf-image-caption *) {
+    text-decoration: none;
+  }
+</style>
