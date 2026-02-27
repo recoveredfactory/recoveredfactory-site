@@ -49,37 +49,37 @@
     {:else}
       <ul class="space-y-12">
         {#each data.posts as post}
-          <li
-            class={`space-y-2 ${
-              post.meta.previewImage && !post.meta.hidePreview ? '' : 'md:text-center'
-            }`}
-          >
-            {#if post.meta.previewImage && !post.meta.hidePreview}
-              <a class="block" href={`/${data.lang}/${post.slug}`}>
+          <li>
+            <a
+              class={`group block space-y-2 ${
+                post.meta.previewImage && !post.meta.hidePreview ? '' : 'md:text-center'
+              }`}
+              href={`/${data.lang}/${post.slug}`}
+            >
+              {#if post.meta.previewImage && !post.meta.hidePreview}
                 <img
                   alt={post.meta.title}
                   class="w-full"
                   loading="lazy"
                   src={getResizedImageUrl(post.meta.previewImage, { width: 1200 })}
                 />
-              </a>
-            {/if}
-            <a
-              class="font-display text-2xl font-semibold text-slate-900 transition hover:text-slate-700"
-              href={`/${data.lang}/${post.slug}`}
-            >
-              {post.meta.title}
+              {/if}
+              <h2
+                class="font-display text-2xl font-semibold text-slate-900 transition group-hover:text-slate-700"
+              >
+                {post.meta.title}
+              </h2>
+              <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                {formatDate(post.meta.date, data.lang, {
+                  year: 'numeric',
+                  month: 'short',
+                  day: 'numeric',
+                })}
+              </p>
+              {#if post.meta.description}
+                <p class="text-sm text-slate-600">{post.meta.description}</p>
+              {/if}
             </a>
-            <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
-              {formatDate(post.meta.date, data.lang, {
-                year: 'numeric',
-                month: 'short',
-                day: 'numeric',
-              })}
-            </p>
-            {#if post.meta.description}
-              <p class="text-sm text-slate-600">{post.meta.description}</p>
-            {/if}
           </li>
         {/each}
       </ul>

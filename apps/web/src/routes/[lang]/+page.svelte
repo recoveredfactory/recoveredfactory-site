@@ -107,51 +107,51 @@
       {:else}
         <ul class="grid gap-16">
           {#each data.posts as post}
-            <li
-              class={`grid gap-4 md:items-center md:gap-6 ${
-                post.meta.previewImage && !post.meta.hidePreview
-                  ? 'md:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)]'
-                  : 'md:grid-cols-1'
-              }`}
-            >
-              {#if post.meta.previewImage && !post.meta.hidePreview}
-                <a class="block w-full" href={`/${data.lang}/${post.slug}`}>
+            <li>
+              <a
+                class={`group grid gap-4 md:items-center md:gap-6 ${
+                  post.meta.previewImage && !post.meta.hidePreview
+                    ? 'md:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)]'
+                    : 'md:grid-cols-1'
+                }`}
+                href={`/${data.lang}/${post.slug}`}
+              >
+                {#if post.meta.previewImage && !post.meta.hidePreview}
                   <img
                     alt={post.meta.title}
                     class="w-full h-auto"
                     loading="lazy"
                     src={getResizedImageUrl(post.meta.previewImage, { width: 720 })}
                   />
-                </a>
-              {/if}
-              <div
-                class={`max-w-xl space-y-4 text-center ${
-                  post.meta.previewImage && !post.meta.hidePreview
-                    ? 'md:text-left'
-                    : 'md:text-center md:mx-auto'
-                }`}
-              >
-                <a
-                  class="font-display text-xl font-semibold tracking-tight text-slate-900 transition hover:text-slate-700 sm:text-3xl lg:text-4xl"
-                  href={`/${data.lang}/${post.slug}`}
-                >
-                  {post.meta.title}
-                </a>
-                <p class="pt-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
-                  By {post.meta.byline || m.site_name()} ·{' '}
-                  {formatDate(post.meta.date, lang, {
-                    year: 'numeric',
-                    month: 'short',
-                    day: 'numeric',
-                  })}
-                  {#if post.meta.editors?.length}
-                    · {editedLabel} {post.meta.editors.join(', ')}
-                  {/if}
-                </p>
-                {#if post.meta.description}
-                  <p class="text-lg text-slate-600">{post.meta.description}</p>
                 {/if}
-              </div>
+                <div
+                  class={`max-w-xl space-y-4 text-center ${
+                    post.meta.previewImage && !post.meta.hidePreview
+                      ? 'md:text-left'
+                      : 'md:text-center md:mx-auto'
+                  }`}
+                >
+                  <h2
+                    class="font-display text-xl font-semibold tracking-tight text-slate-900 transition group-hover:text-slate-700 sm:text-3xl lg:text-4xl"
+                  >
+                    {post.meta.title}
+                  </h2>
+                  <p class="pt-2 text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
+                    By {post.meta.byline || m.site_name()} ·{' '}
+                    {formatDate(post.meta.date, lang, {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                    })}
+                    {#if post.meta.editors?.length}
+                      · {editedLabel} {post.meta.editors.join(', ')}
+                    {/if}
+                  </p>
+                  {#if post.meta.description}
+                    <p class="text-lg text-slate-600">{post.meta.description}</p>
+                  {/if}
+                </div>
+              </a>
             </li>
           {/each}
         </ul>
