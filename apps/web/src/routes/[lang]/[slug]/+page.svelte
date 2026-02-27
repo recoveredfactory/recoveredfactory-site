@@ -100,7 +100,7 @@
       {/if}
 
       <header class="space-y-4">
-        <h1 class="font-display text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
+        <h1 class="font-display text-4xl font-semibold leading-snug tracking-tight text-slate-900 sm:text-5xl">
           {entry.meta.title}
         </h1>
         {#if isPost}
@@ -139,7 +139,7 @@
       </header>
 
       <div
-        class="space-y-6 text-base leading-relaxed text-slate-700 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:tracking-tight [&_p]:text-slate-700 [&_a]:font-medium [&_a]:text-link [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-link/80 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_blockquote]:border-l-2 [&_blockquote]:border-slate-300 [&_blockquote]:pl-4"
+        class="space-y-6 text-base leading-relaxed text-slate-700 [&_h2]:font-display [&_h2]:text-3xl [&_h2]:font-semibold [&_h2]:leading-snug [&_h2]:tracking-tight [&_h2]:sm:text-4xl [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:tracking-tight [&_p]:text-slate-700 [&_a]:font-medium [&_a]:text-link [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-link/80 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_blockquote]:border-l-2 [&_blockquote]:border-slate-300 [&_blockquote]:pl-4"
       >
         <EntryComponent />
       </div>
