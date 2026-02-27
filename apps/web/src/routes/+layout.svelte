@@ -41,6 +41,7 @@
   })());
   const homeHref = $derived(localizeWithPrefix('/', currentLocale));
   const supportHref = $derived(`/${currentLocale}/support`);
+  const footerSupportLabel = $derived(currentLocale === 'es' ? 'Apoyanos' : 'Support us');
   const signupHref = $derived(`${homeHref}#workshop`);
   const manageHref = 'https://app.kit.com/users/login';
   const currentYear = new Date().getFullYear();
@@ -402,11 +403,19 @@
   {@render children()}
 
   <footer class="border-t border-slate-900/10 bg-cream/80">
-    <div class="mx-auto flex max-w-6xl flex-col gap-3 px-6 py-8 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:gap-6 sm:px-10 lg:px-16">
-      <p>{m.footer_copyright({ year: currentYear, name: m.site_name() })}</p>
-      <p class="text-slate-500 [&_a]:text-link [&_a:hover]:text-link/80">
-        {@html m.footer_lettering_credit()}
-      </p>
+    <div class="mx-auto flex max-w-6xl flex-col gap-5 px-6 py-8 sm:px-10 lg:px-16">
+      <a
+        class="inline-flex w-full items-center justify-center bg-donate px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-donate/90 sm:w-auto sm:self-center"
+        href={supportHref}
+      >
+        {footerSupportLabel}
+      </a>
+      <div class="flex flex-col gap-3 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+        <p>{m.footer_copyright({ year: currentYear, name: m.site_name() })}</p>
+        <p class="text-slate-500 [&_a]:text-link [&_a:hover]:text-link/80">
+          {@html m.footer_lettering_credit()}
+        </p>
+      </div>
     </div>
   </footer>
 </div>
