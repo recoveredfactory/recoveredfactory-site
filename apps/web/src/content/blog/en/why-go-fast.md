@@ -1,7 +1,7 @@
 ---
 id: "why-go-fast"
 title: "Why Go Fast? + Missouri Vehicle Stops Updates"
-date: "2026-02-26"
+date: "2026-02-27"
 description: "Journalism is software, and software improves through friction, testing, and real-world use."
 type: "post"
 byline: "David Eads"
@@ -35,7 +35,9 @@ Speed, in that sense, isn’t about haste. It’s about resilience. It’s about
 
 This week’s improvements are another small exercise in that philosophy. Build something useful. Ship it. Then iterate with boring, reliable systems—version control, tests, clear docs, and reproducible data pipelines. 
 
-We’re not yet at the point where user feedback or analytics are driving our latest updates; these were planned features we didn’t want to block launch for, and they were queued because they make the tool more useful for us as we analyze and try to understand this data, which is often a good place to start. Over the coming months, as real usage, feedback, and analytics signal accumulate, we’ll use that to sharpen our questions, improve the structure, and make the service more useful.
+We’re not yet at the point where user feedback or analytics are driving our latest updates; these were planned features we didn’t want to block launch for, and they were queued because they make the tool more useful for us as we analyze and try to understand this data, which is often a good place to start.
+
+Over the coming months, as real usage, feedback, and analytics signals accumulate, we’ll use that to sharpen our questions, improve the structure, and make the service more useful.
 
 ## Updates to Missouri Vehicle Stops
 

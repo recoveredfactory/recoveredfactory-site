@@ -1,7 +1,7 @@
 ---
 id: "about-suku"
 title: "Who is Suku, our logo artist?"
-date: "2026-02-26"
+date: "2026-02-27"
 description: "Suku is a muralist, designer, and illustrator based in Cali, Colombia."
 type: "post"
 byline: "David Eads"
