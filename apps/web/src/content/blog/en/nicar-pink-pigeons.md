@@ -34,7 +34,7 @@ But why pigeon stickers? And why pink? This little pigeon has a great backstory 
 
 As someone who lives in New York City, I see pigeons literally every day, but I've always had a fascination with them. As someone who grew up in rural U.S., pigeons give me a reminder of wild nature in this concrete jungle that the small patches of grass, parks, neatly placed trees and rats cannot.
 
-A few weeks ago, I finally made my first trip out to the [Bronx Zoo](https://bronxzoo.com/shop/ticket-options?gad_source=1&gad_campaignid=23061707430&gbraid=0AAAAAqPDqu43HWizKMtQcMcE1HVwNuhFH&gclid=Cj0KCQjwmunNBhDbARIsAOndKpkK53gzel3mxMtW92rwdAHunWlgoen0B-EZdHL1nqr_iG-LqACKKgEaAjsvEALw_wcB). At the bird sanctuary, I spotted a bird that seemed slightly out of place amongst the neon parakeets, blue macaws and flamingos — it was a rather zany looking [pink pigeon.](https://www.zsl.org/what-we-do/projects/pink-pigeon-conservation) I assumed it had snuck in until I read the information panel and found out it was indeed a pink pigeon — a species of pigeon no New Yorker would ever expect to see.
+A few weeks ago, I finally made my first trip out to the [Bronx Zoo](https://bronxzoo.com/shop/ticket-options). At the bird sanctuary, I spotted a bird that seemed slightly out of place amongst the neon parakeets, blue macaws and flamingos — it was a rather zany looking [pink pigeon.](https://www.zsl.org/what-we-do/projects/pink-pigeon-conservation) I assumed it had snuck in until I read the information panel and found out it was indeed a pink pigeon — a species of pigeon no New Yorker would ever expect to see.
 
 <ResizedImage
   src="/images/pink-pigeon.jpg"
