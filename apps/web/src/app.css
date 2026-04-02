@@ -66,3 +66,74 @@
     background-color: rgba(255, 248, 228, 0.93);
   }
 }
+
+/* ── Inline code overflow fix (mobile) ───────────────── */
+:not(pre) > code {
+  overflow-wrap: anywhere;
+}
+
+/* ── Code blocks ─────────────────────────────────────── */
+.prose-code-wrapper {
+  position: relative;
+  margin-top: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+.prose-code-wrapper pre {
+  border-radius: 0.375rem;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  overflow-x: auto;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+  padding: 1rem 1.25rem !important;
+}
+
+.prose-copy-btn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  padding: 0.2rem 0.5rem;
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: rgba(255, 255, 255, 0.9);
+  color: #94a3b8;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.25rem;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+  line-height: 1.5;
+}
+
+.prose-code-wrapper:hover .prose-copy-btn {
+  opacity: 1;
+}
+
+.prose-copy-btn:hover {
+  color: #334155;
+  background: #fff;
+}
+
+.prose-copy-btn.copied {
+  color: #16a34a;
+  opacity: 1;
+}
+
+/* ── CodeBlock component: filename header ─────────────── */
+.rf-code-filename {
+  padding: 0.375rem 0.875rem;
+  font-size: 0.75rem;
+  font-family: monospace;
+  color: #64748b;
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-bottom: none;
+  border-radius: 0.375rem 0.375rem 0 0;
+}
+
+.rf-code-filename + .prose-code-wrapper pre {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
