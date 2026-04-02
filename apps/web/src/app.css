@@ -70,6 +70,7 @@
 /* ── Inline code overflow fix (mobile) ───────────────── */
 :not(pre) > code {
   overflow-wrap: anywhere;
+  font-size: 0.875em;
 }
 
 /* ── Code blocks ─────────────────────────────────────── */
