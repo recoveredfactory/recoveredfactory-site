@@ -39,6 +39,8 @@
     if (match) return match[1] as Lang;
     return getLocale() as Lang;
   })());
+  const navSubscribeLabel = $derived(m.nav_subscribe({}, { locale: currentLocale }));
+  const navDonateLabel = $derived(m.nav_donate({}, { locale: currentLocale }));
   const homeHref = $derived(localizeWithPrefix('/', currentLocale));
   const supportHref = $derived(`/${currentLocale}/support`);
   const footerSupportLabel = $derived(currentLocale === 'es' ? 'Apoyanos' : 'Support us');
@@ -233,13 +235,13 @@
           href={signupHref}
           onclick={handleSignupAnchorClick}
         >
-          {m.nav_subscribe()}
+          {navSubscribeLabel}
         </a>
         <a
           class="hidden bg-donate px-2.5 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-donate/90 md:inline-flex"
           href={supportHref}
         >
-          {m.nav_donate()}
+          {navDonateLabel}
         </a>
         <button
           aria-controls="site-menu"
@@ -289,14 +291,14 @@
                 closeMenu('nav');
               }}
             >
-              {m.nav_subscribe()}
+              {navSubscribeLabel}
             </a>
             <a
               class="inline-flex items-center justify-center bg-donate px-4 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-donate/90 sm:text-sm"
               href={supportHref}
               onclick={() => closeMenu('nav')}
             >
-              {m.nav_donate()}
+              {navDonateLabel}
             </a>
           </div>
 
