@@ -46,6 +46,47 @@
   const ogTitle = $derived(entry?.meta.title || m.site_name());
   const ogDescription = $derived(entry?.meta.description || m.hero_subtitle());
   const ogImage = $derived(previewImageUrl || defaultOgImage);
+
+  function codeBlocks(node: HTMLElement) {
+    node.querySelectorAll<HTMLPreElement>('pre').forEach((pre) => {
+      if (pre.parentElement?.classList.contains('prose-code-wrapper')) return;
+
+      const wrapper = document.createElement('div');
+      wrapper.className = 'prose-code-wrapper';
+      pre.parentNode?.insertBefore(wrapper, pre);
+      wrapper.appendChild(pre);
+
+      const btn = document.createElement('button');
+      btn.textContent = 'copy';
+      btn.className = 'prose-copy-btn';
+      btn.type = 'button';
+      btn.setAttribute('aria-label', 'Copy code to clipboard');
+
+      btn.addEventListener('click', () => {
+        const text = (pre.querySelector('code')?.textContent ?? pre.textContent ?? '').trim();
+        navigator.clipboard.writeText(text).then(
+          () => {
+            btn.textContent = 'copied!';
+            btn.classList.add('copied');
+            setTimeout(() => {
+              btn.textContent = 'copy';
+              btn.classList.remove('copied');
+            }, 2000);
+          },
+          () => {
+            btn.textContent = 'error';
+            setTimeout(() => {
+              btn.textContent = 'copy';
+            }, 2000);
+          },
+        );
+      });
+
+      wrapper.appendChild(btn);
+    });
+
+    return { destroy() {} };
+  }
 </script>
 
 <svelte:head>
@@ -139,6 +180,7 @@
       </header>
 
       <div
+        use:codeBlocks
         class="space-y-6 text-base leading-relaxed text-slate-700 [&_h2]:font-display [&_h2]:text-3xl [&_h2]:font-semibold [&_h2]:leading-snug [&_h2]:tracking-tight [&_h2]:sm:text-4xl [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:tracking-tight [&_p]:text-slate-700 [&_a]:font-medium [&_a]:text-link [&_a]:underline [&_a]:underline-offset-4 [&_a:hover]:text-link/80 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:list-decimal [&_ol]:pl-6 [&_blockquote]:border-l-2 [&_blockquote]:border-slate-300 [&_blockquote]:pl-4"
       >
         <EntryComponent />
