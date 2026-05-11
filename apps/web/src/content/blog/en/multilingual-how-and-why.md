@@ -408,11 +408,11 @@ hidePreview: true
 ... post body ...
 ```
 
-This isn't perfect, by any means. This approach makes it easy to handle multi-lingual post slugs and tracking back from [https://recoveredfactory.net/es/como-nos-hicimos-multilingue](https://recoveredfactory.net/es/como-nos-hicimos-multilingue) to the original content is trivial. On the other hand, we needed to write a little script to generate a crosswalk between the posts, because it's not obvious just looking at the English and Spanish content directories what the other language's equivalent content is. 
+This isn't perfect, by any means. This approach makes it easy to handle multi-lingual post slugs and tracking back to the source file from a URL like `https://recoveredfactory.net/es/como-nos-hicimos-multilingue` is trivial. On the other hand, we needed to write a little script to generate a crosswalk between the posts, because it's not obvious just looking at the English and Spanish content directories what the other language's equivalent Markdown file is. 
 
-Another approach would have been to encode the canonical ID in the filename and represent the published slug in the frontmatter. This would consistent of files like `how-we-went-multilingual-en.md` and `how-we-went-multilingual-es.md`
+Another approach would have been to encode the canonical ID in the filename and represent the published slug in the frontmatter. This would consist of files like `how-we-went-multilingual-en.md` and `how-we-went-multilingual-es.md`.
 
-In the end, I felt this was a bit of a coin flip. Both are reasonable choices, each with their own small tradeoffs, so I went with the version that simplifies the website logic a bit because we don't have to read and dynamically set the published slug which trades off with the additional complexity of needing to generate a post crosswalk. And in practice, this is rarely an issue, but it still introduces some mental friction and requires additional affordances.
+In the end, I felt the decision was a bit of a coin flip. Both are reasonable choices, each with their own small tradeoffs, so I went with the version that simplifies the website logic a bit because we don't have to read and dynamically set the published slug which trades off with the additional complexity of needing to generate a post crosswalk. And in practice, this is rarely an issue, but it still introduces some mental friction and requires additional affordances.
 
 There's similarly no automated sync, no translation memory, no fancy diffing UI beyond a command line script to tell you which English posts don't have Spanish counterparts yet. It's a manual process. But it works fine at our current scale, and it has the advantage of being dead simple to understand: files in folders, linked by an ID.
 
