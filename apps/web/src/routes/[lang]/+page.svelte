@@ -107,16 +107,17 @@
       {:else}
         <ul class="grid gap-16">
           {#each data.posts as post}
-            <li>
+            {@const hasImage = !!(post.meta.previewImage && !post.meta.hidePreview)}
+            <li class={hasImage ? '' : 'py-6 sm:py-10'}>
               <a
                 class={`group grid gap-4 md:items-center md:gap-6 ${
-                  post.meta.previewImage && !post.meta.hidePreview
+                  hasImage
                     ? 'md:grid-cols-[minmax(0,0.7fr)_minmax(0,1fr)]'
                     : 'md:grid-cols-1'
                 }`}
                 href={`/${data.lang}/${post.slug}`}
               >
-                {#if post.meta.previewImage && !post.meta.hidePreview}
+                {#if hasImage}
                   <img
                     alt={post.meta.title}
                     class="w-full h-auto"
@@ -125,14 +126,18 @@
                   />
                 {/if}
                 <div
-                  class={`max-w-xl space-y-4 text-center ${
-                    post.meta.previewImage && !post.meta.hidePreview
-                      ? 'md:text-left'
-                      : 'md:text-center md:mx-auto'
+                  class={`space-y-4 text-center ${
+                    hasImage
+                      ? 'max-w-xl md:text-left'
+                      : 'max-w-3xl md:text-center md:mx-auto'
                   }`}
                 >
                   <h2
-                    class="font-display text-xl font-semibold tracking-tight text-slate-900 transition group-hover:text-slate-700 sm:text-3xl lg:text-4xl"
+                    class={`font-display font-semibold tracking-tight text-slate-900 transition group-hover:text-slate-700 ${
+                      hasImage
+                        ? 'text-xl sm:text-3xl lg:text-4xl'
+                        : 'text-2xl sm:text-4xl lg:text-5xl'
+                    }`}
                   >
                     {post.meta.title}
                   </h2>

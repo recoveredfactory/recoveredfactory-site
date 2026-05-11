@@ -43,7 +43,7 @@ We wrote a post called “[Why Go Fast?](https://recoveredfactory.net/en/why-go-
 />
 </a>
 
-<p class="text-center">⁘ ⁘ ⁘</p>
+<p class="section-break">⁘ ⁘ ⁘</p>
 
 Doing this got me thinking about a paradox: One of the main reasons we like to go fast is so that we can go slow.
 
@@ -80,7 +80,7 @@ Picture a researcher who sees the stop data once, bookmarks it, and moves on. A 
 
 Reaching them is the hard part — and the hard part to fund. "Slow shoeleather organizing and outreach" doesn't exactly send funders running to write checks. That's a shame, because while the cost of maintaining the data is reasonable even at the miniscule revenue this project earns from paid subscriptions, the cost of making sure people know about it and use it is significantly higher.
 
-<p class="text-center">⁘ ⁘ ⁘</p>
+<p class="section-break">⁘ ⁘ ⁘</p>
 
 The word *consumer* comes from a Latin word that means to destroy, to eat, to diminish, to use up. This perception of people engaging with our work as “consumers”—for whom we must produce a continuous stream of content—defined the audience relationship in most newsrooms I’ve worked in. 
 
