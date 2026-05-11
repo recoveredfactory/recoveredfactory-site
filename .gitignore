@@ -11,3 +11,4 @@ apps/web/static/images/*
 !apps/web/static/images/.gitignore
 apps/web/static/videos/*
 !apps/web/static/videos/.gitignore
+video-processing/*
