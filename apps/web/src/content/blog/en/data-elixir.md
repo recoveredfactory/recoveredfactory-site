@@ -11,7 +11,7 @@ lang: "en"
 ---
 
 <h1 class="rf-headline">
-  Our public-interest data is free.
+  Our public‑interest data is free.
   <span class="rf-headline__turn">Our expertise is for hire.</span>
 </h1>
 
@@ -27,13 +27,13 @@ lang: "en"
   </div>
 </div>
 
-Some firms treat their best work as a secret, shown only once the contract is signed — a logo to add to the homepage. We do it differently. For our projects, we work in public: we share our source and methods, we let you analyze data in plain language, and we release it free because it belonged to all of us in the first place.
+Some firms treat their best work as a secret, shown only once the contract is signed — a logo to add to the homepage. We do it differently. For our projects, we work in public: we share our code and methods, and we release it free because it belonged to all of us in the first place.
 
-It's not charity, it's proof. Proof you can trust us. Proof you can criticize us. Proof we can build and maintain high-stakes tools that hold up in the real world. It shows what a demo can't. When we build an MCP server, user privacy is handled from the first line, because we've been down this road many times. When we ship a feature, we instrument it and test whether it did what we hoped. We may be new to your problem, but we know exactly what to ask.
+It's not charity, it's proof. Proof you can trust us. Proof you can criticize us. Proof we can build and maintain tools that work. It shows what a demo can't. When we build an MCP server, user privacy is handled from the start, because we've been down this road before. When we ship a feature, we test whether it did what we hoped. We may be new to your problem, but we know exactly what to ask.
 
 ---
 
-<p class="rf-kicker">Our projects — and the services behind them</p>
+<p class="rf-kicker">Our projects (and skills)</p>
 
 <div class="rf-cards-wrap not-prose relative left-1/2 right-1/2 -mx-[50vw] w-screen">
   <div class="rf-cards">
@@ -46,7 +46,7 @@ It's not charity, it's proof. Proof you can trust us. Proof you can criticize us
       </a>
       <h3 class="rf-card__name"><a href="https://recoveredfactory.net/en/announcing-287g-explorer">287(g) Watch</a></h3>
       <p class="rf-card__deck">A living national map of which sheriffs deputized themselves for federal immigration enforcement. English and Spanish.</p>
-      <p class="rf-card__craft">Free to download as video, GIF, or still under a Creative Commons license — embed it, broadcast it, print it. We took an active but scattered field and gave it the sweeping national view it was missing. MCP capabilities, including the ability to generate public-records requests for any agency, are coming soon.</p>
+      <p class="rf-card__craft">We use Sveltekit to power the site and generate video and still assets under a Creative Commons license to embed, broadcast, and print. We tapped an active but scattered ecosystem and gave it the sweeping national view it was missing. MCP capabilities, including the ability to generate public-records requests for any agency, are coming soon.</p>
       <a class="rf-card__link" href="https://recoveredfactory.net/en/announcing-287g-explorer">Explore →</a>
     </article>
     <article class="rf-card">
@@ -55,7 +55,7 @@ It's not charity, it's proof. Proof you can trust us. Proof you can criticize us
       </a>
       <h3 class="rf-card__name"><a href="https://recoveredfactory.net/en/announcing-missouri-vehicle-stops">Missouri Vehicle Stops</a></h3>
       <p class="rf-card__deck">Twenty-five years of who Missouri police pulled over, by agency and by race — drawn out of state reports that bury one important facet of daily life.</p>
-      <p class="rf-card__craft">We built a Dagster pipeline to extract and enrich the numbers from PDFs, test the output, and produce usable data; a custom SvelteKit front end to explore it; and a way to query it in plain language through ChatGPT and Claude.</p>
+      <p class="rf-card__craft">We built a Dagster pipeline to extract and enrich the numbers from PDFs, test the output, and produce usable data; a custom SvelteKit front end to explore it; and an MCP server to query it in plain language through ChatGPT and Claude.</p>
       <a class="rf-card__link" href="https://recoveredfactory.net/en/announcing-missouri-vehicle-stops">Explore →</a>
     </article>
     <article class="rf-card">
@@ -63,8 +63,8 @@ It's not charity, it's proof. Proof you can trust us. Proof you can criticize us
         <img class="rf-card__img" src="/images/pando_forest_01.jpg" alt="A lush single map layer — a census of trees" />
       </span>
       <h3 class="rf-card__name">Mapping Cali, Colombia</h3>
-      <p class="rf-card__deck">354 map layers — including 3D elevation — built as a multilingual tool for the city we live in, and to show what the modern geospatial stack can do.</p>
-      <p class="rf-card__craft">We freed the layers off an aging MapServer with an exotic projection, modernized them to MapLibre and PMTiles, made them searchable, and tracked down the data dictionary — well, some of it. It runs on a few dollars a month. We're fluent in this stack end to end, from geocoding exceptionally messy addresses to animating thousands of points.</p>
+      <p class="rf-card__deck">354 map layers — including 3D elevation — built as a multilingual tool to teach a primarily Spanish-speaking audience what the modern geospatial stack can do.</p>
+      <p class="rf-card__craft">We freed the layers off an aging MapServer with an exotic projection, modernized them to MapLibre and PMTiles, made them searchable, and tracked down the data dictionary — well, some of it. Infrastructure costs only a few dollars a month. We're fluent in this stack end to end, from geocoding exceptionally messy addresses to animating thousands of points.</p>
     </article>
     <article class="rf-card">
       <a class="rf-card__media" href="https://recoveredfactory.net/en">
@@ -129,9 +129,8 @@ Every publication is accountable to someone. We want to be accountable to you �
     margin: 3.5rem 0;
   }
 
-  /* Two-line display headline — the magazine-spread hero.
-     Line one in ink, line two turned to the brand crimson:
-     the free → for-hire pivot, stated as a printed headline. */
+  /* Two-line display headline. Block span turns the second line
+     ("Our expertise is for hire.") with a smidge of space above. */
   .rf-headline {
     margin: 0 0 1.25rem;
     font-family: var(--font-display);
@@ -144,14 +143,14 @@ Every publication is accountable to someone. We want to be accountable to you �
   }
   .rf-headline__turn { display: block; margin-top: 0.22em; }
 
-  /* Hero strip — a short, static row of product views sitting in
-     the same content well as the copy. 5 tiles on desktop, 4 on
-     mobile. Tiles are portrait, top-cropped so each reads as a
-     little "view."
+  /* Hero strip — a short row of portrait product views. MOBILE
+     ONLY: it reads great on a phone but felt cramped on desktop,
+     so it's hidden there. 4 tiles on mobile, top-cropped so each
+     reads as a little "view."
      PLACEHOLDER ASSETS: these are the screenshots on hand (mostly
      desktop captures, top-cropped). Replace with real mobile-width
      captures of each product for the intended look. */
-  .rf-strip { margin: 0.25rem 0 3rem; }
+  .rf-strip { display: none; }
   .rf-strip__track {
     display: flex;
     gap: 0.6rem;
@@ -167,8 +166,8 @@ Every publication is accountable to someone. We want to be accountable to you �
     box-shadow: 0 2px 6px rgba(15, 23, 42, 0.1);
     display: block;
   }
-  /* Fewer, wider tiles on phones */
   @media (max-width: 639px) {
+    .rf-strip { display: block; margin: 0.25rem 0 1.75rem; }
     .rf-strip__tile:nth-child(n + 5) { display: none; }
   }
 
