@@ -27,7 +27,7 @@ lang: "en"
   </div>
 </div>
 
-Some firms treat their best work as a secret, shown only once the contract is signed — a logo to add to the homepage. We do it differently. For our projects, we work in public: we share our code and methods, and we release it free because it belonged to all of us in the first place.
+Some firms treat their best work as a secret, shown only once the contract is signed, a logo to add to the homepage. We do it differently. For our projects, we work in public: we share our code and methods, and we release it free because it belonged to all of us in the first place.
 
 It's not charity, it's proof. Proof you can trust us. Proof you can criticize us. Proof we can build and maintain tools that work. It shows what a demo can't. When we build an MCP server, user privacy is handled from the start, because we've been down this road before. When we ship a feature, we test whether it did what we hoped. We may be new to your problem, but we know exactly what to ask.
 
@@ -79,20 +79,20 @@ It's not charity, it's proof. Proof you can trust us. Proof you can criticize us
 
   <div class="rf-before">
     <h3 class="rf-card__name">Before this</h3>
-    <p class="rf-card__deck">The work we did in past lives — and the work we came back for.</p>
-    <p class="rf-card__craft">A Pulitzer. A Premio Gabo. Election results tens of millions of people read between 2015 and 2020. And the COVID Tracking Project, which assembled the data the federal government wasn't — relied on by newsrooms, researchers, and the public through the worst of it. It didn't win a Pulitzer. It mattered more than one.</p>
+    <p class="rf-card__deck">The work we did in past lives</p>
+    <p class="rf-card__craft">TK TK TK</p>
   </div>
 </div>
 
 ---
 
-<p class="rf-kicker">What we'll build for you</p>
+<p id="work" class="rf-kicker">What we'll build for you</p>
 
-A pipeline. Analysis notebooks. An explorer people actually use. Data liberated from a PDF. An MCP server your team can question in plain language to generate maps, graphics, and automate routine work. An AI agent that surfaces themes from a huge corpus of notes — with controls that let a human steer it instead of trusting it blindly. An amazing animated map. Software that turns your web content into spectacular images and video.
+<BuildRotator items={buildItems} />
 
 Your data. Your tools. Your terms. We open-source *our* work; what we build for you is forever yours.
 
-<div id="work" class="rf-badge-wrap not-prose">
+<div class="rf-badge-wrap not-prose">
   <a class="rf-badge" href="mailto:davideads@recoveredfactory.net?subject=Work%20with%20Recovered%20Factory">Work with us →</a>
   <span class="rf-badge-note">Tell us what you need built.</span>
 </div>
@@ -113,7 +113,25 @@ You don't have to hire us to back this. Some people simply believe public data s
 
 We think you're out there, because we know the type — we *are* the type. You read the methodology. You download the data. You open a notebook and start exploring. Maybe you've given to newsrooms before, not because of a high-minded email guilting you into it, but because you saw open, rigorous, public-interest work and wanted more of it to exist.
 
-Every publication is accountable to someone. We want to be accountable to you — not a foundation named for some Gilded Age industrialist, with a quiet veto and priorities that change next year. Just the people who use the work and understand its value, keeping it alive.
+Every publication is accountable to someone. We want to be accountable to you, not a foundation named for some Gilded Age industrialist with priorities that will change next year because it's better to be accountable to the people who use the work and understand its value.
+
+Subscribe to our newsletter or support us finanically:
+
+<script>
+  import BuildRotator from '$lib/components/BuildRotator.svelte';
+
+  // Copy stays in the content file; the component handles the motion.
+  const buildItems = [
+    'A pipeline.',
+    'Analysis notebooks.',
+    'An explorer people actually use.',
+    'Data liberated from a PDF.',
+    'An MCP server you can question in plain language.',
+    'An AI agent that surfaces themes from a huge corpus — with a human at the wheel.',
+    'An amazing animated map.',
+    'Software that turns your web content into spectacular images and video.',
+  ];
+</script>
 
 <style>
   /* ════════════════════════════════════════════════════════
