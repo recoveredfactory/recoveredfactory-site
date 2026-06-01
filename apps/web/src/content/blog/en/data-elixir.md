@@ -89,10 +89,6 @@ We think you're out there, because we know the type — we *are* the type. You r
 
 Every publication is accountable to someone. We want to be accountable to you — not a foundation named for some Gilded Age industrialist, with a quiet veto and priorities that change next year. Just the people who use the work and understand its value, keeping it alive.
 
-<div class="rf-support-wrap not-prose">
-  <a class="rf-support" href="https://recoveredfactory.net/en/support">Support Recovered Factory →</a>
-</div>
-
 <style>
   /* ════════════════════════════════════════════════════════
      Data Elixir — 1980s Apple / magazine-spread treatment.
@@ -248,25 +244,8 @@ Every publication is accountable to someone. We want to be accountable to you �
     color: rgb(71 85 105);
   }
 
-  /* ── Support CTA: the second ask, in the site's green ─── */
-  .rf-support-wrap { margin: 2.25rem 0 0; }
-  .rf-support {
-    display: inline-block;
-    padding: 0.85rem 1.4rem;
-    background: var(--color-donate);
-    color: #fff;
-    font-family: "Jost", sans-serif;
-    font-size: 0.86rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    text-decoration: none;
-    transition: background-color 0.18s ease;
-  }
-  .rf-support:hover { background: #279a5b; }
-
   @media (prefers-reduced-motion: reduce) {
     .rf-card__video { display: none; }
-    .rf-badge, .rf-support { transition: none; }
+    .rf-badge { transition: none; }
   }
 </style>
