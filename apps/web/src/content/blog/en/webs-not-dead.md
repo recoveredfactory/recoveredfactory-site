@@ -1,7 +1,7 @@
 ---
 id: "webs-not-deads"
 title: "The Web Isn't Dying, It's Becoming Infrastructure."
-date: "2026-05-11"
+date: "2026-05-12"
 description: "Should you worry about the death of the web? Only if you’re thinking of it as a destination."
 type: "post"
 byline: "David Eads"
@@ -19,7 +19,7 @@ hidePreview: true
   import ResizedImage from '$lib/components/ResizedImage.svelte';
 </script>
 
-You've heard it many times in the past few years: News media is in the midst of an “[extinction event](http://.com/DNVRSaez/status/2045999388636688607/mediaviewer)” where web traffic is collapsing, search referrals are drying up, AI is eating the [long tail](https://www.cjr.org/analysis/traffic-apocalypse-google-ai-overviews-killing-click-throughs-news-sites.php), and [Google Zero](https://www.theverge.com/24167865/google-zero-search-crash-housefresh-ai-overviews-traffic-data-audience) is here. Some of [that rhetoric is inflated](https://www.seoforgooglenews.com/p/google-zero-is-a-lie), but I saw some version of it happening at my last job, and I see it in the tepid web numbers for our current projects. 
+You've heard it many times in the past few years: News media is in the midst of an “[extinction event](https://www.npr.org/2025/07/31/nx-s1-5484118/google-ai-overview-online-publishers)” where web traffic is collapsing, search referrals are drying up, AI is eating the [long tail](https://www.cjr.org/analysis/traffic-apocalypse-google-ai-overviews-killing-click-throughs-news-sites.php), and [Google Zero](https://www.theverge.com/24167865/google-zero-search-crash-housefresh-ai-overviews-traffic-data-audience) is here. Some of [that rhetoric is inflated](https://www.seoforgooglenews.com/p/google-zero-is-a-lie), but I saw some version of it happening at my last job, and I see it in the tepid web numbers for our current projects. 
 
 Web technology is everywhere; the web itself is receding into the background. There’s a lot of discourse asking "is the web dying?" that treats the web as a destination and measures how much people still go there. It's easy to catastrophize when you look at it that way, but what's happening is something we can take advantage of. It’s the end of the world as we know it, [and I feel fine](https://www.youtube.com/watch?v=Mjvu9ElurIo&list=RDMjvu9ElurIo&start_radio=1). 
 
@@ -79,4 +79,5 @@ To that end, we’re going to be experimenting with animation and video export f
 
 We’re also going to do some paid promotion in the excellent data science newsletter [Data Elixir](https://dataelixir.com/). We have a hypothesis that while mainstream philanthropy isn’t so keen on foundational data and informational data journalism, there might be some wealthy individuals in the data world who are.
 
-We’re investing in ourselves, but to keep this going we need your support. If this is valuable, consider a paid subscription, one-time support, or hiring us for your next project.
+We’re investing in ourselves, but to keep this going we need your support. [If this is valuable, consider a paid subscription, one-time support, or hiring us for your next project.](https://recoveredfactory.net/en/support)
+

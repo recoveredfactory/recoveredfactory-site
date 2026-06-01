@@ -3,13 +3,29 @@ id: "data-elixir"
 title: "Our public-interest data is free. Our expertise is for hire."
 date: "2026-05-30"
 type: "page"
+hideTitle: true
 description: "A landing page for Recovered Factory readers arriving from Data Elixir."
 byline: "Recovered Factory"
 hidePreview: true
 lang: "en"
 ---
 
+<h1 class="rf-headline">
+  Our public-interest data is free.
+  <span class="rf-headline__turn">Our expertise is for hire.</span>
+</h1>
+
 <div class="rf-jump"><a href="#work">Work with us →</a></div>
+
+<div class="rf-strip not-prose">
+  <div class="rf-strip__track">
+    <img class="rf-strip__tile" src="/images/vsr.recoveredfactory.net_en-home.png" alt="" />
+    <img class="rf-strip__tile" src="/images/287g-loop-poster.jpg" alt="" />
+    <img class="rf-strip__tile" src="/images/vsr-screenshot-agencies.png" alt="" />
+    <img class="rf-strip__tile" src="/images/pando_forest_01.jpg" alt="" />
+    <img class="rf-strip__tile" src="/images/rf_25years_homepage.png" alt="" />
+  </div>
+</div>
 
 Some firms treat their best work as a secret, shown only once the contract is signed — a logo to add to the homepage. We do it differently. For our projects, we work in public: we share our source and methods, we let you analyze data in plain language, and we release it free because it belonged to all of us in the first place.
 
@@ -50,11 +66,21 @@ It's not charity, it's proof. Proof you can trust us. Proof you can criticize us
       <p class="rf-card__deck">354 map layers — including 3D elevation — built as a multilingual tool for the city we live in, and to show what the modern geospatial stack can do.</p>
       <p class="rf-card__craft">We freed the layers off an aging MapServer with an exotic projection, modernized them to MapLibre and PMTiles, made them searchable, and tracked down the data dictionary — well, some of it. It runs on a few dollars a month. We're fluent in this stack end to end, from geocoding exceptionally messy addresses to animating thousands of points.</p>
     </article>
-    <article class="rf-card rf-card--text">
-      <h3 class="rf-card__name">Before this</h3>
-      <p class="rf-card__deck">The work we did in past lives — and the work we came back for.</p>
-      <p class="rf-card__craft">A Pulitzer. A Premio Gabo. Election results tens of millions of people read between 2015 and 2020. And the COVID Tracking Project, which assembled the data the federal government wasn't — relied on by newsrooms, researchers, and the public through the worst of it. It didn't win a Pulitzer. It mattered more than one.</p>
+    <article class="rf-card">
+      <a class="rf-card__media" href="https://recoveredfactory.net/en">
+        <img class="rf-card__img" src="/images/rf_25years_homepage.png" alt="The Recovered Factory homepage" />
+      </a>
+      <h3 class="rf-card__name"><a href="https://recoveredfactory.net/en">Recovered Factory</a></h3>
+      <p class="rf-card__deck">This site itself — the publication and open archive that ties the projects together, free to read and download.</p>
+      <p class="rf-card__craft">A fully bilingual SvelteKit site we designed, built, and run ourselves for a few dollars a month. Every project here lives here. Subscribe and you'll see the next one the day it ships.</p>
+      <a class="rf-card__link" href="https://recoveredfactory.net/en">Visit →</a>
     </article>
+  </div>
+
+  <div class="rf-before">
+    <h3 class="rf-card__name">Before this</h3>
+    <p class="rf-card__deck">The work we did in past lives — and the work we came back for.</p>
+    <p class="rf-card__craft">A Pulitzer. A Premio Gabo. Election results tens of millions of people read between 2015 and 2020. And the COVID Tracking Project, which assembled the data the federal government wasn't — relied on by newsrooms, researchers, and the public through the worst of it. It didn't win a Pulitzer. It mattered more than one.</p>
   </div>
 </div>
 
@@ -101,6 +127,49 @@ Every publication is accountable to someone. We want to be accountable to you �
     border: 0;
     border-top: 1px solid rgba(15, 23, 42, 0.16);
     margin: 3.5rem 0;
+  }
+
+  /* Two-line display headline — the magazine-spread hero.
+     Line one in ink, line two turned to the brand crimson:
+     the free → for-hire pivot, stated as a printed headline. */
+  .rf-headline {
+    margin: 0 0 1.25rem;
+    font-family: var(--font-display);
+    font-weight: 400;
+    font-size: clamp(2.3rem, 6.5vw, 4.4rem);
+    line-height: 1.03;
+    letter-spacing: -0.02em;
+    color: rgb(15 23 42);
+    text-wrap: balance;
+  }
+  .rf-headline__turn { display: block; margin-top: 0.22em; }
+
+  /* Hero strip — a short, static row of product views sitting in
+     the same content well as the copy. 5 tiles on desktop, 4 on
+     mobile. Tiles are portrait, top-cropped so each reads as a
+     little "view."
+     PLACEHOLDER ASSETS: these are the screenshots on hand (mostly
+     desktop captures, top-cropped). Replace with real mobile-width
+     captures of each product for the intended look. */
+  .rf-strip { margin: 0.25rem 0 3rem; }
+  .rf-strip__track {
+    display: flex;
+    gap: 0.6rem;
+  }
+  .rf-strip__tile {
+    flex: 1 1 0;
+    min-width: 0;
+    height: 165px;
+    object-fit: cover;
+    object-position: top center;
+    border: 1px solid rgba(15, 23, 42, 0.14);
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.1);
+    display: block;
+  }
+  /* Fewer, wider tiles on phones */
+  @media (max-width: 639px) {
+    .rf-strip__tile:nth-child(n + 5) { display: none; }
   }
 
   /* Jump link under the headline */
@@ -207,13 +276,17 @@ Every publication is accountable to someone. We want to be accountable to you �
   }
   .rf-card__link:hover { text-decoration: underline; text-underline-offset: 5px; }
 
-  /* Text-only card (Before this) — words carry it */
-  .rf-card--text {
-    justify-content: flex-start;
-    padding-top: 0.5rem;
-    border-top: 2px solid rgb(15 23 42);
+  /* "Before this" — centered colophon below the project grid.
+     No image to represent it, so words carry it, set apart by a
+     hairline and centered on desktop like an end-note. */
+  .rf-before {
+    max-width: 42rem;
+    margin: 3.25rem auto 0;
+    padding-top: 1.7rem;
+    border-top: 1px solid rgba(15, 23, 42, 0.18);
   }
-  .rf-card--text .rf-card__name { margin-top: 1.1rem; }
+  @media (min-width: 760px) { .rf-before { text-align: center; } }
+  .rf-before .rf-card__name { margin: 0 0 0.5rem; }
 
   /* ── Work-with-us badge: a printed crimson stamp ──────── */
   .rf-badge-wrap {

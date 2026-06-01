@@ -141,9 +141,11 @@
       {/if}
 
       <header class="space-y-4">
-        <h1 class="font-display text-4xl font-semibold leading-snug tracking-tight text-slate-900 sm:text-5xl">
-          {entry.meta.title}
-        </h1>
+        {#if !entry.meta.hideTitle}
+          <h1 class="font-display text-4xl font-semibold leading-snug tracking-tight text-slate-900 sm:text-5xl">
+            {entry.meta.title}
+          </h1>
+        {/if}
         {#if isPost}
           {#if entry.meta.description}
             <p class="text-lg text-slate-600">{entry.meta.description}</p>

@@ -9,6 +9,7 @@ export type BlogMeta = {
   canonicalId?: string;
   type?: ContentType;
   title: string;
+  hideTitle?: boolean;
   date: string;
   description?: string;
   byline?: string;

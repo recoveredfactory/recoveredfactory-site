@@ -61,6 +61,10 @@
       name: 'Lunalimón',
       url: 'https://lunalimon.co.com',
     },
+    {
+      name: '287(g) Watch',
+      url: 'https://287g.recoveredfactory.net',
+    },
   ];
 
   let lastPath = $state('');
