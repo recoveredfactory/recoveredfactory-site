@@ -11,12 +11,24 @@ lang: "en"
 ---
 
 <h1 class="rf-headline">
-  Our public‑interest data is free.
-  <span class="rf-headline__turn">Our expertise is for hire.</span>
+  Our public‑interest <b>data</b> is free.
+  <span class="rf-headline__turn">Our <b>expertise</b> is for hire.</span>
 </h1>
 
-<div class="rf-jump"><a href="#work">Work with us →</a></div>
+---
 
+<p id="work" class="rf-kicker no-drop">What we'll build for you</p>
+
+<BuildRotator items={buildItems} />
+
+Your data. Your tools. Your terms. We open-source *our* work; what we build for you is forever yours.
+
+<div class="rf-badge-wrap not-prose">
+  <a class="rf-badge" href="mailto:davideads@recoveredfactory.net?subject=Work%20with%20Recovered%20Factory">Work with us →</a>
+  <span class="rf-badge-note">Tell us what you need built.</span>
+</div>
+
+<!--
 <div class="rf-strip not-prose">
   <div class="rf-strip__track">
     <img class="rf-strip__tile" src="/images/vsr.recoveredfactory.net_en-home.png" alt="" />
@@ -26,14 +38,33 @@ lang: "en"
     <img class="rf-strip__tile" src="/images/rf_25years_homepage.png" alt="" />
   </div>
 </div>
+//-->
+---
 
-Some firms treat their best work as a secret, shown only once the contract is signed, a logo to add to the homepage. We do it differently. For our projects, we work in public: we share our code and methods, and we release it free because it belonged to all of us in the first place.
+<p class="rf-kicker">Support the future of data journalism</p>
 
-It's not charity, it's proof. Proof you can trust us. Proof you can criticize us. Proof we can build and maintain tools that work. It shows what a demo can't. When we build an MCP server, user privacy is handled from the start, because we've been down this road before. When we ship a feature, we test whether it did what we hoped. We may be new to your problem, but we know exactly what to ask.
+We offer our services commercially so that our journalism stays free. We want to answer to the people who use the work, whether that's a client or the audiences using our public tools. It's an old-fashioned approach to distinctly modern needs: while the old industry waits for a savior to rescue it at the last minute, we serve real needs for a fair price.
+
+We're not the next nonprofit newsroom. We're what comes after it.
+
+---
+
+<p class="rf-kicker">Don't have a project? You can still support Recovered Factory</p>
+
+Some people simply believe public data should stay public, and want to help sustain this kind of work rather than see it chronically overlooked by traditional journalism and civil society funders.
+
+We think you're out there, because we know the type — we *are* the type. You read the methodology. You download the data. You open a notebook and start exploring. Maybe you've given to newsrooms before, not because of a high-minded email guilting you into it, but because you saw open, rigorous, public-interest work and wanted more of it to exist.
+
+Every publication is accountable to someone. We want to be accountable to you, not a foundation named for some Gilded Age industrialist with priorities that will change next year, because we think it's better to answer to the people who use the work and understand its value.
+
+
+_buttons go here_
 
 ---
 
 <p class="rf-kicker">Our projects (and skills)</p>
+
+Our project's aren't charity, they're proof. Proof you can trust us. Proof you can criticize us. Proof we can build and maintain tools that work. It shows what a demo can't. When we build an MCP server, user privacy is handled from the start, because we've been down this road before. When we ship a feature, we test whether it did what we hoped. We may be new to your problem, but we know exactly what to ask.
 
 <div class="rf-cards-wrap not-prose relative left-1/2 right-1/2 -mx-[50vw] w-screen">
   <div class="rf-cards">
@@ -86,37 +117,6 @@ It's not charity, it's proof. Proof you can trust us. Proof you can criticize us
 
 ---
 
-<p id="work" class="rf-kicker">What we'll build for you</p>
-
-<BuildRotator items={buildItems} />
-
-Your data. Your tools. Your terms. We open-source *our* work; what we build for you is forever yours.
-
-<div class="rf-badge-wrap not-prose">
-  <a class="rf-badge" href="mailto:davideads@recoveredfactory.net?subject=Work%20with%20Recovered%20Factory">Work with us →</a>
-  <span class="rf-badge-note">Tell us what you need built.</span>
-</div>
-
----
-
-<p class="rf-kicker">Support the future of data journalism</p>
-
-We offer our services commercially so that our journalism stays free. We want to answer to the people who use the work — whether that's a client or the audiences using our public tools. It's an old-fashioned approach to distinctly modern needs: while the old industry waits for a savior to rescue it at the last minute, we serve real needs for a fair price.
-
-We're not the next nonprofit newsroom. We're what comes after it.
-
----
-
-<p class="rf-kicker">Don't have a project? You can still support the work</p>
-
-You don't have to hire us to back this. Some people simply believe public data should stay public, and want to fund the work rather than watch it get short shrift among a foundation's priorities.
-
-We think you're out there, because we know the type — we *are* the type. You read the methodology. You download the data. You open a notebook and start exploring. Maybe you've given to newsrooms before, not because of a high-minded email guilting you into it, but because you saw open, rigorous, public-interest work and wanted more of it to exist.
-
-Every publication is accountable to someone. We want to be accountable to you, not a foundation named for some Gilded Age industrialist with priorities that will change next year because it's better to be accountable to the people who use the work and understand its value.
-
-Subscribe to our newsletter or support us finanically:
-
 <script>
   import BuildRotator from '$lib/components/BuildRotator.svelte';
 
@@ -150,16 +150,19 @@ Subscribe to our newsletter or support us finanically:
   /* Two-line display headline. Block span turns the second line
      ("Our expertise is for hire.") with a smidge of space above. */
   .rf-headline {
-    margin: 0 0 1.25rem;
+    margin: 0;
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: clamp(2.3rem, 6.5vw, 4.4rem);
+    font-size: clamp(2.2rem, 6.2vw, 4rem);
     line-height: 1.03;
     letter-spacing: -0.02em;
-    color: rgb(15 23 42);
+    /* color: #444; */
+    color: rgb(48 56 75);
+    /* color: rgb(15 23 42); */
     text-wrap: balance;
   }
-  .rf-headline__turn { display: block; margin-top: 0.22em; }
+  .rf-headline b { font-weight: 900;  color: rgb(15 24 42);}
+  .rf-headline__turn { display: block; margin-top: 0.5em; }
 
   /* Hero strip — a short row of portrait product views. MOBILE
      ONLY: it reads great on a phone but felt cramped on desktop,
