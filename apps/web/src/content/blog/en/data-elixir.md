@@ -25,9 +25,11 @@ lang: "en"
   </div>
 </div>
 
-<p class="rf-lede no-drop">Your problems are bigger than ours — more data, higher stakes, more people waiting on the answer. We work the small, loud version: public-interest government data, built in the open, every assumption left on the table. Sports is a funhouse mirror of labor; we're a funhouse mirror of your world — the same fights, shrunk and exaggerated until they're easy to study.</p>
+<p class="rf-lede no-drop">We're independent data journalists navigating a world swimming in data that is both useful and funky in the midst of an industry disrupted by AI. We think Data Elixir readers can relate.</p>
 
-<p class="rf-lede">Then we take what the field keeps teaching us — the stuff that fills Data Elixir every week — and use it to build the future of “journalism,” by which we mean something broader and older: the honest exchange of information. And exchange runs both ways — we'll teach you what we figure out, and we want to learn how you fight data bigger than ours.</p>
+That's why we're building open data products and writing dispatches with practical advice and open discussion of our strategy and challenges. We're part of an emerging wave of creators creating the future by returning to older, deeper values of transparency and honesty instead of devotion to dying forms and self-congratulatory myths.
+
+This is an invitation to join the conversation that Recovered Factory is part of: We'll share what we're learning through our projects, and we want to learn from you how to make those projects better.
 
 <div class="rf-subscribe not-prose">
   <p class="rf-subscribe__lead">Dispatches from the edge of data journalism's encounter with AI — free to read, and yours to steal.</p>
@@ -36,21 +38,19 @@ lang: "en"
 
 ---
 
+<p class="rf-kicker">What you'll find</p>
+
 <h2 class="rf-q">How do I get the most out of my data?</h2>
 
 By being lazy in the right places. The trick to scale usually isn't more effort, it's better automation — turning the assets you already have (a live chart, a map, a number that updates itself) into video, into a tool people can question in plain language, into a pipeline that runs for a few dollars a month. We keep the *how* high-level enough that you can rebuild it with your own tools, or hand the description to an AI and let it do the typing.
 
 <BuildRotator items={buildItems} />
 
----
-
 <h2 class="rf-q">How does rigor survive a world where we can finally admit how funky real-world data is?</h2>
 
 Old-school editors want certainty, a smoking gun, a single clear finding. Working with administrative data at the ambitious scale required to understand our world was never going to give them that. Data Elixir readers know what we're talking about. If that mythical certainty ever existed, it's gone now. Rigor, on the other hand, hasn't gone anywhere. What survives is older and simpler: tell the truth, show your work, contend with the margin of error, invite people to prove you wrong.
 
 Those values didn't vanish, and they're critical in an era of new threats that have allowed misinformation to flourish. We think the path runs through AI, not around it — used by someone who knows the data cold, who can go and see for themselves what that means out in the world, and always with a human at the wheel.
-
----
 
 <h2 class="rf-q">How can a Data Elixir reader's skill set help fight misinformation?</h2>
 
@@ -165,7 +165,7 @@ Our projects aren't charity, they're proof. Proof you can trust us. Proof you ca
   .rf-hero { padding: 0 1.5rem; }
   @media (min-width: 640px) { .rf-hero { padding: 0 2.5rem; } }
   @media (min-width: 1024px) { .rf-hero { padding: 0 4rem; } }
-  .rf-hero__inner { max-width: 60rem; margin: 0 auto; }
+  .rf-hero__inner { max-width: 66rem; margin: 0 auto; }
 
   .rf-heroshots {
     display: grid;
@@ -198,7 +198,7 @@ Our projects aren't charity, they're proof. Proof you can trust us. Proof you ca
     }
     .rf-hero__inner .rf-heroshots {
       margin: 0;
-      width: clamp(15rem, 24vw, 20rem);
+      width: clamp(16rem, 26vw, 23rem);
     }
   }
 
@@ -230,7 +230,7 @@ Our projects aren't charity, they're proof. Proof you can trust us. Proof you ca
      face, carrying the same crimson left rule as the kickers.
      Two classes beat the route's `.dropcap-prose h2` utilities. */
   .rf-q {
-    margin: 0 0 1.1rem;
+    margin: 2.75rem 0 1.1rem;
     padding: 0.1rem 0 0.1rem 0.95rem;
     border-left: 3px solid var(--color-fern);
     font-family: var(--font-display);
