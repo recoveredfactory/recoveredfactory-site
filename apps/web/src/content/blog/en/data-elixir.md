@@ -1,70 +1,66 @@
 ---
 id: "data-elixir"
-title: "Our public-interest data is free. Our expertise is for hire."
+title: "A newsletter for people who fight with data."
 date: "2026-05-30"
 type: "page"
 hideTitle: true
-description: "A landing page for Recovered Factory readers arriving from Data Elixir."
+description: "Dispatches from the edge of data journalism's encounter with AI — rigorous, public-interest work on real, messy administrative data, built in the open. Subscribe."
 byline: "Recovered Factory"
 hidePreview: true
 lang: "en"
 ---
 
-<h1 class="rf-headline">
-  Our public‑interest <b>data</b> is free.
-  <span class="rf-headline__turn">Our <b>expertise</b> is for hire.</span>
-</h1>
+<div class="rf-hero not-prose relative left-1/2 right-1/2 -mx-[50vw] w-screen">
+  <div class="rf-hero__inner">
+    <h1 class="rf-headline">
+      You fight with<br /><b>data</b> for a living.
+      <span class="rf-headline__turn">So do we…<br />in the open.</span>
+    </h1>
+    <div class="rf-heroshots">
+      <img src="/images/287g-loop-poster.jpg" alt="The 287(g) national map" />
+      <img src="/images/vsr.recoveredfactory.net_en-stl-scatter.png" alt="A disparity chart from the vehicle-stops data" />
+      <img src="/images/pando_forest_01.jpg" alt="A map layer from the Cali, Colombia project" />
+      <img src="/images/rf_25years_homepage.png" alt="The Recovered Factory homepage" />
+    </div>
+  </div>
+</div>
+
+<p class="rf-lede no-drop">Your problems are bigger than ours — more data, higher stakes, more people waiting on the answer. We work the small, loud version: public-interest government data, built in the open, every assumption left on the table. Sports is a funhouse mirror of labor; we're a funhouse mirror of your world — the same fights, shrunk and exaggerated until they're easy to study.</p>
+
+<p class="rf-lede">Then we take what the field keeps teaching us — the stuff that fills Data Elixir every week — and use it to build the future of “journalism,” by which we mean something broader and older: the honest exchange of information. And exchange runs both ways — we'll teach you what we figure out, and we want to learn how you fight data bigger than ours.</p>
+
+<div class="rf-subscribe not-prose">
+  <p class="rf-subscribe__lead">Dispatches from the edge of data journalism's encounter with AI — free to read, and yours to steal.</p>
+  <SubscribeForm lang="en" source="data-elixir" id="subscribe-top" />
+</div>
 
 ---
 
-<p id="work" class="rf-kicker no-drop">What we'll build for you</p>
+<h2 class="rf-q">How do I get the most out of my data?</h2>
+
+By being lazy in the right places. The trick to scale usually isn't more effort, it's better automation — turning the assets you already have (a live chart, a map, a number that updates itself) into video, into a tool people can question in plain language, into a pipeline that runs for a few dollars a month. We keep the *how* high-level enough that you can rebuild it with your own tools, or hand the description to an AI and let it do the typing.
 
 <BuildRotator items={buildItems} />
 
-Your data. Your tools. Your terms. We open-source *our* work; what we build for you is forever yours.
-
-<div class="rf-badge-wrap not-prose">
-  <a class="rf-badge" href="mailto:davideads@recoveredfactory.net?subject=Work%20with%20Recovered%20Factory">Work with us →</a>
-  <span class="rf-badge-note">Tell us what you need built.</span>
-</div>
-
-<!--
-<div class="rf-strip not-prose">
-  <div class="rf-strip__track">
-    <img class="rf-strip__tile" src="/images/vsr.recoveredfactory.net_en-home.png" alt="" />
-    <img class="rf-strip__tile" src="/images/287g-loop-poster.jpg" alt="" />
-    <img class="rf-strip__tile" src="/images/vsr-screenshot-agencies.png" alt="" />
-    <img class="rf-strip__tile" src="/images/pando_forest_01.jpg" alt="" />
-    <img class="rf-strip__tile" src="/images/rf_25years_homepage.png" alt="" />
-  </div>
-</div>
-//-->
 ---
 
-<p class="rf-kicker">Support the future of data journalism</p>
+<h2 class="rf-q">How does rigor survive a world where we can finally admit how funky real-world data is?</h2>
 
-We offer our services commercially so that our journalism stays free. We want to answer to the people who use the work, whether that's a client or the audiences using our public tools. It's an old-fashioned approach to distinctly modern needs: while the old industry waits for a savior to rescue it at the last minute, we serve real needs for a fair price.
+Old-school editors want certainty, a smoking gun, a single clear finding. Working with administrative data at the ambitious scale required to understand our world was never going to give them that. Data Elixir readers know what we're talking about. If that mythical certainty ever existed, it's gone now. Rigor, on the other hand, hasn't gone anywhere. What survives is older and simpler: tell the truth, show your work, contend with the margin of error, invite people to prove you wrong.
 
-We're not the next nonprofit newsroom. We're what comes after it.
+Those values didn't vanish, and they're critical in an era of new threats that have allowed misinformation to flourish. We think the path runs through AI, not around it — used by someone who knows the data cold, who can go and see for themselves what that means out in the world, and always with a human at the wheel.
 
 ---
 
-<p class="rf-kicker">Don't have a project? You can still support Recovered Factory</p>
+<h2 class="rf-q">How can a Data Elixir reader's skill set help fight misinformation?</h2>
 
-Some people simply believe public data should stay public, and want to help sustain this kind of work rather than see it chronically overlooked by traditional journalism and civil society funders.
-
-We think you're out there, because we know the type — we *are* the type. You read the methodology. You download the data. You open a notebook and start exploring. Maybe you've given to newsrooms before, not because of a high-minded email guilting you into it, but because you saw open, rigorous, public-interest work and wanted more of it to exist.
-
-Every publication is accountable to someone. We want to be accountable to you, not a foundation named for some Gilded Age industrialist with priorities that will change next year, because we think it's better to answer to the people who use the work and understand its value.
-
-
-_buttons go here_
+More than you'd guess — and not the way the word usually implies. Most errors in the wild aren't lies; they're small, honest mistakes nobody with the full picture was around to catch. The scarce, valuable thing isn't a fact-checking model — it's a person who has actually lived inside a dataset, paired with tools that can read at a scale no person can. That pairing is exactly what the data-literate already have and most of the internet doesn't. Turning it into public, checkable information is the future of journalism we're actually interested in — and the reason this newsletter exists.
 
 ---
 
-<p class="rf-kicker">Our projects (and skills)</p>
+<p class="rf-kicker">Don't take our word for it</p>
 
-Our project's aren't charity, they're proof. Proof you can trust us. Proof you can criticize us. Proof we can build and maintain tools that work. It shows what a demo can't. When we build an MCP server, user privacy is handled from the start, because we've been down this road before. When we ship a feature, we test whether it did what we hoped. We may be new to your problem, but we know exactly what to ask.
+Our projects aren't charity, they're proof. Proof you can trust us. Proof you can criticize us. Proof we can build things that work and keep working. We read the methodology, publish it, and tell you where the data is funky. Download it, open a notebook, and push back — that's the whole idea.
 
 <div class="rf-cards-wrap not-prose relative left-1/2 right-1/2 -mx-[50vw] w-screen">
   <div class="rf-cards">
@@ -107,29 +103,30 @@ Our project's aren't charity, they're proof. Proof you can trust us. Proof you c
       <a class="rf-card__link" href="https://recoveredfactory.net/en">Visit →</a>
     </article>
   </div>
-
-  <div class="rf-before">
-    <h3 class="rf-card__name">Before this</h3>
-    <p class="rf-card__deck">The work we did in past lives</p>
-    <p class="rf-card__craft">TK TK TK</p>
-  </div>
 </div>
 
 ---
 
+<div class="rf-subscribe rf-subscribe--foot not-prose">
+  <p class="rf-subscribe__note">Free · We read every reply · Leave whenever you like</p>
+  <SubscribeForm lang="en" source="data-elixir" id="subscribe-foot" />
+</div>
+
+<p class="rf-fineprint">We still take on commissioned work — pipelines, explorers, MCP servers for public-interest data. <a href="mailto:davideads@recoveredfactory.net?subject=Work%20with%20Recovered%20Factory">Tell us what you need built.</a></p>
+
 <script>
   import BuildRotator from '$lib/components/BuildRotator.svelte';
+  import SubscribeForm from '$lib/components/SubscribeForm.svelte';
 
   // Copy stays in the content file; the component handles the motion.
   const buildItems = [
-    'A pipeline.',
-    'Analysis notebooks.',
-    'An explorer people actually use.',
-    'Data liberated from a PDF.',
-    'An MCP server you can question in plain language.',
-    'An AI agent that surfaces themes from a huge corpus — with a human at the wheel.',
-    'An amazing animated map.',
-    'Software that turns your web content into spectacular images and video.',
+    'Live data, turned into video — automatically.',
+    'A number on your site, turned into an MCP server.',
+    'Data dragged out of decades-old PDFs.',
+    'An animated national map from a scattered dataset.',
+    'A whole pipeline for a few dollars a month.',
+    'Workflows high-level enough to hand to an AI.',
+    'One web page that doubles as a Reel, a GIF, and a poster.',
   ];
 </script>
 
@@ -147,8 +144,7 @@ Our project's aren't charity, they're proof. Proof you can trust us. Proof you c
     margin: 3.5rem 0;
   }
 
-  /* Two-line display headline. Block span turns the second line
-     ("Our expertise is for hire.") with a smidge of space above. */
+  /* Two-line display headline. */
   .rf-headline {
     margin: 0;
     font-family: var(--font-display);
@@ -156,58 +152,67 @@ Our project's aren't charity, they're proof. Proof you can trust us. Proof you c
     font-size: clamp(2.2rem, 6.2vw, 4rem);
     line-height: 1.03;
     letter-spacing: -0.02em;
-    /* color: #444; */
     color: rgb(48 56 75);
-    /* color: rgb(15 23 42); */
     text-wrap: balance;
   }
   .rf-headline b { font-weight: 900;  color: rgb(15 24 42);}
-  .rf-headline__turn { display: block; margin-top: 0.5em; }
+  .rf-headline__turn { display: block; margin-top: 1em; }
 
-  /* Hero strip — a short row of portrait product views. MOBILE
-     ONLY: it reads great on a phone but felt cramped on desktop,
-     so it's hidden there. 4 tiles on mobile, top-cropped so each
-     reads as a little "view."
-     PLACEHOLDER ASSETS: these are the screenshots on hand (mostly
-     desktop captures, top-cropped). Replace with real mobile-width
-     captures of each product for the intended look. */
-  .rf-strip { display: none; }
-  .rf-strip__track {
-    display: flex;
+  /* ── Hero: bleeds wider than the article column. Headline left
+     (always two couplets / four lines, with a paragraph gap), a
+     2×2 grid of square product views right (desktop). Stacks on
+     small screens, headline over the grid. ─────────────────── */
+  .rf-hero { padding: 0 1.5rem; }
+  @media (min-width: 640px) { .rf-hero { padding: 0 2.5rem; } }
+  @media (min-width: 1024px) { .rf-hero { padding: 0 4rem; } }
+  .rf-hero__inner { max-width: 60rem; margin: 0 auto; }
+
+  .rf-heroshots {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 0.6rem;
+    margin: 1.9rem 0 0;
   }
-  .rf-strip__tile {
-    flex: 1 1 0;
-    min-width: 0;
-    height: 165px;
+  .rf-heroshots img {
+    width: 100%;
+    aspect-ratio: 1 / 1;
     object-fit: cover;
     object-position: top center;
-    border: 1px solid rgba(15, 23, 42, 0.14);
+    border: 1px solid rgba(15, 23, 42, 0.16);
     background: #fff;
-    box-shadow: 0 2px 6px rgba(15, 23, 42, 0.1);
+    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
     display: block;
   }
-  @media (max-width: 639px) {
-    .rf-strip { display: block; margin: 0.25rem 0 1.75rem; }
-    .rf-strip__tile:nth-child(n + 5) { display: none; }
+
+  @media (min-width: 860px) {
+    .rf-hero__inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 3rem;
+      align-items: center;
+      padding: 1rem 0 1.5rem;
+    }
+    .rf-hero__inner .rf-headline {
+      font-size: clamp(2.8rem, 4.8vw, 4rem);
+      line-height: 1.05;
+    }
+    .rf-hero__inner .rf-heroshots {
+      margin: 0;
+      width: clamp(15rem, 24vw, 20rem);
+    }
   }
 
-  /* Jump link under the headline */
-  .rf-jump { margin: 0.25rem 0 1.75rem; }
-  .rf-jump a {
-    font-family: "Jost", sans-serif;
-    font-size: 0.82rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: var(--color-fern);
-    text-decoration: none;
+  /* Lede — a serif standfirst under the headline. */
+  .rf-lede {
+    margin: 1.4rem 0 0;
+    font-family: var(--font-display);
+    font-size: clamp(1.15rem, 2.6vw, 1.4rem);
+    line-height: 1.5;
+    color: rgb(48 56 75);
+    text-wrap: pretty;
   }
-  .rf-jump a:hover { text-decoration: underline; text-underline-offset: 5px; }
 
-  /* Section kickers — geometric caps with a Bauhaus left rule.
-     Border-left (not a centered square) so it spans cleanly when
-     the label wraps on narrow screens. */
+  /* Section kickers — geometric caps with a Bauhaus left rule. */
   .rf-kicker {
     margin: 0 0 1.7rem;
     padding: 0.15rem 0 0.15rem 0.95rem;
@@ -220,6 +225,55 @@ Our project's aren't charity, they're proof. Proof you can trust us. Proof you c
     text-transform: uppercase;
     color: rgb(15 23 42);
   }
+
+  /* Section questions — reader-voice headers in the serif display
+     face, carrying the same crimson left rule as the kickers.
+     Two classes beat the route's `.dropcap-prose h2` utilities. */
+  .rf-q {
+    margin: 0 0 1.1rem;
+    padding: 0.1rem 0 0.1rem 0.95rem;
+    border-left: 3px solid var(--color-fern);
+    font-family: var(--font-display);
+    font-size: clamp(1.5rem, 3.6vw, 2.05rem);
+    font-weight: 600;
+    line-height: 1.18;
+    letter-spacing: -0.01em;
+    color: rgb(15 23 42);
+    text-wrap: balance;
+  }
+
+  /* ── Subscribe blocks ─────────────────────────────────── */
+  .rf-subscribe { margin: 2rem 0 0; }
+  .rf-subscribe--foot { margin-top: 0.5rem; }
+  .rf-subscribe__lead {
+    margin: 0 0 1rem;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 1.05rem;
+    line-height: 1.5;
+    color: rgb(51 65 85);
+  }
+  .rf-subscribe__note {
+    margin: 0 0 1rem;
+    font-family: "Jost", sans-serif;
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgb(71 85 105);
+  }
+
+  /* Quiet commercial footnote at the very bottom */
+  .rf-fineprint {
+    margin: 2.75rem 0 0;
+    font-family: var(--font-display);
+    font-style: italic;
+    font-size: 0.95rem;
+    line-height: 1.55;
+    color: rgb(100 116 139);
+  }
+  .rf-fineprint a { color: var(--color-fern); text-decoration: none; }
+  .rf-fineprint a:hover { text-decoration: underline; text-underline-offset: 4px; }
 
   /* ── Project cards: flat plates, generous air, no boxes ── */
   .rf-cards-wrap { padding: 0 1.5rem; }
@@ -296,49 +350,7 @@ Our project's aren't charity, they're proof. Proof you can trust us. Proof you c
   }
   .rf-card__link:hover { text-decoration: underline; text-underline-offset: 5px; }
 
-  /* "Before this" — centered colophon below the project grid.
-     No image to represent it, so words carry it, set apart by a
-     hairline and centered on desktop like an end-note. */
-  .rf-before {
-    max-width: 42rem;
-    margin: 3.25rem auto 0;
-    padding-top: 1.7rem;
-    border-top: 1px solid rgba(15, 23, 42, 0.18);
-  }
-  @media (min-width: 760px) { .rf-before { text-align: center; } }
-  .rf-before .rf-card__name { margin: 0 0 0.5rem; }
-
-  /* ── Work-with-us badge: a printed crimson stamp ──────── */
-  .rf-badge-wrap {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: baseline;
-    gap: 0.6rem 1.1rem;
-    margin: 2.25rem 0 0;
-  }
-  .rf-badge {
-    display: inline-block;
-    padding: 0.85rem 1.4rem;
-    background: var(--color-fern);
-    color: #fff;
-    font-family: "Jost", sans-serif;
-    font-size: 0.86rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    text-decoration: none;
-    transition: background-color 0.18s ease;
-  }
-  .rf-badge:hover { background: #b91540; }
-  .rf-badge-note {
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: 1rem;
-    color: rgb(71 85 105);
-  }
-
   @media (prefers-reduced-motion: reduce) {
     .rf-card__video { display: none; }
-    .rf-badge { transition: none; }
   }
 </style>
