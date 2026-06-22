@@ -39,19 +39,19 @@ lang: "en"
 
 <p class="rf-kicker">What we're asking ourselves</p>
 
+<h2 class="rf-q">How do we get more out of the data we already have?</h2>
+
+By being lazy in the right places. The leverage usually isn't more effort — it's automation, and it hides in assets you already have. A finished dataset can become a server you [interrogate in plain language](https://recoveredfactory.net/en/announcing-missouri-vehicle-stops); a pipeline you tend once keeps working while you sleep. We build the expressive tools for the people who want to go deep, and our [dispatches](https://recoveredfactory.net) hand over the whole workflow so you can rebuild it yourself — or describe it to an AI. Spend the slow hour setting it up once; collect the fast minutes forever.
+
+<h2 class="rf-q">How do we make data more accessible?</h2>
+
+By cutting the same numbers into more front doors. The data behind a deep tool can be re-rendered for everyone else, automatically and on a schedule — a looping map, a short video, a poster you can print. And we build every project in [English and Spanish](https://recoveredfactory.net/es), interface and methodology alike, because accessible has to include the language people actually read. One set of facts; many ways in.
+
 <h2 class="rf-q">What does rigor mean in a stochastic world?</h2>
 
 Old-school journalists wanted certainty, a smoking gun, a single clear finding. Working with administrative data at the ambitious scale required to understand our world was never going to give them that. Data Elixir readers know what we're talking about. If that mythical certainty ever existed, it's gone now. Rigor, on the other hand, hasn't gone anywhere. What survives is older and simpler: tell the truth, show your work, estimate the error, invite people to prove you wrong.
 
 Those values didn't vanish, and they're critical in an era of new threats that have allowed misinformation to flourish. We think the path runs through AI, not around it — used by people deep in the data, who can go and see for themselves what that means out in the world, and always with a human at the wheel.
-
-<h2 class="rf-q">How do I get the most out of my data?</h2>
-
-By being lazy in the right places. The trick to scale usually isn't more effort, it's better automation — turning the assets you already have (a live chart, a map, a number that updates itself) into video, into a tool people can question in plain language, into a pipeline that runs for a few dollars a month. We keep the *how* high-level enough that you can rebuild it with your own tools, or hand the description to an AI and let it do the typing.
-
-<h2 class="rf-q">How can a Data Elixir reader's skill set help fight misinformation?</h2>
-
-More than you'd guess — and not the way the word usually implies. Most errors in the wild aren't lies; they're small, honest mistakes nobody with the full picture was around to catch. The scarce, valuable thing isn't a fact-checking model — it's a person who has actually lived inside a dataset, paired with tools that can read at a scale no person can. That pairing is exactly what the data-literate already have and most of the internet doesn't. Turning it into public, checkable information is the future of journalism we're actually interested in — and the reason this newsletter exists.
 
 ---
 
