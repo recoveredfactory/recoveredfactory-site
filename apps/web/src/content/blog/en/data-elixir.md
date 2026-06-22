@@ -10,16 +10,16 @@ hidePreview: true
 lang: "en"
 ---
 
-<div class="rf-hero not-prose relative left-1/2 right-1/2 -mx-[50vw] w-screen">
+<div class="rf-hero not-prose">
   <div class="rf-hero__inner">
     <h1 class="rf-headline">
-      You fight with<br />data for a living.
-      <span class="rf-headline__turn">So do we…<br />in the open.</span>
+      You fight with data for a living.
+      <span class="rf-headline__turn">So do we… in the open.</span>
     </h1>
   </div>
 </div>
 
-<p class="rf-lede no-drop">We're independent data journalists navigating a world swimming in messy data in the midst of an industry disrupted by AI. We think Data Elixir readers can relate.</p>
+<p class="rf-lede">We're independent data journalists navigating a world swimming in messy data in the midst of an industry disrupted by AI. We think Data Elixir readers can relate.</p>
 
 <p class="rf-lede">That's why we're building open data products and writing dispatches with practical advice and open discussion of our strategy and challenges. We're part of an emerging wave of creators building the future by returning to broader values of transparency and honesty instead of devotion to dying forms and self-congratulatory myths.</p>
 
@@ -130,7 +130,7 @@ Our projects aren't charity, they're proof. Proof you can trust us. Proof you ca
     margin: 0;
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: clamp(2.6rem, 7.5vw, 5.25rem);
+    font-size: clamp(2.4rem, 7vw, 4rem);
     line-height: 1.03;
     letter-spacing: -0.02em;
     color: rgb(48 56 75);
@@ -139,17 +139,16 @@ Our projects aren't charity, they're proof. Proof you can trust us. Proof you ca
   .rf-headline b { font-weight: 900;  color: rgb(15 24 42);}
   .rf-headline__turn { display: block; margin-top: 0.5em; }
 
-  /* ── Hero: a pure typographic statement. Big display headline,
-     two couplets / four lines with a paragraph-beat between them,
-     bleeding wider than the article column. No imagery here — the
-     project cards below carry the visual evidence. ─────────────── */
-  .rf-hero { padding: 0 1.5rem; }
-  @media (min-width: 640px) { .rf-hero { padding: 0 2.5rem; } }
-  @media (min-width: 1024px) { .rf-hero { padding: 0 4rem; } }
-  .rf-hero__inner { max-width: 66rem; margin: 0 auto; }
+  /* ── Hero: a pure typographic statement that lives in the article
+     column (no longer full-bleed), so the headline's left edge lines
+     up with the body copy. Big display headline, two couplets / four
+     lines with a paragraph-beat. The project cards below carry the
+     visual evidence. ─────────────────────────────────────────────── */
+  .rf-hero { padding: 0; margin: 0.25rem 0 2.75rem; }
+  .rf-hero__inner { margin: 0; }
 
   @media (min-width: 860px) {
-    .rf-hero__inner { padding: 1.5rem 0 2rem; }
+    .rf-hero { margin-top: 0.75rem; }
   }
 
   /* Lede — balanced sans-serif intro paragraphs with a clear
