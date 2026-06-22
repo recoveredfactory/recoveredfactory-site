@@ -13,7 +13,7 @@ lang: "en"
 <div class="rf-hero not-prose relative left-1/2 right-1/2 -mx-[50vw] w-screen">
   <div class="rf-hero__inner">
     <h1 class="rf-headline">
-      You fight with<br /><b>data</b> for a living.
+      You fight with<br />data for a living.
       <span class="rf-headline__turn">So do we…<br />in the open.</span>
     </h1>
     <div class="rf-heroshots">
@@ -25,32 +25,29 @@ lang: "en"
   </div>
 </div>
 
-<p class="rf-lede no-drop">We're independent data journalists navigating a world swimming in data that is both useful and funky in the midst of an industry disrupted by AI. We think Data Elixir readers can relate.</p>
+<p class="rf-lede no-drop">We're independent data journalists navigating a world swimming in messy data in the midst of an industry disrupted by AI. We think Data Elixir readers can relate.</p>
 
-That's why we're building open data products and writing dispatches with practical advice and open discussion of our strategy and challenges. We're part of an emerging wave of creators creating the future by returning to older, deeper values of transparency and honesty instead of devotion to dying forms and self-congratulatory myths.
+<p class="rf-lede">That's why we're building open data products and writing dispatches with practical advice and open discussion of our strategy and challenges. We're part of an emerging wave of creators building the future by returning to broader values of transparency and honesty instead of devotion to dying forms and self-congratulatory myths.</p>
 
-This is an invitation to join the conversation that Recovered Factory is part of: We'll share what we're learning through our projects, and we want to learn from you how to make those projects better.
+<p class="rf-lede">Subscribe to join the conversation: We'll share what we're learning through our projects, and we want to learn from you and work with you to make those projects better.</p>
 
 <div class="rf-subscribe not-prose">
-  <p class="rf-subscribe__lead">Dispatches from the edge of data journalism's encounter with AI — free to read, and yours to steal.</p>
   <SubscribeForm lang="en" source="data-elixir" id="subscribe-top" />
 </div>
 
 ---
 
-<p class="rf-kicker">What you'll find</p>
+<p class="rf-kicker">What we're asking ourselves</p>
+
+<h2 class="rf-q">What does rigor mean in a stochastic world?</h2>
+
+Old-school journalists wanted certainty, a smoking gun, a single clear finding. Working with administrative data at the ambitious scale required to understand our world was never going to give them that. Data Elixir readers know what we're talking about. If that mythical certainty ever existed, it's gone now. Rigor, on the other hand, hasn't gone anywhere. What survives is older and simpler: tell the truth, show your work, estimate the error, invite people to prove you wrong.
+
+Those values didn't vanish, and they're critical in an era of new threats that have allowed misinformation to flourish. We think the path runs through AI, not around it — used by people deep in the data, who can go and see for themselves what that means out in the world, and always with a human at the wheel.
 
 <h2 class="rf-q">How do I get the most out of my data?</h2>
 
 By being lazy in the right places. The trick to scale usually isn't more effort, it's better automation — turning the assets you already have (a live chart, a map, a number that updates itself) into video, into a tool people can question in plain language, into a pipeline that runs for a few dollars a month. We keep the *how* high-level enough that you can rebuild it with your own tools, or hand the description to an AI and let it do the typing.
-
-<BuildRotator items={buildItems} />
-
-<h2 class="rf-q">How does rigor survive a world where we can finally admit how funky real-world data is?</h2>
-
-Old-school editors want certainty, a smoking gun, a single clear finding. Working with administrative data at the ambitious scale required to understand our world was never going to give them that. Data Elixir readers know what we're talking about. If that mythical certainty ever existed, it's gone now. Rigor, on the other hand, hasn't gone anywhere. What survives is older and simpler: tell the truth, show your work, contend with the margin of error, invite people to prove you wrong.
-
-Those values didn't vanish, and they're critical in an era of new threats that have allowed misinformation to flourish. We think the path runs through AI, not around it — used by someone who knows the data cold, who can go and see for themselves what that means out in the world, and always with a human at the wheel.
 
 <h2 class="rf-q">How can a Data Elixir reader's skill set help fight misinformation?</h2>
 
@@ -58,7 +55,7 @@ More than you'd guess — and not the way the word usually implies. Most errors 
 
 ---
 
-<p class="rf-kicker">Don't take our word for it</p>
+<p class="rf-kicker">More about our projects</p>
 
 Our projects aren't charity, they're proof. Proof you can trust us. Proof you can criticize us. Proof we can build things that work and keep working. We read the methodology, publish it, and tell you where the data is funky. Download it, open a notebook, and push back — that's the whole idea.
 
@@ -115,19 +112,7 @@ Our projects aren't charity, they're proof. Proof you can trust us. Proof you ca
 <p class="rf-fineprint">We still take on commissioned work — pipelines, explorers, MCP servers for public-interest data. <a href="mailto:davideads@recoveredfactory.net?subject=Work%20with%20Recovered%20Factory">Tell us what you need built.</a></p>
 
 <script>
-  import BuildRotator from '$lib/components/BuildRotator.svelte';
   import SubscribeForm from '$lib/components/SubscribeForm.svelte';
-
-  // Copy stays in the content file; the component handles the motion.
-  const buildItems = [
-    'Live data, turned into video — automatically.',
-    'A number on your site, turned into an MCP server.',
-    'Data dragged out of decades-old PDFs.',
-    'An animated national map from a scattered dataset.',
-    'A whole pipeline for a few dollars a month.',
-    'Workflows high-level enough to hand to an AI.',
-    'One web page that doubles as a Reel, a GIF, and a poster.',
-  ];
 </script>
 
 <style>
@@ -202,12 +187,14 @@ Our projects aren't charity, they're proof. Proof you can trust us. Proof you ca
     }
   }
 
-  /* Lede — a serif standfirst under the headline. */
+  /* Lede — balanced sans-serif intro paragraphs with a clear
+     paragraph break between them (bottom margin beats the prose
+     space-y, so the grafs read as distinct beats). */
   .rf-lede {
-    margin: 1.4rem 0 0;
-    font-family: var(--font-display);
-    font-size: clamp(1.15rem, 2.6vw, 1.4rem);
-    line-height: 1.5;
+    margin: 0 0 1.75rem;
+    font-family: var(--font-body);
+    font-size: 1.15rem;
+    line-height: 1.6;
     color: rgb(48 56 75);
     text-wrap: pretty;
   }
