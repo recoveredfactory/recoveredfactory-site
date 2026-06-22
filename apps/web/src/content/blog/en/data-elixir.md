@@ -16,12 +16,6 @@ lang: "en"
       You fight with<br />data for a living.
       <span class="rf-headline__turn">So do we…<br />in the open.</span>
     </h1>
-    <div class="rf-heroshots">
-      <img src="/images/287g-loop-poster.jpg" alt="The 287(g) national map" />
-      <img src="/images/vsr.recoveredfactory.net_en-stl-scatter.png" alt="A disparity chart from the vehicle-stops data" />
-      <img src="/images/pando_forest_01.jpg" alt="A map layer from the Cali, Colombia project" />
-      <img src="/images/rf_25years_homepage.png" alt="The Recovered Factory homepage" />
-    </div>
   </div>
 </div>
 
@@ -41,11 +35,13 @@ lang: "en"
 
 <h2 class="rf-q">How do we get more out of the data we already have?</h2>
 
-By being lazy in the right places. The leverage usually isn't more effort — it's automation, and it hides in assets you already have. A finished dataset can become a server you [interrogate in plain language](https://recoveredfactory.net/en/announcing-missouri-vehicle-stops); a pipeline you tend once keeps working while you sleep. We build the expressive tools for the people who want to go deep, and our [dispatches](https://recoveredfactory.net) hand over the whole workflow so you can rebuild it yourself — or describe it to an AI. Spend the slow hour setting it up once; collect the fast minutes forever.
+We're empowering people to do more with data. Data journalism is often locked up in rigid articles that can only express so much. We built an MCP that lets you [interrogate data in plain language](https://vsr.recoveredfactory.net/en#mcp). 
+
+We build the [expressive tools like our data MCP](https://vsr.recoveredfactory.net/en#mcp) for the people who want to go deep, and our [dispatches](https://recoveredfactory.net) hand over the whole workflow so you can rebuild these systems in your community, yourself or describe it to an AI.
 
 <h2 class="rf-q">How do we make data more accessible?</h2>
 
-By cutting the same numbers into more front doors. The data behind a deep tool can be re-rendered for everyone else, automatically and on a schedule — a looping map, a short video, a poster you can print. And we build every project in [English and Spanish](https://recoveredfactory.net/es), interface and methodology alike, because accessible has to include the language people actually read. One set of facts; many ways in.
+We're building engines to get more, better information in front of more people. Our projects are [multilingual from the start](https://recoveredfactory.net/en/multilingual-how-and-why). We're use data to build [compelling, free visual assets](https://287g.recoveredfactory.net/en/use-the-map) for social media. 
 
 <h2 class="rf-q">What does rigor mean in a stochastic world?</h2>
 
@@ -134,57 +130,26 @@ Our projects aren't charity, they're proof. Proof you can trust us. Proof you ca
     margin: 0;
     font-family: var(--font-display);
     font-weight: 400;
-    font-size: clamp(2.2rem, 6.2vw, 4rem);
+    font-size: clamp(2.6rem, 7.5vw, 5.25rem);
     line-height: 1.03;
     letter-spacing: -0.02em;
     color: rgb(48 56 75);
     text-wrap: balance;
   }
   .rf-headline b { font-weight: 900;  color: rgb(15 24 42);}
-  .rf-headline__turn { display: block; margin-top: 1em; }
+  .rf-headline__turn { display: block; margin-top: 0.5em; }
 
-  /* ── Hero: bleeds wider than the article column. Headline left
-     (always two couplets / four lines, with a paragraph gap), a
-     2×2 grid of square product views right (desktop). Stacks on
-     small screens, headline over the grid. ─────────────────── */
+  /* ── Hero: a pure typographic statement. Big display headline,
+     two couplets / four lines with a paragraph-beat between them,
+     bleeding wider than the article column. No imagery here — the
+     project cards below carry the visual evidence. ─────────────── */
   .rf-hero { padding: 0 1.5rem; }
   @media (min-width: 640px) { .rf-hero { padding: 0 2.5rem; } }
   @media (min-width: 1024px) { .rf-hero { padding: 0 4rem; } }
   .rf-hero__inner { max-width: 66rem; margin: 0 auto; }
 
-  .rf-heroshots {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.6rem;
-    margin: 1.9rem 0 0;
-  }
-  .rf-heroshots img {
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    object-position: top center;
-    border: 1px solid rgba(15, 23, 42, 0.16);
-    background: #fff;
-    box-shadow: 0 2px 8px rgba(15, 23, 42, 0.12);
-    display: block;
-  }
-
   @media (min-width: 860px) {
-    .rf-hero__inner {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 3rem;
-      align-items: center;
-      padding: 1rem 0 1.5rem;
-    }
-    .rf-hero__inner .rf-headline {
-      font-size: clamp(2.8rem, 4.8vw, 4rem);
-      line-height: 1.05;
-    }
-    .rf-hero__inner .rf-heroshots {
-      margin: 0;
-      width: clamp(16rem, 26vw, 23rem);
-    }
+    .rf-hero__inner { padding: 1.5rem 0 2rem; }
   }
 
   /* Lede — balanced sans-serif intro paragraphs with a clear
