@@ -10,7 +10,7 @@ editors:
 tags:
   - "field-notes"
 lang: "en"
-previewImage: "https://287g.recoveredfactory.net/og/home.png"
+previewImage: "/images/287g-og-home.png"
 ---
 
 <script>
