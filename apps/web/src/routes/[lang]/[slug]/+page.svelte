@@ -188,6 +188,7 @@
         <EntryComponent />
       </div>
 
+      {#if isPost}
       <section class="mt-12 w-full space-y-5">
         <hr class="border-slate-900/10" />
         <p class="text-center text-sm font-semibold uppercase tracking-[0.2em] text-slate-600">
@@ -204,6 +205,7 @@
           source="post"
         />
       </section>
+      {/if}
     </article>
   </main>
 {:else}

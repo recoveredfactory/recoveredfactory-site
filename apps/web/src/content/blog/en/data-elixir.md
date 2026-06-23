@@ -19,93 +19,86 @@ lang: "en"
   </div>
 </div>
 
-<p class="rf-lede">We're independent data journalists navigating a world swimming in messy data in the midst of an industry disrupted by AI. We think Data Elixir readers can relate.</p>
+<p class="rf-lede">We're independent data journalists navigating a world brimming with messy data in the midst of an industry disrupted by AI. We think Data Elixir readers can relate.</p>
 
-<p class="rf-lede">That's why we're building open data products and writing dispatches with practical advice and open discussion of our strategy and challenges. We're part of an emerging wave of creators building the future by returning to broader values of transparency and honesty instead of devotion to dying forms and self-congratulatory myths.</p>
+<p class="rf-lede">That's why we're building open data products and writing dispatches with practical advice and discussion of our strategy and challenges. We're part of a wave of creators building the future by embracing old-school values like transparency and utility instead of fossilized, self-congratulatory myths.</p>
 
-<p class="rf-lede">Subscribe to join the conversation: We'll share what we're learning through our projects, and we want to learn from you and work with you to make those projects better.</p>
+<p class="rf-lede">Subscribe and join the conversation: We'll share what we're learning through our projects, and we want to learn from you to make those projects better.</p>
 
 <div class="rf-subscribe not-prose">
-  <SubscribeForm lang="en" source="data-elixir" id="subscribe-top" />
+  <SubscribeForm
+    buttonClass="bg-fern-strong px-5 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
+    id="subscribe-top"
+    inputClass="w-full border border-slate-900/15 bg-white/90 px-5 py-4 text-lg text-slate-800 placeholder:text-slate-400 shadow-sm sm:max-w-[28rem] sm:flex-none"
+    lang="en"
+    source="data-elixir"
+  />
 </div>
 
 ---
 
-<p class="rf-kicker">What we're asking ourselves</p>
-
-<h2 class="rf-q">How do we get more out of the data we already have?</h2>
-
-We're empowering people to do more with data. Data journalism is often locked up in rigid articles that can only express so much. We built an MCP that lets you [interrogate data in plain language](https://vsr.recoveredfactory.net/en#mcp). 
-
-We build the [expressive tools like our data MCP](https://vsr.recoveredfactory.net/en#mcp) for the people who want to go deep, and our [dispatches](https://recoveredfactory.net) hand over the whole workflow so you can rebuild these systems in your community, yourself or describe it to an AI.
-
-<h2 class="rf-q">How do we make data more accessible?</h2>
-
-We're building engines to get more, better information in front of more people. Our projects are [multilingual from the start](https://recoveredfactory.net/en/multilingual-how-and-why). We're use data to build [compelling, free visual assets](https://287g.recoveredfactory.net/en/use-the-map) for social media. 
-
-<h2 class="rf-q">What does rigor mean in a stochastic world?</h2>
-
-Old-school journalists wanted certainty, a smoking gun, a single clear finding. Working with administrative data at the ambitious scale required to understand our world was never going to give them that. Data Elixir readers know what we're talking about. If that mythical certainty ever existed, it's gone now. Rigor, on the other hand, hasn't gone anywhere. What survives is older and simpler: tell the truth, show your work, estimate the error, invite people to prove you wrong.
-
-Those values didn't vanish, and they're critical in an era of new threats that have allowed misinformation to flourish. We think the path runs through AI, not around it — used by people deep in the data, who can go and see for themselves what that means out in the world, and always with a human at the wheel.
-
----
-
-<p class="rf-kicker">More about our projects</p>
-
-Our projects aren't charity, they're proof. Proof you can trust us. Proof you can criticize us. Proof we can build things that work and keep working. We read the methodology, publish it, and tell you where the data is funky. Download it, open a notebook, and push back — that's the whole idea.
-
-<div class="rf-cards-wrap not-prose relative left-1/2 right-1/2 -mx-[50vw] w-screen">
-  <div class="rf-cards">
-    <article class="rf-card">
-      <a class="rf-card__media" href="https://recoveredfactory.net/en/announcing-287g-explorer">
-        <img class="rf-card__poster" src="/images/287g-loop-poster.jpg" alt="" />
-        <video class="rf-card__video" autoplay muted loop playsinline poster="/images/287g-loop-poster.jpg">
-          <source src="/videos/287g-loop.mp4" type="video/mp4" />
-        </video>
+<div class="rf-strip-wrap not-prose relative left-1/2 right-1/2 -mx-[50vw] w-screen">
+  <div class="rf-strip">
+    <article class="rf-strip__item">
+      <a class="rf-strip__media" href="https://recoveredfactory.net/en/announcing-287g-explorer">
+        <img src="/images/287g-tx.png" alt="The 287(g) explorer on a phone, showing Texas" />
       </a>
-      <h3 class="rf-card__name"><a href="https://recoveredfactory.net/en/announcing-287g-explorer">287(g) Watch</a></h3>
-      <p class="rf-card__deck">A living national map of which sheriffs deputized themselves for federal immigration enforcement. English and Spanish.</p>
-      <p class="rf-card__craft">We use Sveltekit to power the site and generate video and still assets under a Creative Commons license to embed, broadcast, and print. We tapped an active but scattered ecosystem and gave it the sweeping national view it was missing. MCP capabilities, including the ability to generate public-records requests for any agency, are coming soon.</p>
-      <a class="rf-card__link" href="https://recoveredfactory.net/en/announcing-287g-explorer">Explore →</a>
+      <h3 class="rf-strip__name">287(g) Watch</h3>
+      <p class="rf-strip__blurb">A living national map of 287(g) agreements, with <a href="https://287g.recoveredfactory.net/en/use-the-map">auto-built assets</a>, <a href="https://287g.recoveredfactory.net/en">state pages</a>, and <a href="https://287g.recoveredfactory.net/en">local lookup</a>.</p>
     </article>
-    <article class="rf-card">
-      <a class="rf-card__media" href="https://recoveredfactory.net/en/announcing-missouri-vehicle-stops">
-        <img class="rf-card__img" src="/images/vsr.recoveredfactory.net_en-stl-scatter.png" alt="A disparity chart pulled straight from the Missouri Vehicle Stops data" />
+
+    <article class="rf-strip__item">
+      <a class="rf-strip__media" href="https://recoveredfactory.net/en/announcing-missouri-vehicle-stops">
+        <img src="/images/vsr-searches.png" alt="The Missouri Vehicle Stops explorer on a phone" />
       </a>
-      <h3 class="rf-card__name"><a href="https://recoveredfactory.net/en/announcing-missouri-vehicle-stops">Missouri Vehicle Stops</a></h3>
-      <p class="rf-card__deck">Twenty-five years of who Missouri police pulled over, by agency and by race — drawn out of state reports that bury one important facet of daily life.</p>
-      <p class="rf-card__craft">We built a Dagster pipeline to extract and enrich the numbers from PDFs, test the output, and produce usable data; a custom SvelteKit front end to explore it; and an MCP server to query it in plain language through ChatGPT and Claude.</p>
-      <a class="rf-card__link" href="https://recoveredfactory.net/en/announcing-missouri-vehicle-stops">Explore →</a>
+      <h3 class="rf-strip__name">Missouri Vehicle Stops</h3>
+      <p class="rf-strip__blurb">Twenty-five years of who got pulled over — <a href="https://vsr.recoveredfactory.net/en#mcp">query it in plain language</a> or read the <a href="https://recoveredfactory.net/en/announcing-missouri-vehicle-stops">2025 analysis</a>.</p>
     </article>
-    <article class="rf-card">
-      <span class="rf-card__media">
-        <img class="rf-card__img" src="/images/pando_forest_01.jpg" alt="A lush single map layer — a census of trees" />
+
+    <article class="rf-strip__item">
+      <span class="rf-strip__media">
+        <img src="/images/cali-maps-strata.png" alt="The Cali, Colombia map on a phone, showing elevation strata" />
       </span>
-      <h3 class="rf-card__name">Mapping Cali, Colombia</h3>
-      <p class="rf-card__deck">354 map layers — including 3D elevation — built as a multilingual tool to teach a primarily Spanish-speaking audience what the modern geospatial stack can do.</p>
-      <p class="rf-card__craft">We freed the layers off an aging MapServer with an exotic projection, modernized them to MapLibre and PMTiles, made them searchable, and tracked down the data dictionary — well, some of it. Infrastructure costs only a few dollars a month. We're fluent in this stack end to end, from geocoding exceptionally messy addresses to animating thousands of points.</p>
+      <h3 class="rf-strip__name">Mapas Cali</h3>
+      <p class="rf-strip__blurb">354 map layers of Cali, Colombia, including a <a href="https://recoveredfactory.net/en">fancy digital-elevation bake</a>.</p>
     </article>
-    <article class="rf-card">
-      <a class="rf-card__media" href="https://recoveredfactory.net/en">
-        <img class="rf-card__img" src="/images/rf_25years_homepage.png" alt="The Recovered Factory homepage" />
+
+    <article class="rf-strip__item">
+      <a class="rf-strip__media" href="https://recoveredfactory.net/en">
+        <img src="/images/rf-suku.png" alt="Recovered Factory on a phone" />
       </a>
-      <h3 class="rf-card__name"><a href="https://recoveredfactory.net/en">Recovered Factory</a></h3>
-      <p class="rf-card__deck">This site itself — the publication and open archive that ties the projects together, free to read and download.</p>
-      <p class="rf-card__craft">A fully bilingual SvelteKit site we designed, built, and run ourselves for a few dollars a month. Every project here lives here. Subscribe and you'll see the next one the day it ships.</p>
-      <a class="rf-card__link" href="https://recoveredfactory.net/en">Visit →</a>
+      <h3 class="rf-strip__name">Recovered Factory</h3>
+      <p class="rf-strip__blurb">Our home and open archive — and <a href="#subscribe-foot">the newsletter</a> you're looking at.</p>
     </article>
+
   </div>
 </div>
 
 ---
 
-<div class="rf-subscribe rf-subscribe--foot not-prose">
-  <p class="rf-subscribe__note">Free · We read every reply · Leave whenever you like</p>
-  <SubscribeForm lang="en" source="data-elixir" id="subscribe-foot" />
-</div>
+<p class="rf-kicker">Questions we're asking</p>
 
-<p class="rf-fineprint">We still take on commissioned work — pipelines, explorers, MCP servers for public-interest data. <a href="mailto:davideads@recoveredfactory.net?subject=Work%20with%20Recovered%20Factory">Tell us what you need built.</a></p>
+<h2 class="rf-q">How do we get more out of the stuff we're already building?</h2>
+
+We're empowering people to do more with data. Data journalism is often locked up in rigid articles that can only express so much of much bigger and complex topics.
+
+That's why we build [expressive tools like our Missouri Vehicle Stops MCP](https://vsr.recoveredfactory.net/en#mcp) for the people who want to go deep. We're using data to build [compelling, free visual assets](https://287g.recoveredfactory.net/en/use-the-map) for social media. 
+
+And our [dispatches](https://recoveredfactory.net) describe practices like our sustainable [system for internationalization](https://recoveredfactory.net/en/multilingual-how-and-why) so you can reproduce the parts that are helpful.
+
+<h2 class="rf-q">What does rigor mean in a stochastic world?</h2>
+
+Old-school journalists wanted certainty, a smoking gun, a single clear finding. Working with administrative data at the ambitious scale required to understand our world was never going to give them that. Data Elixir readers know what we're talking about. 
+
+If that mythical certainty ever existed, it's gone now. Rigor, on the other hand, hasn't gone anywhere. 
+
+Modern data tools let us affirm old values of the craft in a very different world: Show your work, check it, estimate the error, invite the public to kick the tires or contribute improvements, describe what you're seeing plainly and honestly. Those values didn't vanish and they're critical in an era where misinformation has flourished. 
+
+We think the path runs through AI, not around it. When used by people who go and see for themselves what that means out in the world and who use it to hold power to account, it can play a role in positive impact. 
+
+---
+
+<p class="rf-fineprint">We're open to contract work — pipelines, explorers, maps, site translation, charts, MCP servers, and agents for public-interest data. <a href="mailto:davideads@recoveredfactory.net?subject=Work%20with%20Recovered%20Factory">Tell us what you need built.</a></p>
 
 <script>
   import SubscribeForm from '$lib/components/SubscribeForm.svelte';
@@ -166,8 +159,7 @@ Our projects aren't charity, they're proof. Proof you can trust us. Proof you ca
   /* Section kickers — geometric caps with a Bauhaus left rule. */
   .rf-kicker {
     margin: 0 0 1.7rem;
-    padding: 0.15rem 0 0.15rem 0.95rem;
-    border-left: 3px solid var(--color-fern);
+    padding: 0;
     font-family: "Jost", sans-serif;
     font-size: 0.98rem;
     font-weight: 600;
@@ -219,89 +211,90 @@ Our projects aren't charity, they're proof. Proof you can trust us. Proof you ca
     margin: 2.75rem 0 0;
     font-family: var(--font-display);
     font-style: italic;
-    font-size: 0.95rem;
-    line-height: 1.55;
-    color: rgb(100 116 139);
   }
   .rf-fineprint a { color: var(--color-fern); text-decoration: none; }
   .rf-fineprint a:hover { text-decoration: underline; text-underline-offset: 4px; }
 
-  /* ── Project cards: flat plates, generous air, no boxes ── */
-  .rf-cards-wrap { padding: 0 1.5rem; }
-  @media (min-width: 640px) { .rf-cards-wrap { padding: 0 2.5rem; } }
-  @media (min-width: 1024px) { .rf-cards-wrap { padding: 0 4rem; } }
-  .rf-cards {
-    max-width: 70rem;
-    margin: 0 auto;
-    display: grid;
-    gap: 3rem 3.5rem;
+  /* ── Project strip: a compact filmstrip of real phone screenshots in
+     a subtle phone-ish frame (rounded, hairline), cropped to 9/16 so
+     only the bottom is trimmed. Mobile scroll-snaps horizontally;
+     desktop lays them out 4-up with generous gaps. One-sentence blurb
+     with inline links per project. ────────────────────────────────── */
+  .rf-strip-wrap { padding: 0; }
+  .rf-strip {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    padding: 0 1.5rem 0.75rem;
+    scroll-padding-left: 1.5rem;
   }
-  @media (min-width: 760px) {
-    .rf-cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  @media (min-width: 640px) {
+    .rf-strip {
+      padding-left: 2.5rem;
+      padding-right: 2.5rem;
+      scroll-padding-left: 2.5rem;
+    }
   }
-  .rf-card { display: flex; flex-direction: column; }
+  .rf-strip__item {
+    flex: 0 0 62%;
+    max-width: 12.5rem;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+  }
 
-  .rf-card__media {
-    position: relative;
-    display: block;
-    aspect-ratio: 3 / 2;
-    overflow: hidden;
-    border: 1px solid rgba(15, 23, 42, 0.18);
-    background: #efece2;
-    margin-bottom: 1.4rem;
+  @media (min-width: 860px) {
+    .rf-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 2.5rem;
+      max-width: 62rem;
+      margin: 0 auto;
+      overflow: visible;
+      padding: 0 2.5rem;
+    }
+    .rf-strip__item { flex: none; max-width: none; }
   }
-  .rf-card__media img,
-  .rf-card__media video {
-    position: absolute;
-    inset: 0;
+
+  .rf-strip__media {
+    display: block;
+    aspect-ratio: 9 / 16; /* phone-ish; trims only the bottom of the shot */
+    overflow: hidden;
+    border: 1px solid rgba(15, 23, 42, 0.22);
+    border-radius: 0.9rem;
+    background: #efece2;
+    margin-bottom: 0.9rem;
+  }
+  .rf-strip__media img {
     width: 100%;
     height: 100%;
     object-fit: cover;
+    object-position: top center;
     display: block;
   }
-  .rf-card__poster { z-index: 0; }
-  .rf-card__video { z-index: 1; }
 
-  .rf-card__name {
-    margin: 0 0 0.5rem;
+  .rf-strip__name {
+    margin: 0 0 0.4rem;
     font-family: var(--font-display);
-    font-size: 1.7rem;
+    font-size: 1.18rem;
     font-weight: 600;
-    line-height: 1.1;
+    line-height: 1.15;
     letter-spacing: -0.01em;
     color: rgb(15 23 42);
   }
-  .rf-card__name a { color: inherit; text-decoration: none; }
-  .rf-card__name a:hover { color: var(--color-fern); }
-
-  .rf-card__deck {
-    margin: 0 0 0.9rem;
-    font-family: var(--font-display);
-    font-style: italic;
-    font-size: 1.08rem;
-    line-height: 1.45;
-    color: rgb(51 65 85);
-  }
-  .rf-card__craft {
+  .rf-strip__blurb {
     margin: 0;
     font-family: var(--font-body);
     font-size: 0.92rem;
-    line-height: 1.6;
+    line-height: 1.5;
     color: rgb(71 85 105);
   }
-  .rf-card__link {
-    margin-top: 1rem;
-    font-family: "Jost", sans-serif;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
+  .rf-strip__blurb a {
     color: var(--color-fern);
+    font-weight: 600;
     text-decoration: none;
   }
-  .rf-card__link:hover { text-decoration: underline; text-underline-offset: 5px; }
-
-  @media (prefers-reduced-motion: reduce) {
-    .rf-card__video { display: none; }
-  }
+  .rf-strip__blurb a:hover { text-decoration: underline; text-underline-offset: 3px; }
 </style>
