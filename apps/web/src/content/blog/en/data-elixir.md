@@ -64,7 +64,7 @@ lang: "en"
 
 
     <article class="rf-strip__item">
-      <a class="rf-strip__media" target="_blank" rel="noopener noreferrer" href="https://recoveredfactory.net/en">
+      <a class="rf-strip__media" target="_blank" rel="noopener noreferrer" href="https://recoveredfactory.net/en/introducing-recovered-factory">
         <img src="/images/rf-suku.png" alt="Recovered Factory on a phone" />
       </a>
       <h3 class="rf-strip__name">Recovered Factory</h3>
@@ -86,15 +86,15 @@ That's why we build <a target="_blank" rel="noopener noreferrer" href="https://v
 
 And our <a target="_blank" rel="noopener noreferrer" href="https://recoveredfactory.net">dispatches</a> describe practices like our sustainable <a target="_blank" rel="noopener noreferrer" href="https://recoveredfactory.net/en/multilingual-how-and-why">system for internationalization</a> so you can reproduce the parts that are helpful.
 
-<h2 class="rf-q">What does rigor mean in a stochastic world?</h2>
+<h2 class="rf-q">What does rigor mean in a world full of noise?</h2>
 
-Old-school journalists wanted certainty, a smoking gun, a single clear finding. Working with administrative data at the ambitious scale required to understand our world was never going to give them that. Data Elixir readers know what we're talking about. 
+Old-school journalists wanted certainty: a smoking gun, a single clean finding. Administrative data, at the scale it takes to understand the world, was never going to give them that. The signal was always buried in noise. 
 
-If that mythical certainty ever existed, it's gone now. Rigor, on the other hand, hasn't gone anywhere. 
+If that certainty ever existed, it's gone. Rigor hasn't gone anywhere. 
 
-Modern data tools let us affirm old values of the craft in a very different world: Show your work, check it, estimate the error, invite the public to kick the tires or contribute improvements, describe what you're seeing plainly and honestly. Those values didn't vanish and they're critical in an era where misinformation has flourished. 
+The values hold even as the tools change: show your work, check it, estimate the error, let the public test or improve it, say what you see plainly and honestly. None of that vanished — and in an age of misinformation, it matters more. 
 
-We think the path runs through AI, not around it. When used by people who go and see for themselves what that means out in the world and who use it to hold power to account, it can play a role in positive impact. 
+The path runs through AI, not around it: in the hands of people who go see for themselves, and who use it to hold power to account. That's still how you tell signal from noise. 
 
 ---
 
