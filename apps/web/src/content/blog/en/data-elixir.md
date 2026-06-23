@@ -40,35 +40,35 @@ lang: "en"
 <div class="rf-strip-wrap not-prose relative left-1/2 right-1/2 -mx-[50vw] w-screen">
   <div class="rf-strip">
     <article class="rf-strip__item">
-      <a class="rf-strip__media" href="https://recoveredfactory.net/en/announcing-287g-explorer">
+      <a class="rf-strip__media" target="_blank" rel="noopener noreferrer" href="https://recoveredfactory.net/en/announcing-287g-explorer">
         <img src="/images/287g-tx.png" alt="The 287(g) explorer on a phone, showing Texas" />
       </a>
       <h3 class="rf-strip__name">287(g) Watch</h3>
-      <p class="rf-strip__blurb">A living national map of 287(g) agreements, with <a href="https://287g.recoveredfactory.net/en/use-the-map">auto-built assets</a>, <a href="https://287g.recoveredfactory.net/en">state pages</a>, and <a href="https://287g.recoveredfactory.net/en">local lookup</a>.</p>
+      <p class="rf-strip__blurb">A living map and explainers about 287(g) agreements, with <a target="_blank" rel="noopener noreferrer" href="https://287g.recoveredfactory.net/en/use-the-map">auto-generated, multilingual assets</a> along with detailed <a target="_blank" rel="noopener noreferrer" href="https://287g.recoveredfactory.net/en">state</a> and agency profiles.</p>
     </article>
-
     <article class="rf-strip__item">
-      <a class="rf-strip__media" href="https://recoveredfactory.net/en/announcing-missouri-vehicle-stops">
+      <a class="rf-strip__media" target="_blank" rel="noopener noreferrer" href="https://cali.recoveredfactory.net">
+        <img src="/images/cali-maps-strata.png" alt="The Cali, Colombia map on a phone, showing elevation strata" />
+      </a>
+      <h3 class="rf-strip__name">Mapas Cali</h3>
+      <p class="rf-strip__blurb">354 map layers of Cali, Colombia, freed from a forgotten server. From <a target="_blank" rel="noopener noreferrer" href="https://cali.recoveredfactory.net/#l=idesc__mc_comunas~w.0.8&d=1&v=10.05/3.46513/-76.56500">beautiful relief map</a> to a <a target="_blank" rel="noopener noreferrer" href="https://cali.recoveredfactory.net/#l=dagma__obs_arb_densidad_arborea~c.texto&d=1&v=11.51/3.42131/-76.52907">census of trees</a>.</p>
+    </article>
+    <article class="rf-strip__item">
+      <a class="rf-strip__media" target="_blank" rel="noopener noreferrer" href="https://recoveredfactory.net/en/announcing-missouri-vehicle-stops">
         <img src="/images/vsr-searches.png" alt="The Missouri Vehicle Stops explorer on a phone" />
       </a>
       <h3 class="rf-strip__name">Missouri Vehicle Stops</h3>
-      <p class="rf-strip__blurb">Twenty-five years of who got pulled over — <a href="https://vsr.recoveredfactory.net/en#mcp">query it in plain language</a> or read the <a href="https://recoveredfactory.net/en/announcing-missouri-vehicle-stops">2025 analysis</a>.</p>
+      <p class="rf-strip__blurb">Twenty-six years of data about the most common way people interact with police. <a target="_blank" rel="noopener noreferrer" href="https://vsr.recoveredfactory.net/en#mcp">Chat about the data</a> or read the <a target="_blank" rel="noopener noreferrer" href="https://vsr.recoveredfactory.net/en/analysis/first-impressions-2025">latest analysis</a>.</p>
     </article>
 
-    <article class="rf-strip__item">
-      <span class="rf-strip__media">
-        <img src="/images/cali-maps-strata.png" alt="The Cali, Colombia map on a phone, showing elevation strata" />
-      </span>
-      <h3 class="rf-strip__name">Mapas Cali</h3>
-      <p class="rf-strip__blurb">354 map layers of Cali, Colombia, including a <a href="https://recoveredfactory.net/en">fancy digital-elevation bake</a>.</p>
-    </article>
+
 
     <article class="rf-strip__item">
-      <a class="rf-strip__media" href="https://recoveredfactory.net/en">
+      <a class="rf-strip__media" target="_blank" rel="noopener noreferrer" href="https://recoveredfactory.net/en">
         <img src="/images/rf-suku.png" alt="Recovered Factory on a phone" />
       </a>
       <h3 class="rf-strip__name">Recovered Factory</h3>
-      <p class="rf-strip__blurb">Our home and open archive — and <a href="#subscribe-foot">the newsletter</a> you're looking at.</p>
+      <p class="rf-strip__blurb">You're looking at it. We hired a <a target="_blank" rel="noopener noreferrer" href="https://recoveredfactory.net/en/about-suku-muralist-artist">local street artist</a> to make our logo. We're named for Argentina's "<a target="_blank" rel="noopener noreferrer" href="https://www.theguardian.com/sustainable-business/argentina-recovered-factory-movement">recovered factory</a>" movement.</p>
     </article>
 
   </div>
@@ -82,9 +82,9 @@ lang: "en"
 
 We're empowering people to do more with data. Data journalism is often locked up in rigid articles that can only express so much of much bigger and complex topics.
 
-That's why we build [expressive tools like our Missouri Vehicle Stops MCP](https://vsr.recoveredfactory.net/en#mcp) for the people who want to go deep. We're using data to build [compelling, free visual assets](https://287g.recoveredfactory.net/en/use-the-map) for social media. 
+That's why we build <a target="_blank" rel="noopener noreferrer" href="https://vsr.recoveredfactory.net/en#mcp">expressive tools like our Missouri Vehicle Stops MCP</a> for the people who want to go deep. We're using data to build <a target="_blank" rel="noopener noreferrer" href="https://287g.recoveredfactory.net/en/use-the-map">compelling, free visual assets</a> for social media. 
 
-And our [dispatches](https://recoveredfactory.net) describe practices like our sustainable [system for internationalization](https://recoveredfactory.net/en/multilingual-how-and-why) so you can reproduce the parts that are helpful.
+And our <a target="_blank" rel="noopener noreferrer" href="https://recoveredfactory.net">dispatches</a> describe practices like our sustainable <a target="_blank" rel="noopener noreferrer" href="https://recoveredfactory.net/en/multilingual-how-and-why">system for internationalization</a> so you can reproduce the parts that are helpful.
 
 <h2 class="rf-q">What does rigor mean in a stochastic world?</h2>
 
@@ -250,7 +250,7 @@ We think the path runs through AI, not around it. When used by people who go and
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 2.5rem;
-      max-width: 62rem;
+      max-width: 65rem;
       margin: 0 auto;
       overflow: visible;
       padding: 0 2.5rem;
