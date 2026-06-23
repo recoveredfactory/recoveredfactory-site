@@ -54,7 +54,7 @@ lang: "en"
       <p class="rf-strip__blurb">354 map layers of Cali, Colombia, freed from a forgotten server. From <a target="_blank" rel="noopener noreferrer" href="https://cali.recoveredfactory.net/#l=idesc__mc_comunas~w.0.8&d=1&v=10.05/3.46513/-76.56500">beautiful relief map</a> to a <a target="_blank" rel="noopener noreferrer" href="https://cali.recoveredfactory.net/#l=dagma__obs_arb_densidad_arborea~c.texto&d=1&v=11.51/3.42131/-76.52907">census of trees</a>.</p>
     </article>
     <article class="rf-strip__item">
-      <a class="rf-strip__media" target="_blank" rel="noopener noreferrer" href="https://recoveredfactory.net/en/announcing-missouri-vehicle-stops">
+      <a class="rf-strip__media" target="_blank" rel="noopener noreferrer" href="https://vsr.recoveredfactory.net">
         <img src="/images/vsr-searches.png" alt="The Missouri Vehicle Stops explorer on a phone" />
       </a>
       <h3 class="rf-strip__name">Missouri Vehicle Stops</h3>
