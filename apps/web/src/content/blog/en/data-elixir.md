@@ -64,11 +64,11 @@ lang: "en"
 
 
     <article class="rf-strip__item">
-      <a class="rf-strip__media" target="_blank" rel="noopener noreferrer" href="https://recoveredfactory.net/en/introducing-recovered-factory">
+      <a class="rf-strip__media" target="_blank" rel="noopener noreferrer" href="https://recoveredfactory.net/en">
         <img src="/images/rf-suku.png" alt="Recovered Factory on a phone" />
       </a>
       <h3 class="rf-strip__name">Recovered Factory</h3>
-      <p class="rf-strip__blurb">You're looking at it. We hired a <a target="_blank" rel="noopener noreferrer" href="https://recoveredfactory.net/en/about-suku-muralist-artist">local street artist</a> to make our logo. We're named for Argentina's "<a target="_blank" rel="noopener noreferrer" href="https://www.theguardian.com/sustainable-business/argentina-recovered-factory-movement">recovered factory</a>" movement.</p>
+      <p class="rf-strip__blurb">You're looking at it. We hired a <a target="_blank" rel="noopener noreferrer" href="https://recoveredfactory.net/en/about-suku-muralist-artist">local street artist</a> to make our logo. We're named for Argentina's "<a target="_blank" rel="noopener noreferrer" href="https://recoveredfactory.net/en/introducing-recovered-factory">recovered factory</a>" movement.</p>
     </article>
 
   </div>
