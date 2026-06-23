@@ -40,7 +40,7 @@ lang: "en"
 <div class="rf-strip-wrap not-prose relative left-1/2 right-1/2 -mx-[50vw] w-screen">
   <div class="rf-strip">
     <article class="rf-strip__item">
-      <a class="rf-strip__media" target="_blank" rel="noopener noreferrer" href="https://recoveredfactory.net/en/announcing-287g-explorer">
+      <a class="rf-strip__media" target="_blank" rel="noopener noreferrer" href="https://287g.recoveredfactory.net">
         <img src="/images/287g-tx.png" alt="The 287(g) explorer on a phone, showing Texas" />
       </a>
       <h3 class="rf-strip__name">287(g) Watch</h3>
