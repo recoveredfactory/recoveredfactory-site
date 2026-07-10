@@ -39,7 +39,7 @@ I might not have a knack for audio or video, but I am decently good at engineeri
   />
 </div>
 
-That forms the core of a fundamental shortcut we’re using to generate social video: A web-driven “asset bakery.” The asset bakery, data pipeline, and frontend for this project are [open source](https://github.com/recoveredfactory/287g-explorer/) if you want to go deeper..
+That forms the core of a fundamental shortcut we’re using to generate social video: A web-driven “asset bakery.” The asset bakery, data pipeline, and frontend for this project are [open source](https://github.com/recoveredfactory/287g-explorer/) if you want to go deeper.
 
 ## The trick: the video is a web page
 
@@ -93,11 +93,11 @@ All of this is wired into our automated data pipeline, which runs as a scheduled
 
 If fresh data lands, the job rebuilds and redeploys the site, bakes all four cuts — square and vertical aspect ratios, English and Spanish — and publishes them to our CloudFront CDN, so the public download page always offers the latest cut in each language we support.
 
-The final step is automated upload of [draft posts to YouTube](https://github.com/recoveredfactory/287g-explorer/blob/main/packages/web/scripts/publish-social-youtube.mjs), a [notification to publish](https://github.com/recoveredfactory/287g-explorer/blob/main/packages/web/scripts/notify-social-ready.mjs) to Instagram, and soon TikTok integration as well. In the case of YouTube, we use the platform’s official API and create an unpublished draft video.
+The final step is automated upload of [draft posts to YouTube](https://github.com/recoveredfactory/287g-explorer/blob/main/packages/web/scripts/publish-social-youtube.mjs), a [notification to publish](https://github.com/recoveredfactory/287g-explorer/blob/main/packages/web/scripts/notify-social-ready.mjs) to Instagram, and soon TikTok integration as well.
 
 We’re not categorically opposed to full automation, but for this project we wanted to draw a deliberate line: We want human involvement, editorial control over headlines and captions, and final review of every video that goes out. We know even the best systems can get fouled by bad input data or generate the wrong thing. We’d rather use our judgement every few days about how best to publish and characterize these videos than blindly publishing.
 
-Unfortunately, Instagram only supports posting straight-to-public via their API. And so in both cases, every time there’s new data, we generate a draft on YouTube and send an email alert that it’s time to check the draft post and manually create an Instagram post.
+In the case of YouTube, we use the platform’s official API and create an unpublished draft video. Unfortunately, Instagram only supports posting straight-to-public via their API. And so in both cases, every time there’s new data, we generate a draft on YouTube and send an email alert that it’s time to check the draft post and manually create an Instagram post.
 
 ## Social video that’s just a web page
 
@@ -111,8 +111,8 @@ It’s part of our overarching strategy of chasing mainstream platforms with hig
 
 ## We like taking shortcuts
 
-Shortcuts get a bad rap. In the sense we’re talking about cheating, that’s bad. Cheating is bad. But if you’re in search of excellence and not cheating or exploiting someone, what’s wrong with shortcuts if they mean you can go further and be less depleted?
+Shortcuts get a bad rap. In the sense we’re talking about cheating, that’s bad. Cheating is bad. But if you’re in search of excellence and not cheating, what’s wrong with shortcuts if they mean you can go further and be less depleted?
 
-It’s a mistake in many instances to conflate *work* with *worth*. I could force myself to do something I vaguely dread with some significant opportunity costs and pat myself on the back for being so courageous and noble to use a new medium. If that’s the nobility we value, you can count me out, because I would much rather write a GitHub Action that leverages resources that already exist so that I only need to think about making videos when I want to or the situation truly calls for it.
+It’s usually a mistake to conflate *work* with *worth*. I could force myself to do something I vaguely dread with some significant opportunity costs and pat myself on the back for being so courageous and noble to use a new medium. If that’s the nobility we value, you can count me out, because I would much rather write a GitHub Action that leverages resources that already exist so that I only need to think about making videos when I want to or the situation truly calls for it.
 
 So, next time: Take the shortcut so that you can wind up somewhere more interesting.
