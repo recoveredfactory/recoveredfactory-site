@@ -138,6 +138,7 @@
 .dropcap-prose > p:first-of-type:not(.no-drop)::first-letter,
 .dropcap-prose > .section-break:not(.no-drop) + p:not(.no-drop)::first-letter {
   font-family: var(--font-display);
+  font-style: normal;
   font-weight: 500;
   color: rgb(51 65 85);
   float: left;
