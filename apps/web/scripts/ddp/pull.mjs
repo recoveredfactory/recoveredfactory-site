@@ -1,10 +1,14 @@
 #!/usr/bin/env node
 // Pull the DDP drop (EN/ES post + chart data) from the PromptQL automation:
-// writes mdsvex posts into src/content/blog/{en,es} and the chart data JSON
-// into src/lib/data/ddp-chart-data.json (the chart components import it).
+// writes mdsvex posts into src/content/blog/{en,es}, the chart data JSON
+// into src/lib/data/ddp-chart-data.json (the chart components import it),
+// and foldout artifacts (numbers ledger, DHS response, …) into
+// src/lib/content/ (appended to both posts as <Foldout> disclosures).
 //
-// Usage: node scripts/ddp/pull.mjs [--raw-only]   (from apps/web)
+// Usage: node scripts/ddp/pull.mjs [--raw-only] [--offline]   (from apps/web)
 //   --raw-only   fetch and save scripts/ddp/out/response.json, don't write posts
+//   --offline    re-template from the saved scripts/ddp/out/response.json
+//                instead of hitting the API (deterministic re-runs)
 //
 // Reads PQL_DDP_POST_URL / PQL_DDP_POST_KEY from apps/web/.env.
 // To independently verify the chart data against the raw DDP release:
@@ -24,7 +28,7 @@ const CONFIG = {
   canonicalId: 'ice-jails-nearly-everyone',
   date: '2026-07-15',
   tags: ['field-notes', 'immigration'],
-  byline: 'PromptQL and David Eads',
+  byline: 'David Eads and PromptQL',
   previewImage: '/images/ddp-arrest-volume.png',
   en: {
     artifact: 'ddp_rhetoric_vs_numbers_en',
@@ -39,17 +43,25 @@ const CONFIG = {
       'Nuevos datos muestran que ICE ahora encarcela al 90% de las personas que arresta — y que la deportación es el desenlace más común.',
   },
   chartData: 'ddp_rhetoric_chart_data',
-  // "Show your work" companion, EN only; published as a type:"page" entry
-  // (kept out of the post index, served at /en/<slug>).
-  ledger: {
-    artifact: 'ddp_numbers_ledger',
-    slug: 'ice-jails-nearly-everyone-numbers',
-    description: 'Every figure in the piece, with the math behind it.',
-  },
-  ledgerLine: {
-    en: 'Every number in this piece, and the math behind it: [the numbers ledger](/en/ice-jails-nearly-everyone-numbers).',
-    es: 'Cada cifra de este artículo, y las matemáticas detrás de ella: [el registro de cifras (en inglés)](/en/ice-jails-nearly-everyone-numbers).',
-  },
+  // Foldouts — appendix disclosures at the end of each post, in this order.
+  // `artifact` is per-lang; a lang whose artifact is missing falls back to
+  // the EN artifact (label gets an '(en inglés)' suffix), and a foldout with
+  // no artifact at all is omitted from the post with a warning. 'TK …'
+  // names are placeholders for artifacts that don't exist upstream yet —
+  // replace them when the drop grows them.
+  foldouts: [
+    {
+      component: 'NumbersLedger',
+      artifact: { en: 'ddp_numbers_ledger', es: 'ddp_numbers_ledger_es' },
+      label: { en: 'How we did this', es: 'Cómo lo hicimos' },
+    },
+    {
+      // No ES variant upstream yet; ES falls back to the EN artifact.
+      component: 'DhsResponse',
+      artifact: { en: 'ddp_dhs_response' },
+      label: { en: 'Response from DHS, 7/16/2026', es: 'Respuesta del DHS, 16/7/2026' },
+    },
+  ],
 };
 
 // TK CHART markers are matched to components by caption keywords (EN + ES);
@@ -79,29 +91,35 @@ if (!url || !key) {
   process.exit(1);
 }
 
-// The run endpoint expects multipart/form-data with 'manifest' as the first field.
-const form = new FormData();
-form.append('manifest', '{}');
-
-const res = await fetch(url, {
-  method: 'POST',
-  headers: { Authorization: `pat ${key}` },
-  body: form,
-});
-
-const text = await res.text();
-if (!res.ok) {
-  console.error(`PromptQL request failed: HTTP ${res.status}`);
-  console.error(text.slice(0, 2000));
-  process.exit(1);
-}
-
 const outDir = join(here, 'out');
 mkdirSync(outDir, { recursive: true });
 
-const response = JSON.parse(text);
-writeFileSync(join(outDir, 'response.json'), JSON.stringify(response, null, 2));
-console.log(`Saved raw response (${text.length} bytes) to scripts/ddp/out/response.json`);
+let response;
+if (process.argv.includes('--offline')) {
+  response = JSON.parse(readFileSync(join(outDir, 'response.json'), 'utf8'));
+  console.log('Offline: re-templating from saved scripts/ddp/out/response.json');
+} else {
+  // The run endpoint expects multipart/form-data with 'manifest' as the first field.
+  const form = new FormData();
+  form.append('manifest', '{}');
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { Authorization: `pat ${key}` },
+    body: form,
+  });
+
+  const text = await res.text();
+  if (!res.ok) {
+    console.error(`PromptQL request failed: HTTP ${res.status}`);
+    console.error(text.slice(0, 2000));
+    process.exit(1);
+  }
+
+  response = JSON.parse(text);
+  writeFileSync(join(outDir, 'response.json'), JSON.stringify(response, null, 2));
+  console.log(`Saved raw response (${text.length} bytes) to scripts/ddp/out/response.json`);
+}
 if (response.error) {
   console.error(`Automation reported error: ${JSON.stringify(response.error)}`);
   process.exit(1);
@@ -136,6 +154,43 @@ if (chartArtifact?.data) {
   console.warn(`Artifact '${CONFIG.chartData}' missing; chart data left untouched.`);
 }
 
+// Resolve foldouts first: write each artifact's include file once (keyed by
+// artifact name, so an ES fallback reuses the EN file) and collect per-lang
+// {component, file, label} lists for toPost().
+const foldoutsByLang = { en: [], es: [] };
+const writtenIncludes = new Map();
+for (const foldout of CONFIG.foldouts) {
+  for (const lang of ['en', 'es']) {
+    let artifactName = foldout.artifact[lang];
+    let artifact = response.artifacts.find((a) => a.name === artifactName);
+    let fellBack = false;
+    if (!artifact?.data && lang !== 'en') {
+      artifactName = foldout.artifact.en;
+      artifact = response.artifacts.find((a) => a.name === artifactName);
+      fellBack = true;
+    }
+    if (!artifact?.data) {
+      console.warn(
+        `Foldout '${foldout.component}' (${lang}): artifact '${foldout.artifact[lang]}' missing; omitted.`,
+      );
+      continue;
+    }
+    if (!writtenIncludes.has(artifactName)) {
+      const file = `${artifactName.replace(/_/g, '-')}.md`;
+      const path = join(webRoot, 'src', 'lib', 'content', file);
+      mkdirSync(dirname(path), { recursive: true });
+      writeFileSync(path, toInclude(artifact.data));
+      console.log(`Wrote src/lib/content/${file}`);
+      writtenIncludes.set(artifactName, file);
+    }
+    foldoutsByLang[lang].push({
+      component: foldout.component,
+      file: writtenIncludes.get(artifactName),
+      label: foldout.label[lang] + (fellBack ? ' (en inglés)' : ''),
+    });
+  }
+}
+
 for (const lang of ['en', 'es']) {
   const { artifact: artifactName, slug } = CONFIG[lang];
   const artifact = response.artifacts.find((a) => a.name === artifactName);
@@ -146,15 +201,6 @@ for (const lang of ['en', 'es']) {
   const path = join(webRoot, 'src', 'content', 'blog', lang, `${slug}.md`);
   writeFileSync(path, toPost(artifact.data, lang));
   console.log(`Wrote src/content/blog/${lang}/${slug}.md`);
-}
-
-const ledger = response.artifacts.find((a) => a.name === CONFIG.ledger.artifact);
-if (ledger?.data) {
-  const path = join(webRoot, 'src', 'content', 'blog', 'en', `${CONFIG.ledger.slug}.md`);
-  writeFileSync(path, toLedgerPage(ledger.data));
-  console.log(`Wrote src/content/blog/en/${CONFIG.ledger.slug}.md`);
-} else {
-  console.warn(`Artifact '${CONFIG.ledger.artifact}' missing; ledger page left untouched.`);
 }
 
 // Convert PromptQL post markdown into an mdsvex post: H1 → frontmatter title,
@@ -201,17 +247,22 @@ function toPost(markdown, lang) {
     '---',
   ].join('\n');
 
-  const script = used.size
-    ? [
-        '<script>',
-        ...[...used].map((c) => `  import ${c} from '$lib/components/charts/${c}.svelte';`),
-        '</script>',
-        '',
-        '',
-      ].join('\n')
-    : '';
+  const foldouts = foldoutsByLang[lang];
+  const script = [
+    '<script>',
+    ...[...used].map((c) => `  import ${c} from '$lib/components/charts/${c}.svelte';`),
+    ...(foldouts.length ? ["  import Foldout from '$lib/components/Foldout.svelte';"] : []),
+    ...foldouts.map((f) => `  import ${f.component} from '$lib/content/${f.file}';`),
+    '</script>',
+    '',
+    '',
+  ].join('\n');
 
-  return `${frontmatter}\n\n${script}${body}\n\n*${CONFIG.ledgerLine[lang]}*\n`;
+  const foldoutBlocks = foldouts
+    .map((f) => `<Foldout label="${f.label.replace(/"/g, '&quot;')}">\n  <${f.component} />\n</Foldout>`)
+    .join('\n');
+
+  return `${frontmatter}\n\n${script}${body}${foldoutBlocks ? `\n\n${foldoutBlocks}` : ''}\n`;
 }
 
 // mdsvex hands markdown to the Svelte parser, which rejects stray `<` (e.g.
@@ -235,27 +286,16 @@ function escapeAngles(md) {
     .join('\n');
 }
 
-// The numbers ledger publishes as a page: linked from the posts, absent from
-// the post index.
-function toLedgerPage(markdown) {
+// Foldout artifacts compile as bare mdsvex includes (no frontmatter, no
+// route); the posts import them inside <Foldout> disclosures. The upstream
+// H1 is dropped — the disclosure's summary is the heading.
+function toInclude(markdown) {
   let body = escapeAngles(markdown.trim());
 
   const h1 = body.match(/^# (.+)\n/);
-  const title = h1 ? h1[1].trim() : 'TK title';
   if (h1) body = body.slice(h1[0].length).trim();
 
-  const frontmatter = [
-    '---',
-    `id: "${CONFIG.ledger.slug}"`,
-    `title: "${escapeYaml(title)}"`,
-    `date: "${CONFIG.date}"`,
-    `description: "${escapeYaml(CONFIG.ledger.description)}"`,
-    'type: "page"',
-    'lang: "en"',
-    '---',
-  ].join('\n');
-
-  return `${frontmatter}\n\n${body}\n`;
+  return `${body}\n`;
 }
 
 function escapeYaml(s) {

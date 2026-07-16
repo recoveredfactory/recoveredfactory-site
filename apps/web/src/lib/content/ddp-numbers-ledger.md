@@ -1,25 +1,18 @@
----
-id: "ice-jails-nearly-everyone-numbers"
-title: "DDP drop — numbers ledger"
-date: "2026-07-15"
-description: "Every figure in the piece, with the math behind it."
-type: "page"
-lang: "en"
----
+This document accompanies the editorial piece. It lists every quantity that appears in (or backs) the piece and, for each one, gives a short plain-language note on exactly how it was computed. It is meant to stand on its own — you should be able to read it without any prior knowledge of the tools or data behind the piece.
 
-This ledger accompanies the editorial piece *ICE rhetoric vs. the numbers*. It lists every quantity that appears in (or backs) the piece and, for each one, gives a short plain-language note on exactly how it was computed. It is meant to stand on its own — you should be able to read it without any prior knowledge of the tools or database behind the piece.
+**Where the data comes from.** Most figures trace to the [Deportation Data Project](https://deportationdata.org) (DDP), a public-interest effort hosted at UC Berkeley Law that obtains internal U.S. government immigration-enforcement datasets through the Freedom of Information Act and publishes them — mostly as anonymized, individual-level records — under a CC-0 public-domain dedication, each accompanied by DDP's own documentation and [codebook](https://deportationdata.org/data). This piece uses DDP's published dataset that joins ICE interior-arrest records to ICE detention-stay records. The field names and coded values referenced below (e.g. `apprehension_date`, `final_order_yes_no`, the `1`/`2`/`3` criminality codes) are DDP's own — consult the DDP codebook for their authoritative definitions.
 
-**Where the data comes from.** Every figure ultimately traces to the [Deportation Data Project](https://deportationdata.org) (DDP), a public-interest effort hosted at UC Berkeley Law that obtains internal U.S. government immigration-enforcement datasets through the Freedom of Information Act and publishes them — mostly as anonymized, individual-level records — under a CC-0 public-domain dedication, each accompanied by DDP's own documentation and [codebook](https://deportationdata.org/data). This piece uses DDP's published dataset that joins ICE interior-arrest records to ICE detention-stay records. The field names and coded values referenced below (e.g. `apprehension_date`, `final_order_yes_no`, the `1`/`2`/`3` criminality codes) are DDP's own — consult the DDP codebook for their authoritative definitions.
+Two families of figures come from **outside** DDP. The 287(g) counts (see "Local enforcement") come from a daily scrape of ICE's own public list of participating state and local agencies, not from DDP. And the rhetoric counts (see "Rhetoric corpus") come from DHS's public press-release archive. Each of those sections says so again where its numbers appear.
 
-**How these numbers are produced.** DDP's raw release is run once through a single analysis routine that computes every figure and writes them to one machine-readable JSON file; this ledger is then produced purely by reading and formatting that JSON. It runs no database query and calls no AI or statistical model — it is a plain, deterministic transform, so the same inputs always yield exactly these numbers. (Verified: regenerating this ledger repeatedly from the same JSON yields a byte-for-byte identical document.)
+**How these numbers are produced.** The raw data is run once through a single analysis routine that computes every figure and writes them to one machine-readable file; this document is then produced purely by reading and formatting that file. It runs no database query and calls no AI or statistical model — it is a plain, deterministic transform, so the same inputs always yield exactly these numbers. (Verified: regenerating this document repeatedly from the same inputs yields a byte-for-byte identical result.)
 
-**Base dataset.** The analysis works over DDP's joined arrests⋈detention-stays dataset — one row per deduplicated ICE interior arrest, with a detention stay attached when book-in falls within 5 days before to 10 days after the arrest.
+**Base dataset.** The analysis works over DDP's joined arrests x detention-stays dataset — one row per deduplicated ICE interior arrest, with a detention stay attached when book-in falls within 5 days before to 10 days after the arrest.
 
 **Administration split** (`apprehension_date` vs. the Trump inauguration boundary): `BIDEN = apprehension_date < TIMESTAMP '2025-01-20'`, `TRUMP = apprehension_date >= TIMESTAMP '2025-01-20'`. The two administrations are read separately, never as one continuous curve.
 
 ## Headline (all arrests, both administrations)
 
-_one row per deduplicated ICE arrest; detention = a detention stay booked within 5 days before to 10 days after the arrest_
+_Each row is one deduplicated ICE arrest, with detention meaning a detention stay booked within five days before to ten days after the arrest._
 
 | Figure | Value | How it's computed |
 |---|---|---|
@@ -31,7 +24,7 @@ _one row per deduplicated ICE arrest; detention = a detention stay booked within
 
 ## Detention rate by administration
 
-_two distinct enforcement administrations; do not read the full series as one continuous trend_
+_These are two distinct enforcement administrations, so the full series should not be read as one continuous trend._
 
 | Figure | Value | How it's computed |
 |---|---|---|
@@ -40,7 +33,7 @@ _two distinct enforcement administrations; do not read the full series as one co
 
 ## Detention consequences per arrest
 
-_The capability the July arrests⋈stays join newly unlocks. Percentages are of arrests unless noted 'of detained'._
+_This is the capability the July arrests x detention-stays join newly unlocks, with each percentage taken over arrests unless it is marked 'of detained'._
 
 | Figure | Value | How it's computed |
 |---|---|---|
@@ -57,7 +50,7 @@ _The capability the July arrests⋈stays join newly unlocks. Percentages are of 
 
 ## Outcome mix (3-way, share of all arrests)
 
-_released_after_detention = detained − still_in_custody; each pct is of arrests._
+_Released after detention equals detained minus those still in custody, and each percentage is taken over all arrests._
 
 | Figure | Value | How it's computed |
 |---|---|---|
@@ -70,7 +63,7 @@ _released_after_detention = detained − still_in_custody; each pct is of arrest
 
 ## Outcome taxonomy (5-way, share of all arrests)
 
-_A single CASE over each person's release reason + arrest-side departure fields._
+_Each person is placed in a single bucket based on their release reason and arrest-side departure fields._
 
 | Figure | Value | How it's computed |
 |---|---|---|
@@ -86,6 +79,8 @@ _A single CASE over each person's release reason + arrest-side departure fields.
 | Biden: still in custody | 1,249 (0.4%) | release reason IS NULL (booked in, not yet released) |
 
 ## Removal signal (Trump era)
+
+_These signals corroborate how often a Trump-era arrest ended in an actual removal or departure._
 
 | Figure | Value | How it's computed |
 |---|---|---|
@@ -110,7 +105,7 @@ _Labels carry a leading digit: '1 Convicted Criminal', '2 Pending Criminal Charg
 
 ## Local enforcement — 287(g)
 
-_distinct currently-participating state/local agencies with 287(g) agreements_
+_These 287(g) figures do not come from DDP; they come from a daily scrape of ICE's own public list of state and local agencies that have signed 287(g) agreements, collated across all daily snapshots and counted as distinct currently-participating agencies._
 
 | Figure | Value | How it's computed |
 |---|---|---|
@@ -120,7 +115,7 @@ _distinct currently-participating state/local agencies with 287(g) agreements_
 
 ## Rhetoric corpus (DHS press releases)
 
-_Corpus span 2025-01-20..2026-07-13. Source table: `federal_press_releases` WHERE `source = 'DHS'`._
+_These counts come from the Department of Homeland Security's own public press-release archive, covering releases issued from January 20, 2025 through July 13, 2026 (corpus span 2025-01-20..2026-07-13)._
 
 | Figure | Value | How it's computed |
 |---|---|---|
@@ -130,18 +125,20 @@ _Corpus span 2025-01-20..2026-07-13. Source table: `federal_press_releases` WHER
 | Detainer-titled releases | 68 | title matching the detainer pattern |
 | Named-governor attack releases | Pritzker 11, Walz 7, Spanberger 10, Newsom 9, Hochul 1 | count of releases whose title names each governor |
 
-## Series (full arrays live in the JSON)
+## Series (breakdowns available in full in the underlying data)
+
+_These are longer breakdowns whose full arrays live in the underlying data; only their shape is summarized here._
 
 | Figure | Value | How it's computed |
 |---|---|---|
 | Monthly arrests / detention rate | 41 months, 2022-10 → 2026-02 | `GROUP BY DATE_TRUNC('month', apprehension_date)`; rate = detained/arrests |
 | Monthly criminality mix | 14 months, within-month shares | monthly `GROUP BY apprehension_criminality`, share of that month's total |
 | Stay-length histogram | 8 buckets × 2 administrations | bucketed `(book_out − book_in)/86400` over closed detained stays |
-| `by_program` | 10 rows | arrests + detention rate grouped by that dimension, top-N by arrests |
-| `by_citizenship` | 12 rows | arrests + detention rate grouped by that dimension, top-N by arrests |
-| `by_state` | 15 rows | arrests + detention rate grouped by that dimension, top-N by arrests |
-| `by_aor` | 15 rows | arrests + detention rate grouped by that dimension, top-N by arrests |
+| By program | 10 rows | arrests and detention rate grouped by that dimension, top-N by arrests |
+| By citizenship | 12 rows | arrests and detention rate grouped by that dimension, top-N by arrests |
+| By state | 15 rows | arrests and detention rate grouped by that dimension, top-N by arrests |
+| By area of responsibility (AOR) | 15 rows | arrests and detention rate grouped by that dimension, top-N by arrests |
 
 ---
 
-_Note: this ledger is single-sourced from `ddp_rhetoric_chart_data`, which is recomputed from the raw DDP release. The published prose is hand-edited, so a few narrative roundings may differ from these exact figures — that difference is intentional editorial latitude, and this ledger is the numeric ground truth._
+_Note: this document is single-sourced from the same computed figures that back the chart and the piece, recomputed from the raw DDP release. The published prose is hand-edited, so a few narrative roundings may differ from these exact figures — that difference is intentional editorial latitude, and these figures are the numeric ground truth._

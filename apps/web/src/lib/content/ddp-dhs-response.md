@@ -1,0 +1,5 @@
+The Deportation Data Project relies on information releases that have not been reviewed, audited or given context. DHS nor ICE have verified the accuracy, methodology or the analysis of the project and its results. The bottom line is that the Deportation Data Project is not accurate.
+
+Many of the individuals that are counted as ‘non-criminals’ are actually terrorists, human rights abusers, gangsters and more; they just don’t have a rap sheet in the U.S. Further, every single one of these individuals committed a crime when they came into this country illegally.
+
+Since Day One, DHS law enforcement has been delivering on President Trump’s promise to the American people to arrest and deport criminal illegal aliens including murderers, rapists, pedophiles, gang members, and terrorists. Nearly 70% of ICE arrests are of illegal aliens charged or convicted of a crime in the U.S. More than 3 million illegal aliens are out of the country and counting. Our message is clear: if you come to our country illegally, we will find you, we will arrest you, and we will deport you.
