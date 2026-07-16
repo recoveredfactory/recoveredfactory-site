@@ -93,9 +93,9 @@ Todo lo aquí expuesto se refiere a los arrestos de ICE y sus consecuencias, no 
 
 Y las etiquetas de criminalidad son las propias clasificaciones administrativas de ICE, no fallos judiciales, una salvedad que juega en contra de usarlas tanto para validar como para refutar el encuadre de los 'worst of the worst'.
 
-<Foldout label="Cómo lo hicimos">
+<Foldout id="how-we-did-this" label="Cómo lo hicimos">
   <NumbersLedger />
 </Foldout>
-<Foldout label="Respuesta del DHS, 16/7/2026 (en inglés)">
+<Foldout id="dhs-response" label="Respuesta del DHS, 16/7/2026 (en inglés)">
   <DhsResponse />
 </Foldout>

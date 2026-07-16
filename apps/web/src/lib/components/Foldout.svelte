@@ -1,9 +1,28 @@
 <script lang="ts">
-  let { label, children } = $props();
+  import { onMount } from 'svelte';
+
+  let { id, label, children } = $props();
+  let el: HTMLDetailsElement | undefined = $state();
+
+  // Deep links (e.g. #dhs-response from the newsletter) should land on the
+  // foldout with it open; <details> doesn't do that on its own.
+  function openIfTargeted() {
+    if (el && id && location.hash === `#${id}`) {
+      el.open = true;
+      el.scrollIntoView();
+    }
+  }
+
+  onMount(openIfTargeted);
 </script>
 
-<details class="foldout">
-  <summary>{label}</summary>
+<svelte:window onhashchange={openIfTargeted} />
+
+<details class="foldout" {id} bind:this={el}>
+  <summary>
+    <span class="foldout-label">{label}</span>
+    <span class="foldout-marker" aria-hidden="true"></span>
+  </summary>
   <div class="foldout-body">
     {@render children?.()}
   </div>
@@ -25,27 +44,38 @@
   summary {
     cursor: pointer;
     list-style: none;
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
     padding: 0.875rem 0;
-    font-size: 0.75rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: rgb(51 65 85);
   }
 
   summary::-webkit-details-marker {
     display: none;
   }
 
-  summary::after {
-    content: '+';
-    float: right;
+  .foldout-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgb(51 65 85);
+    line-height: 1.6;
+  }
+
+  .foldout-marker {
+    flex-shrink: 0;
     font-size: 1rem;
     line-height: 1;
     color: rgb(100 116 139);
   }
 
-  .foldout[open] summary::after {
+  .foldout-marker::before {
+    content: '+';
+  }
+
+  .foldout[open] .foldout-marker::before {
     content: '−';
   }
 

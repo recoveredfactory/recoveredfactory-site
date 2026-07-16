@@ -91,9 +91,9 @@ Everything here concerns ICE arrests and their consequences, not ICE detention a
 
 And the criminality labels are ICE's own administrative classifications, not court adjudications, a caveat that cuts against using them either to validate or to rebut the 'worst of the worst' framing.
 
-<Foldout label="How we did this">
+<Foldout id="how-we-did-this" label="How we did this">
   <NumbersLedger />
 </Foldout>
-<Foldout label="Response from DHS, 7/16/2026">
+<Foldout id="dhs-response" label="Response from DHS, 7/16/2026">
   <DhsResponse />
 </Foldout>

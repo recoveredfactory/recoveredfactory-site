@@ -51,13 +51,16 @@ const CONFIG = {
   // replace them when the drop grows them.
   foldouts: [
     {
+      // `id` is the anchor (same in both langs, so /es/…#how-we-did-this works).
       component: 'NumbersLedger',
+      id: 'how-we-did-this',
       artifact: { en: 'ddp_numbers_ledger', es: 'ddp_numbers_ledger_es' },
       label: { en: 'How we did this', es: 'Cómo lo hicimos' },
     },
     {
       // No ES variant upstream yet; ES falls back to the EN artifact.
       component: 'DhsResponse',
+      id: 'dhs-response',
       artifact: { en: 'ddp_dhs_response' },
       label: { en: 'Response from DHS, 7/16/2026', es: 'Respuesta del DHS, 16/7/2026' },
     },
@@ -185,6 +188,7 @@ for (const foldout of CONFIG.foldouts) {
     }
     foldoutsByLang[lang].push({
       component: foldout.component,
+      id: foldout.id,
       file: writtenIncludes.get(artifactName),
       label: foldout.label[lang] + (fellBack ? ' (en inglés)' : ''),
     });
@@ -259,7 +263,10 @@ function toPost(markdown, lang) {
   ].join('\n');
 
   const foldoutBlocks = foldouts
-    .map((f) => `<Foldout label="${f.label.replace(/"/g, '&quot;')}">\n  <${f.component} />\n</Foldout>`)
+    .map(
+      (f) =>
+        `<Foldout id="${f.id}" label="${f.label.replace(/"/g, '&quot;')}">\n  <${f.component} />\n</Foldout>`,
+    )
     .join('\n');
 
   return `${frontmatter}\n\n${script}${body}${foldoutBlocks ? `\n\n${foldoutBlocks}` : ''}\n`;
