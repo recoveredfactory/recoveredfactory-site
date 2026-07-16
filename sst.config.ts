@@ -109,6 +109,7 @@ export default $config({
           }
         : {}),
       environment: {
+        PUBLIC_STAGE: stage,
         PUBLIC_SITE_URL: siteDomain
           ? `https://${siteDomain}`
           : process.env.PUBLIC_SITE_URL ?? "",

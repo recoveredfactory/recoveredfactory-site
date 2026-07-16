@@ -1,8 +1,10 @@
 <script lang="ts">
   import '../app.css';
   import { onMount } from 'svelte';
+  import { dev } from '$app/environment';
   import { afterNavigate } from '$app/navigation';
   import { page } from '$app/stores';
+  import { env } from '$env/dynamic/public';
   import { trackEvent } from '$lib/analytics';
   import { getResizedImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
@@ -44,6 +46,8 @@
   const homeHref = $derived(localizeWithPrefix('/', currentLocale));
   // Bare pages (chart embeds for newsletter screenshots / social media) skip site chrome.
   const isEmbed = $derived(/^\/(en|es)\/embed\//.test($page.url.pathname));
+  // Anything that isn't the prod deploy (local dev, staging, ad-hoc stages) gets flagged.
+  const isPreview = dev || env.PUBLIC_STAGE !== 'prod';
   const supportHref = $derived(`/${currentLocale}/support`);
   const footerSupportLabel = $derived(currentLocale === 'es' ? 'Apoyanos' : 'Support us');
   const signupHref = $derived(`${homeHref}#workshop`);
@@ -222,6 +226,11 @@
 
 <div class="min-h-dvh">
   {#if !isEmbed}
+  {#if isPreview}
+    <div class="bg-fern-strong px-4 py-1.5 text-center text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-white">
+      Preview — do not share
+    </div>
+  {/if}
   <header
     bind:clientHeight={headerHeight}
     class="sticky top-0 z-40 border-b border-slate-900/10 bg-cream/80 backdrop-blur-md supports-[backdrop-filter]:bg-cream/70"
