@@ -7,13 +7,17 @@ type: "page"
 lang: "en"
 ---
 
-Every quantity in the *ICE rhetoric vs. the numbers* piece, with a short note on the math/SQL behind it. Values are single-sourced from the `ddp_rhetoric_chart_data` artifact (the same computed JSON that backs the charts and the copy); the derivations are transcribed from `ddp_drop_analysis.py`. This doc is regenerated deterministically from that JSON — it runs no query and no model.
+This ledger accompanies the editorial piece *ICE rhetoric vs. the numbers*. It lists every quantity that appears in (or backs) the piece and, for each one, gives a short plain-language note on exactly how it was computed. It is meant to stand on its own — you should be able to read it without any prior knowledge of the tools or database behind the piece.
 
-**Base table:** `shelf.davideads.ddp_joined_arrests_stays` — one row per deduplicated ICE interior arrest; a detention stay is attached when book-in falls within 5 days before to 10 days after the arrest.
+**Where the data comes from.** Every figure ultimately traces to the [Deportation Data Project](https://deportationdata.org) (DDP), a public-interest effort hosted at UC Berkeley Law that obtains internal U.S. government immigration-enforcement datasets through the Freedom of Information Act and publishes them — mostly as anonymized, individual-level records — under a CC-0 public-domain dedication, each accompanied by DDP's own documentation and [codebook](https://deportationdata.org/data). This piece uses DDP's published dataset that joins ICE interior-arrest records to ICE detention-stay records. The field names and coded values referenced below (e.g. `apprehension_date`, `final_order_yes_no`, the `1`/`2`/`3` criminality codes) are DDP's own — consult the DDP codebook for their authoritative definitions.
 
-**Regime split** (`apprehension_date` vs. the Trump inauguration boundary): `BIDEN = apprehension_date < TIMESTAMP '2025-01-20'`, `TRUMP = apprehension_date >= TIMESTAMP '2025-01-20'`. The two regimes are read separately, never as one continuous curve.
+**How these numbers are produced.** DDP's raw release is run once through a single analysis routine that computes every figure and writes them to one machine-readable JSON file; this ledger is then produced purely by reading and formatting that JSON. It runs no database query and calls no AI or statistical model — it is a plain, deterministic transform, so the same inputs always yield exactly these numbers. (Verified: regenerating this ledger repeatedly from the same JSON yields a byte-for-byte identical document.)
 
-## Headline (all arrests, both regimes)
+**Base dataset.** The analysis works over DDP's joined arrests⋈detention-stays dataset — one row per deduplicated ICE interior arrest, with a detention stay attached when book-in falls within 5 days before to 10 days after the arrest.
+
+**Administration split** (`apprehension_date` vs. the Trump inauguration boundary): `BIDEN = apprehension_date < TIMESTAMP '2025-01-20'`, `TRUMP = apprehension_date >= TIMESTAMP '2025-01-20'`. The two administrations are read separately, never as one continuous curve.
+
+## Headline (all arrests, both administrations)
 
 _one row per deduplicated ICE arrest; detention = a detention stay booked within 5 days before to 10 days after the arrest_
 
@@ -27,7 +31,7 @@ _one row per deduplicated ICE arrest; detention = a detention stay booked within
 
 ## Detention rate by administration
 
-_two distinct enforcement regimes; do not read the full series as one continuous trend_
+_two distinct enforcement administrations; do not read the full series as one continuous trend_
 
 | Figure | Value | How it's computed |
 |---|---|---|
@@ -102,7 +106,7 @@ _Labels carry a leading digit: '1 Convicted Criminal', '2 Pending Criminal Charg
 | Other immigration violator | 148,782 arrests, 82.9% detained | '3 Other Immigration Violator' — neither charged nor convicted (civil) |
 | Convicted of nothing | 261,825 (67.2% of Trump arrests) | pending_charges + other_immigration_violator (no conviction). Say 'convicted of nothing', never 'charged with nothing' |
 | Charged with nothing | 148,782 (38.2% of Trump arrests) | other_immigration_violator ONLY (no charge at all) |
-| Non-criminal detention rate: Biden → Trump | 22.9% → 82.9% | detention rate of '3 Other Immigration Violator', each regime window |
+| Non-criminal detention rate: Biden → Trump | 22.9% → 82.9% | detention rate of '3 Other Immigration Violator', each administration window |
 
 ## Local enforcement — 287(g)
 
@@ -132,7 +136,7 @@ _Corpus span 2025-01-20..2026-07-13. Source table: `federal_press_releases` WHER
 |---|---|---|
 | Monthly arrests / detention rate | 41 months, 2022-10 → 2026-02 | `GROUP BY DATE_TRUNC('month', apprehension_date)`; rate = detained/arrests |
 | Monthly criminality mix | 14 months, within-month shares | monthly `GROUP BY apprehension_criminality`, share of that month's total |
-| Stay-length histogram | 8 buckets × 2 regimes | bucketed `(book_out − book_in)/86400` over closed detained stays |
+| Stay-length histogram | 8 buckets × 2 administrations | bucketed `(book_out − book_in)/86400` over closed detained stays |
 | `by_program` | 10 rows | arrests + detention rate grouped by that dimension, top-N by arrests |
 | `by_citizenship` | 12 rows | arrests + detention rate grouped by that dimension, top-N by arrests |
 | `by_state` | 15 rows | arrests + detention rate grouped by that dimension, top-N by arrests |
