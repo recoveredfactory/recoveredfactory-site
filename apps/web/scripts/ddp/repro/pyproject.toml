@@ -1,0 +1,16 @@
+[project]
+name = "ddp-rhetoric-vs-numbers"
+version = "0.1.0"
+description = "Reproduce the DDP arrests-vs-detention 'rhetoric vs. numbers' analysis from the raw Deportation Data Project data."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "marimo>=0.9",
+    "pandas>=2.1",
+    "pyarrow>=15",      # required to read the parquet dataset
+    "altair>=5.2",      # charts in the notebook
+]
+
+# Run with uv — no manual venv needed:
+#   uv run python download_data.py     # fetch ~74 MB parquet into ./data/
+#   uv run marimo edit notebook.py      # open the reproducible notebook

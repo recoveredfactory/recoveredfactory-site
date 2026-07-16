@@ -42,6 +42,8 @@
   const navSubscribeLabel = $derived(m.nav_subscribe({}, { locale: currentLocale }));
   const navDonateLabel = $derived(m.nav_donate({}, { locale: currentLocale }));
   const homeHref = $derived(localizeWithPrefix('/', currentLocale));
+  // Bare pages (chart embeds for newsletter screenshots / social media) skip site chrome.
+  const isEmbed = $derived(/^\/(en|es)\/embed\//.test($page.url.pathname));
   const supportHref = $derived(`/${currentLocale}/support`);
   const footerSupportLabel = $derived(currentLocale === 'es' ? 'Apoyanos' : 'Support us');
   const signupHref = $derived(`${homeHref}#workshop`);
@@ -219,6 +221,7 @@
 </script>
 
 <div class="min-h-dvh">
+  {#if !isEmbed}
   <header
     bind:clientHeight={headerHeight}
     class="sticky top-0 z-40 border-b border-slate-900/10 bg-cream/80 backdrop-blur-md supports-[backdrop-filter]:bg-cream/70"
@@ -405,9 +408,11 @@
     {/if}
 
   </header>
+  {/if}
 
   {@render children()}
 
+  {#if !isEmbed}
   <footer class="border-t border-slate-900/10 bg-cream/80">
     <div class="mx-auto flex max-w-6xl flex-col gap-5 px-6 py-8 sm:px-10 lg:px-16">
       <a
@@ -424,4 +429,5 @@
       </div>
     </div>
   </footer>
+  {/if}
 </div>
