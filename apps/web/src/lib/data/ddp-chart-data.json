@@ -1,0 +1,1090 @@
+{
+  "generated_note": "Chart-reconstruction data for the DDP rhetoric-vs-numbers piece.",
+  "headline": {
+    "total_arrests": 705286,
+    "total_detained": 544300,
+    "overall_detention_rate_pct": 77.2,
+    "coverage_start": "2022-10",
+    "coverage_end_solid": "2026-02",
+    "book_in_lag_median_hours": 0.42,
+    "note": "one row per deduplicated ICE arrest; detention = a detention stay booked within 5 days before to 10 days after the arrest"
+  },
+  "administration_split": {
+    "cutoff": "2025-01-20 (Trump inauguration)",
+    "biden_oct2022_jan2025": {
+      "arrests": 315461,
+      "detained": 193474,
+      "detention_rate_pct": 61.3
+    },
+    "trump_jan2025_on": {
+      "arrests": 389825,
+      "detained": 350826,
+      "detention_rate_pct": 90
+    },
+    "note": "two distinct enforcement regimes; do not read the full series as one continuous trend"
+  },
+  "detention_consequences": {
+    "what_this_release_adds": "The July 2026 arrests-joined-with-detention-stays release is the first to attach each arrest's detention consequences — book-in/book-out, first/longest/last stint, bond, and a flag for arrests with no book-in (likely swift release) — so we can now ask not just whether ICE arrests but what happens next.",
+    "trump_jan2025_on": {
+      "arrests": 389825,
+      "detained": 350826,
+      "detention_rate_pct": 90,
+      "swift_release": 38999,
+      "swift_release_pct": 10,
+      "still_in_custody": 49810,
+      "still_in_custody_pct_of_detained": 14.2,
+      "bond_posted": 28465,
+      "bond_posted_pct_of_detained": 8.1,
+      "median_stay_days_closed": 21.9,
+      "median_stints_detained": 3
+    },
+    "biden_oct2022_jan2025": {
+      "arrests": 315461,
+      "detained": 193474,
+      "detention_rate_pct": 61.3,
+      "swift_release": 121987,
+      "swift_release_pct": 38.7,
+      "still_in_custody": 714,
+      "still_in_custody_pct_of_detained": 0.4,
+      "bond_posted": 21010,
+      "bond_posted_pct_of_detained": 10.9,
+      "median_stay_days_closed": 22.8,
+      "median_stints_detained": 2
+    },
+    "lead_finding": "Under Trump, detention is near-universal (90.0% vs 61.3% under Biden) and the release valve has nearly closed: arrests ending in swift release (no book-in) fell from 38.7% to 10.0%. Open-ended custody (booked in, not yet released) rose from 0.4% to 14.2% of detainees, with more stints per person (2 → 3). What changed is not how long or how fast ICE detains (median stay ~21.9 days, book-in within a day in both eras) but whether anyone is let go."
+  },
+  "cut_month": "2025-01",
+  "monthly": [
+    {
+      "month": "2022-10",
+      "arrests": 16653,
+      "detained": 6024,
+      "detention_rate_pct": 36.2,
+      "admin": "Biden"
+    },
+    {
+      "month": "2022-11",
+      "arrests": 16447,
+      "detained": 5769,
+      "detention_rate_pct": 35.1,
+      "admin": "Biden"
+    },
+    {
+      "month": "2022-12",
+      "arrests": 15265,
+      "detained": 5496,
+      "detention_rate_pct": 36,
+      "admin": "Biden"
+    },
+    {
+      "month": "2023-01",
+      "arrests": 18019,
+      "detained": 5995,
+      "detention_rate_pct": 33.3,
+      "admin": "Biden"
+    },
+    {
+      "month": "2023-02",
+      "arrests": 16147,
+      "detained": 6448,
+      "detention_rate_pct": 39.9,
+      "admin": "Biden"
+    },
+    {
+      "month": "2023-03",
+      "arrests": 15716,
+      "detained": 7415,
+      "detention_rate_pct": 47.2,
+      "admin": "Biden"
+    },
+    {
+      "month": "2023-04",
+      "arrests": 13321,
+      "detained": 6746,
+      "detention_rate_pct": 50.6,
+      "admin": "Biden"
+    },
+    {
+      "month": "2023-05",
+      "arrests": 13661,
+      "detained": 7386,
+      "detention_rate_pct": 54.1,
+      "admin": "Biden"
+    },
+    {
+      "month": "2023-06",
+      "arrests": 12562,
+      "detained": 7279,
+      "detention_rate_pct": 57.9,
+      "admin": "Biden"
+    },
+    {
+      "month": "2023-07",
+      "arrests": 11628,
+      "detained": 7272,
+      "detention_rate_pct": 62.5,
+      "admin": "Biden"
+    },
+    {
+      "month": "2023-08",
+      "arrests": 11777,
+      "detained": 7432,
+      "detention_rate_pct": 63.1,
+      "admin": "Biden"
+    },
+    {
+      "month": "2023-09",
+      "arrests": 10538,
+      "detained": 7290,
+      "detention_rate_pct": 69.2,
+      "admin": "Biden"
+    },
+    {
+      "month": "2023-10",
+      "arrests": 10053,
+      "detained": 6916,
+      "detention_rate_pct": 68.8,
+      "admin": "Biden"
+    },
+    {
+      "month": "2023-11",
+      "arrests": 8939,
+      "detained": 6371,
+      "detention_rate_pct": 71.3,
+      "admin": "Biden"
+    },
+    {
+      "month": "2023-12",
+      "arrests": 9860,
+      "detained": 7451,
+      "detention_rate_pct": 75.6,
+      "admin": "Biden"
+    },
+    {
+      "month": "2024-01",
+      "arrests": 8523,
+      "detained": 6205,
+      "detention_rate_pct": 72.8,
+      "admin": "Biden"
+    },
+    {
+      "month": "2024-02",
+      "arrests": 9606,
+      "detained": 7171,
+      "detention_rate_pct": 74.7,
+      "admin": "Biden"
+    },
+    {
+      "month": "2024-03",
+      "arrests": 9640,
+      "detained": 7192,
+      "detention_rate_pct": 74.6,
+      "admin": "Biden"
+    },
+    {
+      "month": "2024-04",
+      "arrests": 10214,
+      "detained": 7844,
+      "detention_rate_pct": 76.8,
+      "admin": "Biden"
+    },
+    {
+      "month": "2024-05",
+      "arrests": 10267,
+      "detained": 8033,
+      "detention_rate_pct": 78.2,
+      "admin": "Biden"
+    },
+    {
+      "month": "2024-06",
+      "arrests": 8575,
+      "detained": 6945,
+      "detention_rate_pct": 81,
+      "admin": "Biden"
+    },
+    {
+      "month": "2024-07",
+      "arrests": 9489,
+      "detained": 7711,
+      "detention_rate_pct": 81.3,
+      "admin": "Biden"
+    },
+    {
+      "month": "2024-08",
+      "arrests": 9191,
+      "detained": 7598,
+      "detention_rate_pct": 82.7,
+      "admin": "Biden"
+    },
+    {
+      "month": "2024-09",
+      "arrests": 8397,
+      "detained": 6906,
+      "detention_rate_pct": 82.2,
+      "admin": "Biden"
+    },
+    {
+      "month": "2024-10",
+      "arrests": 9513,
+      "detained": 8000,
+      "detention_rate_pct": 84.1,
+      "admin": "Biden"
+    },
+    {
+      "month": "2024-11",
+      "arrests": 8181,
+      "detained": 7043,
+      "detention_rate_pct": 86.1,
+      "admin": "Biden"
+    },
+    {
+      "month": "2024-12",
+      "arrests": 8512,
+      "detained": 7352,
+      "detention_rate_pct": 86.4,
+      "admin": "Biden"
+    },
+    {
+      "month": "2025-01",
+      "arrests": 12194,
+      "detained": 10861,
+      "detention_rate_pct": 89.1,
+      "admin": "Trump"
+    },
+    {
+      "month": "2025-02",
+      "arrests": 17173,
+      "detained": 15673,
+      "detention_rate_pct": 91.3,
+      "admin": "Trump"
+    },
+    {
+      "month": "2025-03",
+      "arrests": 18640,
+      "detained": 17213,
+      "detention_rate_pct": 92.3,
+      "admin": "Trump"
+    },
+    {
+      "month": "2025-04",
+      "arrests": 17682,
+      "detained": 16408,
+      "detention_rate_pct": 92.8,
+      "admin": "Trump"
+    },
+    {
+      "month": "2025-05",
+      "arrests": 22374,
+      "detained": 21005,
+      "detention_rate_pct": 93.9,
+      "admin": "Trump"
+    },
+    {
+      "month": "2025-06",
+      "arrests": 29851,
+      "detained": 27306,
+      "detention_rate_pct": 91.5,
+      "admin": "Trump"
+    },
+    {
+      "month": "2025-07",
+      "arrests": 26877,
+      "detained": 24266,
+      "detention_rate_pct": 90.3,
+      "admin": "Trump"
+    },
+    {
+      "month": "2025-08",
+      "arrests": 27881,
+      "detained": 25242,
+      "detention_rate_pct": 90.5,
+      "admin": "Trump"
+    },
+    {
+      "month": "2025-09",
+      "arrests": 32747,
+      "detained": 29393,
+      "detention_rate_pct": 89.8,
+      "admin": "Trump"
+    },
+    {
+      "month": "2025-10",
+      "arrests": 37139,
+      "detained": 33617,
+      "detention_rate_pct": 90.5,
+      "admin": "Trump"
+    },
+    {
+      "month": "2025-11",
+      "arrests": 34645,
+      "detained": 31238,
+      "detention_rate_pct": 90.2,
+      "admin": "Trump"
+    },
+    {
+      "month": "2025-12",
+      "arrests": 39829,
+      "detained": 34324,
+      "detention_rate_pct": 86.2,
+      "admin": "Trump"
+    },
+    {
+      "month": "2026-01",
+      "arrests": 37612,
+      "detained": 33306,
+      "detention_rate_pct": 88.6,
+      "admin": "Trump"
+    },
+    {
+      "month": "2026-02",
+      "arrests": 29661,
+      "detained": 26368,
+      "detention_rate_pct": 88.9,
+      "admin": "Trump"
+    }
+  ],
+  "by_criminality": [
+    {
+      "category": "3 Other Immigration Violator",
+      "arrests": 148782,
+      "detention_rate_pct": 82.9
+    },
+    {
+      "category": "1 Convicted Criminal",
+      "arrests": 128000,
+      "detention_rate_pct": 94.2
+    },
+    {
+      "category": "2 Pending Criminal Charges",
+      "arrests": 113043,
+      "detention_rate_pct": 94.6
+    }
+  ],
+  "by_criminality_biden": [
+    {
+      "category": "3 Other Immigration Violator",
+      "arrests": 137150,
+      "detention_rate_pct": 22.9
+    },
+    {
+      "category": "1 Convicted Criminal",
+      "arrests": 127099,
+      "detention_rate_pct": 92
+    },
+    {
+      "category": "2 Pending Criminal Charges",
+      "arrests": 51212,
+      "detention_rate_pct": 88.2
+    }
+  ],
+  "criminality_precision": {
+    "convicted_criminal": {
+      "arrests": 128000,
+      "detention_rate_pct": 94.2,
+      "means": "has a criminal CONVICTION"
+    },
+    "pending_charges": {
+      "arrests": 113043,
+      "detention_rate_pct": 94.6,
+      "means": "CHARGED with a crime but NOT convicted"
+    },
+    "other_immigration_violator": {
+      "arrests": 148782,
+      "detention_rate_pct": 82.9,
+      "means": "neither charged nor convicted — a civil immigration matter"
+    },
+    "convicted_of_nothing": {
+      "arrests": 261825,
+      "share_of_trump_pct": 67.2,
+      "composition": "pending_charges + other_immigration_violator",
+      "wording_rule": "these people have NO CONVICTION; say 'convicted of nothing' / 'no criminal conviction' — NEVER 'charged with nothing' (the pending-charges group HAS been charged)"
+    },
+    "charged_with_nothing": {
+      "arrests": 148782,
+      "share_of_trump_pct": 38.2,
+      "composition": "other_immigration_violator only",
+      "wording_rule": "ONLY this bucket may be described as 'charged with nothing' / 'no criminal charge'"
+    },
+    "key_finding": "people with only pending charges are detained at 94.6% — statistically indistinguishable from convicted criminals at 94.2% — and even people with no criminal charge at all are detained 82.9%"
+  },
+  "outcome_mix": {
+    "trump": {
+      "arrests": 389825,
+      "swift_release": 38999,
+      "swift_release_pct": 10,
+      "released_after_detention": 301016,
+      "released_after_detention_pct": 77.2,
+      "still_in_custody": 49810,
+      "still_in_custody_pct": 12.8
+    },
+    "biden": {
+      "arrests": 315461,
+      "swift_release": 121987,
+      "swift_release_pct": 38.7,
+      "released_after_detention": 192760,
+      "released_after_detention_pct": 61.1,
+      "still_in_custody": 714,
+      "still_in_custody_pct": 0.2
+    }
+  },
+  "outcome_taxonomy": {
+    "trump": {
+      "arrests": 389825,
+      "released_no_detention": 38999,
+      "released_no_detention_pct": 10,
+      "removed_departed": 261302,
+      "removed_departed_pct": 67,
+      "released_into_us": 26913,
+      "released_into_us_pct": 6.9,
+      "transferred_other": 12793,
+      "transferred_other_pct": 3.3,
+      "still_in_custody": 49818,
+      "still_in_custody_pct": 12.8
+    },
+    "biden": {
+      "arrests": 315461,
+      "released_no_detention": 121987,
+      "released_no_detention_pct": 38.7,
+      "removed_departed": 130147,
+      "removed_departed_pct": 41.3,
+      "released_into_us": 51725,
+      "released_into_us_pct": 16.4,
+      "transferred_other": 10353,
+      "transferred_other_pct": 3.3,
+      "still_in_custody": 1249,
+      "still_in_custody_pct": 0.4
+    }
+  },
+  "removal_signal": {
+    "arrests": 389825,
+    "detained": 350826,
+    "removed_departed": 261302,
+    "removed_departed_pct_of_arrests": 67,
+    "departed_date_set": 278637,
+    "final_order_yes": 219945,
+    "removed_reason_corroborated_by_departed_date_pct": 97,
+    "top_departure_countries": [
+      {
+        "country": "Mexico",
+        "n": 128741
+      },
+      {
+        "country": "Guatemala",
+        "n": 42305
+      },
+      {
+        "country": "Honduras",
+        "n": 32496
+      },
+      {
+        "country": "Venezuela",
+        "n": 13756
+      },
+      {
+        "country": "El Salvador",
+        "n": 11936
+      },
+      {
+        "country": "Ecuador",
+        "n": 8200
+      },
+      {
+        "country": "Nicaragua",
+        "n": 8017
+      },
+      {
+        "country": "Colombia",
+        "n": 7494
+      }
+    ]
+  },
+  "monthly_criminality_mix": [
+    {
+      "month": "2025-01",
+      "total": 7427,
+      "convicted": 3403,
+      "pending": 2001,
+      "other": 2023,
+      "convicted_pct": 45.8,
+      "pending_pct": 26.9,
+      "other_pct": 27.2
+    },
+    {
+      "month": "2025-02",
+      "total": 17173,
+      "convicted": 7702,
+      "pending": 5561,
+      "other": 3910,
+      "convicted_pct": 44.8,
+      "pending_pct": 32.4,
+      "other_pct": 22.8
+    },
+    {
+      "month": "2025-03",
+      "total": 18640,
+      "convicted": 8278,
+      "pending": 6523,
+      "other": 3839,
+      "convicted_pct": 44.4,
+      "pending_pct": 35,
+      "other_pct": 20.6
+    },
+    {
+      "month": "2025-04",
+      "total": 17682,
+      "convicted": 7781,
+      "pending": 6274,
+      "other": 3627,
+      "convicted_pct": 44,
+      "pending_pct": 35.5,
+      "other_pct": 20.5
+    },
+    {
+      "month": "2025-05",
+      "total": 22374,
+      "convicted": 8913,
+      "pending": 7331,
+      "other": 6130,
+      "convicted_pct": 39.8,
+      "pending_pct": 32.8,
+      "other_pct": 27.4
+    },
+    {
+      "month": "2025-06",
+      "total": 29851,
+      "convicted": 9995,
+      "pending": 7722,
+      "other": 12134,
+      "convicted_pct": 33.5,
+      "pending_pct": 25.9,
+      "other_pct": 40.6
+    },
+    {
+      "month": "2025-07",
+      "total": 26877,
+      "convicted": 9518,
+      "pending": 7721,
+      "other": 9638,
+      "convicted_pct": 35.4,
+      "pending_pct": 28.7,
+      "other_pct": 35.9
+    },
+    {
+      "month": "2025-08",
+      "total": 27881,
+      "convicted": 9645,
+      "pending": 8206,
+      "other": 10030,
+      "convicted_pct": 34.6,
+      "pending_pct": 29.4,
+      "other_pct": 36
+    },
+    {
+      "month": "2025-09",
+      "total": 32747,
+      "convicted": 9933,
+      "pending": 9212,
+      "other": 13602,
+      "convicted_pct": 30.3,
+      "pending_pct": 28.1,
+      "other_pct": 41.5
+    },
+    {
+      "month": "2025-10",
+      "total": 37139,
+      "convicted": 10891,
+      "pending": 10635,
+      "other": 15613,
+      "convicted_pct": 29.3,
+      "pending_pct": 28.6,
+      "other_pct": 42
+    },
+    {
+      "month": "2025-11",
+      "total": 34645,
+      "convicted": 9667,
+      "pending": 9895,
+      "other": 15083,
+      "convicted_pct": 27.9,
+      "pending_pct": 28.6,
+      "other_pct": 43.5
+    },
+    {
+      "month": "2025-12",
+      "total": 39829,
+      "convicted": 10550,
+      "pending": 10312,
+      "other": 18967,
+      "convicted_pct": 26.5,
+      "pending_pct": 25.9,
+      "other_pct": 47.6
+    },
+    {
+      "month": "2026-01",
+      "total": 37612,
+      "convicted": 9957,
+      "pending": 10124,
+      "other": 17531,
+      "convicted_pct": 26.5,
+      "pending_pct": 26.9,
+      "other_pct": 46.6
+    },
+    {
+      "month": "2026-02",
+      "total": 29661,
+      "convicted": 8833,
+      "pending": 8415,
+      "other": 12413,
+      "convicted_pct": 29.8,
+      "pending_pct": 28.4,
+      "other_pct": 41.8
+    }
+  ],
+  "stay_length_hist": {
+    "trump": [
+      {
+        "bucket": "<1 day",
+        "arrests": 26405
+      },
+      {
+        "bucket": "1–3 days",
+        "arrests": 21482
+      },
+      {
+        "bucket": "3–7 days",
+        "arrests": 30842
+      },
+      {
+        "bucket": "1–2 weeks",
+        "arrests": 40405
+      },
+      {
+        "bucket": "2–4 weeks",
+        "arrests": 58421
+      },
+      {
+        "bucket": "1–2 months",
+        "arrests": 62456
+      },
+      {
+        "bucket": "2–3 months",
+        "arrests": 29108
+      },
+      {
+        "bucket": "3+ months",
+        "arrests": 31897
+      }
+    ],
+    "biden": [
+      {
+        "bucket": "<1 day",
+        "arrests": 44779
+      },
+      {
+        "bucket": "1–3 days",
+        "arrests": 11759
+      },
+      {
+        "bucket": "3–7 days",
+        "arrests": 8128
+      },
+      {
+        "bucket": "1–2 weeks",
+        "arrests": 12737
+      },
+      {
+        "bucket": "2–4 weeks",
+        "arrests": 33949
+      },
+      {
+        "bucket": "1–2 months",
+        "arrests": 34937
+      },
+      {
+        "bucket": "2–3 months",
+        "arrests": 16786
+      },
+      {
+        "bucket": "3+ months",
+        "arrests": 29685
+      }
+    ]
+  },
+  "by_program": [
+    {
+      "program": "ERO Criminal Alien Program",
+      "arrests": 226599,
+      "detention_rate_pct": 91.7
+    },
+    {
+      "program": "Fugitive Operations",
+      "arrests": 70934,
+      "detention_rate_pct": 92.6
+    },
+    {
+      "program": "Non-Detained Docket Control",
+      "arrests": 31370,
+      "detention_rate_pct": 77.3
+    },
+    {
+      "program": "Alternatives to Detention",
+      "arrests": 18767,
+      "detention_rate_pct": 88.2
+    },
+    {
+      "program": "Detained Docket Control",
+      "arrests": 11962,
+      "detention_rate_pct": 75.4
+    },
+    {
+      "program": "(missing)",
+      "arrests": 7356,
+      "detention_rate_pct": 100
+    },
+    {
+      "program": "Detention and Deportation",
+      "arrests": 6906,
+      "detention_rate_pct": 81.2
+    },
+    {
+      "program": "Border Patrol",
+      "arrests": 5681,
+      "detention_rate_pct": 100
+    },
+    {
+      "program": "287G Program",
+      "arrests": 4629,
+      "detention_rate_pct": 90.2
+    },
+    {
+      "program": "Mobile Criminal Alien Team",
+      "arrests": 3012,
+      "detention_rate_pct": 89.3
+    }
+  ],
+  "by_citizenship": [
+    {
+      "country": "Mexico",
+      "arrests": 153601,
+      "detention_rate_pct": 86.2
+    },
+    {
+      "country": "Guatemala",
+      "arrests": 54339,
+      "detention_rate_pct": 94
+    },
+    {
+      "country": "Honduras",
+      "arrests": 41437,
+      "detention_rate_pct": 94.8
+    },
+    {
+      "country": "Venezuela",
+      "arrests": 25091,
+      "detention_rate_pct": 93.3
+    },
+    {
+      "country": "El Salvador",
+      "arrests": 17715,
+      "detention_rate_pct": 92.4
+    },
+    {
+      "country": "Nicaragua",
+      "arrests": 12091,
+      "detention_rate_pct": 90.2
+    },
+    {
+      "country": "Colombia",
+      "arrests": 11841,
+      "detention_rate_pct": 90.4
+    },
+    {
+      "country": "Ecuador",
+      "arrests": 11440,
+      "detention_rate_pct": 92.2
+    },
+    {
+      "country": "Cuba",
+      "arrests": 10474,
+      "detention_rate_pct": 94.3
+    },
+    {
+      "country": "Brazil",
+      "arrests": 5219,
+      "detention_rate_pct": 94.3
+    },
+    {
+      "country": "Dominican Republic",
+      "arrests": 4520,
+      "detention_rate_pct": 92.2
+    },
+    {
+      "country": "Peru",
+      "arrests": 4484,
+      "detention_rate_pct": 83.7
+    }
+  ],
+  "by_state": [
+    {
+      "state": "Texas",
+      "arrests": 99813,
+      "detention_rate_pct": 84.9
+    },
+    {
+      "state": "Florida",
+      "arrests": 39248,
+      "detention_rate_pct": 90
+    },
+    {
+      "state": "California",
+      "arrests": 34785,
+      "detention_rate_pct": 83.3
+    },
+    {
+      "state": "Georgia",
+      "arrests": 14417,
+      "detention_rate_pct": 86.4
+    },
+    {
+      "state": "New York",
+      "arrests": 13969,
+      "detention_rate_pct": 94.5
+    },
+    {
+      "state": "Arizona",
+      "arrests": 12302,
+      "detention_rate_pct": 95.5
+    },
+    {
+      "state": "New Jersey",
+      "arrests": 11422,
+      "detention_rate_pct": 99
+    },
+    {
+      "state": "Virginia",
+      "arrests": 11181,
+      "detention_rate_pct": 62.8
+    },
+    {
+      "state": "Tennessee",
+      "arrests": 10436,
+      "detention_rate_pct": 98.5
+    },
+    {
+      "state": "Pennsylvania",
+      "arrests": 8851,
+      "detention_rate_pct": 98.7
+    },
+    {
+      "state": "Massachusetts",
+      "arrests": 7380,
+      "detention_rate_pct": 95.2
+    },
+    {
+      "state": "Alabama",
+      "arrests": 6814,
+      "detention_rate_pct": 98.5
+    },
+    {
+      "state": "Illinois",
+      "arrests": 6750,
+      "detention_rate_pct": 87.4
+    },
+    {
+      "state": "Maryland",
+      "arrests": 6572,
+      "detention_rate_pct": 95.9
+    },
+    {
+      "state": "North Carolina",
+      "arrests": 6540,
+      "detention_rate_pct": 97.4
+    }
+  ],
+  "by_aor": [
+    {
+      "aor": "Miami",
+      "arrests": 39702,
+      "detention_rate_pct": 90.2
+    },
+    {
+      "aor": "New Orleans",
+      "arrests": 30712,
+      "detention_rate_pct": 97.7
+    },
+    {
+      "aor": "Dallas",
+      "arrests": 29414,
+      "detention_rate_pct": 96.5
+    },
+    {
+      "aor": "Houston",
+      "arrests": 27533,
+      "detention_rate_pct": 96.5
+    },
+    {
+      "aor": "Atlanta",
+      "arrests": 26063,
+      "detention_rate_pct": 91.5
+    },
+    {
+      "aor": "Chicago",
+      "arrests": 22595,
+      "detention_rate_pct": 94.3
+    },
+    {
+      "aor": "San Antonio",
+      "arrests": 21908,
+      "detention_rate_pct": 88.3
+    },
+    {
+      "aor": "Harlingen",
+      "arrests": 20180,
+      "detention_rate_pct": 53.1
+    },
+    {
+      "aor": "Los Angeles",
+      "arrests": 16396,
+      "detention_rate_pct": 95.7
+    },
+    {
+      "aor": "Washington",
+      "arrests": 13579,
+      "detention_rate_pct": 68.7
+    },
+    {
+      "aor": "Phoenix",
+      "arrests": 12333,
+      "detention_rate_pct": 95.7
+    },
+    {
+      "aor": "El Paso",
+      "arrests": 12189,
+      "detention_rate_pct": 84.5
+    },
+    {
+      "aor": "Philadelphia",
+      "arrests": 11834,
+      "detention_rate_pct": 98.2
+    },
+    {
+      "aor": "Newark",
+      "arrests": 11428,
+      "detention_rate_pct": 99
+    },
+    {
+      "aor": "San Diego",
+      "arrests": 10988,
+      "detention_rate_pct": 63
+    }
+  ],
+  "local_enforcement_287g": {
+    "national_current_agencies": 1720,
+    "top_states": [
+      {
+        "state": "Texas",
+        "agencies": 350
+      },
+      {
+        "state": "Florida",
+        "agencies": 272
+      },
+      {
+        "state": "Pennsylvania",
+        "agencies": 104
+      },
+      {
+        "state": "Arkansas",
+        "agencies": 98
+      },
+      {
+        "state": "Missouri",
+        "agencies": 97
+      },
+      {
+        "state": "Tennessee",
+        "agencies": 80
+      }
+    ],
+    "sanctuary_states_with_zero_agencies": [
+      "California",
+      "Connecticut",
+      "Washington",
+      "Vermont",
+      "Oregon",
+      "Illinois",
+      "New Jersey"
+    ],
+    "note": "distinct currently-participating state/local agencies with 287(g) agreements"
+  },
+  "rhetoric": {
+    "dhs_releases_trump_era": 971,
+    "worst_of_the_worst_releases_trump_era": 42,
+    "sanctuary_titled_releases_trump_era": 88,
+    "detainer_titled_releases_trump_era": 68,
+    "named_governor_attack_releases": {
+      "Pritzker": 11,
+      "Walz": 7,
+      "Spanberger": 10,
+      "Newsom": 9,
+      "Hochul": 1
+    },
+    "corpus_span": "2025-01-20..2026-07-13"
+  },
+  "citations": {
+    "ddp_source": {
+      "url": "https://deportationdata.org",
+      "title": "Deportation Data Project",
+      "date": null,
+      "note": "primary data source"
+    },
+    "maine_killing": {
+      "url": "https://apnews.com/article/ice-shooting-maine-immigration-dhs-f26f8c2256aa6f0748582ea4adbb515c",
+      "title": "Man fatally shot by ICE officer in Maine was not the target of arrest warrant",
+      "date": "2026-07-13",
+      "note": "ICE deadly-force killing in Biddeford, Maine on July 13 2026: an ICE Enforcement and Removal Operations officer fatally shot a 26-year-old Colombian man who was authorized to work in the US, during an operation tied to a final order of removal; officer placed on leave, Maine AG investigating; the second ICE deadly-force incident in a week"
+    },
+    "worst_worst": {
+      "url": "https://www.dhs.gov/news/2026/07/13/worst-worst-ice-arrests-murderers-pedophiles-violent-assailants-and-drug",
+      "title": "WORST OF THE WORST: ICE Arrests Murderers, Pedophiles, Violent Assailants, and Drug Traffickers",
+      "date": "2026-07-13",
+      "note": "recurring 'worst of the worst' arrest release"
+    },
+    "gang_10k": {
+      "url": "https://www.dhs.gov/news/2026/06/24/making-america-safe-again-ice-hits-milestone-more-10000-gang-members-arrested-under",
+      "title": "MAKING AMERICA SAFE AGAIN: ICE Hits Milestone of More Than 10,000 Gang Members Arrested Under Trump Administration",
+      "date": "2026-06-24",
+      "note": "milestone: 10,000 gang members arrested"
+    },
+    "zero_releases": {
+      "url": "https://www.dhs.gov/news/2026/06/19/trump-administration-delivers-13-straight-months-zero-releases-border",
+      "title": "Trump Administration Delivers 13 Straight Months of Zero Releases at the Border",
+      "date": "2026-06-19",
+      "note": "'13 straight months of zero releases'"
+    },
+    "detainer_pritzker": {
+      "url": "https://www.dhs.gov/news/2026/07/09/ice-asks-governor-jb-pritzker-and-illinois-sanctuary-politicians-not-release",
+      "title": "ICE Asks Governor J.B. Pritzker and Illinois Sanctuary Politicians to Not Release Illegal Alien Arrested After Kidnapping and Sexually Assaulting a 9-Year-Old Girl",
+      "date": "2026-07-09",
+      "note": "detainer request to an Illinois sanctuary governor"
+    },
+    "detainer_spanberger": {
+      "url": "https://www.dhs.gov/news/2026/07/07/ice-lodges-detainer-asking-governor-abigail-spanberger-and-fairfax-sanctuary",
+      "title": "ICE Lodges Detainer Asking Governor Abigail Spanberger and Fairfax Sanctuary Politicians to Not Release Illegal Alien Arrested on Charges of Rape and Abduction in Fairfax County, Virginia",
+      "date": "2026-07-07",
+      "note": "detainer request to Virginia's governor"
+    },
+    "walz_pardon": {
+      "url": "https://www.dhs.gov/news/2026/07/10/deported-dhs-removes-convicted-child-rapist-pardoned-minnesota-governor-tim-walz",
+      "title": "DEPORTED: DHS Removes Convicted Child Rapist Pardoned by Minnesota Governor Tim Walz",
+      "date": "2026-07-10",
+      "note": "attack on Minnesota's governor over a pardon"
+    },
+    "sheriffs_coop": {
+      "url": "https://www.dhs.gov/news/2026/06/09/secretary-mullin-highlights-local-law-enforcement-cooperation-national-sheriffs",
+      "title": "Secretary Mullin Highlights Local Law Enforcement Cooperation at National Sheriffs’ Association Annual Conference",
+      "date": "2026-06-09",
+      "note": "DHS touting local law-enforcement cooperation"
+    }
+  }
+}

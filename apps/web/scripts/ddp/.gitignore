@@ -1,0 +1,5 @@
+# Transient pull/screenshot outputs; the machinery is tracked, its artifacts aren't.
+out/
+repro/data/
+repro/.venv/
+repro/__pycache__/
