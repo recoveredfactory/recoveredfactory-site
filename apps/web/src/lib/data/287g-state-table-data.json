@@ -1,0 +1,214 @@
+{
+  "note": "287(g) signings by state, April 1 2026 through the current roster snapshot (July partial). now=current active agencies; since=signed on/after 2026-04-01; small=those with FBI LEE officer_ct<10. Source: 287g-explorer agency_index.json snapshot 2026-07-21.",
+  "national_total_now": 1846,
+  "totals": {
+    "now": 1804,
+    "since": 514,
+    "small": 209
+  },
+  "rows": [
+    {
+      "abbr": "TX",
+      "name": "Texas",
+      "now": 380,
+      "since": 106,
+      "small": 40
+    },
+    {
+      "abbr": "AR",
+      "name": "Arkansas",
+      "now": 104,
+      "since": 54,
+      "small": 25
+    },
+    {
+      "abbr": "OK",
+      "name": "Oklahoma",
+      "now": 84,
+      "since": 46,
+      "small": 28
+    },
+    {
+      "abbr": "MO",
+      "name": "Missouri",
+      "now": 105,
+      "since": 41,
+      "small": 19
+    },
+    {
+      "abbr": "PA",
+      "name": "Pennsylvania",
+      "now": 114,
+      "since": 41,
+      "small": 11
+    },
+    {
+      "abbr": "LA",
+      "name": "Louisiana",
+      "now": 58,
+      "since": 34,
+      "small": 8
+    },
+    {
+      "abbr": "MS",
+      "name": "Mississippi",
+      "now": 48,
+      "since": 29,
+      "small": 8
+    },
+    {
+      "abbr": "TN",
+      "name": "Tennessee",
+      "now": 87,
+      "since": 24,
+      "small": 3
+    },
+    {
+      "abbr": "IN",
+      "name": "Indiana",
+      "now": 39,
+      "since": 21,
+      "small": 3
+    },
+    {
+      "abbr": "GA",
+      "name": "Georgia",
+      "now": 69,
+      "since": 20,
+      "small": 5
+    },
+    {
+      "abbr": "AL",
+      "name": "Alabama",
+      "now": 58,
+      "since": 18,
+      "small": 14
+    },
+    {
+      "abbr": "KY",
+      "name": "Kentucky",
+      "now": 49,
+      "since": 15,
+      "small": 11
+    },
+    {
+      "abbr": "KS",
+      "name": "Kansas",
+      "now": 40,
+      "since": 14,
+      "small": 8
+    },
+    {
+      "abbr": "NH",
+      "name": "New Hampshire",
+      "now": 25,
+      "since": 11,
+      "small": 9
+    },
+    {
+      "abbr": "SC",
+      "name": "South Carolina",
+      "now": 49,
+      "since": 11,
+      "small": 6
+    },
+    {
+      "abbr": "WY",
+      "name": "Wyoming",
+      "now": 13,
+      "since": 5,
+      "small": 4
+    },
+    {
+      "abbr": "NE",
+      "name": "Nebraska",
+      "now": 9,
+      "since": 4,
+      "small": 2
+    },
+    {
+      "abbr": "OH",
+      "name": "Ohio",
+      "now": 19,
+      "since": 4,
+      "small": 0
+    },
+    {
+      "abbr": "FL",
+      "name": "Florida",
+      "now": 284,
+      "since": 3,
+      "small": 1
+    },
+    {
+      "abbr": "ND",
+      "name": "North Dakota",
+      "now": 11,
+      "since": 2,
+      "small": 0
+    },
+    {
+      "abbr": "VA",
+      "name": "Virginia",
+      "now": 27,
+      "since": 2,
+      "small": 1
+    },
+    {
+      "abbr": "WV",
+      "name": "West Virginia",
+      "now": 38,
+      "since": 2,
+      "small": 1
+    },
+    {
+      "abbr": "ID",
+      "name": "Idaho",
+      "now": 11,
+      "since": 1,
+      "small": 0
+    },
+    {
+      "abbr": "MI",
+      "name": "Michigan",
+      "now": 8,
+      "since": 1,
+      "small": 0
+    },
+    {
+      "abbr": "MN",
+      "name": "Minnesota",
+      "now": 9,
+      "since": 1,
+      "small": 0
+    },
+    {
+      "abbr": "MT",
+      "name": "Montana",
+      "now": 6,
+      "since": 1,
+      "small": 1
+    },
+    {
+      "abbr": "NC",
+      "name": "North Carolina",
+      "now": 26,
+      "since": 1,
+      "small": 1
+    },
+    {
+      "abbr": "UT",
+      "name": "Utah",
+      "now": 13,
+      "since": 1,
+      "small": 0
+    },
+    {
+      "abbr": "WI",
+      "name": "Wisconsin",
+      "now": 21,
+      "since": 1,
+      "small": 0
+    }
+  ]
+}

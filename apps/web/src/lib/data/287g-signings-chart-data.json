@@ -1,0 +1,83 @@
+{
+  "note": "New 287(g) signings by month (active agencies, by signed_date). Source: 287g-explorer agency_index.json snapshot 2026-07-21. Final month (2026-07) is partial through the snapshot date.",
+  "snapshot": "2026-07-21",
+  "partialMonth": "2026-07",
+  "monthly": [
+    {
+      "month": "2025-01",
+      "signings": 2
+    },
+    {
+      "month": "2025-02",
+      "signings": 80
+    },
+    {
+      "month": "2025-03",
+      "signings": 108
+    },
+    {
+      "month": "2025-04",
+      "signings": 94
+    },
+    {
+      "month": "2025-05",
+      "signings": 81
+    },
+    {
+      "month": "2025-06",
+      "signings": 91
+    },
+    {
+      "month": "2025-07",
+      "signings": 107
+    },
+    {
+      "month": "2025-08",
+      "signings": 71
+    },
+    {
+      "month": "2025-09",
+      "signings": 60
+    },
+    {
+      "month": "2025-10",
+      "signings": 46
+    },
+    {
+      "month": "2025-11",
+      "signings": 81
+    },
+    {
+      "month": "2025-12",
+      "signings": 73
+    },
+    {
+      "month": "2026-01",
+      "signings": 98
+    },
+    {
+      "month": "2026-02",
+      "signings": 102
+    },
+    {
+      "month": "2026-03",
+      "signings": 105
+    },
+    {
+      "month": "2026-04",
+      "signings": 139
+    },
+    {
+      "month": "2026-05",
+      "signings": 116
+    },
+    {
+      "month": "2026-06",
+      "signings": 154
+    },
+    {
+      "month": "2026-07",
+      "signings": 105
+    }
+  ]
+}
