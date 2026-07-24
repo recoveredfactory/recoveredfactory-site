@@ -1,6 +1,6 @@
 ---
 id: "287g-network-expansion"
-title: "Almost a third of all 287(g) agreements are barely three months old"
+title: "More than a quarter of all 287(g) agreements are barely three months old"
 date: "2026-07-23"
 description: "The ever-expanding network of immigration enforcement is quickly adding the smallest police departments in the South."
 type: "post"

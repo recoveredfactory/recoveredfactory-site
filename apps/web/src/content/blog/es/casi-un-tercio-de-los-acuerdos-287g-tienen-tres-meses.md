@@ -1,6 +1,6 @@
 ---
 id: "287g-network-expansion"
-title: "Casi un tercio de todos los acuerdos 287(g) tienen apenas tres meses"
+title: "Más de una cuarta parte de todos los acuerdos 287(g) tienen apenas tres meses"
 date: "2026-07-23"
 description: "La red en expansión constante de la aplicación de leyes migratorias suma rápidamente a los departamentos de policía más pequeños del Sur."
 type: "post"
