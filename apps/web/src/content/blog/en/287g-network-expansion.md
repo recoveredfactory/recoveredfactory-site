@@ -34,7 +34,9 @@ previewImage: "/images/287g-expansion-og.png"
 
 <p class="section-break">⁘ ⁘ ⁘</p>
 
-There are currently over 1,800 agencies with an agreement with ICE to enforce federal immigration law through the 287(g) program. About 28% of those have signed since April of this year. Taken together, April through June is the largest three-month stretch of signings since Trump took office in 2025. And agencies are overwhelmingly agreeing to implement the Task Force Model, the agreement type that lets local police make immigration arrests during routine patrols and traffic stops.
+There are currently over 1,800 local police agencies with an agreement with ICE to enforce federal immigration law through the 287(g) program. About 28% of those have signed since April of this year.
+
+The agencies in this wave of expansion are largely tiny police departments whose presence extends the physical reach and omnipresence of immigration enforcement. And they're overwhelmingly agreeing to implement the Task Force Model, the agreement type that lets local police make immigration arrests during routine patrols and traffic stops.
 
 <SigningsChart lang="en" />
 
@@ -42,31 +44,29 @@ A signed agreement does not immediately or automatically mean an active enforcem
 
 April was the first sign of a jump with 139 new agreements, compared to about 100 per month in the first quarter of 2026, and signings have remained elevated since. June was the single biggest month of the year so far, with 154. Across April, May, and June, 409 agencies signed on, the largest three-month run since the administration took office.
 
-Texas alone has added 106 new agencies since April, bringing it to almost 400. Arkansas (+54), Oklahoma (+46), and Pennsylvania and Missouri (+41 each) round out the top five. More than half the new agencies are concentrated in just those five states.
+Texas alone has added 106 new agencies since April, bringing it to almost 400. Arkansas (+54), Oklahoma (+46), Pennsylvania and Missouri (+41 each), and Louisiana (+34) round out the top six. Almost two-thirds of the new agencies are concentrated in just those six states.
 
 <figure class="rf-resized-image mx-auto my-6 max-w-2xl">
   <picture>
     <source media="(max-width: 639px)" srcset="/images/287g-expansion-states-portrait.gif" />
     <img
       src="/images/287g-expansion-map.gif"
-      alt="An animated map of Texas, the South, and the lower Midwest. Agencies that signed 287(g) agreements before April 2026 sit on the map in slate gray; a wave of new signers since April then fills in as orange dots, concentrated across Texas, Arkansas, Oklahoma, Missouri, and Pennsylvania."
+      alt="An animated map of Texas, the South, and the lower Midwest. Agencies that signed 287(g) agreements before April 2026 sit on the map in slate gray; a wave of new signers since April then fills in as orange dots, concentrated across Texas, Arkansas, Oklahoma, Missouri, Pennsylvania, and Louisiana."
       class="w-full h-auto"
       loading="lazy"
       decoding="async"
     />
   </picture>
-  <figcaption class="rf-image-caption mt-2 text-xs text-slate-500">Departments that had signed on before April 2026 (gray) and the wave that has signed since (orange). The new signers cluster across Texas and its neighbors. Dots are sized by each agency's sworn-officer count.</figcaption>
+  <figcaption class="rf-image-caption mt-2 text-xs text-slate-500">Departments that signed on before April 2026 (gray) and the wave that has signed since (orange). The new signers cluster across Texas and its neighbors. Dots are sized by each agency's sworn-officer count.</figcaption>
 </figure>
 
-As the maps above show, most of these new signers are tiny. The median agency that signed since April serves about **4,400 people with nine sworn officers.** Half of the agencies signing up during this time period have fewer than ten officers; a quarter have four or fewer according to FBI data. Nine in ten serve a population under 25,000 and none serve a jurisdiction of 250,000 or more.
+Most of these new signers are tiny. The median agency that signed since April serves about **4,400 people with nine sworn officers.** Half of the agencies signing up during this time period have fewer than ten officers; a quarter have four or fewer according to FBI data. Nine in ten serve a population under 25,000 and none serve a jurisdiction of 250,000 or more.
 
 That's a shift from the agencies that signed earlier, whose median was roughly 15,000 residents and 27 officers, and which included big metro-area sheriffs and state agencies. The new wave is overwhelmingly small-town and rural: departments like [Mountainburg, Arkansas](https://287g.recoveredfactory.net/en/agency/mountainburg-police-department-ar) (one officer, population 533) or [Brookside, Alabama](https://287g.recoveredfactory.net/en/agency/brookside-police-department-al) (one officer, population 1,185). About two-thirds are municipal police departments; most of the rest are county sheriffs.
 
 <StateSigningsTable lang="en" />
 
-This is an implication of the Task Force Model's apparently low barrier to signing: A one- or two-officer department can sign and gain the authority to make immigration arrests on patrol without building any of the infrastructure a jail-based one requires.
-
-Call it "long tail" policing: Federal immigration-enforcement authority is spreading into some of the smallest, least-resourced police agencies, primarily in the south, which tend to have the least oversight and training capacity. They might not necessarily have many opportunities to carry out immigration enforcement, but now they have federal powers.
+Call it "long tail" policing: Federal immigration-enforcement authority is spreading into some of the smallest, least-resourced police agencies, primarily in the South, which often have the least oversight and training capacity. The departments might not necessarily have many opportunities to carry out immigration enforcement, but now they have federal powers and states like Texas are blanketed in enforcement.
 
 <p class="section-break">⁘ ⁘ ⁘</p>
 
@@ -74,7 +74,7 @@ The Task Force Model's dominance matters because it changes how people encounter
 
 The other two models — the Jail Enforcement Model and the Warrant Service Officer program — are triggered only after someone has been arrested for another crime. Both have seen modest growth, but the recent swell tilts the balance even further toward patrol-based enforcement. Of the new agreements signed since April, 86% are Task Force Model.
 
-We don't have cohesive national enforcement data, but Florida's [Suspected Unauthorized Alien Encounters dashboard](https://www.fdle.state.fl.us/CJIS/Suspected-Unauthorized-Alien-Encounters.aspx) offers a window into what this looks like in practice. The state reports about 14K 287(g) arrests since this time last year. Florida has perhaps the most transparent topline immigrant arrest data in the country, and while it does not break down the initiating event for every arrest, the scale is clear: 287(g) is now a major pipeline into immigration detention and [likely deportation](https://recoveredfactory.net/en/ice-jails-nearly-everyone).
+We don't have cohesive national enforcement data, but Florida's [Suspected Unauthorized Alien Encounters dashboard](https://www.fdle.state.fl.us/CJIS/Suspected-Unauthorized-Alien-Encounters.aspx) offers a window into what this looks like in practice. The state reports about 14,000 287(g) arrests since this time last year. Florida has perhaps the most transparent topline immigrant arrest data in the country, and while it does not break down the initiating event for every arrest, the scale is clear: 287(g) is now a major pipeline into immigration detention and [likely deportation](https://recoveredfactory.net/en/ice-jails-nearly-everyone).
 
 <ResizedImage
   src="/images/287g-fdle-dashboard.png"

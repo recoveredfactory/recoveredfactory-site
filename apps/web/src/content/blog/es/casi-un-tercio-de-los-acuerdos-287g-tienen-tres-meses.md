@@ -36,7 +36,9 @@ previewImage: "/images/287g-expansion-og.png"
 
 <p class="section-break">⁘ ⁘ ⁘</p>
 
-Actualmente hay más de 1.800 agencias con un acuerdo con ICE para hacer cumplir la ley migratoria federal a través del programa 287(g). Cerca del 28% de ellas firmaron desde abril de este año. En conjunto, de abril a junio es el mayor tramo de tres meses de firmas desde que Trump asumió el cargo en 2025. Y las agencias están aceptando, de manera abrumadora, implementar el Task Force Model, el tipo de acuerdo que permite a la policía local hacer arrestos migratorios durante patrullajes de rutina y paradas de tráfico.
+Actualmente hay más de 1.800 agencias policiales locales con un acuerdo con ICE para hacer cumplir la ley migratoria federal a través del programa 287(g). Cerca del 28% de ellas firmaron desde abril de este año.
+
+Las agencias en esta ola de expansión son en su mayoría departamentos de policía diminutos cuya presencia extiende el alcance físico y la omnipresencia de la aplicación migratoria. Y están aceptando, de manera abrumadora, implementar el Task Force Model, el tipo de acuerdo que permite a la policía local hacer arrestos migratorios durante patrullajes de rutina y paradas de tráfico.
 
 <SigningsChart lang="es" />
 
@@ -44,31 +46,29 @@ Un acuerdo firmado no significa de forma inmediata ni automática un programa de
 
 Abril fue la primera señal de un salto, con 139 nuevos acuerdos, frente a unos 100 al mes en el primer trimestre de 2026, y las firmas se han mantenido elevadas desde entonces. Junio fue el mes más grande del año hasta ahora, con 154. Entre abril, mayo y junio firmaron 409 agencias, la mayor racha de tres meses desde que el gobierno asumió el cargo.
 
-Tan solo Texas ha sumado 106 nuevas agencias desde abril, hasta llegar a casi 400. Arkansas (+54), Oklahoma (+46), y Pensilvania y Misuri (+41 cada uno) completan los cinco primeros. Más de la mitad de las nuevas agencias se concentran solo en esos cinco estados.
+Tan solo Texas ha sumado 106 nuevas agencias desde abril, hasta llegar a casi 400. Arkansas (+54), Oklahoma (+46), Pensilvania y Misuri (+41 cada uno), y Luisiana (+34) completan los seis primeros. Casi dos tercios de las nuevas agencias se concentran solo en esos seis estados.
 
 <figure class="rf-resized-image mx-auto my-6 max-w-2xl">
   <picture>
     <source media="(max-width: 639px)" srcset="/images/287g-expansion-states-portrait.gif" />
     <img
       src="/images/287g-expansion-map.gif"
-      alt="Un mapa animado de Texas, el Sur y el bajo Medio Oeste. Las agencias que firmaron acuerdos 287(g) antes de abril de 2026 aparecen en gris pizarra; luego una ola de nuevas firmantes desde abril se va llenando con puntos naranjas, concentrados en Texas, Arkansas, Oklahoma, Misuri y Pensilvania."
+      alt="Un mapa animado de Texas, el Sur y el bajo Medio Oeste. Las agencias que firmaron acuerdos 287(g) antes de abril de 2026 aparecen en gris pizarra; luego una ola de nuevas firmantes desde abril se va llenando con puntos naranjas, concentrados en Texas, Arkansas, Oklahoma, Misuri, Pensilvania y Luisiana."
       class="w-full h-auto"
       loading="lazy"
       decoding="async"
     />
   </picture>
-  <figcaption class="rf-image-caption mt-2 text-xs text-slate-500">Departamentos que ya habían firmado antes de abril de 2026 (gris) y la ola que ha firmado desde entonces (naranja). Las nuevas firmantes se agrupan en Texas y sus vecinos. El tamaño de los puntos corresponde al número de oficiales juramentados de cada agencia.</figcaption>
+  <figcaption class="rf-image-caption mt-2 text-xs text-slate-500">Departamentos que firmaron antes de abril de 2026 (gris) y la ola que ha firmado desde entonces (naranja). Las nuevas firmantes se agrupan en Texas y sus vecinos. El tamaño de los puntos corresponde al número de oficiales juramentados de cada agencia.</figcaption>
 </figure>
 
-Como muestran los mapas de arriba, la mayoría de estas nuevas firmantes son diminutas. La agencia mediana que firmó desde abril presta servicio a unas **4.400 personas con nueve oficiales juramentados.** La mitad de las agencias que firmaron durante este periodo tiene menos de diez oficiales; una cuarta parte tiene cuatro o menos, según datos del FBI. Nueve de cada diez sirven a una población de menos de 25.000 y ninguna cubre una jurisdicción de 250.000 o más.
+La mayoría de estas nuevas firmantes son diminutas. La agencia mediana que firmó desde abril presta servicio a unas **4.400 personas con nueve oficiales juramentados.** La mitad de las agencias que firmaron durante este periodo tiene menos de diez oficiales; una cuarta parte tiene cuatro o menos, según datos del FBI. Nueve de cada diez sirven a una población de menos de 25.000 y ninguna cubre una jurisdicción de 250.000 o más.
 
 Es un cambio respecto a las agencias que firmaron antes, cuya mediana era de unos 15.000 residentes y 27 oficiales, y que incluían a grandes sheriffs de áreas metropolitanas y agencias estatales. La nueva ola es, de manera abrumadora, de pueblos pequeños y zonas rurales: departamentos como [Mountainburg, Arkansas](https://287g.recoveredfactory.net/es/agency/mountainburg-police-department-ar) (un oficial, población de 533) o [Brookside, Alabama](https://287g.recoveredfactory.net/es/agency/brookside-police-department-al) (un oficial, población de 1.185). Cerca de dos tercios son departamentos de policía municipales; la mayor parte del resto son sheriffs de condado.
 
 <StateSigningsTable lang="es" />
 
-Esto es una consecuencia de la barrera aparentemente baja del Task Force Model para firmar: un departamento de uno o dos oficiales puede firmar y obtener la autoridad para hacer arrestos migratorios durante el patrullaje sin construir nada de la infraestructura que exige un modelo basado en cárceles.
-
-Llámalo vigilancia policial de "cola larga": la autoridad federal de aplicación migratoria se está extendiendo hacia algunas de las agencias policiales más pequeñas y con menos recursos, sobre todo en el sur, que suelen tener la menor supervisión y capacidad de capacitación. Puede que no necesariamente tengan muchas oportunidades de llevar a cabo aplicación migratoria, pero ahora tienen poderes federales.
+Llámalo vigilancia policial de "cola larga": la autoridad federal de aplicación migratoria se está extendiendo hacia algunas de las agencias policiales más pequeñas y con menos recursos, sobre todo en el Sur, que a menudo tienen la menor supervisión y capacidad de capacitación. Puede que estos departamentos no necesariamente tengan muchas oportunidades de llevar a cabo aplicación migratoria, pero ahora tienen poderes federales y estados como Texas quedan cubiertos de aplicación migratoria.
 
 <p class="section-break">⁘ ⁘ ⁘</p>
 
