@@ -36,13 +36,13 @@ previewImage: "/images/287g-expansion-og.png"
 
 There are currently over 1,800 agencies with an agreement with ICE to enforce federal immigration law through the 287(g) program. About 28% of those have signed since April of this year. Taken together, April through June is the largest three-month stretch of signings since Trump took office in 2025. And agencies are overwhelmingly agreeing to implement the Task Force Model, the agreement type that lets local police make immigration arrests during routine patrols and traffic stops.
 
-A signed agreement does not immediately or automatically mean an active enforcement program. Bigger agencies have a ramp-up, like Missouri State Patrol who joined 287(g) last spring, but reportedly didn't start implementing the program [until the fall](https://spectrumlocalnews.com/mo/st-louis/news/2026/02/13/missouri-ice-mshp-st-louis-st-charles). A small rural police department in Texas or Arkansas, on the other hand, can sign a Task Force Model agreement with minimal upfront investment.
-
 <SigningsChart lang="en" />
+
+A signed agreement does not immediately or automatically mean an active enforcement program. Bigger agencies have a ramp-up, like Missouri State Patrol who joined 287(g) last spring, but reportedly didn't start implementing the program [until the fall](https://spectrumlocalnews.com/mo/st-louis/news/2026/02/13/missouri-ice-mshp-st-louis-st-charles). A small rural police department in Texas or Arkansas, on the other hand, can sign a Task Force Model agreement with minimal upfront investment.
 
 April was the first sign of a jump with 139 new agreements, compared to about 100 per month in the first quarter of 2026, and signings have remained elevated since. June was the single biggest month of the year so far, with 154. Across April, May, and June, 409 agencies signed on, the largest three-month run since the administration took office.
 
-Texas alone added 88 new agreements in the April–June window, bringing it to almost 400 agencies. Arkansas (+47), Oklahoma (+40), Pennsylvania (+34), and Missouri (+32) round out the top five. Nearly six in ten new agencies are concentrated in just those five states.
+Texas alone has added 106 new agencies since April, bringing it to almost 400. Arkansas (+54), Oklahoma (+46), and Pennsylvania and Missouri (+41 each) round out the top five. More than half the new agencies are concentrated in just those five states.
 
 <figure class="rf-resized-image mx-auto my-6 max-w-2xl">
   <picture>

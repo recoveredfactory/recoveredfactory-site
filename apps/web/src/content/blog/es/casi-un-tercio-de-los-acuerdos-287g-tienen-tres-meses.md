@@ -38,13 +38,13 @@ previewImage: "/images/287g-expansion-og.png"
 
 Actualmente hay más de 1.800 agencias con un acuerdo con ICE para hacer cumplir la ley migratoria federal a través del programa 287(g). Cerca del 28% de ellas firmaron desde abril de este año. En conjunto, de abril a junio es el mayor tramo de tres meses de firmas desde que Trump asumió el cargo en 2025. Y las agencias están aceptando, de manera abrumadora, implementar el Task Force Model, el tipo de acuerdo que permite a la policía local hacer arrestos migratorios durante patrullajes de rutina y paradas de tráfico.
 
-Un acuerdo firmado no significa de forma inmediata ni automática un programa de aplicación activo. Las agencias más grandes tienen un periodo de arranque, como la Patrulla Estatal de Misuri, que se sumó a 287(g) la primavera pasada pero, según los informes, no empezó a implementar el programa [hasta el otoño](https://spectrumlocalnews.com/mo/st-louis/news/2026/02/13/missouri-ice-mshp-st-louis-st-charles). Un pequeño departamento de policía rural en Texas o Arkansas, en cambio, puede firmar un acuerdo Task Force Model con una inversión inicial mínima.
-
 <SigningsChart lang="es" />
+
+Un acuerdo firmado no significa de forma inmediata ni automática un programa de aplicación activo. Las agencias más grandes tienen un periodo de arranque, como la Patrulla Estatal de Misuri, que se sumó a 287(g) la primavera pasada pero, según los informes, no empezó a implementar el programa [hasta el otoño](https://spectrumlocalnews.com/mo/st-louis/news/2026/02/13/missouri-ice-mshp-st-louis-st-charles). Un pequeño departamento de policía rural en Texas o Arkansas, en cambio, puede firmar un acuerdo Task Force Model con una inversión inicial mínima.
 
 Abril fue la primera señal de un salto, con 139 nuevos acuerdos, frente a unos 100 al mes en el primer trimestre de 2026, y las firmas se han mantenido elevadas desde entonces. Junio fue el mes más grande del año hasta ahora, con 154. Entre abril, mayo y junio firmaron 409 agencias, la mayor racha de tres meses desde que el gobierno asumió el cargo.
 
-Tan solo Texas sumó 88 nuevos acuerdos en el periodo de abril a junio, hasta llegar a casi 400 agencias. Arkansas (+47), Oklahoma (+40), Pensilvania (+34) y Misuri (+32) completan los cinco primeros. Casi seis de cada diez nuevas agencias se concentran solo en esos cinco estados.
+Tan solo Texas ha sumado 106 nuevas agencias desde abril, hasta llegar a casi 400. Arkansas (+54), Oklahoma (+46), y Pensilvania y Misuri (+41 cada uno) completan los cinco primeros. Más de la mitad de las nuevas agencias se concentran solo en esos cinco estados.
 
 <figure class="rf-resized-image mx-auto my-6 max-w-2xl">
   <picture>
