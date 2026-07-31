@@ -1,11 +1,21 @@
 import { json, redirect } from '@sveltejs/kit';
+import { tagSubscriberByName } from '$lib/kit';
 
 const FORM_IDS = {
   en: '8972189',
   es: '8981790',
 } as const;
 
+// Anyone can POST here, so tags are allow-listed rather than pattern-matched —
+// otherwise a forged request could fill the Kit account with junk tags.
+const ALLOWED_TAGS = new Set(['newsletter:immigration-daybook']);
+
 const resolveLang = (value: string) => (value === 'es' ? 'es' : 'en');
+
+const resolveTag = (value: string) => {
+  const tag = value.trim().toLowerCase();
+  return ALLOWED_TAGS.has(tag) ? tag : '';
+};
 
 const getSafeRedirect = (requestUrl: string, target: string | null) => {
   const base = new URL(requestUrl);
@@ -25,6 +35,7 @@ export const POST = async ({ request }) => {
   const lang = resolveLang(
     String(formData.get('lang') ?? formData.get('fields[lang]') ?? 'en').toLowerCase(),
   );
+  const tag = resolveTag(String(formData.get('tag') ?? ''));
   const redirectTarget = getSafeRedirect(
     request.url,
     String(formData.get('redirect') ?? request.headers.get('referer') ?? ''),
@@ -78,9 +89,25 @@ export const POST = async ({ request }) => {
     );
   }
 
+  // The form subscription has already landed at this point. A tagging failure
+  // means the reader is on the list but not segmented into this newsletter, so
+  // it is reported rather than thrown — signing up again would not fix it.
+  let tagged = true;
+  if (tag) {
+    try {
+      await tagSubscriberByName({ email, tag });
+    } catch (err) {
+      tagged = false;
+      console.error('[signup] Failed to apply Kit tag', {
+        tag,
+        error: (err as Error)?.message,
+      });
+    }
+  }
+
   const wantsJson = request.headers.get('accept')?.includes('application/json');
   if (wantsJson) {
-    return json({ ok: true });
+    return json({ ok: true, tagged });
   }
 
   const url = new URL(redirectTarget, request.url);

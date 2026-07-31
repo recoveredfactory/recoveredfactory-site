@@ -5,6 +5,18 @@ const PROD_DOMAIN = ROOT_DOMAIN;
 const WWW_DOMAIN = `www.${ROOT_DOMAIN}`;
 const STAGE_DOMAIN = "cms--stage.recoveredfactory.net";
 
+// Parked newsletter domains. They resolve to the same distribution as the main
+// site; `parkedDomainHandle` in apps/web/src/hooks.server.ts sends every request
+// on to the Immigration Daybook page. Each of these needs its own Route 53
+// hosted zone, which is why the site uses zone auto-lookup below rather than a
+// single pinned zone id.
+const PARKED_DOMAINS = [
+  "immigrationdaybook.com",
+  "www.immigrationdaybook.com",
+  "immigrationdaybook.net",
+  "www.immigrationdaybook.net",
+];
+
 export default $config({
   app() {
     return {
@@ -104,7 +116,10 @@ export default $config({
             domain: {
               name: siteDomain,
               redirects: siteDomain === ROOT_DOMAIN ? [WWW_DOMAIN] : [],
-              dns: sst.aws.dns({ zone: hostedZone.zoneId }),
+              aliases: siteDomain === ROOT_DOMAIN ? PARKED_DOMAINS : [],
+              // Auto-lookup: the parked domains live in their own hosted zones,
+              // so records can't all be pinned to the recoveredfactory.net zone.
+              dns: sst.aws.dns(),
             },
           }
         : {}),

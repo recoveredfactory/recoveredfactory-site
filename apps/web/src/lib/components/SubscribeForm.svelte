@@ -15,6 +15,7 @@
     buttonClass?: string;
     labelClass?: string;
     redirectTo?: string;
+    tag?: string;
     meta?: Record<string, unknown>;
   };
 
@@ -30,6 +31,7 @@
       'bg-fern-strong px-5 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0',
     labelClass = 'sr-only',
     redirectTo = '',
+    tag = '',
     meta = {},
   }: SubscribeFormProps = $props();
 
@@ -48,7 +50,7 @@
     if (status === 'loading') return;
     status = 'loading';
     errorMessage = '';
-    trackEvent('subscribe_submit', { source, lang, ...meta });
+    trackEvent('subscribe_submit', { source, lang, ...(tag ? { tag } : {}), ...meta });
 
     const form = event.currentTarget as HTMLFormElement;
     const formData = new FormData(form);
@@ -56,6 +58,9 @@
     formData.set('lang', lang);
     formData.set('fields[lang]', lang);
     formData.set('source', source);
+    if (tag) {
+      formData.set('tag', tag);
+    }
     if (redirectTo) {
       formData.set('redirect', redirectTo);
     }
@@ -151,6 +156,9 @@
       <input name="fields[lang]" type="hidden" value={lang} />
       <input name="lang" type="hidden" value={lang} />
       <input name="source" type="hidden" value={source} />
+      {#if tag}
+        <input name="tag" type="hidden" value={tag} />
+      {/if}
       {#if redirectTo}
         <input name="redirect" type="hidden" value={redirectTo} />
       {/if}

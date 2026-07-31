@@ -32,23 +32,32 @@ const buildUrl = (path: string, query: Record<string, string>) => {
   return url.toString();
 };
 
-const postJson = async (path: string, body: Record<string, unknown>) => {
+const request = async (
+  method: 'GET' | 'POST',
+  path: string,
+  body?: Record<string, unknown>,
+): Promise<unknown> => {
   const auth = getAuth();
   if (!KIT_API_KEY && !KIT_API_SECRET) {
     throw new Error('Missing Kit API credentials.');
   }
   const response = await fetch(buildUrl(path, auth.query), {
-    method: 'POST',
+    method,
     headers: {
       'content-type': 'application/json',
       ...auth.headers,
     },
-    body: JSON.stringify(body),
+    ...(body ? { body: JSON.stringify(body) } : {}),
   });
   if (!response.ok) {
     const text = await response.text().catch(() => '');
     throw new Error(`Kit API error: ${response.status} ${text}`);
   }
+  return response.json().catch(() => ({}));
+};
+
+const postJson = async (path: string, body: Record<string, unknown>) => {
+  await request('POST', path, body);
 };
 
 export const upsertSubscriber = async (payload: {
@@ -71,4 +80,58 @@ export const tagSubscriber = async (payload: { email: string; tagId: string }) =
     email: payload.email,
     email_address: payload.email,
   });
+};
+
+// Newsletter tags are named, not configured: a page asks for
+// `newsletter:immigration-daybook` and we look the id up (creating it the first
+// time) rather than threading another numeric id through the SST environment.
+const tagIdsByName = new Map<string, string>();
+
+const listTagIdByName = async (name: string): Promise<string | null> => {
+  const payload = (await request('GET', '/tags')) as {
+    tags?: Array<{ id?: number | string; name?: string }>;
+  };
+  const wanted = name.trim().toLowerCase();
+  const match = payload?.tags?.find(
+    (tag) => String(tag?.name ?? '').trim().toLowerCase() === wanted,
+  );
+  return match?.id != null ? String(match.id) : null;
+};
+
+const createTag = async (name: string): Promise<string | null> => {
+  const payload = (await request('POST', '/tags', { tag: { name } })) as
+    | { id?: number | string }
+    | Array<{ id?: number | string }>;
+  const created = Array.isArray(payload) ? payload[0] : payload;
+  return created?.id != null ? String(created.id) : null;
+};
+
+export const resolveTagId = async (name: string): Promise<string | null> => {
+  const key = name.trim().toLowerCase();
+  if (!key) return null;
+
+  const cached = tagIdsByName.get(key);
+  if (cached) return cached;
+
+  let id = await listTagIdByName(name);
+  if (!id) {
+    // Kit rejects duplicate names, so a create failure most likely means it
+    // appeared between the list and the create. Re-read before giving up.
+    id = await createTag(name).catch(() => null);
+    if (!id) id = await listTagIdByName(name);
+  }
+
+  if (id) tagIdsByName.set(key, id);
+  return id;
+};
+
+export const tagSubscriberByName = async (payload: {
+  email: string;
+  tag: string;
+}) => {
+  const tagId = await resolveTagId(payload.tag);
+  if (!tagId) {
+    throw new Error(`Could not resolve Kit tag: ${payload.tag}`);
+  }
+  await tagSubscriber({ email: payload.email, tagId });
 };
