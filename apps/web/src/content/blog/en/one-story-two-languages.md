@@ -169,7 +169,9 @@ If the in-state pool is thin after filtering, the brief ends early. Shorter is c
 
 And the topical gate is narrower than "immigration news about this state." A development enters only if it is about **local police working with ICE**: an agreement in any 287(g) model, another arrangement like detainers or jail access, or direct pushback, litigation, or oversight *of that cooperation*. Detention without a local partner, immigration courts, visas, ballot props, federal-only raids: out, no matter how newsworthy, no matter how often the state is named.
 
-Some jurisdictions produce almost no coverage of 287(g) or other forms of local police collaborating with ICE in a given time window. The honest move is neither to invent a narrative nor to pad with general immigration news. Usually the story there is the roster itself: which agencies signed, and when. The composer narrates that arc from the structured data and doesn't speculate. "Relatively little 287(g) news in the corpus" is a fact the archive can support. "This state is a news desert" is a hunch it cannot. Little coverage does not mean nothing is happening, and the roster usually says otherwise.
+Some jurisdictions produce almost no coverage of 287(g) or other forms of local police collaborating with ICE in a given time window. The honest move is neither to invent a narrative nor to pad with general immigration news. Usually the story there is the roster itself: which agencies signed, and when. The composer narrates that arc from the structured data and doesn't speculate because little coverage does not mean nothing is happening, and the roster often says otherwise.
+
+Conversely, we compose entries for states that don't participate in the program at all. Non-participating states can have plenty of 287(g) news, because they're targets for the Trump administration.
 
 <ResizedImage
   src="/images/287g-summary-nd-en.png"

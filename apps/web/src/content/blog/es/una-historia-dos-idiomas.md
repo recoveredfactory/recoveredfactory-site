@@ -169,7 +169,9 @@ Si el pozo dentro del estado queda delgado después de filtrar, el resumen termi
 
 Y la puerta temática es más estrecha que "noticias de inmigración sobre este estado". Un desarrollo entra solo si trata de **la policía local trabajando con ICE**: un acuerdo bajo cualquier modelo del 287(g), otro arreglo como las órdenes de retención o el acceso a las cárceles, o el rechazo directo, los litigios o la fiscalización *de esa cooperación*. Detenciones sin socio local, tribunales de inmigración, visas, propuestas en la boleta, redadas solo federales: fuera, por más noticiosas que sean y por más veces que aparezca el nombre del estado.
 
-Algunas jurisdicciones casi no producen cobertura sobre el 287(g) ni sobre otras formas de colaboración de la policía local con ICE en una ventana de tiempo dada. Lo honesto no es inventar una narrativa ni rellenar con noticias generales de inmigración. Normalmente la historia ahí es el registro mismo: qué agencias firmaron y cuándo. El compositor narra ese arco a partir de los datos estructurados y no especula. "Hay relativamente pocas noticias sobre el 287(g) en el corpus" es un hecho que el archivo puede sostener. "Este estado es un desierto informativo" es una corazonada que no puede. Que haya poca cobertura no significa que no esté pasando nada, y el registro normalmente dice lo contrario.
+Algunas jurisdicciones casi no producen cobertura sobre el 287(g) ni sobre otras formas de colaboración de la policía local con ICE en una ventana de tiempo dada. Lo honesto no es inventar una narrativa ni rellenar con noticias generales de inmigración. Normalmente la historia ahí es el registro mismo: qué agencias firmaron y cuándo. El compositor narra ese arco a partir de los datos estructurados y no especula, porque poca cobertura no significa que no esté pasando nada, y el registro a menudo dice lo contrario.
+
+A la inversa, componemos entradas para los estados que no participan en el programa en absoluto. Un estado que no participa puede tener muchísimas noticias sobre el 287(g), porque son blanco del gobierno de Trump.
 
 <ResizedImage
   src="/images/287g-summary-nd-es.png"
