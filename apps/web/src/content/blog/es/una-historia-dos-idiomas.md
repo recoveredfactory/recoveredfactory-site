@@ -37,7 +37,7 @@ previewImage: "/images/one-story-two-languages-og.png"
       decoding="async"
     />
   </div>
-  <figcaption class="rf-image-caption mt-3 text-xs text-slate-500">Misuri, en <a href="https://287g.recoveredfactory.net/es/state/mo#news">español</a> y en <a href="https://287g.recoveredfactory.net/en/state/mo#news">inglés</a>. La misma entrada, los mismos desarrollos, el mismo orden — pero no hay dos oraciones que se correspondan, porque ninguna edición se escribió a partir de la otra.</figcaption>
+  <figcaption class="rf-image-caption mt-3 text-xs text-slate-500">Misuri, en <a href="https://287g.recoveredfactory.net/es/state/mo#news">español</a> y en <a href="https://287g.recoveredfactory.net/en/state/mo#news">inglés</a>. La misma entrada, los mismos desarrollos, el mismo orden — pero las oraciones rara vez se corresponden, porque ninguna edición se escribió a partir de la otra.</figcaption>
 </figure>
 
 Todo lo demás que hay aquí — búsqueda, deduplicación, control de costos — es plomería que vamos a recorrer rápido. La idea que creemos que vale la pena robarse es la del final: **arma un solo esquema neutral respecto al idioma con todo lo que encontraste en todos los idiomas, y luego escríbelo de forma nativa en cada uno.**
@@ -175,11 +175,11 @@ A la inversa, componemos entradas para los estados que no participan en el progr
 
 <ResizedImage
   src="/images/287g-summary-nd-es.png"
-  alt="El resumen de North Dakota en 287(g) Watch. Dice con todas sus letras que hay relativamente pocas noticias sobre el 287(g) en el estado, y luego narra el registro: 11 agencias bajo 16 acuerdos, empezando por Dickinson y los condados de Dunn y McKenzie."
+  alt="El resumen de Dakota del Norte en 287(g) Watch. Dice con todas sus letras que hay relativamente pocas noticias sobre el 287(g) en el estado, y luego narra el registro: 11 agencias participantes bajo 16 memorandos de entendimiento vigentes, con el estado en el puesto 24.º a nivel nacional."
   width={900}
   figureClass="my-6 max-w-xl"
   class="rounded-lg shadow-xl"
-  caption="North Dakota, donde el registro es la historia. El resumen dice en voz alta que la cobertura es escasa, y se niega a concluir que no está pasando nada."
+  caption="Dakota del Norte, donde el registro es la historia. El resumen dice en voz alta que la cobertura es escasa, y se niega a concluir que no está pasando nada."
 />
 
 ### Escrito dos veces, de forma nativa

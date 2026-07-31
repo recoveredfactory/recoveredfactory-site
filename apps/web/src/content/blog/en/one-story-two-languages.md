@@ -37,7 +37,7 @@ previewImage: "/images/one-story-two-languages-og.png"
       decoding="async"
     />
   </div>
-  <figcaption class="rf-image-caption mt-3 text-xs text-slate-500">Missouri, in <a href="https://287g.recoveredfactory.net/en/state/mo#news">English</a> and <a href="https://287g.recoveredfactory.net/es/state/mo#news">Spanish</a>. Same lead, same developments, same order — but no two sentences line up, because neither edition was written from the other.</figcaption>
+  <figcaption class="rf-image-caption mt-3 text-xs text-slate-500">Missouri, in <a href="https://287g.recoveredfactory.net/en/state/mo#news">English</a> and <a href="https://287g.recoveredfactory.net/es/state/mo#news">Spanish</a>. Same lead, same developments, same order — but the sentences rarely line up, because neither edition was written from the other.</figcaption>
 </figure>
 
 Everything else here — search and dedupe and cost control — is plumbing we'll walk through quickly. The idea we think is worth stealing is the one at the end: **build a single language-neutral outline from everything you found in every language, then write it out natively in each one.**
