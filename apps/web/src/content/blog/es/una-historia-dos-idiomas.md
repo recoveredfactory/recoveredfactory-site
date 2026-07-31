@@ -5,6 +5,8 @@ date: "2026-07-30"
 description: "Cómo escribimos resúmenes bilingües de noticias sobre el programa de ICE para cada estado, y la idea de fondo que hace que funcione."
 type: "post"
 byline: "David Eads"
+editors:
+  - "Tory Lysik"
 tags:
   - "field-notes"
   - "immigration"

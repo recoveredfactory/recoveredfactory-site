@@ -5,6 +5,8 @@ date: "2026-07-30"
 description: "How we write bilingual news summaries about the ICE program for every state, and the big idea that makes it work."
 type: "post"
 byline: "David Eads"
+editors:
+  - "Tory Lysik"
 tags:
   - "field-notes"
   - "immigration"
