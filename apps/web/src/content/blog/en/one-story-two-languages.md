@@ -135,7 +135,7 @@ Translate at the end and you can only ever be as good as your English recall. Se
 
 ## Part two: building a spine
 
-Once a search run is committed, daily or weekly or whatever your cadence is, the writing system wakes up, reads the archive through a read-only door, and does one thing before it writes a single sentence: **it builds a spine.**
+Once a search run is committed, daily or weekly or whatever your cadence is, the writing system wakes up, reads the archive through a read-only door, and does one thing before it writes a single sentence: **it builds a spine based first on what we know, then on the entire corpus in every language we searched.**
 
 A spine is an ordered list of beats: the things the piece has to say, in the order it should say them — for example, the governor signed a bill in the spring but a court shot it down in the fall, while activists pressured cities to change their policies. It's the underlying structure of any narrative news product. In our setup the spine is language-neutral, closer to notes on index cards than to sentences, and both the English and Spanish editions descend from that one outline rather than from each other.
 

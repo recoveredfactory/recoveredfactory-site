@@ -135,7 +135,7 @@ Si traduces al final, nunca podrás ser mejor que tu recuperación en inglés. S
 
 ## Segunda parte: construir una columna vertebral
 
-Una vez que una corrida de búsqueda queda confirmada — diario, semanal o con la cadencia que sea —, el sistema de escritura despierta, lee el archivo por una puerta de solo lectura y hace una sola cosa antes de escribir una sola frase: **construye una columna vertebral.**
+Una vez que una corrida de búsqueda queda confirmada — diario, semanal o con la cadencia que sea —, el sistema de escritura despierta, lee el archivo por una puerta de solo lectura y hace una sola cosa antes de escribir una sola frase: **construye una columna vertebral basada primero en lo que ya sabemos, y después en todo el corpus, en todos los idiomas que buscamos.**
 
 La columna es una lista ordenada de puntos: las cosas que la pieza tiene que decir, en el orden en que debería decirlas. Por ejemplo: el gobernador firmó una ley en la primavera pero un tribunal la tumbó en el otoño, mientras activistas presionaban a las ciudades para cambiar sus políticas. Es la estructura de fondo de cualquier producto noticioso narrativo. En nuestro montaje la columna es neutral respecto al idioma, más cerca de unas notas en fichas que de un texto redactado, y tanto la edición en inglés como la edición en español descienden de ese único esquema, y no una de la otra.
 
