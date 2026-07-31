@@ -25,6 +25,11 @@
 
   body {
     @apply bg-cream font-body text-slate-900 antialiased;
+    /* Full-bleed blocks break out with 100vw, which counts the scrollbar
+       gutter and would otherwise leave a sliver of horizontal scroll. `clip`
+       rather than `hidden` so no scroll container is created and sticky
+       positioning keeps working. */
+    overflow-x: clip;
   }
 }
 
