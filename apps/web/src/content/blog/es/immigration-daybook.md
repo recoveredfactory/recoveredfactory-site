@@ -14,7 +14,7 @@ lang: "es"
   <div class="rf-hero__inner">
     <p class="rf-eyebrow">Muy pronto, de Recovered Factory</p>
     <h1 class="rf-wordmark">Immigration<br />Daybook</h1>
-    <p class="rf-deck">El boletín algorítmico más cuidado que vas a leer.</p>
+    <p class="rf-deck">{DECKS[ACTIVE_DECK]}</p>
     <ul class="rf-facts">
       <li>De lunes a viernes</li>
       <li>Las 53 jurisdicciones</li>
@@ -28,6 +28,7 @@ lang: "es"
         inputClass="w-full border border-white/25 bg-white px-5 py-4 text-lg text-slate-800 placeholder:text-slate-400 sm:max-w-[24rem] sm:flex-none"
         lang="es"
         layoutClass="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-2"
+        meta={{ deck: ACTIVE_DECK, placement: 'hero' }}
         source="immigration-daybook"
         successClass="mt-6 border border-white/20 bg-cream p-6 text-center sm:p-8"
         tag="newsletter:immigration-daybook"
@@ -96,6 +97,7 @@ lang: "es"
     inputClass="w-full border border-slate-900/20 bg-white px-5 py-4 text-lg text-slate-800 placeholder:text-slate-400 sm:max-w-[24rem] sm:flex-none"
     lang="es"
     layoutClass="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-2"
+    meta={{ deck: ACTIVE_DECK, placement: 'foot' }}
     source="immigration-daybook"
     tag="newsletter:immigration-daybook"
   />
@@ -107,6 +109,37 @@ lang: "es"
 <script>
   import LatestEdition from '$lib/components/LatestEdition.svelte';
   import SubscribeForm from '$lib/components/SubscribeForm.svelte';
+
+  /**
+   * Variantes del lema en prueba. Corre una a la vez: rotarlas en cada recarga
+   * le mostraría líneas distintas a la misma persona y haría imposible saber
+   * cuál consiguió la suscripción. Cambia ACTIVE_DECK para probar otro mensaje;
+   * el id viaja con cada evento de suscripción para poder leer el resultado.
+   *
+   * Los ids van en paralelo con la página en inglés para que una prueba cubra
+   * las dos ediciones. Las líneas están escritas en español, no traducidas: a
+   * quien lee en español no le dice lo mismo la coletilla "en dos idiomas".
+   */
+  const DECKS = {
+    raids:
+      'Las redadas — y los papeles que las autorizaron. De lunes a viernes, en español e inglés.',
+    weekday:
+      'Cada día leemos las noticias migratorias en dos idiomas: el trámite, los litigios y las redadas que ya todos tememos.',
+    rule:
+      'Para quien necesita saber qué dice la norma, no solo qué pasó. Las noticias migratorias del día, en español e inglés.',
+    thesis:
+      'Las redadas se llevan los titulares. El procedimiento decide el resultado. Seguimos los dos, de lunes a viernes.',
+    cull:
+      'Cada día leemos decenas de artículos en español e inglés para poder descartar casi todos. Queda la ley, los expedientes y las redadas.',
+    discard:
+      'Decenas de artículos al día, casi todos descartados. Lo que sobrevive: las normas, los litigios y la aplicación de la ley.',
+    lawyer:
+      'Lo que un buen abogado de inmigración querría que hubieras leído esta mañana.',
+    machine:
+      'Una máquina lee todo lo que se publica en dos idiomas. Una persona decide qué importa. Te llega de lunes a viernes.',
+  };
+
+  const ACTIVE_DECK = 'raids';
 </script>
 
 <style>

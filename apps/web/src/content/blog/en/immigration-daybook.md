@@ -14,7 +14,7 @@ lang: "en"
   <div class="rf-hero__inner">
     <p class="rf-eyebrow">Coming soon from Recovered Factory</p>
     <h1 class="rf-wordmark">Immigration<br />Daybook</h1>
-    <p class="rf-deck">The most lovingly crafted algorithmic newsletter you'll ever read.</p>
+    <p class="rf-deck">{DECKS[ACTIVE_DECK]}</p>
     <ul class="rf-facts">
       <li>Monday–Friday</li>
       <li>All 53 jurisdictions</li>
@@ -28,6 +28,7 @@ lang: "en"
         inputClass="w-full border border-white/25 bg-white px-5 py-4 text-lg text-slate-800 placeholder:text-slate-400 sm:max-w-[24rem] sm:flex-none"
         lang="en"
         layoutClass="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-2"
+        meta={{ deck: ACTIVE_DECK, placement: 'hero' }}
         source="immigration-daybook"
         successClass="mt-6 border border-white/20 bg-cream p-6 text-center sm:p-8"
         tag="newsletter:immigration-daybook"
@@ -96,6 +97,7 @@ lang: "en"
     inputClass="w-full border border-slate-900/20 bg-white px-5 py-4 text-lg text-slate-800 placeholder:text-slate-400 sm:max-w-[24rem] sm:flex-none"
     lang="en"
     layoutClass="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-2"
+    meta={{ deck: ACTIVE_DECK, placement: 'foot' }}
     source="immigration-daybook"
     tag="newsletter:immigration-daybook"
   />
@@ -107,6 +109,35 @@ lang: "en"
 <script>
   import LatestEdition from '$lib/components/LatestEdition.svelte';
   import SubscribeForm from '$lib/components/SubscribeForm.svelte';
+
+  /**
+   * Deck variants under test. One runs at a time — rotating per reload would
+   * show the same visitor different lines and make a signup impossible to
+   * attribute. Change ACTIVE_DECK to run a different message; the id rides
+   * along on every subscribe event so the result can be read back.
+   *
+   * Keep the ids in step with the Spanish page so a test spans both editions.
+   */
+  const DECKS = {
+    raids:
+      'The raids — and the paperwork that authorized them. Every weekday, in English and Spanish.',
+    weekday:
+      'Every weekday we read the immigration news in two languages — the procedure, the litigation, and the enforcement everyone’s already bracing for.',
+    rule:
+      'For people who need to know what the rule says, not just what happened. The day’s immigration news in English and Spanish.',
+    thesis:
+      'Immigration enforcement makes the headlines. The procedure decides the outcome. We follow both, every weekday, in two languages.',
+    cull:
+      'We read dozens of articles in English and Spanish every weekday so we can throw most of them away. What’s left is the law, the filings, and the raids.',
+    discard:
+      'Dozens of articles a day, most of them discarded. What survives: the rulemaking, the litigation, and the enforcement.',
+    lawyer:
+      'What a good immigration lawyer would want you to have read this morning.',
+    machine:
+      'A machine reads everything published in two languages. A person decides what matters. You get it every weekday.',
+  };
+
+  const ACTIVE_DECK = 'raids';
 </script>
 
 <style>
