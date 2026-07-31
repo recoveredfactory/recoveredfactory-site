@@ -64,8 +64,9 @@
     margin: 0;
   }
 
+  /* Kept in step with `.rf-kicker` on the pages that use this. */
   .rf-edition__kicker {
-    margin: 0 0 0.9rem;
+    margin: 0 0 1.1rem;
     font-family: 'Jost', sans-serif;
     font-size: 1rem;
     font-weight: 700;

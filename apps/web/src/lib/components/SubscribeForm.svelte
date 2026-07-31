@@ -16,6 +16,9 @@
     labelClass?: string;
     redirectTo?: string;
     tag?: string;
+    /** Override when the form sits on a dark ground — the default card is
+        translucent white and would go unreadable over a dark plate. */
+    successClass?: string;
     meta?: Record<string, unknown>;
   };
 
@@ -32,6 +35,7 @@
     labelClass = 'sr-only',
     redirectTo = '',
     tag = '',
+    successClass = 'mt-6 rounded border border-slate-900/10 bg-white/70 p-6 text-center sm:p-8',
     meta = {},
   }: SubscribeFormProps = $props();
 
@@ -168,10 +172,7 @@
     </div>
   {/if}
   {#if status === 'success'}
-    <div
-      class="mt-6 rounded border border-slate-900/10 bg-white/70 p-6 text-center sm:p-8"
-      in:fade={{ duration: 250 }}
-    >
+    <div class={successClass} in:fade={{ duration: 250 }}>
       <p class="font-display text-xl font-semibold text-slate-900 sm:text-2xl" role="status">
         {m.subscribe_success()}
       </p>
