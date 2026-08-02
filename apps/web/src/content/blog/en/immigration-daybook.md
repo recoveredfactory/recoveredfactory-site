@@ -4,7 +4,7 @@ title: "Immigration Daybook"
 date: "2026-07-31"
 type: "page"
 hideTitle: true
-description: "The most lovingly crafted algorithmic newsletter you'll read. Immigration enforcement in all 53 jurisdictions, Monday through Friday, in English and Spanish."
+description: "A weekday rundown of the immigration system — and a calendar of what's coming. Effective dates, comment deadlines, court dates. Free pilot starts Wednesday, August 5."
 byline: "Recovered Factory"
 previewImage: "/images/immigration-daybook-og-en.png"
 hidePreview: true
@@ -13,14 +13,13 @@ lang: "en"
 
 <div class="rf-hero not-prose">
   <div class="rf-hero__inner">
-    <p class="rf-eyebrow">Coming soon from Recovered Factory</p>
+    <p class="rf-eyebrow">Starts Wednesday, August 5</p>
     <h1 class="rf-wordmark">Immigration<br />Daybook</h1>
     <p class="rf-deck">{DECKS[ACTIVE_DECK]}</p>
     <ul class="rf-facts">
-      <li>Monday–Friday</li>
-      <li>All 53 jurisdictions</li>
+      <li>Every weekday</li>
+      <li>Free in August</li>
       <li>English &amp; Spanish</li>
-      <li>Free</li>
     </ul>
     <div class="rf-hero__cta">
       <SubscribeForm
@@ -34,18 +33,18 @@ lang: "en"
         successClass="mt-6 border border-white/20 bg-cream p-6 text-center sm:p-8"
         tag="newsletter:immigration-daybook"
       />
-      <p class="rf-hero__note">No spam. Unsubscribe anytime.</p>
+      <p class="rf-hero__note">Free August pilot. No spam. Unsubscribe anytime.</p>
     </div>
   </div>
 </div>
 
 <div class="rf-body not-prose">
 
-<p class="rf-lede">Immigration enforcement isn't one national story. It's fifty-three of them — 50 states, two territories, and D.C. — each moving at its own pace, most of them covered by local outlets nobody outside the state is reading. No newsroom in the country is staffed to follow all of it.</p>
+<p class="rf-lede">On August 24, DHS intends to implement a rule that nearly doubles the filing fees on naturalization forms. If you're filing, that's real money and a real deadline. If you're a lawyer, that's a week of phone calls you'd rather schedule than receive. If you're a reporter, that's a story you want to file on the 23rd, not the 25th.</p>
 
-<p class="rf-graf">So we built a system that can. It reads in English and Spanish, grounds every brief in the underlying government records instead of whatever a national roundup said six months ago, and links back to the reporters who did the work. Then a person edits it. That person is <a href="/en/introducing-recovered-factory">David Eads</a>, an immigrant himself.</p>
+<p class="rf-graf">Maybe you already knew, because you track this stuff yourself. A lot of people don't, and shouldn't have to. That's what we built Immigration Daybook to solve — and it's why the part we're most excited about isn't the news, it's the calendar of what's coming.</p>
 
-<p class="rf-graf">The machinery matters right now, and we're not coy about it: the full method is <a href="/en/one-story-two-languages">written up here</a>, including the parts we're still unsure about.</p>
+<p class="rf-graf">There's a lot of fire in US immigration right now. There's far more smoke: thousands of articles, videos, threads, and posts a day, often covering actions that seem designed to create confusion, chaos, and spectacle. Machines are good at telling you where the smoke is thickest. Finding the fire takes judgement and expertise.</p>
 
 <section class="rf-section">
   <LatestEdition
@@ -63,22 +62,22 @@ lang: "en"
     <div class="rf-spec__row">
       <p class="rf-spec__num">01</p>
       <div class="rf-spec__text">
-        <p class="rf-spec__label">What changed, and where</p>
-        <p class="rf-spec__body">New agreements, rescinded ones, council votes, lawsuits, and state laws that override local choices in either direction. The record first — who signed, under which model, as of when. Then the coverage.</p>
+        <p class="rf-spec__label">A calendar of what's coming</p>
+        <p class="rf-spec__body">Effective dates, comment deadlines, court dates — all backed by primary sources and links to expert analysis. The rules that quietly take force while everyone's arguing about the outrage of the day.</p>
       </div>
     </div>
     <div class="rf-spec__row">
       <p class="rf-spec__num">02</p>
       <div class="rf-spec__text">
-        <p class="rf-spec__label">What English-language search missed</p>
-        <p class="rf-spec__body">Spanish is a search leg, not a translation step. A development covered mostly by Spanish-language outlets earns its place on equal footing, so readers of both editions get stories they would otherwise never have seen.</p>
+        <p class="rf-spec__label">The day's rundown, checked against the record</p>
+        <p class="rf-spec__body">Detention trends go against the latest data. 287(g) goes against <a href="https://287g.recoveredfactory.net">the roster</a> and the actual agreements. A rule change gets looked up in the Federal Register and the USCIS Policy Manual first.</p>
       </div>
     </div>
     <div class="rf-spec__row">
       <p class="rf-spec__num">03</p>
       <div class="rf-spec__text">
-        <p class="rf-spec__label">Links to the people who reported it</p>
-        <p class="rf-spec__body">We follow a news ecosystem; we don't replace it. Every beat carries citations out to the local newsroom that broke it. Many of them need your support.</p>
+        <p class="rf-spec__label">Read past the headlines, in two languages</p>
+        <p class="rf-spec__body">Not just the big stories and prestige investigations you're already seeing. Deeply technical policy blogs, Substack newsletters, social video, and whatever's actually hot in Spanish-language media — YouTube coverage of ICE raids included.</p>
       </div>
     </div>
   </div>
@@ -86,12 +85,14 @@ lang: "en"
 
 <section class="rf-section">
   <p class="rf-kicker">How it's made</p>
-  <p class="rf-graf">Broad multilingual search into a persistent archive, then a separate composer that builds a language-neutral outline — grounded in authoritative records before it touches a headline — and writes it out natively in each language. Neither edition is a translation of the other.</p>
-  <p class="rf-graf">Nothing reaches a reader without a human deciding it's right.</p>
+  <p class="rf-graf">This newsletter is proudly algorithmic, and we intend to make it the most carefully crafted algorithmic writing you've ever read. The bet isn't "AI reads the news" — lots of people are doing that, and a lot of it is slop. The bet is that a newsroom can have a brain: something you can actually <em>query</em> about everything it knows, that shows its work instead of asking you to trust it.</p>
+  <p class="rf-graf">The system reads all day and surfaces the patterns it finds. Then a person edits — what it means, whether it's accurate, and who covered it best. That person is <a href="/en/introducing-recovered-factory">David Eads</a>, an immigrant himself, and the de facto immigration editor at The Marshall Project for several years.</p>
+  <p class="rf-graf">The machinery is <a href="/en/announcing-immigration-daybook">written up in full here</a>, including the parts we're still unsure about.</p>
 </section>
 
 <section class="rf-section rf-section--cta">
-  <p class="rf-subscribe__lead">Start Monday.</p>
+  <p class="rf-subscribe__lead">Start Wednesday.</p>
+  <p class="rf-graf rf-pilot">August is a free pilot while we figure out what this should be and how to sustain it. We'd rather have you in the room for the early version than polish it in a vacuum.</p>
   <SubscribeForm
     buttonClass="bg-fern-strong px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
     id="daybook-subscribe-foot"
@@ -136,9 +137,18 @@ lang: "en"
       'What a good immigration lawyer would want you to have read this morning.',
     machine:
       'A machine reads everything published in two languages. A person decides what matters. You get it every weekday.',
+    // From the announcement draft — these say what the thing actually is.
+    quiet:
+      'The rules that quietly take force while everyone’s arguing about the outrage of the day.',
+    calendar:
+      'A rundown of what happened in the immigration system — and a calendar of what’s coming.',
+    smoke:
+      'There’s a lot of fire in US immigration right now. There’s far more smoke. Every weekday, we go find the fire.',
+    dates:
+      'Effective dates, comment deadlines, court dates — before they land on you, not after.',
   };
 
-  const ACTIVE_DECK = 'raids';
+  const ACTIVE_DECK = 'quiet';
 </script>
 
 <style>
@@ -389,6 +399,14 @@ lang: "en"
     line-height: 1.18;
     letter-spacing: -0.02em;
     color: rgb(15 23 42);
+  }
+
+  /* Sits between the closing headline and the form, so it reads as terms
+     rather than as another paragraph of pitch. */
+  .rf-pilot {
+    margin: 0 0 1.5rem;
+    font-size: 1rem;
+    color: rgb(71 85 105);
   }
 
   .rf-fineprint {

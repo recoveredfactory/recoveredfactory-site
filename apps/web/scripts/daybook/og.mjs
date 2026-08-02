@@ -34,10 +34,10 @@ const flag = (name, fallback) => {
 const langs = flag('lang', 'en,es').split(',');
 const outDir = resolve(here, flag('out', '../../static/images'));
 
-// Straight off the page's style block — see the .rf-hero rules in
-// src/content/blog/{en,es}/immigration-daybook.md.
 const OUT_SIZE = '1600x840';
 
+// Straight off the page's style block — see the .rf-hero rules in
+// src/content/blog/{en,es}/immigration-daybook.md.
 const INK = '#12161d';
 const CREAM = '#f3f1e9';
 const CRIMSON = '#e8244f';
@@ -49,14 +49,14 @@ const COPY = {
   en: {
     eyebrow: 'Recovered Factory',
     wordmark: ['Immigration', 'Daybook'],
-    facts: ['Monday–Friday', 'All 53 jurisdictions', 'English & Spanish', 'Free'],
+    facts: ['Every weekday', 'Free in August', 'English & Spanish'],
     factsSize: 22,
   },
   es: {
     eyebrow: 'Recovered Factory',
     wordmark: ['Immigration', 'Daybook'],
-    facts: ['De lunes a viernes', 'Las 53 jurisdicciones', 'Español e inglés', 'Gratis'],
-    factsSize: 18,
+    facts: ['De lunes a viernes', 'Gratis en agosto', 'Español e inglés'],
+    factsSize: 20,
   },
 };
 

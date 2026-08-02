@@ -4,7 +4,7 @@ title: "Immigration Daybook"
 date: "2026-07-31"
 type: "page"
 hideTitle: true
-description: "El boletín algorítmico más cuidado que vas a leer. La aplicación de la ley migratoria en las 53 jurisdicciones, de lunes a viernes, en español e inglés."
+description: "Un resumen diario del sistema migratorio y un calendario de lo que viene. Fechas de entrada en vigor, plazos de comentarios, audiencias. El piloto gratuito empieza el miércoles 5 de agosto."
 byline: "Recovered Factory"
 previewImage: "/images/immigration-daybook-og-es.png"
 hidePreview: true
@@ -13,14 +13,13 @@ lang: "es"
 
 <div class="rf-hero not-prose">
   <div class="rf-hero__inner">
-    <p class="rf-eyebrow">Muy pronto, de Recovered Factory</p>
+    <p class="rf-eyebrow">Empieza el miércoles 5 de agosto</p>
     <h1 class="rf-wordmark">Immigration<br />Daybook</h1>
     <p class="rf-deck">{DECKS[ACTIVE_DECK]}</p>
     <ul class="rf-facts">
       <li>De lunes a viernes</li>
-      <li>Las 53 jurisdicciones</li>
+      <li>Gratis en agosto</li>
       <li>Español e inglés</li>
-      <li>Gratis</li>
     </ul>
     <div class="rf-hero__cta">
       <SubscribeForm
@@ -34,18 +33,18 @@ lang: "es"
         successClass="mt-6 border border-white/20 bg-cream p-6 text-center sm:p-8"
         tag="newsletter:immigration-daybook"
       />
-      <p class="rf-hero__note">Sin spam. Te das de baja cuando quieras.</p>
+      <p class="rf-hero__note">Piloto gratuito de agosto. Sin spam. Te das de baja cuando quieras.</p>
     </div>
   </div>
 </div>
 
 <div class="rf-body not-prose">
 
-<p class="rf-lede">La aplicación de la ley migratoria no es una sola historia nacional. Son cincuenta y tres: 50 estados, dos territorios y D.C. Cada uno avanza a su propio ritmo y casi siempre lo cuentan medios locales que nadie lee fuera del estado. Ninguna redacción del país tiene gente suficiente para seguirlo todo.</p>
+<p class="rf-lede">El 24 de agosto, el DHS pretende poner en marcha una norma que casi duplica las tarifas de los formularios de naturalización. Si estás haciendo el trámite, eso es dinero real y una fecha límite real. Si eres abogado, es una semana de llamadas que preferirías agendar tú antes de recibirlas. Si eres periodista, es una nota que quieres publicar el 23 y no el 25.</p>
 
-<p class="rf-graf">Por eso construimos un sistema que sí puede. Lee en español y en inglés, ancla cada resumen en los registros oficiales y no en lo que dijo un recuento nacional hace seis meses, y enlaza a quienes hicieron el reporteo. Después lo edita una persona: <a href="/es/presentamos-recovered-factory">David Eads</a>, inmigrante él mismo.</p>
+<p class="rf-graf">Puede que ya lo supieras, porque le sigues la pista a estas cosas. Mucha gente no lo sabe, y no tendría por qué tener que averiguarlo sola. Para eso construimos Immigration Daybook, y por eso lo que más ilusión nos hace no son las noticias sino el calendario de lo que viene.</p>
 
-<p class="rf-graf">La maquinaria importa justo ahora, y no lo escondemos: el método completo está <a href="/es/una-historia-dos-idiomas">explicado aquí</a>, incluidas las partes de las que todavía no estamos seguros.</p>
+<p class="rf-graf">Ahora mismo hay mucho fuego en la inmigración estadounidense. Y hay muchísimo más humo: miles de artículos, videos, hilos y publicaciones al día, muchas veces sobre acciones que parecen diseñadas para producir confusión, caos y espectáculo. Las máquinas son buenas para decirte dónde está más espeso el humo. Encontrar el fuego exige criterio y experiencia.</p>
 
 <section class="rf-section">
   <LatestEdition
@@ -63,22 +62,22 @@ lang: "es"
     <div class="rf-spec__row">
       <p class="rf-spec__num">01</p>
       <div class="rf-spec__text">
-        <p class="rf-spec__label">Qué cambió, y dónde</p>
-        <p class="rf-spec__body">Acuerdos nuevos, acuerdos cancelados, votaciones de concejos, demandas y leyes estatales que anulan las decisiones locales en cualquiera de las dos direcciones. Primero el registro: quién firmó, bajo qué modelo y desde cuándo. Después, la cobertura.</p>
+        <p class="rf-spec__label">Un calendario de lo que viene</p>
+        <p class="rf-spec__body">Fechas de entrada en vigor, plazos para enviar comentarios, audiencias: todo respaldado por fuentes primarias y con enlaces al análisis de quienes saben. Las normas que entran en vigor en voz baja mientras todo el mundo discute la indignación del día.</p>
       </div>
     </div>
     <div class="rf-spec__row">
       <p class="rf-spec__num">02</p>
       <div class="rf-spec__text">
-        <p class="rf-spec__label">Lo que la búsqueda en inglés no encuentra</p>
-        <p class="rf-spec__body">El español es una vía de búsqueda, no un paso de traducción. Un hecho que cubrieron sobre todo los medios en español entra en igualdad de condiciones, y así quienes leen cualquiera de las dos ediciones se enteran de historias que de otro modo no habrían visto.</p>
+        <p class="rf-spec__label">El resumen del día, contrastado con el registro</p>
+        <p class="rf-spec__body">Las tendencias de detención van contra los datos más recientes. El 287(g) va contra <a href="https://287g.recoveredfactory.net/es">el registro</a> y los acuerdos mismos. Un cambio de norma se busca primero en el Federal Register y en el Manual de Políticas de USCIS.</p>
       </div>
     </div>
     <div class="rf-spec__row">
       <p class="rf-spec__num">03</p>
       <div class="rf-spec__text">
-        <p class="rf-spec__label">Enlaces a quienes lo reportaron</p>
-        <p class="rf-spec__body">Seguimos a un ecosistema de noticias; no lo reemplazamos. Cada punto lleva su cita a la redacción local que lo publicó primero. Muchas de ellas necesitan tu apoyo.</p>
+        <p class="rf-spec__label">Más allá de los titulares, en dos idiomas</p>
+        <p class="rf-spec__body">No solo las notas grandes y las investigaciones de prestigio que ya estás viendo. Blogs de política migratoria muy técnicos, boletines de Substack, video social y lo que de verdad está sonando en los medios en español, incluida la cobertura de redadas de ICE en YouTube.</p>
       </div>
     </div>
   </div>
@@ -86,12 +85,14 @@ lang: "es"
 
 <section class="rf-section">
   <p class="rf-kicker">Cómo se hace</p>
-  <p class="rf-graf">Una búsqueda amplia y multilingüe que alimenta un archivo permanente, y luego un sistema aparte que arma un esquema sin idioma —anclado en registros oficiales antes de mirar un solo titular— y lo escribe de forma nativa en cada lengua. Ninguna edición es la traducción de la otra.</p>
-  <p class="rf-graf">Nada llega a quien lee sin que una persona decida que está bien.</p>
+  <p class="rf-graf">Este boletín es orgullosamente algorítmico, y queremos que sea el texto algorítmico más cuidado que hayas leído. La apuesta no es "la IA lee las noticias": mucha gente hace eso y buena parte sale mal. La apuesta es que una redacción puede tener un cerebro, algo a lo que de verdad puedas <em>preguntarle</em> por todo lo que sabe y que enseñe su trabajo en vez de pedirte que confíes.</p>
+  <p class="rf-graf">El sistema lee todo el día y saca a la luz los patrones que encuentra. Después una persona edita: qué significa, si es exacto y quién lo cubrió mejor. Esa persona es <a href="/es/presentamos-recovered-factory">David Eads</a>, inmigrante él mismo y editor de inmigración de facto en The Marshall Project durante varios años.</p>
+  <p class="rf-graf">La maquinaria está <a href="/es/presentamos-immigration-daybook">explicada completa aquí</a>, incluidas las partes de las que todavía no estamos seguros.</p>
 </section>
 
 <section class="rf-section rf-section--cta">
-  <p class="rf-subscribe__lead">Empieza el lunes.</p>
+  <p class="rf-subscribe__lead">Empieza el miércoles.</p>
+  <p class="rf-graf rf-pilot">Agosto es un piloto gratuito mientras averiguamos qué debe ser esto y cómo sostenerlo. Preferimos tenerte dentro desde la versión temprana a pulirla en el vacío.</p>
   <SubscribeForm
     buttonClass="bg-fern-strong px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
     id="daybook-subscribe-foot"
@@ -138,9 +139,18 @@ lang: "es"
       'Lo que un buen abogado de inmigración querría que hubieras leído esta mañana.',
     machine:
       'Una máquina lee todo lo que se publica en dos idiomas. Una persona decide qué importa. Te llega de lunes a viernes.',
+    // Del borrador del anuncio: estas sí dicen qué es la cosa.
+    quiet:
+      'Las normas que entran en vigor en voz baja mientras todo el mundo discute la indignación del día.',
+    calendar:
+      'Un resumen de lo que pasó en el sistema migratorio y un calendario de lo que viene.',
+    smoke:
+      'Ahora mismo hay mucho fuego en la inmigración estadounidense. Hay muchísimo más humo. Cada día vamos a buscar el fuego.',
+    dates:
+      'Fechas de entrada en vigor, plazos para comentar, audiencias: antes de que te caigan encima, no después.',
   };
 
-  const ACTIVE_DECK = 'raids';
+  const ACTIVE_DECK = 'quiet';
 </script>
 
 <style>
@@ -391,6 +401,14 @@ lang: "es"
     line-height: 1.18;
     letter-spacing: -0.02em;
     color: rgb(15 23 42);
+  }
+
+  /* Va entre el titular de cierre y el formulario, para que se lea como
+     condiciones y no como otro párrafo de argumento. */
+  .rf-pilot {
+    margin: 0 0 1.5rem;
+    font-size: 1rem;
+    color: rgb(71 85 105);
   }
 
   .rf-fineprint {
