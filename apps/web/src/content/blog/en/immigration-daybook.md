@@ -6,6 +6,7 @@ type: "page"
 hideTitle: true
 description: "The most lovingly crafted algorithmic newsletter you'll read. Immigration enforcement in all 53 jurisdictions, Monday through Friday, in English and Spanish."
 byline: "Recovered Factory"
+previewImage: "/images/immigration-daybook-og-en.png"
 hidePreview: true
 lang: "en"
 ---

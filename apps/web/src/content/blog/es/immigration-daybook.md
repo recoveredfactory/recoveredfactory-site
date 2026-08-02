@@ -6,6 +6,7 @@ type: "page"
 hideTitle: true
 description: "El boletín algorítmico más cuidado que vas a leer. La aplicación de la ley migratoria en las 53 jurisdicciones, de lunes a viernes, en español e inglés."
 byline: "Recovered Factory"
+previewImage: "/images/immigration-daybook-og-es.png"
 hidePreview: true
 lang: "es"
 ---
