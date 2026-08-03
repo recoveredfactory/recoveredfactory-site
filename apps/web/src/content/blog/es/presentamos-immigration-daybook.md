@@ -14,9 +14,8 @@ lang: "es"
 previewImage: "/images/immigration-daybook-announce-og-es.png"
 ---
 
-<p class="no-drop"><em>Immigration Daybook empieza el miércoles 5 de agosto.</em></p>
-
 <div class="rf-signup not-prose">
+  <p class="rf-signup__lead">Immigration Daybook empieza el miércoles 5 de agosto.</p>
   <SubscribeForm
     buttonClass="bg-fern-strong px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
     id="daybook-post-top"
@@ -40,7 +39,28 @@ Puede que ya lo supieras, porque le sigues la pista a estas cosas. Mucha gente n
 
 Para eso construimos Immigration Daybook. Cada día de lunes a viernes: un resumen de lo que pasó en el sistema migratorio y, la parte que más ilusión me hace, **un calendario de todo lo que sabemos que viene.** Fechas de entrada en vigor, plazos para enviar comentarios, audiencias, todo respaldado por fuentes primarias y con enlaces al análisis de quienes saben. Las normas que entran en vigor en voz baja mientras todo el mundo discute la indignación del día.
 
-<div class="rf-tk">CAPTURA TK — la sección del calendario, ojalá con 2 o 3 fechas reales a la vista</div>
+<div class="rf-shots-wrap not-prose relative left-1/2 right-1/2 -mx-[50vw] w-screen">
+  <div class="rf-shots">
+    <figure class="rf-shots__item">
+      <img
+        src="/images/immigration-daybook-edition-en.png"
+        alt="El encabezado de una edición de Immigration Daybook del 3 de agosto de 2026, editada por David Eads. La nota principal informa que venció un contrato federal que financiaba asistencia legal para menores migrantes no acompañados, y que decenas de miles de menores quedan sin abogado ante los tribunales de inmigración. Dos entradas en negrita terminan con sus fuentes: NBC Chicago y Telemundo Washington DC, y después El Paso Matters, Los Angeles Times y Univision."
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption class="rf-shots__cap">El resumen: qué pasó, qué significa y quién lo reportó. <span class="rf-shots__lang">Edición en inglés</span></figcaption>
+    </figure>
+    <figure class="rf-shots__item">
+      <img
+        src="/images/immigration-daybook-upcoming-en.png"
+        alt="La sección Upcoming de la misma edición: un calendario con fechas, dividido en TODAY y THIS WEEK. Dos entradas del 3 de agosto tratan sobre nuevos salarios mínimos para trabajadores H-2A y una norma propuesta de fianzas para visas; una del 4 de agosto, sobre una decisión judicial acerca de las renovaciones del Estatus de Protección Temporal; una del 5 de agosto, sobre permisos de trabajo acortados para solicitantes de asilo. Cada una enlaza a su fuente, el Federal Register o WR Immigration."
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption class="rf-shots__cap">El calendario: lo que viene, con la fuente primaria detrás de cada fecha. <span class="rf-shots__lang">Edición en inglés</span></figcaption>
+    </figure>
+  </div>
+</div>
 
 ## Encontrar el fuego entre el humo
 
@@ -116,18 +136,62 @@ Lo que queda abierto es la sostenibilidad. Esto cuesta una fracción de lo que c
     text-transform: uppercase;
     color: rgb(100 116 139);
   }
-  /* Marcador para arte que todavía no existe. Borra el bloque junto con esta
-     regla cuando llegue la captura real. */
-  .rf-tk {
-    margin: 2rem 0;
-    padding: 2.5rem 1.5rem;
-    border: 1px dashed rgba(15, 23, 42, 0.35);
-    font-family: "Jost", sans-serif;
+  /* ── Capturas de la edición ───────────────────────────────
+     Dos capturas de la misma edición, una al lado de la otra y
+     más anchas que la columna de texto. A la medida de la
+     columna, dos columnas dejarían la tipografía de 12px del
+     boletín en unos 320px, ilegible; por eso el par se sale del
+     ancho y solo pasa a dos columnas cuando hay espacio. Los dos
+     archivos comparten un mismo lienzo, así que las columnas
+     quedan a la misma altura sin forzarlo. */
+  .rf-shots-wrap {
+    margin: 2.5rem 0;
+  }
+  .rf-shots {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+    max-width: 34rem;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  @media (min-width: 900px) {
+    .rf-shots {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2rem;
+      max-width: 68rem;
+      padding: 0 2.5rem;
+    }
+  }
+  .rf-shots__item {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .rf-shots__item img {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* Las capturas son blancas sobre una página crema y si no se
+       confundirían con el fondo. */
+    border: 1px solid rgba(15, 23, 42, 0.15);
+  }
+  .rf-shots__cap {
+    margin-top: 0.65rem;
+    font-family: var(--font-body);
     font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-align: center;
-    text-transform: uppercase;
+    line-height: 1.5;
     color: rgb(100 116 139);
+  }
+  /* Son capturas de la edición en inglés hasta que corra la de español. */
+  .rf-shots__lang {
+    display: block;
+    margin-top: 0.15rem;
+    font-family: "Jost", sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(148 163 184);
   }
 </style>

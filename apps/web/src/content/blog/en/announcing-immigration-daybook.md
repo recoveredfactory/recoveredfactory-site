@@ -14,9 +14,8 @@ lang: "en"
 previewImage: "/images/immigration-daybook-announce-og-en.png"
 ---
 
-<p class="no-drop"><em>Immigration Daybook starts Wednesday, Aug. 5.</em></p>
-
 <div class="rf-signup not-prose">
+  <p class="rf-signup__lead">Immigration Daybook starts Wednesday, Aug. 5.</p>
   <SubscribeForm
     buttonClass="bg-fern-strong px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
     id="daybook-post-top"
@@ -40,21 +39,28 @@ Maybe you already knew, because you track this stuff yourself. A lot of people d
 
 That's what we built Immigration Daybook to solve. Every weekday: a rundown of what happened in the immigration system, along with the part I'm most excited about — **a calendar of everything we know that's coming.** Effective dates, comment deadlines, court dates, all backed by primary sources and links to expert analysis. The rules that quietly take force while everyone's arguing about the outrage of the day.
 
-<ResizedImage
-  src="/images/immigration-daybook-edition-en.png"
-  alt="The top of an Immigration Daybook edition dated August 3, 2026, edited by David Eads. The lead story reports that a federal contract funding legal aid for unaccompanied migrant children has expired, leaving tens of thousands of minors facing immigration court without attorneys. Two bolded follow-up items each end in source links: NBC Chicago and Telemundo Washington DC, then El Paso Matters, Los Angeles Times, and Univision."
-  figureClass="my-8 max-w-2xl"
-  caption="The rundown: what happened, what it means, and who reported it."
-  unoptimized
-/>
-
-<ResizedImage
-  src="/images/immigration-daybook-upcoming-en.png"
-  alt="The Upcoming section of the same edition, a dated calendar split into TODAY and THIS WEEK. Two Aug. 3 entries cover new H-2A wage rates and a proposed visa bond rule; an Aug. 4 entry covers a court decision on Temporary Protected Status renewals; an Aug. 5 entry covers a decision on shortened work permits for asylum seekers. Each carries a source link to the Federal Register or WR Immigration."
-  figureClass="my-8 max-w-2xl"
-  caption="The calendar: what's coming, with the primary source behind each date."
-  unoptimized
-/>
+<div class="rf-shots-wrap not-prose relative left-1/2 right-1/2 -mx-[50vw] w-screen">
+  <div class="rf-shots">
+    <figure class="rf-shots__item">
+      <img
+        src="/images/immigration-daybook-edition-en.png"
+        alt="The top of an Immigration Daybook edition dated August 3, 2026, edited by David Eads. The lead story reports that a federal contract funding legal aid for unaccompanied migrant children has expired, leaving tens of thousands of minors facing immigration court without attorneys. Two bolded follow-up items each end in source links: NBC Chicago and Telemundo Washington DC, then El Paso Matters, Los Angeles Times, and Univision."
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption class="rf-shots__cap">The rundown: what happened, what it means, and who reported it.</figcaption>
+    </figure>
+    <figure class="rf-shots__item">
+      <img
+        src="/images/immigration-daybook-upcoming-en.png"
+        alt="The Upcoming section of the same edition, a dated calendar split into TODAY and THIS WEEK. Two Aug. 3 entries cover new H-2A wage rates and a proposed visa bond rule; an Aug. 4 entry covers a court decision on Temporary Protected Status renewals; an Aug. 5 entry covers a decision on shortened work permits for asylum seekers. Each carries a source link to the Federal Register or WR Immigration."
+        loading="lazy"
+        decoding="async"
+      />
+      <figcaption class="rf-shots__cap">The calendar: what's coming, with the primary source behind each date.</figcaption>
+    </figure>
+  </div>
+</div>
 
 ## Finding the fire in the smoke
 
@@ -98,7 +104,6 @@ Sustainability is the open question. This runs on a fraction of what a tradition
 </div>
 
 <script>
-  import ResizedImage from '$lib/components/ResizedImage.svelte';
   import SubscribeForm from '$lib/components/SubscribeForm.svelte';
 </script>
 
@@ -129,6 +134,53 @@ Sustainability is the open question. This runs on a fraction of what a tradition
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
+    color: rgb(100 116 139);
+  }
+
+  /* ── Edition screenshots ──────────────────────────────────
+     Two shots of the same edition, side by side past the prose
+     measure. At the column's own width a 2-up would render the
+     newsletter's 12px type at around 320px wide and unreadable,
+     so the pair breaks out and only goes two-column once there
+     is room for it. Both files share one canvas, so the columns
+     match height without a rule to force it. */
+  .rf-shots-wrap {
+    margin: 2.5rem 0;
+  }
+  .rf-shots {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+    max-width: 34rem;
+    margin: 0 auto;
+    padding: 0 1.5rem;
+  }
+  @media (min-width: 900px) {
+    .rf-shots {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2rem;
+      max-width: 68rem;
+      padding: 0 2.5rem;
+    }
+  }
+  .rf-shots__item {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .rf-shots__item img {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* The shots are white on a cream page and would otherwise bleed
+       into it. */
+    border: 1px solid rgba(15, 23, 42, 0.15);
+  }
+  .rf-shots__cap {
+    margin-top: 0.65rem;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    line-height: 1.5;
     color: rgb(100 116 139);
   }
 </style>
