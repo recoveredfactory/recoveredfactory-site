@@ -8,24 +8,30 @@ const KIT_API_BASE_URL =
 const KIT_API_KEY = process.env.KIT_API_KEY ?? '';
 const KIT_API_SECRET = process.env.KIT_API_SECRET ?? '';
 
+/**
+ * Kit's v3 API authenticates with `api_key` / `api_secret` query parameters.
+ * `Authorization: Bearer` is a v4 convention and v3 answers it with a 401, so
+ * sending the key as a header meant every authenticated call failed.
+ *
+ * Both credentials go out when both are configured: endpoints differ on which
+ * they accept — tag writes take the key, tag and subscriber reads want the
+ * secret — and Kit ignores the one it does not need.
+ */
 const getAuth = (): KitAuth => {
-  if (KIT_API_KEY) {
-    return {
-      headers: { Authorization: `Bearer ${KIT_API_KEY}` },
-      query: {},
-    };
-  }
-  if (KIT_API_SECRET) {
-    return {
-      headers: {},
-      query: { api_secret: KIT_API_SECRET },
-    };
-  }
-  return { headers: {}, query: {} };
+  const query: Record<string, string> = {};
+  if (KIT_API_KEY) query.api_key = KIT_API_KEY;
+  if (KIT_API_SECRET) query.api_secret = KIT_API_SECRET;
+  return { headers: {}, query };
 };
 
 const buildUrl = (path: string, query: Record<string, string>) => {
-  const url = new URL(path, KIT_API_BASE_URL);
+  // Join the strings rather than resolving them: `new URL('/tags', '…/v3')`
+  // treats a leading slash as host-absolute and drops the version segment. The
+  // request then lands on a redirect to marketing HTML, which parses as an
+  // empty object instead of failing — so every call quietly returns nothing.
+  const url = new URL(
+    `${KIT_API_BASE_URL.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`,
+  );
   Object.entries(query).forEach(([key, value]) => {
     if (value) url.searchParams.set(key, value);
   });
@@ -123,6 +129,55 @@ export const resolveTagId = async (name: string): Promise<string | null> => {
 
   if (id) tagIdsByName.set(key, id);
   return id;
+};
+
+/**
+ * Kit v3 gates subscriber *reads* behind the account secret — the publishable
+ * key that authorizes tag writes is rejected on this endpoint — so this asks
+ * for the secret directly instead of going through `getAuth()`.
+ *
+ * `checked: false` (no secret configured) is deliberately distinct from
+ * `subscriber: null` (Kit does not know this address). Collapsing the two would
+ * make a missing credential look identical to a failed signup.
+ */
+export type SubscriberLookup = {
+  checked: boolean;
+  subscriber: { id: string; state: string } | null;
+};
+
+export const findSubscriberByEmail = async (
+  email: string,
+): Promise<SubscriberLookup> => {
+  if (!KIT_API_SECRET) return { checked: false, subscriber: null };
+
+  const response = await fetch(
+    buildUrl('/subscribers', {
+      api_secret: KIT_API_SECRET,
+      email_address: email,
+      // Kit defaults this endpoint to `active`, which hides everyone who has
+      // not answered the double opt-in yet — i.e. precisely the people a guard
+      // confirmation is asking about. Without `all`, a fresh signup reads as
+      // "no such subscriber" seconds after it succeeded.
+      status: 'all',
+    }),
+    { headers: { 'content-type': 'application/json' } },
+  );
+  if (!response.ok) {
+    const text = await response.text().catch(() => '');
+    throw new Error(`Kit API error: ${response.status} ${text}`);
+  }
+
+  const payload = (await response.json().catch(() => ({}))) as {
+    subscribers?: Array<{ id?: number | string; state?: string }>;
+  };
+  const match = payload?.subscribers?.[0];
+  return {
+    checked: true,
+    subscriber:
+      match?.id != null
+        ? { id: String(match.id), state: String(match.state ?? '') }
+        : null,
+  };
 };
 
 export const tagSubscriberByName = async (payload: {

@@ -1,21 +1,13 @@
 import { json, redirect } from '@sveltejs/kit';
 import { tagSubscriberByName } from '$lib/kit';
+import { resolveTag } from '$lib/signup-tags';
 
 const FORM_IDS = {
   en: '8972189',
   es: '8981790',
 } as const;
 
-// Anyone can POST here, so tags are allow-listed rather than pattern-matched —
-// otherwise a forged request could fill the Kit account with junk tags.
-const ALLOWED_TAGS = new Set(['newsletter:immigration-daybook']);
-
 const resolveLang = (value: string) => (value === 'es' ? 'es' : 'en');
-
-const resolveTag = (value: string) => {
-  const tag = value.trim().toLowerCase();
-  return ALLOWED_TAGS.has(tag) ? tag : '';
-};
 
 const getSafeRedirect = (requestUrl: string, target: string | null) => {
   const base = new URL(requestUrl);

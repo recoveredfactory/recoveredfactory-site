@@ -45,6 +45,17 @@
   let supportEmail = $state('');
   let guardUrl = $state('');
   let guardLoadCount = $state(0);
+  // Held from submit so the guard confirmation can name the address again — by
+  // then the input has been hidden behind the challenge.
+  let pendingEmail = $state('');
+
+  // Kit's guard runs inside Kit's own iframe, so the only signals we get are a
+  // postMessage that may never arrive and the iframe reloading. Neither proves
+  // the challenge passed, so both are treated as "go ask the server", and the
+  // server asks Kit. Kit can lag a moment behind the challenge, hence retries.
+  const GUARD_CONFIRM_TRIES = 4;
+  const GUARD_CONFIRM_DELAY_MS = 1500;
+  let confirming = false;
 
   const inputId = $derived(`${id}-email`);
   const isLocked = $derived(status === 'loading' || status === 'success');
@@ -59,6 +70,7 @@
     const form = event.currentTarget as HTMLFormElement;
     const formData = new FormData(form);
     const submittedEmail = String(formData.get('email_address') ?? '').trim();
+    pendingEmail = submittedEmail;
     formData.set('lang', lang);
     formData.set('fields[lang]', lang);
     formData.set('source', source);
@@ -112,19 +124,76 @@
           (data as { type?: string }).type;
     if (!messageName || !String(messageName).includes('ckjs:guard:confirmed')) return;
     if (status !== 'guard') return;
-    status = 'success';
-    guardUrl = '';
-    guardLoadCount = 0;
-    errorMessage = '';
+    void confirmGuard(true);
   };
 
   const handleGuardLoad = () => {
     if (status !== 'guard') return;
     guardLoadCount += 1;
+    // The first load is the challenge appearing; a second means it was
+    // submitted. That says the reader acted, not that they passed, so it asks
+    // the server instead of declaring victory.
     if (guardLoadCount >= 2) {
-      status = 'success';
+      void confirmGuard(false);
+    }
+  };
+
+  /**
+   * Applies the newsletter tag that /api/signup could not, because Kit
+   * interrupted it with the guard. The server verifies against Kit before
+   * tagging, so a failed challenge surfaces as an error rather than a success
+   * message to someone who never got subscribed.
+   */
+  const confirmGuard = async (trusted: boolean) => {
+    if (confirming || status !== 'guard') return;
+    confirming = true;
+
+    const body = new FormData();
+    body.set('email_address', pendingEmail);
+    body.set('lang', lang);
+    if (tag) body.set('tag', tag);
+
+    try {
+      for (let attempt = 0; attempt < GUARD_CONFIRM_TRIES; attempt += 1) {
+        if (attempt > 0) {
+          await new Promise((resolve) =>
+            setTimeout(resolve, GUARD_CONFIRM_DELAY_MS),
+          );
+        }
+        if (status !== 'guard') return;
+
+        // Ask for real verification on every pass but the last. Only once the
+        // retries are spent does a trusted trigger fall back to Kit's word, so
+        // lookup lag ends in a tagged subscriber rather than a failed one.
+        const isFinal = attempt === GUARD_CONFIRM_TRIES - 1;
+        body.set('trusted', trusted && isFinal ? '1' : '0');
+
+        const payload = await fetch('/api/signup/confirm', {
+          method: 'POST',
+          body,
+          headers: { accept: 'application/json' },
+        })
+          .then((response) => response.json())
+          .catch(() => null);
+
+        if (payload?.ok) {
+          status = 'success';
+          guardUrl = '';
+          guardLoadCount = 0;
+          errorMessage = '';
+          supportEmail = pendingEmail;
+          emailValue = '';
+          return;
+        }
+        // A definite "no" ends it; only an unsettled answer is worth retrying.
+        if (payload && !payload.retryable) break;
+      }
+
+      status = 'error';
       guardUrl = '';
-      errorMessage = '';
+      errorMessage = m.subscribe_error();
+    } finally {
+      confirming = false;
     }
   };
 
