@@ -90,19 +90,21 @@ ${body}
 // ── Landing card ──────────────────────────────────────────────────────────
 // `factsSize` keeps the terms on a single line. The Spanish strip runs ~15%
 // longer than the English one and wraps at a matched size, orphaning the last
-// term and throwing the card off balance.
+// term and throwing the card off balance. With the editor credit gone there are
+// two terms rather than three, so they spread to the ends of the rule instead of
+// sitting bunched at the left.
 const LANDING = {
   en: {
     eyebrow: 'Recovered Factory',
     wordmark: ['Immigration', 'Daybook'],
-    facts: ['Monday–Friday', 'Edited by David Eads', 'English & Spanish'],
-    factsSize: 21,
+    facts: ['Monday–Friday', 'English & Spanish'],
+    factsSize: 26,
   },
   es: {
     eyebrow: 'Recovered Factory',
     wordmark: ['Immigration', 'Daybook'],
-    facts: ['De lunes a viernes', 'Editado por David Eads', 'Español e inglés'],
-    factsSize: 18,
+    facts: ['De lunes a viernes', 'Español e inglés'],
+    factsSize: 24,
   },
 };
 
@@ -130,6 +132,7 @@ const landingCard = ({ eyebrow, wordmark, facts, factsSize }) =>
     display: flex;
     flex-wrap: nowrap;
     white-space: nowrap;
+    justify-content: space-between;
     gap: ${Math.round(factsSize * 1.5)}px;
     margin-top: 46px;
     padding-top: 30px;
@@ -158,8 +161,8 @@ const ANNOUNCEMENT = {
     lockupSize: 56,
     headline: 'We turn the spectacle of the immigration system into evidence, every weekday.',
     headlineSize: 58,
-    meta: ['Starts Wednesday, Aug. 5', 'Edited by David Eads'],
-    metaSize: 30,
+    meta: ['Starts Wednesday, Aug. 5'],
+    metaSize: 36,
   },
   es: {
     lockup: 'Immigration Daybook',
@@ -167,10 +170,8 @@ const ANNOUNCEMENT = {
     headline:
       'Convertimos el espectáculo del sistema migratorio en evidencia, de lunes a viernes.',
     headlineSize: 54,
-    // 25px overruns the rule by ~13px: the Spanish strip is 6 characters longer
-    // than the English one and `nowrap` spills rather than wrapping.
-    meta: ['Empieza el miércoles 5 de agosto', 'Editado por David Eads'],
-    metaSize: 24,
+    meta: ['Empieza el miércoles 5 de agosto'],
+    metaSize: 28,
   },
 };
 
@@ -197,9 +198,11 @@ const announcementCard = ({ lockup, lockupSize, headline, headlineSize, meta, me
     color: ${CREAM};
     text-wrap: balance;
   }
-  /* Spread to the ends rather than bunched at the left: the crimson rule above
-     already spans the full measure, and a short strip under a full-width rule
-     reads as unfinished. */
+  /* One item since the editor credit came off, so space-between has nothing
+     left to spread and the strip runs about two thirds of the rule. Sizing it
+     to actually fill would take ~55px, level with the 56px lockup, which would
+     rank a date as loudly as the masthead. A full-width rule over a shorter
+     caption is the better trade. */
   .meta {
     display: flex;
     flex-wrap: nowrap;

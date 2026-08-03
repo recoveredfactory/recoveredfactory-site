@@ -34,7 +34,6 @@ lang: "es"
       />
       <ul class="rf-hero__meta">
         <li>Empieza el miér. 5 de agosto</li>
-        <li>Editado por David Eads</li>
       </ul>
     </div>
   </div>
@@ -103,7 +102,7 @@ lang: "es"
 <section class="rf-section">
   <p class="rf-kicker">Cómo se hace</p>
   <p class="rf-graf">Este boletín es orgullosamente algorítmico, y queremos que sea el texto algorítmico más cuidado que hayas leído. La apuesta no es "la IA lee las noticias": mucha gente hace eso y buena parte sale mal. La apuesta es que una redacción puede tener un cerebro, algo a lo que de verdad puedas <em>preguntarle</em> por todo lo que sabe y que enseñe su trabajo en vez de pedirte que confíes.</p>
-  <p class="rf-graf">El sistema lee las noticias del día y saca a la luz los patrones que encuentra. Después una persona edita: qué significa, si es exacto y quién lo cubrió mejor. Esa persona es <a href="/es/presentamos-recovered-factory">David Eads</a>, periodista de datos con años de experiencia cubriendo inmigración para medios como NPR y The Marshall Project, e inmigrante él mismo.</p>
+  <p class="rf-graf">El sistema lee las noticias del día y saca a la luz los patrones que encuentra. Después una persona edita: qué significa, si es exacto y quién lo cubrió mejor. Esa persona es <a href="/es/presentamos-recovered-factory">David Eads</a>, periodista de datos con años de experiencia cubriendo inmigración para medios como NPR y The Marshall Project.</p>
 </section>
 
 <section class="rf-section rf-section--cta">
