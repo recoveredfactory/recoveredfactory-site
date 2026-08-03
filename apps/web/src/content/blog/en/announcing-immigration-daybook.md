@@ -2,7 +2,7 @@
 id: "announcing-immigration-daybook"
 title: "Announcing Immigration Daybook"
 date: "2026-08-03"
-description: "A weekday rundown of the immigration system — and a calendar of what's coming. Proudly algorithmic. Free pilot starts Wednesday, Aug. 5."
+description: "A weekday rundown of the immigration system — and a calendar of what's coming. Proudly algorithmic, crafted with care. Free pilot starts Wednesday, Aug. 5."
 type: "post"
 hideSubscribe: true
 byline: "David Eads"
@@ -36,26 +36,30 @@ previewImage: "/images/immigration-daybook-announce-og-en.png"
 
 Maybe you already knew, because you track this stuff yourself. A lot of people don't, and shouldn't have to.
 
-That's what we built Immigration Daybook to solve. Every weekday: a rundown of what happened in the immigration system, along with the part I'm most excited about — **a calendar of everything we know that's coming.** Effective dates, comment deadlines, court dates, all backed by primary sources and links to expert analysis. The rules that quietly take force while everyone's arguing about the outrage of the day.
+That's what we built [Immigration Daybook](/en/immigration-daybook) to solve. Every weekday: a rundown of what happened in the immigration system, along with the part I'm most excited about — **a calendar of everything we know that's coming.** Effective dates, comment deadlines, court dates, all backed by primary sources and links to expert analysis. The rules that quietly take force while everyone's arguing about the outrage of the day.
 
 <div class="rf-shots-wrap not-prose">
   <div class="rf-shots">
     <figure class="rf-shots__item">
-      <img
-        src="/images/immigration-daybook-edition-en.png"
-        alt="The top of an Immigration Daybook edition dated August 3, 2026, a Recovered Factory project. The lead story reports that a federal contract funding legal aid for unaccompanied migrant children has expired, leaving tens of thousands of minors facing immigration court without attorneys. Two bolded follow-up items each end in source links: NBC Chicago and Telemundo Washington DC, then El Paso Matters, Los Angeles Times, and Univision."
-        loading="lazy"
-        decoding="async"
-      />
+      <a class="rf-shots__link" href="/en/immigration-daybook">
+        <img
+          src="/images/immigration-daybook-edition-en.png"
+          alt="The top of an Immigration Daybook edition dated August 3, 2026, a Recovered Factory project. The lead story reports that a federal contract funding legal aid for unaccompanied migrant children has expired, leaving tens of thousands of minors facing immigration court without attorneys. Two bolded follow-up items each end in source links: NBC Chicago and Telemundo Washington DC, then El Paso Matters, Los Angeles Times, and Univision."
+          loading="lazy"
+          decoding="async"
+        />
+      </a>
       <figcaption class="rf-shots__cap">The rundown: what happened, what it means, and who reported it. (Screenshots taken from a recent prototype.)</figcaption>
     </figure>
     <figure class="rf-shots__item">
-      <img
-        src="/images/immigration-daybook-upcoming-en.png"
-        alt="The Upcoming section of the same edition, a dated calendar split into TODAY and THIS WEEK. Two Aug. 3 entries cover new H-2A wage rates and a proposed visa bond rule; an Aug. 4 entry covers a court decision on Temporary Protected Status renewals; an Aug. 5 entry covers a decision on shortened work permits for asylum seekers. Each carries a source link to the Federal Register or WR Immigration."
-        loading="lazy"
-        decoding="async"
-      />
+      <a class="rf-shots__link" href="/en/immigration-daybook">
+        <img
+          src="/images/immigration-daybook-upcoming-en.png"
+          alt="The Upcoming section of the same edition, a dated calendar split into TODAY and THIS WEEK. Two Aug. 3 entries cover new H-2A wage rates and a proposed visa bond rule; an Aug. 4 entry covers a court decision on Temporary Protected Status renewals; an Aug. 5 entry covers a decision on shortened work permits for asylum seekers. Each carries a source link to the Federal Register or WR Immigration."
+          loading="lazy"
+          decoding="async"
+        />
+      </a>
       <figcaption class="rf-shots__cap">The calendar: What's coming, with the primary source or expert citation for each date.</figcaption>
     </figure>
   </div>
@@ -188,9 +192,6 @@ Sustainability is the open question. This runs on a fraction of what a tradition
     display: block;
     width: 100%;
     height: auto;
-    /* The shots are white on a cream page and would otherwise bleed
-       into it. */
-    border: 1px solid rgba(15, 23, 42, 0.15);
   }
   .rf-shots__cap {
     margin-top: 0.65rem;
@@ -198,5 +199,16 @@ Sustainability is the open question. This runs on a fraction of what a tradition
     font-size: 0.78rem;
     line-height: 1.5;
     color: rgb(100 116 139);
+  }
+  /* The shots link through to the landing page. Block-level so the anchor is
+     the image and not a text-sized box around it, and the border moves onto
+     the anchor so the hover state has something to change. */
+  .rf-shots__link {
+    display: block;
+    border: 1px solid rgba(15, 23, 42, 0.15);
+    transition: border-color 150ms ease;
+  }
+  .rf-shots__link:hover {
+    border-color: var(--color-fern);
   }
 </style>

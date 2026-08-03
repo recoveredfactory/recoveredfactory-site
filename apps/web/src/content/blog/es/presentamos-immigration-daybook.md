@@ -2,7 +2,7 @@
 id: "announcing-immigration-daybook"
 title: "Presentamos Immigration Daybook"
 date: "2026-08-03"
-description: "Un resumen diario del sistema migratorio y un calendario de lo que viene. Orgullosamente algorítmico. El piloto gratuito empieza el miércoles 5 de agosto."
+description: "Un resumen diario del sistema migratorio y un calendario de lo que viene. Orgullosamente algorítmico, hecho con cuidado. El piloto gratuito empieza el miércoles 5 de agosto."
 type: "post"
 hideSubscribe: true
 byline: "David Eads"
@@ -36,26 +36,30 @@ previewImage: "/images/immigration-daybook-announce-og-es.png"
 
 Puede que ya lo supieras, porque le sigues la pista a estas cosas. Mucha gente no lo sabe, y no tendría por qué tener que averiguarlo sola.
 
-Para eso construimos Immigration Daybook. Cada día de lunes a viernes: un resumen de lo que pasó en el sistema migratorio y, la parte que más ilusión me hace, **un calendario de todo lo que sabemos que viene.** Fechas de entrada en vigor, plazos para enviar comentarios, audiencias, todo respaldado por fuentes primarias y con enlaces al análisis de quienes saben. Las normas que entran en vigor en voz baja mientras todo el mundo discute la indignación del día.
+Para eso construimos [Immigration Daybook](/es/immigration-daybook). Cada día de lunes a viernes: un resumen de lo que pasó en el sistema migratorio y, la parte que más ilusión me hace, **un calendario de todo lo que sabemos que viene.** Fechas de entrada en vigor, plazos para enviar comentarios, audiencias, todo respaldado por fuentes primarias y con enlaces al análisis de quienes saben. Las normas que entran en vigor en voz baja mientras todo el mundo discute la indignación del día.
 
 <div class="rf-shots-wrap not-prose">
   <div class="rf-shots">
     <figure class="rf-shots__item">
-      <img
-        src="/images/immigration-daybook-edition-en.png"
-        alt="El encabezado de una edición de Immigration Daybook del 3 de agosto de 2026, un proyecto de Recovered Factory. La nota principal informa que venció un contrato federal que financiaba asistencia legal para menores migrantes no acompañados, y que decenas de miles de menores quedan sin abogado ante los tribunales de inmigración. Dos entradas en negrita terminan con sus fuentes: NBC Chicago y Telemundo Washington DC, y después El Paso Matters, Los Angeles Times y Univision."
-        loading="lazy"
-        decoding="async"
-      />
+      <a class="rf-shots__link" href="/es/immigration-daybook">
+        <img
+          src="/images/immigration-daybook-edition-en.png"
+          alt="El encabezado de una edición de Immigration Daybook del 3 de agosto de 2026, un proyecto de Recovered Factory. La nota principal informa que venció un contrato federal que financiaba asistencia legal para menores migrantes no acompañados, y que decenas de miles de menores quedan sin abogado ante los tribunales de inmigración. Dos entradas en negrita terminan con sus fuentes: NBC Chicago y Telemundo Washington DC, y después El Paso Matters, Los Angeles Times y Univision."
+          loading="lazy"
+          decoding="async"
+        />
+      </a>
       <figcaption class="rf-shots__cap">El resumen: qué pasó, qué significa y quién lo reportó. (Capturas de un prototipo reciente.) <span class="rf-shots__lang">Edición en inglés</span></figcaption>
     </figure>
     <figure class="rf-shots__item">
-      <img
-        src="/images/immigration-daybook-upcoming-en.png"
-        alt="La sección Upcoming de la misma edición: un calendario con fechas, dividido en TODAY y THIS WEEK. Dos entradas del 3 de agosto tratan sobre nuevos salarios mínimos para trabajadores H-2A y una norma propuesta de fianzas para visas; una del 4 de agosto, sobre una decisión judicial acerca de las renovaciones del Estatus de Protección Temporal; una del 5 de agosto, sobre permisos de trabajo acortados para solicitantes de asilo. Cada una enlaza a su fuente, el Federal Register o WR Immigration."
-        loading="lazy"
-        decoding="async"
-      />
+      <a class="rf-shots__link" href="/es/immigration-daybook">
+        <img
+          src="/images/immigration-daybook-upcoming-en.png"
+          alt="La sección Upcoming de la misma edición: un calendario con fechas, dividido en TODAY y THIS WEEK. Dos entradas del 3 de agosto tratan sobre nuevos salarios mínimos para trabajadores H-2A y una norma propuesta de fianzas para visas; una del 4 de agosto, sobre una decisión judicial acerca de las renovaciones del Estatus de Protección Temporal; una del 5 de agosto, sobre permisos de trabajo acortados para solicitantes de asilo. Cada una enlaza a su fuente, el Federal Register o WR Immigration."
+          loading="lazy"
+          decoding="async"
+        />
+      </a>
       <figcaption class="rf-shots__cap">El calendario: Lo que viene, con la fuente primaria o la cita experta de cada fecha. <span class="rf-shots__lang">Edición en inglés</span></figcaption>
     </figure>
   </div>
@@ -189,9 +193,6 @@ Lo que queda abierto es la sostenibilidad. Esto cuesta una fracción de lo que c
     display: block;
     width: 100%;
     height: auto;
-    /* Las capturas son blancas sobre una página crema y si no se
-       confundirían con el fondo. */
-    border: 1px solid rgba(15, 23, 42, 0.15);
   }
   .rf-shots__cap {
     margin-top: 0.65rem;
@@ -210,5 +211,16 @@ Lo que queda abierto es la sostenibilidad. Esto cuesta una fracción de lo que c
     letter-spacing: 0.12em;
     text-transform: uppercase;
     color: rgb(148 163 184);
+  }
+  /* Las capturas enlazan a la página de presentación. En bloque, para que el
+     enlace sea la imagen y no una caja del tamaño del texto; el borde pasa al
+     enlace para que el hover tenga algo que cambiar. */
+  .rf-shots__link {
+    display: block;
+    border: 1px solid rgba(15, 23, 42, 0.15);
+    transition: border-color 150ms ease;
+  }
+  .rf-shots__link:hover {
+    border-color: var(--color-fern);
   }
 </style>
