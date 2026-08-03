@@ -11,7 +11,7 @@ tags:
   - "field-notes"
   - "immigration"
 lang: "en"
-previewImage: "/images/immigration-daybook-og-en.png"
+previewImage: "/images/immigration-daybook-announce-og-en.png"
 ---
 
 <p class="no-drop"><em>Immigration Daybook starts Wednesday, August 5.</em></p>

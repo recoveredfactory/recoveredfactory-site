@@ -1,21 +1,29 @@
 #!/usr/bin/env node
-// Render the Immigration Daybook social/OG cards, one per language.
+// Render the Immigration Daybook social cards, per language, per card type.
 //
-// Usage: node scripts/daybook/og.mjs [--lang en,es] [--out ../../static/images]
+// Usage: node scripts/daybook/og.mjs [--lang en,es] [--card landing,announcement]
+//                                    [--out ../../static/images]
 //
 // Needs google-chrome and ImageMagick's `convert` on the PATH, and network
 // access the first time so Chrome can fetch Lora + Jost from Google Fonts.
-// Composes a standalone 1200x630 card rather than screenshotting the live page:
-// the page is a tall scroll with a signup form in it, and the card wants the
-// plate, the wordmark, and the terms with nothing else.
 //
-// The deck line is deliberately NOT on the card. Deck copy is under A/B test
-// (see ACTIVE_DECK in the page files) and baking it in would mean regenerating
-// and redeploying these images on every message change.
+// Two cards, because they do different jobs:
+//
+//   landing      — the wordmark plate, for /{lang}/immigration-daybook. A reader
+//                  who clicks lands on the full pitch, so the card only has to
+//                  identify the thing and state the terms.
+//   announcement — for the launch post. A wordmark here would be inert: it just
+//                  repeats og:title and gives nobody a reason to click. So this
+//                  one leads with the argument and the launch date, and demotes
+//                  the wordmark to a lockup.
+//
+// The announcement headline is deliberately its own string rather than a
+// reference to ACTIVE_DECK. The deck is under A/B test and this card should not
+// silently change when a different variant goes live.
 //
 // Composed on a 1200x630 canvas, shot at 2x, and downsampled to 1600x840 —
 // same 1.91:1 frame the platforms want. The extra size is deliberate: the OG
-// tag runs through the image resizer at w=1600 (see getResizedImageUrl), so a
+// tag runs through the image resizer at w=1600 (see getSocialImageUrl), so a
 // 1200px card would be upscaled and softened on the way out.
 
 import { execFileSync } from 'node:child_process';
@@ -32,6 +40,7 @@ const flag = (name, fallback) => {
 };
 
 const langs = flag('lang', 'en,es').split(',');
+const cards = flag('card', 'landing,announcement').split(',');
 const outDir = resolve(here, flag('out', '../../static/images'));
 
 const OUT_SIZE = '1600x840';
@@ -42,10 +51,45 @@ const INK = '#12161d';
 const CREAM = '#f3f1e9';
 const CRIMSON = '#e8244f';
 
-// `factsSize` keeps the terms on a single line. The Spanish strip is ~15%
-// longer than the English one and wraps at the same size, orphaning the last
+const FONTS =
+  'https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Lora:wght@400;500;600&display=swap';
+
+const shell = (css, body) => `<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="${FONTS}" rel="stylesheet" />
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { width: 1200px; height: 630px; }
+  body {
+    background: ${INK};
+    color: ${CREAM};
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 86px;
+    -webkit-font-smoothing: antialiased;
+  }
+  .rule {
+    border: 0;
+    border-top: 3px solid ${CRIMSON};
+  }
+${css}
+</style>
+</head>
+<body>
+${body}
+</body>
+</html>`;
+
+// ── Landing card ──────────────────────────────────────────────────────────
+// `factsSize` keeps the terms on a single line. The Spanish strip runs ~15%
+// longer than the English one and wraps at a matched size, orphaning the last
 // term and throwing the card off balance.
-const COPY = {
+const LANDING = {
   en: {
     eyebrow: 'Recovered Factory',
     wordmark: ['Immigration', 'Daybook'],
@@ -60,25 +104,9 @@ const COPY = {
   },
 };
 
-const card = ({ eyebrow, wordmark, facts, factsSize }) => `<!doctype html>
-<html>
-<head>
-<meta charset="utf-8" />
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Lora:wght@400;500;600&display=swap" rel="stylesheet" />
-<style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 1200px; height: 630px; }
-  body {
-    background: ${INK};
-    color: ${CREAM};
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding: 0 86px;
-    -webkit-font-smoothing: antialiased;
-  }
+const landingCard = ({ eyebrow, wordmark, facts, factsSize }) =>
+  shell(
+    `
   .eyebrow {
     font-family: "Jost", sans-serif;
     font-size: 21px;
@@ -111,55 +139,139 @@ const card = ({ eyebrow, wordmark, facts, factsSize }) => `<!doctype html>
     letter-spacing: 0.16em;
     text-transform: uppercase;
     color: rgba(243, 241, 233, 0.74);
-  }
-</style>
-</head>
-<body>
-  <p class="eyebrow">${eyebrow}</p>
+  }`,
+    `  <p class="eyebrow">${eyebrow}</p>
   <h1 class="wordmark">${wordmark.join('<br />')}</h1>
-  <ul class="facts">${facts.map((f) => `<li>${f}</li>`).join('')}</ul>
-</body>
-</html>`;
+  <ul class="facts">${facts.map((f) => `<li>${f}</li>`).join('')}</ul>`,
+  );
+
+// ── Announcement card ─────────────────────────────────────────────────────
+// Headline carries the argument; the wordmark drops to a lockup above it and
+// the launch date sits under a crimson rule, where the terms live on the
+// landing card. `headlineSize` is per-language because the Spanish sentence is
+// longer and would otherwise run to an extra line.
+const ANNOUNCEMENT = {
+  en: {
+    lockup: 'Immigration Daybook',
+    headline: 'The rules that quietly take force while the spectacle continues.',
+    headlineSize: 62,
+    meta: ['Starts Wednesday, August 5', 'Edited by David Eads'],
+    metaSize: 21,
+  },
+  es: {
+    lockup: 'Immigration Daybook',
+    headline: 'Las normas que entran en vigor en voz baja mientras sigue el espectáculo.',
+    headlineSize: 56,
+    meta: ['Empieza el miércoles 5 de agosto', 'Editado por David Eads'],
+    metaSize: 19,
+  },
+};
+
+const announcementCard = ({ lockup, headline, headlineSize, meta, metaSize }) =>
+  shell(
+    `
+  .lockup {
+    font-family: "Jost", sans-serif;
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: ${CRIMSON};
+    margin-bottom: 38px;
+  }
+  .headline {
+    font-family: "Lora", serif;
+    font-weight: 600;
+    font-size: ${headlineSize}px;
+    line-height: 1.14;
+    letter-spacing: -0.022em;
+    color: ${CREAM};
+    text-wrap: balance;
+  }
+  .meta {
+    display: flex;
+    flex-wrap: nowrap;
+    white-space: nowrap;
+    gap: ${Math.round(metaSize * 1.6)}px;
+    margin-top: 44px;
+    padding-top: 30px;
+    border-top: 3px solid ${CRIMSON};
+    list-style: none;
+    font-family: "Jost", sans-serif;
+    font-size: ${metaSize}px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(243, 241, 233, 0.74);
+  }`,
+    `  <p class="lockup">${lockup}</p>
+  <h1 class="headline">${headline}</h1>
+  <ul class="meta">${meta.map((m) => `<li>${m}</li>`).join('')}</ul>`,
+  );
+
+const CARDS = {
+  landing: {
+    copy: LANDING,
+    render: landingCard,
+    file: (lang) => `immigration-daybook-og-${lang}.png`,
+  },
+  announcement: {
+    copy: ANNOUNCEMENT,
+    render: announcementCard,
+    file: (lang) => `immigration-daybook-announce-og-${lang}.png`,
+  },
+};
 
 const workDir = join(here, 'out');
 mkdirSync(workDir, { recursive: true });
 mkdirSync(outDir, { recursive: true });
 
-for (const lang of langs) {
-  const copy = COPY[lang];
-  if (!copy) {
-    console.error(`No copy for lang "${lang}" — known: ${Object.keys(COPY).join(', ')}`);
+for (const cardName of cards) {
+  const card = CARDS[cardName];
+  if (!card) {
+    console.error(`Unknown card "${cardName}" — known: ${Object.keys(CARDS).join(', ')}`);
     process.exitCode = 1;
     continue;
   }
 
-  const html = join(workDir, `.og-${lang}.html`);
-  const raw = join(workDir, `.og-${lang}-2x.png`);
-  const out = join(outDir, `immigration-daybook-og-${lang}.png`);
+  for (const lang of langs) {
+    const copy = card.copy[lang];
+    if (!copy) {
+      console.error(
+        `No ${cardName} copy for lang "${lang}" — known: ${Object.keys(card.copy).join(', ')}`,
+      );
+      process.exitCode = 1;
+      continue;
+    }
 
-  writeFileSync(html, card(copy));
+    const html = join(workDir, `.${cardName}-${lang}.html`);
+    const raw = join(workDir, `.${cardName}-${lang}-2x.png`);
+    const out = join(outDir, card.file(lang));
 
-  execFileSync(
-    'google-chrome',
-    [
-      '--headless=new',
-      '--disable-gpu',
-      '--hide-scrollbars',
-      '--force-device-scale-factor=2',
-      // Generous: the card must not shoot before the webfonts land, or it
-      // silently renders in a fallback face.
-      '--virtual-time-budget=20000',
-      '--window-size=1200,630',
-      `--screenshot=${raw}`,
-      `file://${html}`,
-    ],
-    // stderr is dropped: headless Chrome spews harmless dbus/UPower noise here.
-    { stdio: ['ignore', 'ignore', 'ignore'] },
-  );
+    writeFileSync(html, card.render(copy));
 
-  execFileSync('convert', [raw, '-resize', OUT_SIZE, '-strip', out]);
-  rmSync(raw, { force: true });
-  rmSync(html, { force: true });
+    execFileSync(
+      'google-chrome',
+      [
+        '--headless=new',
+        '--disable-gpu',
+        '--hide-scrollbars',
+        '--force-device-scale-factor=2',
+        // Generous: the card must not shoot before the webfonts land, or it
+        // silently renders in a fallback face.
+        '--virtual-time-budget=20000',
+        '--window-size=1200,630',
+        `--screenshot=${raw}`,
+        `file://${html}`,
+      ],
+      // stderr is dropped: headless Chrome spews harmless dbus/UPower noise here.
+      { stdio: ['ignore', 'ignore', 'ignore'] },
+    );
 
-  console.log(`Wrote static/images/immigration-daybook-og-${lang}.png`);
+    execFileSync('convert', [raw, '-resize', OUT_SIZE, '-strip', out]);
+    rmSync(raw, { force: true });
+    rmSync(html, { force: true });
+
+    console.log(`Wrote static/images/${card.file(lang)}`);
+  }
 }

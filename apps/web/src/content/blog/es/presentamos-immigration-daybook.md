@@ -11,7 +11,7 @@ tags:
   - "field-notes"
   - "immigration"
 lang: "es"
-previewImage: "/images/immigration-daybook-og-es.png"
+previewImage: "/images/immigration-daybook-announce-og-es.png"
 ---
 
 <p class="no-drop"><em>Immigration Daybook empieza el miércoles 5 de agosto.</em></p>
