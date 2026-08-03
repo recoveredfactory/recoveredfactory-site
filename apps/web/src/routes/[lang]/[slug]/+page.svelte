@@ -17,6 +17,9 @@
 
   const entry = $derived(getEntry(data.lang, data.slug));
   const isPost = $derived(entry?.meta.type !== 'page');
+  // A post that ships its own newsletter-specific form opts out of the stock
+  // house-list blocks, so a reader never sees two different asks.
+  const showsStockSubscribe = $derived(isPost && !entry?.meta.hideSubscribe);
   const byline = $derived(entry?.meta.byline || m.site_name());
   const editedLabel = $derived(data.lang === 'es' ? 'Editado por' : 'Edited by');
   const editorsLine = $derived(
@@ -122,7 +125,7 @@
 {#if entry && EntryComponent}
   <main class="min-h-dvh mt-3 px-6 sm:px-10 lg:px-16">
     <article class="mx-auto max-w-2xl space-y-8 pt-3 pb-12">
-      {#if isPost}
+      {#if showsStockSubscribe}
         <section class="mb-16 w-full rounded border border-slate-900/10 bg-white/60 p-4 sm:p-5">
           <p class="mb-3 text-center text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">
             {m.post_subscribe_heading()}
@@ -188,7 +191,7 @@
         <EntryComponent />
       </div>
 
-      {#if isPost}
+      {#if showsStockSubscribe}
       <section class="mt-12 w-full space-y-5">
         <hr class="border-slate-900/10" />
         <p class="text-center text-sm font-semibold uppercase tracking-[0.2em] text-slate-600">

@@ -50,6 +50,48 @@
   const isPreview = dev || env.PUBLIC_STAGE !== 'prod';
   const supportHref = $derived(`/${currentLocale}/support`);
   const footerSupportLabel = $derived(currentLocale === 'es' ? 'Apoyanos' : 'Support us');
+
+  // ── Immigration Daybook promo strip ──────────────────────────────────────
+  // Runs site-wide until the launch push is over. Dismissal is remembered, and
+  // the strip never shows on the pages that are already selling the thing.
+  const DAYBOOK_BANNER_KEY = 'rf:daybook-banner-dismissed';
+  const DAYBOOK_PAGES =
+    /^\/(en|es)\/(immigration-daybook|announcing-immigration-daybook|presentamos-immigration-daybook)\/?$/;
+
+  let daybookBannerDismissed = $state(false);
+
+  const daybookHref = $derived(`/${currentLocale}/immigration-daybook`);
+  const daybookBannerText = $derived(
+    currentLocale === 'es'
+      ? 'Nuevo: Immigration Daybook, de lunes a viernes. Gratis en agosto.'
+      : 'New: Immigration Daybook, every weekday. Free in August.',
+  );
+  const daybookBannerCta = $derived(currentLocale === 'es' ? 'Suscríbete →' : 'Sign up →');
+  const daybookBannerDismissLabel = $derived(
+    currentLocale === 'es' ? 'Cerrar este aviso' : 'Dismiss this notice',
+  );
+  const showDaybookBanner = $derived(
+    !daybookBannerDismissed && !DAYBOOK_PAGES.test($page.url.pathname),
+  );
+
+  const dismissDaybookBanner = () => {
+    daybookBannerDismissed = true;
+    try {
+      localStorage.setItem(DAYBOOK_BANNER_KEY, '1');
+    } catch {
+      // Storage blocked (private mode, cookie settings): the strip simply
+      // returns on the next full load rather than breaking the page.
+    }
+    trackEvent('daybook_banner_dismiss', { locale: currentLocale });
+  };
+
+  onMount(() => {
+    try {
+      daybookBannerDismissed = localStorage.getItem(DAYBOOK_BANNER_KEY) === '1';
+    } catch {
+      daybookBannerDismissed = false;
+    }
+  });
   const signupHref = $derived(`${homeHref}#workshop`);
   const manageHref = 'https://app.kit.com/users/login';
   const currentYear = new Date().getFullYear();
@@ -229,6 +271,30 @@
   {#if isPreview}
     <div class="bg-fern-strong px-4 py-1.5 text-center text-[0.65rem] font-semibold uppercase tracking-[0.3em] text-white">
       Preview — do not share
+    </div>
+  {/if}
+  {#if showDaybookBanner}
+    <!-- Ink rather than crimson: it carries the Daybook plate colour, and it
+         can't be mistaken for the preview warning when both are stacked. -->
+    <div class="relative bg-[#12161d] text-cream">
+      <a
+        class="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 px-10 py-2.5 text-center transition hover:bg-[#1a2029]"
+        href={daybookHref}
+        onclick={() => trackEvent('daybook_banner_click', { locale: currentLocale })}
+      >
+        <span class="text-[0.8rem] text-cream/85">{daybookBannerText}</span>
+        <span class="text-[0.68rem] font-semibold uppercase tracking-[0.2em] text-fern-strong">
+          {daybookBannerCta}
+        </span>
+      </a>
+      <button
+        aria-label={daybookBannerDismissLabel}
+        class="absolute right-2 top-1/2 -translate-y-1/2 px-2 py-1 text-lg leading-none text-cream/45 transition hover:text-cream"
+        onclick={dismissDaybookBanner}
+        type="button"
+      >
+        ×
+      </button>
     </div>
   {/if}
   <header

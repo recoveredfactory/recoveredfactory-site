@@ -16,6 +16,9 @@ export type BlogMeta = {
   editors?: string[];
   previewImage?: string;
   hidePreview?: boolean;
+  /** Suppress the route's stock subscribe blocks — for posts that carry their
+      own, tagged for a specific newsletter rather than the house list. */
+  hideSubscribe?: boolean;
   tags?: string[];
   lang: Lang;
 };

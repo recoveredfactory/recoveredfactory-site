@@ -2,8 +2,9 @@
 id: "announcing-immigration-daybook"
 title: "Announcing Immigration Daybook"
 date: "2026-08-03"
-description: "A weekday rundown of the immigration system — and a calendar of what's coming. Proudly algorithmic, edited every morning by a person. Free pilot starts Wednesday, August 5."
+description: "A weekday rundown of the immigration system — and a calendar of what's coming. Proudly algorithmic, edited every weekday morning by David Eads. Free pilot starts Wednesday, August 5."
 type: "post"
+hideSubscribe: true
 byline: "David Eads"
 tags:
   - "field-notes"
@@ -12,7 +13,21 @@ lang: "en"
 previewImage: "/images/immigration-daybook-og-en.png"
 ---
 
-<p class="no-drop"><em>Immigration Daybook starts Wednesday, August 5. <a href="/en/immigration-daybook">Subscribe →</a></em></p>
+<p class="no-drop"><em>Immigration Daybook starts Wednesday, August 5.</em></p>
+
+<div class="rf-signup not-prose">
+  <SubscribeForm
+    buttonClass="bg-fern-strong px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
+    id="daybook-post-top"
+    inputClass="w-full border border-slate-900/20 bg-white px-5 py-4 text-lg text-slate-800 placeholder:text-slate-400 sm:max-w-[24rem] sm:flex-none"
+    lang="en"
+    layoutClass="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-2"
+    meta={{ placement: 'announcement-top' }}
+    source="immigration-daybook"
+    tag="newsletter:immigration-daybook"
+  />
+  <p class="rf-signup__note">Free August pilot · English and Spanish editions</p>
+</div>
 
 ---
 
@@ -52,9 +67,54 @@ We're running August as a pilot for free, while we figure out what this should b
 
 Sustainability is the open question. This runs on a fraction of what a traditional link newsletter takes, but it isn't free: there's real compute, plus the time I spent building the system and the time I'll spend editing it every morning. We're not chasing philanthropic money — we'd rather be accountable to our audience than to a program officer — which means at some point we sell something at a fair price that covers costs and pays for the work. This month is how we find out what that is.
 
-<p><a href="/en/immigration-daybook">Subscribe →</a> Starts Wednesday.</p>
+<div class="rf-signup not-prose">
+  <p class="rf-signup__lead">Starts Wednesday, August 5.</p>
+  <SubscribeForm
+    buttonClass="bg-fern-strong px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
+    id="daybook-post-foot"
+    inputClass="w-full border border-slate-900/20 bg-white px-5 py-4 text-lg text-slate-800 placeholder:text-slate-400 sm:max-w-[24rem] sm:flex-none"
+    lang="en"
+    layoutClass="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-2"
+    meta={{ placement: 'announcement-foot' }}
+    source="immigration-daybook"
+    tag="newsletter:immigration-daybook"
+  />
+  <p class="rf-signup__note">Free through August · Unsubscribe anytime</p>
+</div>
+
+<script>
+  import SubscribeForm from '$lib/components/SubscribeForm.svelte';
+</script>
 
 <style>
+  /* The route's stock house-list forms are switched off for this post via
+     `hideSubscribe`, so these are the only asks on the page and they carry the
+     newsletter's own tag. */
+  .rf-signup {
+    margin: 2rem 0;
+    padding: 1.75rem 1.5rem;
+    border: 1px solid rgba(15, 23, 42, 0.15);
+    border-left: 6px solid var(--color-fern);
+    background: #ffffff;
+  }
+  .rf-signup__lead {
+    margin: 0 0 1.1rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 3vw, 1.7rem);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    color: rgb(15 23 42);
+  }
+  .rf-signup__note {
+    margin: 1.1rem 0 0;
+    font-family: "Jost", sans-serif;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgb(100 116 139);
+  }
   /* Placeholder marker for art that hasn't been shot yet. Delete the block
      along with this rule once the real screenshot lands. */
   .rf-tk {

@@ -2,8 +2,9 @@
 id: "announcing-immigration-daybook"
 title: "Presentamos Immigration Daybook"
 date: "2026-08-03"
-description: "Un resumen diario del sistema migratorio y un calendario de lo que viene. Orgullosamente algorítmico, editado cada mañana por una persona. El piloto gratuito empieza el miércoles 5 de agosto."
+description: "Un resumen diario del sistema migratorio y un calendario de lo que viene. Orgullosamente algorítmico, editado cada mañana por David Eads. El piloto gratuito empieza el miércoles 5 de agosto."
 type: "post"
+hideSubscribe: true
 byline: "David Eads"
 tags:
   - "field-notes"
@@ -12,7 +13,21 @@ lang: "es"
 previewImage: "/images/immigration-daybook-og-es.png"
 ---
 
-<p class="no-drop"><em>Immigration Daybook empieza el miércoles 5 de agosto. <a href="/es/immigration-daybook">Suscríbete →</a></em></p>
+<p class="no-drop"><em>Immigration Daybook empieza el miércoles 5 de agosto.</em></p>
+
+<div class="rf-signup not-prose">
+  <SubscribeForm
+    buttonClass="bg-fern-strong px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
+    id="daybook-post-top"
+    inputClass="w-full border border-slate-900/20 bg-white px-5 py-4 text-lg text-slate-800 placeholder:text-slate-400 sm:max-w-[24rem] sm:flex-none"
+    lang="es"
+    layoutClass="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-2"
+    meta={{ placement: 'announcement-top' }}
+    source="immigration-daybook"
+    tag="newsletter:immigration-daybook"
+  />
+  <p class="rf-signup__note">Piloto gratuito de agosto · Ediciones en español e inglés</p>
+</div>
 
 ---
 
@@ -52,9 +67,54 @@ Agosto es un piloto gratuito, mientras averiguamos qué debe ser esto y cómo so
 
 Lo que queda abierto es la sostenibilidad. Esto cuesta una fracción de lo que cuesta un boletín de enlaces tradicional, pero no es gratis: hay cómputo real, más el tiempo que dediqué a construir el sistema y el que dedicaré a editarlo cada mañana. No vamos detrás del dinero filantrópico —preferimos rendirle cuentas a nuestra audiencia y no a un oficial de programa—, lo que significa que en algún momento venderemos algo a un precio justo que cubra los costos y pague el trabajo. Este mes es como lo averiguamos.
 
-<p><a href="/es/immigration-daybook">Suscríbete →</a> Empieza el miércoles.</p>
+<div class="rf-signup not-prose">
+  <p class="rf-signup__lead">Empieza el miércoles 5 de agosto.</p>
+  <SubscribeForm
+    buttonClass="bg-fern-strong px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
+    id="daybook-post-foot"
+    inputClass="w-full border border-slate-900/20 bg-white px-5 py-4 text-lg text-slate-800 placeholder:text-slate-400 sm:max-w-[24rem] sm:flex-none"
+    lang="es"
+    layoutClass="flex flex-col gap-3 sm:flex-row sm:items-stretch sm:gap-2"
+    meta={{ placement: 'announcement-foot' }}
+    source="immigration-daybook"
+    tag="newsletter:immigration-daybook"
+  />
+  <p class="rf-signup__note">Gratis durante agosto · Te das de baja cuando quieras</p>
+</div>
+
+<script>
+  import SubscribeForm from '$lib/components/SubscribeForm.svelte';
+</script>
 
 <style>
+  /* The route's stock house-list forms are switched off for this post via
+     `hideSubscribe`, so these are the only asks on the page and they carry the
+     newsletter's own tag. */
+  .rf-signup {
+    margin: 2rem 0;
+    padding: 1.75rem 1.5rem;
+    border: 1px solid rgba(15, 23, 42, 0.15);
+    border-left: 6px solid var(--color-fern);
+    background: #ffffff;
+  }
+  .rf-signup__lead {
+    margin: 0 0 1.1rem;
+    font-family: var(--font-display);
+    font-size: clamp(1.35rem, 3vw, 1.7rem);
+    font-weight: 600;
+    line-height: 1.2;
+    letter-spacing: -0.015em;
+    color: rgb(15 23 42);
+  }
+  .rf-signup__note {
+    margin: 1.1rem 0 0;
+    font-family: "Jost", sans-serif;
+    font-size: 0.74rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgb(100 116 139);
+  }
   /* Marcador para arte que todavía no existe. Borra el bloque junto con esta
      regla cuando llegue la captura real. */
   .rf-tk {
