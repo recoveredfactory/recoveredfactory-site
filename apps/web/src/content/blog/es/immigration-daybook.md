@@ -89,7 +89,7 @@ lang: "es"
   <p class="rf-kicker">Cómo se hace</p>
   <p class="rf-graf">Este boletín es orgullosamente algorítmico, y queremos que sea el texto algorítmico más cuidado que hayas leído. La apuesta no es "la IA lee las noticias": mucha gente hace eso y buena parte sale mal. La apuesta es que una redacción puede tener un cerebro, algo a lo que de verdad puedas <em>preguntarle</em> por todo lo que sabe y que enseñe su trabajo en vez de pedirte que confíes.</p>
   <p class="rf-graf">El sistema lee todo el día y saca a la luz los patrones que encuentra. Después una persona edita: qué significa, si es exacto y quién lo cubrió mejor. Esa persona es <a href="/es/presentamos-recovered-factory">David Eads</a>, inmigrante él mismo y editor de inmigración de facto en The Marshall Project durante varios años.</p>
-  <p class="rf-graf">La maquinaria está <a href="/es/presentamos-immigration-daybook">explicada completa aquí</a>, incluidas las partes de las que todavía no estamos seguros.</p>
+  <p class="rf-graf">La maquinaria está <a href="/es/una-historia-dos-idiomas">explicada completa aquí</a>, incluidas las partes de las que todavía no estamos seguros.</p>
 </section>
 
 <section class="rf-section rf-section--cta">

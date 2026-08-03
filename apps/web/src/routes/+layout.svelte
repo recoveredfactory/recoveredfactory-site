@@ -70,8 +70,12 @@
   const daybookBannerDismissLabel = $derived(
     currentLocale === 'es' ? 'Cerrar este aviso' : 'Dismiss this notice',
   );
+  // Off in production until PUBLIC_DAYBOOK_BANNER is set, so the domain and the
+  // landing page can go live and be smoke-tested without announcing anything.
+  // Always on locally and on non-prod stages, where it needs reviewing.
+  const daybookBannerEnabled = isPreview || env.PUBLIC_DAYBOOK_BANNER === '1';
   const showDaybookBanner = $derived(
-    !daybookBannerDismissed && !DAYBOOK_PAGES.test($page.url.pathname),
+    daybookBannerEnabled && !daybookBannerDismissed && !DAYBOOK_PAGES.test($page.url.pathname),
   );
 
   const dismissDaybookBanner = () => {

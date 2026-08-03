@@ -125,6 +125,11 @@ export default $config({
         : {}),
       environment: {
         PUBLIC_STAGE: stage,
+        // Set to "1" to run the Immigration Daybook promo strip in prod:
+        //   PUBLIC_DAYBOOK_BANNER=1 pnpm deploy --stage prod
+        // Unset, prod stays quiet while the domain and landing page are live.
+        // Non-prod stages always show it regardless.
+        PUBLIC_DAYBOOK_BANNER: process.env.PUBLIC_DAYBOOK_BANNER ?? "",
         PUBLIC_SITE_URL: siteDomain
           ? `https://${siteDomain}`
           : process.env.PUBLIC_SITE_URL ?? "",

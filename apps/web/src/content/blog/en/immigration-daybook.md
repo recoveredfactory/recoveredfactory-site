@@ -89,7 +89,7 @@ lang: "en"
   <p class="rf-kicker">How it's made</p>
   <p class="rf-graf">This newsletter is proudly algorithmic, and we intend to make it the most carefully crafted algorithmic writing you've ever read. The bet isn't "AI reads the news" — lots of people are doing that, and a lot of it is slop. The bet is that a newsroom can have a brain: something you can actually <em>query</em> about everything it knows, that shows its work instead of asking you to trust it.</p>
   <p class="rf-graf">The system reads all day and surfaces the patterns it finds. Then a person edits — what it means, whether it's accurate, and who covered it best. That person is <a href="/en/introducing-recovered-factory">David Eads</a>, an immigrant himself, and the de facto immigration editor at The Marshall Project for several years.</p>
-  <p class="rf-graf">The machinery is <a href="/en/announcing-immigration-daybook">written up in full here</a>, including the parts we're still unsure about.</p>
+  <p class="rf-graf">The machinery is <a href="/en/one-story-two-languages">written up in full here</a>, including the parts we're still unsure about.</p>
 </section>
 
 <section class="rf-section rf-section--cta">

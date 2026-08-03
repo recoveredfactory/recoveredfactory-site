@@ -1,6 +1,15 @@
 import type { ComponentType } from 'svelte';
+import { dev } from '$app/environment';
+import { env } from '$env/dynamic/public';
 import type { Lang } from '$lib/i18n';
 import { parseDate } from '$lib/dates';
+
+// Drafts are readable while working locally and on any non-prod stage
+// (cms--stage), and vanish completely in production — no route, no listing, no
+// RSS, no sitemap. Filtering at load time rather than per-consumer means a new
+// caller can't accidentally leak one. An unset PUBLIC_STAGE counts as non-prod,
+// which is the safe direction: a stray build shows drafts, prod never does.
+const SHOW_DRAFTS = dev || env.PUBLIC_STAGE !== 'prod';
 
 export type ContentType = 'post' | 'page';
 
@@ -19,6 +28,8 @@ export type BlogMeta = {
   /** Suppress the route's stock subscribe blocks — for posts that carry their
       own, tagged for a specific newsletter rather than the house list. */
   hideSubscribe?: boolean;
+  /** Staged but unpublished: visible in dev and on non-prod stages only. */
+  draft?: boolean;
   tags?: string[];
   lang: Lang;
 };
@@ -58,6 +69,7 @@ function mapModules(modules: Record<string, BlogModule>, lang: Lang): BlogPost[]
 
   for (const [path, mod] of Object.entries(modules)) {
     if (!mod?.metadata) continue;
+    if (mod.metadata.draft && !SHOW_DRAFTS) continue;
     const slug = path.split('/').pop()?.replace(/\.md$/, '') ?? '';
     if (!slug) continue;
 
