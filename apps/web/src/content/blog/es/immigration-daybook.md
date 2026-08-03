@@ -42,23 +42,13 @@ lang: "es"
 
 <div class="rf-body not-prose">
 
-<!-- REWRITE 1/5 — lede. The English lede was tightened and the fee figures
-     ($760/$1,330) cut; this still carries them. EN now reads: "…a DHS rule that
-     raises the naturalization filing fee by 75% and eliminates fee waivers
-     outright. If you're filing, that's a big jump you have to budget for." -->
-<p class="rf-lede">El 24 de agosto se cierra el plazo para comentar <a href="https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments">una norma del DHS</a> que subiría 75% la tarifa de naturalización y eliminaría por completo las exenciones de pago. Si estás haciendo el trámite, eso es dinero real en camino —$760 hoy, $1,330 propuesto— y una razón para moverte ya. Si eres abogado, es una semana de llamadas que preferirías agendar tú antes de recibirlas. Si eres periodista, es una nota que quieres publicar el 23 y no el 25.</p>
+<p class="rf-lede">El 24 de agosto se cierra el plazo para comentar <a href="https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments">una norma del DHS</a> que subiría 75% la tarifa de naturalización y eliminaría por completo las exenciones de pago. Si estás haciendo el trámite, es un salto fuerte que vas a tener que presupuestar. Si eres abogado, es una semana de llamadas que preferirías agendar tú antes de recibirlas. Si eres periodista, es una nota que quieres publicar el 23 y no el 25.</p>
 
-<!-- REWRITE 2/5 — EN split this into two paragraphs and dropped the
-     "calendar is the exciting part" clause. Second EN paragraph now reads:
-     "That's what we built Immigration Daybook to solve: a broad, daily view of
-     news about US immigration with the key upcoming events front and center." -->
-<p class="rf-graf">Puede que ya lo supieras, porque le sigues la pista a estas cosas. Mucha gente no lo sabe, y no tendría por qué tener que averiguarlo sola. Para eso construimos Immigration Daybook, y por eso lo que más ilusión nos hace no son las noticias sino el calendario de lo que viene.</p>
+<p class="rf-graf">Puede que ya lo supieras, porque le sigues la pista a estas cosas. Mucha gente no lo sabe, y no tendría por qué tener que averiguarlo sola.</p>
 
-<!-- REWRITE 3/5 — EN reframed the ending from "machines find the smoke,
-     judgement finds the fire" to first person: "We're using algorithms to show
-     where the smoke is thickest and using our judgement and expertise to reveal
-     what really matters." -->
-<p class="rf-graf">Ahora mismo hay mucho fuego en la inmigración estadounidense. Y hay muchísimo más humo: miles de artículos, videos, hilos y publicaciones al día, muchas veces sobre acciones que parecen diseñadas para producir confusión, caos y espectáculo. Las máquinas son buenas para decirte dónde está más espeso el humo. Encontrar el fuego exige criterio y experiencia.</p>
+<p class="rf-graf">Para eso construimos Immigration Daybook: una mirada amplia y diaria a las noticias sobre la inmigración en Estados Unidos, con las fechas clave que vienen por delante.</p>
+
+<p class="rf-graf">Ahora mismo hay mucho fuego metafórico en el sistema migratorio estadounidense, pero hay todavía más humo: miles de artículos, videos, hilos y publicaciones al día, muchas veces sobre acciones que parecen diseñadas para producir confusión, caos y espectáculo. Usamos algoritmos para mostrar dónde está más espeso el humo, y nuestro criterio y experiencia para revelar lo que de verdad importa.</p>
 
 <section class="rf-section">
   <p class="rf-kicker">Qué vas a recibir</p>
@@ -73,22 +63,15 @@ lang: "es"
     <div class="rf-spec__row">
       <p class="rf-spec__num">02</p>
       <div class="rf-spec__text">
-        <!-- REWRITE 4/5 — EN retitled this "The day's rundown, grounded in
-             reporting and evidence" and shortened the body to two sentences,
-             dropping the 287(g) roster link. Keep or drop that link as you
-             prefer; it is the page's only pointer to 287(g) Watch. -->
-        <p class="rf-spec__label">El resumen del día, contrastado con el registro</p>
-        <p class="rf-spec__body">Las tendencias de detención van contra las cifras más recientes del <a href="https://deportationdata.org">Deportation Data Project</a>. El 287(g) va contra <a href="https://287g.recoveredfactory.net/es">el registro</a> y los acuerdos mismos. Un cambio de norma se busca primero en el <a href="https://www.federalregister.gov">Federal Register</a> y en el <a href="https://www.uscis.gov/policy-manual">Manual de Políticas de USCIS</a>.</p>
+        <p class="rf-spec__label">El resumen del día, con reporteo y evidencia detrás</p>
+        <p class="rf-spec__body">Cuando citamos enlaces sobre deportación, los contrastamos con el <a href="https://deportationdata.org">Deportation Data Project</a>. Un cambio de norma que se reporta se contrasta con el <a href="https://www.federalregister.gov">Federal Register</a> y el <a href="https://www.uscis.gov/policy-manual">Manual de Políticas de USCIS</a>.</p>
       </div>
     </div>
     <div class="rf-spec__row">
       <p class="rf-spec__num">03</p>
       <div class="rf-spec__text">
-        <!-- REWRITE 5/5 — EN retitled this "The headlines… from English <em>and</em>
-             Spanish media" and leads the body with "Our innovative technology goes
-             beyond the big stories and prestige investigations you probably saw." -->
-        <p class="rf-spec__label">Más allá de los titulares, en dos idiomas</p>
-        <p class="rf-spec__body">No solo las notas grandes y las investigaciones de prestigio que ya estás viendo. Blogs de política migratoria muy técnicos, boletines de Substack, video social y lo que de verdad está sonando en los medios en español, incluida la cobertura de redadas de ICE en YouTube.</p>
+        <p class="rf-spec__label">Los titulares… de medios en inglés <em>y</em> en español</p>
+        <p class="rf-spec__body">Nuestra tecnología va más allá de las notas grandes y las investigaciones de prestigio que probablemente ya viste. Noticieros de televisión en español, blogs de política migratoria muy técnicos, boletines de Substack, video social: desde blogs jurídicos especializados hasta cobertura de redadas de ICE en YouTube, estamos mirando y te traemos lo relevante.</p>
       </div>
     </div>
   </div>
@@ -97,13 +80,7 @@ lang: "es"
 <section class="rf-section">
   <p class="rf-kicker">Cómo se hace</p>
   <p class="rf-graf">Este boletín es orgullosamente algorítmico, y queremos que sea el texto algorítmico más cuidado que hayas leído. La apuesta no es "la IA lee las noticias": mucha gente hace eso y buena parte sale mal. La apuesta es que una redacción puede tener un cerebro, algo a lo que de verdad puedas <em>preguntarle</em> por todo lo que sabe y que enseñe su trabajo en vez de pedirte que confíes.</p>
-  <!-- FACTUAL — this paragraph carries two claims corrected in EN and still
-       wrong here. "El sistema lee todo el día": it does not read all day, it
-       reads the day's news. And the bio now reads "a data journalist with years
-       of experience covering immigration for publications including NPR and The
-       Marshall Project, and an immigrant himself" rather than claiming the de
-       facto immigration editor role. Fix before launch. -->
-  <p class="rf-graf">El sistema lee todo el día y saca a la luz los patrones que encuentra. Después una persona edita: qué significa, si es exacto y quién lo cubrió mejor. Esa persona es <a href="/es/presentamos-recovered-factory">David Eads</a>, inmigrante él mismo y editor de inmigración de facto en The Marshall Project durante varios años.</p>
+  <p class="rf-graf">El sistema lee las noticias del día y saca a la luz los patrones que encuentra. Después una persona edita: qué significa, si es exacto y quién lo cubrió mejor. Esa persona es <a href="/es/presentamos-recovered-factory">David Eads</a>, periodista de datos con años de experiencia cubriendo inmigración para medios como NPR y The Marshall Project, e inmigrante él mismo.</p>
 </section>
 
 <section class="rf-section rf-section--cta">

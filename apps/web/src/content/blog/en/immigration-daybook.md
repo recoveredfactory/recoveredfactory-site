@@ -48,7 +48,7 @@ lang: "en"
 
 <p class="rf-graf">That's what we built Immigration Daybook to solve: a broad, daily view of news about US immigration with the key upcoming events front and center.</p>
 
-<p class="rf-graf">There's a lot of fire in US immigration right now, but there's even more smoke: thousands of articles, videos, threads, and posts a day, often covering actions that seem designed to create confusion, chaos, and spectacle. We're using algorithms to show where the smoke is thickest and using our judgement and expertise to reveal what really matters.</p>
+<p class="rf-graf">There's a lot of metaphorical fire in the U.S. immigration system right now, but there's even more smoke: thousands of articles, videos, threads, and posts a day, often covering actions that seem designed to create confusion, chaos, and spectacle. We're using algorithms to show where the smoke is thickest and using our judgement and expertise to reveal what really matters.</p>
 
 <section class="rf-section">
   <p class="rf-kicker">What's in it</p>
