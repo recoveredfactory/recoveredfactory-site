@@ -34,6 +34,7 @@ lang: "es"
       />
       <ul class="rf-hero__meta">
         <li>Empieza el miér. 5 de agosto</li>
+        <li>Editado por David Eads</li>
       </ul>
     </div>
   </div>
