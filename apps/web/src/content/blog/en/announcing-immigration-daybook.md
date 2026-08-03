@@ -2,7 +2,7 @@
 id: "announcing-immigration-daybook"
 title: "Announcing Immigration Daybook"
 date: "2026-08-03"
-description: "A weekday rundown of the immigration system — and a calendar of what's coming. Proudly algorithmic, edited every weekday by David Eads. Free pilot starts Wednesday, August 5."
+description: "A weekday rundown of the immigration system — and a calendar of what's coming. Proudly algorithmic, edited every weekday by David Eads. Free pilot starts Wednesday, Aug. 5."
 type: "post"
 hideSubscribe: true
 draft: true
@@ -14,7 +14,7 @@ lang: "en"
 previewImage: "/images/immigration-daybook-announce-og-en.png"
 ---
 
-<p class="no-drop"><em>Immigration Daybook starts Wednesday, August 5.</em></p>
+<p class="no-drop"><em>Immigration Daybook starts Wednesday, Aug. 5.</em></p>
 
 <div class="rf-signup not-prose">
   <SubscribeForm
@@ -32,7 +32,7 @@ previewImage: "/images/immigration-daybook-announce-og-en.png"
 
 ---
 
-**On August 24, the comment window closes on [a DHS rule](https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments) that would raise the naturalization filing fee by 75% and eliminate fee waivers outright.**
+**On Aug. 24, the comment window closes on [a DHS rule](https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments) that would raise the naturalization filing fee by 75% and eliminate fee waivers outright.**
 
 If you're filing, that's real money you have to budget for. If you're a lawyer, that's a week of phone calls you'd rather schedule than receive. If you're a reporter, that's a story you want to file on the 23rd, not the 25th.
 
@@ -46,7 +46,7 @@ That's what we built Immigration Daybook to solve. Every weekday: a rundown of w
 
 There's a lot of metaphorical fire in the U.S. immigration system right now, but there's even more smoke: thousands of articles, videos, threads, and posts a day, often trying to cover actions that seem designed to create confusion, chaos, and spectacle.
 
-Machines are good at telling you where the smoke is thickest. Finding the fire takes judgement and expertise.
+Machines are good at telling you where the smoke is thickest. Finding the fire takes judgment and expertise.
 
 So this newsletter is proudly algorithmic, and we intend to make it the most carefully crafted algorithmic writing you've ever read. We go beyond the big stories and prestige investigations you probably already saw. Spanish language TV news, deeply technical policy blogs, Substack newsletters, social video — from nerdy law blogs to YouTube coverage of ICE raids, we're watching and bringing you what's relevant.
 
@@ -69,7 +69,7 @@ We're running August as a pilot for free, while we figure out what this should b
 Sustainability is the open question. This runs on a fraction of what a traditional link newsletter takes, but it isn't free: there's real compute, plus the time I spent building the system and the time I'll spend editing it every day. We're not chasing philanthropic money — we'd rather be accountable to our audience than to a program officer — which means at some point we sell something at a fair price that covers costs and pays for the work. This month is how we find out what that is.
 
 <div class="rf-signup not-prose">
-  <p class="rf-signup__lead">Starts Wednesday, August 5.</p>
+  <p class="rf-signup__lead">Starts Wednesday, Aug. 5.</p>
   <SubscribeForm
     buttonClass="bg-fern-strong px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
     id="daybook-post-foot"

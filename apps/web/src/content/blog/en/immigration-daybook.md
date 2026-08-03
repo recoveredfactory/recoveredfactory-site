@@ -4,7 +4,7 @@ title: "Immigration Daybook"
 date: "2026-07-31"
 type: "page"
 hideTitle: true
-description: "A weekday rundown of the immigration system — and a calendar of what's coming. Effective dates, comment deadlines, court dates. Free pilot starts Wednesday, August 5."
+description: "A weekday rundown of the immigration system — and a calendar of what's coming. Effective dates, comment deadlines, court dates. Free pilot starts Wednesday, Aug. 5."
 byline: "Recovered Factory"
 previewImage: "/images/immigration-daybook-og-en.png"
 hidePreview: true
@@ -42,13 +42,13 @@ lang: "en"
 
 <div class="rf-body not-prose">
 
-<p class="rf-lede">On August 24th, the comment window closes on <a href="https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments">a DHS rule</a> that raises the naturalization filing fee by 75% and eliminates fee waivers outright. If you're filing, that's a big jump you have to budget for. If you're a lawyer, that's a week of phone calls you'd rather schedule than receive. If you're a reporter, that's a story you want to file on the 23rd, not the 25th.</p>
+<p class="rf-lede">On Aug. 24, the comment window closes on <a href="https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments">a DHS rule</a> that raises the naturalization filing fee by 75% and eliminates fee waivers outright. If you're filing, that's a big jump you have to budget for. If you're a lawyer, that's a week of phone calls you'd rather schedule than receive. If you're a reporter, that's a story you want to file on the 23rd, not the 25th.</p>
 
 <p class="rf-graf">Maybe you already knew, because you track this stuff yourself. A lot of people don't, and shouldn't have to.</p>
 
-<p class="rf-graf">That's what we built Immigration Daybook to solve: a broad, daily view of news about US immigration with the key upcoming events front and center.</p>
+<p class="rf-graf">That's what we built Immigration Daybook to solve: a broad, daily view of news about U.S. immigration with the key upcoming events front and center.</p>
 
-<p class="rf-graf">There's a lot of metaphorical fire in the U.S. immigration system right now, but there's even more smoke: thousands of articles, videos, threads, and posts a day, often covering actions that seem designed to create confusion, chaos, and spectacle. We're using algorithms to show where the smoke is thickest and using our judgement and expertise to reveal what really matters.</p>
+<p class="rf-graf">There's a lot of metaphorical fire in the U.S. immigration system right now, but there's even more smoke: thousands of articles, videos, threads, and posts a day, often covering actions that seem designed to create confusion, chaos, and spectacle. We're using algorithms to show where the smoke is thickest and using our judgment and expertise to reveal what really matters.</p>
 
 <section class="rf-section">
   <p class="rf-kicker">What's in it</p>
@@ -135,7 +135,7 @@ lang: "en"
     calendar:
       'A rundown of what happened in the immigration system — and a calendar of what’s coming.',
     smoke:
-      'There’s a lot of fire in US immigration right now. There’s far more smoke. Every weekday, we go find the fire.',
+      'There’s a lot of fire in U.S. immigration right now. There’s far more smoke. Every weekday, we go find the fire.',
     dates:
       'Effective dates, comment deadlines, court dates — before they land on you, not after.',
   };
