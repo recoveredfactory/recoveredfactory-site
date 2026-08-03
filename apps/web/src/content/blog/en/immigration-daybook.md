@@ -49,16 +49,6 @@ lang: "en"
 <p class="rf-graf">There's a lot of fire in US immigration right now. There's far more smoke: thousands of articles, videos, threads, and posts a day, often covering actions that seem designed to create confusion, chaos, and spectacle. Machines are good at telling you where the smoke is thickest. Finding the fire takes judgement and expertise.</p>
 
 <section class="rf-section">
-  <LatestEdition
-    blurb="TK — a sentence or two of what the edition covered, so a reader can judge the thing before handing over an email address."
-    dateline="TK · Edition of ——"
-    kicker="The latest edition"
-    note="Design TK · first edition pending"
-    title="TK — the headline of the most recent edition"
-  />
-</section>
-
-<section class="rf-section">
   <p class="rf-kicker">What's in it</p>
   <div class="rf-spec">
     <div class="rf-spec__row">
@@ -111,7 +101,6 @@ lang: "en"
 </div>
 
 <script>
-  import LatestEdition from '$lib/components/LatestEdition.svelte';
   import SubscribeForm from '$lib/components/SubscribeForm.svelte';
 
   /**

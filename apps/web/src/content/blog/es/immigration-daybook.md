@@ -49,16 +49,6 @@ lang: "es"
 <p class="rf-graf">Ahora mismo hay mucho fuego en la inmigración estadounidense. Y hay muchísimo más humo: miles de artículos, videos, hilos y publicaciones al día, muchas veces sobre acciones que parecen diseñadas para producir confusión, caos y espectáculo. Las máquinas son buenas para decirte dónde está más espeso el humo. Encontrar el fuego exige criterio y experiencia.</p>
 
 <section class="rf-section">
-  <LatestEdition
-    blurb="TK — una o dos frases sobre lo que trajo la edición, para que quien llega pueda juzgar antes de dejar su correo."
-    dateline="TK · Edición del ——"
-    kicker="La edición más reciente"
-    note="Diseño TK · falta la primera edición"
-    title="TK — el titular de la edición más reciente"
-  />
-</section>
-
-<section class="rf-section">
   <p class="rf-kicker">Qué vas a recibir</p>
   <div class="rf-spec">
     <div class="rf-spec__row">
@@ -111,7 +101,6 @@ lang: "es"
 </div>
 
 <script>
-  import LatestEdition from '$lib/components/LatestEdition.svelte';
   import SubscribeForm from '$lib/components/SubscribeForm.svelte';
 
   /**
