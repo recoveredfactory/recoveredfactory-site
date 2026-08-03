@@ -45,7 +45,7 @@ Para eso construimos Immigration Daybook. Cada día de lunes a viernes: un resum
         loading="lazy"
         decoding="async"
       />
-      <figcaption class="rf-shots__cap">El resumen: qué pasó, qué significa y quién lo reportó. <span class="rf-shots__lang">Edición en inglés</span></figcaption>
+      <figcaption class="rf-shots__cap">El resumen: qué pasó, qué significa y quién lo reportó. (Capturas de un prototipo reciente.) <span class="rf-shots__lang">Edición en inglés</span></figcaption>
     </figure>
     <figure class="rf-shots__item">
       <img
@@ -54,7 +54,7 @@ Para eso construimos Immigration Daybook. Cada día de lunes a viernes: un resum
         loading="lazy"
         decoding="async"
       />
-      <figcaption class="rf-shots__cap">El calendario: lo que viene, con la fuente primaria detrás de cada fecha. <span class="rf-shots__lang">Edición en inglés</span></figcaption>
+      <figcaption class="rf-shots__cap">El calendario: Lo que viene, con la fuente primaria o la cita experta de cada fecha. <span class="rf-shots__lang">Edición en inglés</span></figcaption>
     </figure>
   </div>
 </div>

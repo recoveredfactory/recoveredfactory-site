@@ -45,7 +45,7 @@ That's what we built Immigration Daybook to solve. Every weekday: a rundown of w
         loading="lazy"
         decoding="async"
       />
-      <figcaption class="rf-shots__cap">The rundown: what happened, what it means, and who reported it.</figcaption>
+      <figcaption class="rf-shots__cap">The rundown: what happened, what it means, and who reported it. (Screenshots taken from a recent prototype.)</figcaption>
     </figure>
     <figure class="rf-shots__item">
       <img
@@ -54,7 +54,7 @@ That's what we built Immigration Daybook to solve. Every weekday: a rundown of w
         loading="lazy"
         decoding="async"
       />
-      <figcaption class="rf-shots__cap">The calendar: what's coming, with the primary source behind each date.</figcaption>
+      <figcaption class="rf-shots__cap">The calendar: What's coming, with the primary source or expert citation for each date.</figcaption>
     </figure>
   </div>
 </div>
