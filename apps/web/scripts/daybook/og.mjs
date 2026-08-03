@@ -49,14 +49,14 @@ const COPY = {
   en: {
     eyebrow: 'Recovered Factory',
     wordmark: ['Immigration', 'Daybook'],
-    facts: ['Every weekday', 'Free in August', 'English & Spanish'],
-    factsSize: 22,
+    facts: ['Every weekday', 'Edited by David Eads', 'English & Spanish'],
+    factsSize: 21,
   },
   es: {
     eyebrow: 'Recovered Factory',
     wordmark: ['Immigration', 'Daybook'],
-    facts: ['De lunes a viernes', 'Gratis en agosto', 'Español e inglés'],
-    factsSize: 20,
+    facts: ['De lunes a viernes', 'Editado por David Eads', 'Español e inglés'],
+    factsSize: 18,
   },
 };
 

@@ -18,8 +18,9 @@ lang: "en"
     <p class="rf-deck">{DECKS[ACTIVE_DECK]}</p>
     <ul class="rf-facts">
       <li>Every weekday</li>
-      <li>Free in August</li>
+      <li>Edited by David Eads</li>
       <li>English &amp; Spanish</li>
+      <li>Free in August</li>
     </ul>
     <div class="rf-hero__cta">
       <SubscribeForm
