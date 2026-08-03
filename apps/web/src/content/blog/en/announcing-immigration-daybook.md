@@ -40,7 +40,21 @@ Maybe you already knew, because you track this stuff yourself. A lot of people d
 
 That's what we built Immigration Daybook to solve. Every weekday: a rundown of what happened in the immigration system, along with the part I'm most excited about — **a calendar of everything we know that's coming.** Effective dates, comment deadlines, court dates, all backed by primary sources and links to expert analysis. The rules that quietly take force while everyone's arguing about the outrage of the day.
 
-<div class="rf-tk">SCREENSHOT TK — the calendar section, ideally with 2–3 real upcoming dates visible</div>
+<ResizedImage
+  src="/images/immigration-daybook-edition-en.png"
+  alt="The top of an Immigration Daybook edition dated August 3, 2026, edited by David Eads. The lead story reports that a federal contract funding legal aid for unaccompanied migrant children has expired, leaving tens of thousands of minors facing immigration court without attorneys. Two bolded follow-up items each end in source links: NBC Chicago and Telemundo Washington DC, then El Paso Matters, Los Angeles Times, and Univision."
+  figureClass="my-8 max-w-2xl"
+  caption="The rundown: what happened, what it means, and who reported it."
+  unoptimized
+/>
+
+<ResizedImage
+  src="/images/immigration-daybook-upcoming-en.png"
+  alt="The Upcoming section of the same edition, a dated calendar split into TODAY and THIS WEEK. Two Aug. 3 entries cover new H-2A wage rates and a proposed visa bond rule; an Aug. 4 entry covers a court decision on Temporary Protected Status renewals; an Aug. 5 entry covers a decision on shortened work permits for asylum seekers. Each carries a source link to the Federal Register or WR Immigration."
+  figureClass="my-8 max-w-2xl"
+  caption="The calendar: what's coming, with the primary source behind each date."
+  unoptimized
+/>
 
 ## Finding the fire in the smoke
 
@@ -84,6 +98,7 @@ Sustainability is the open question. This runs on a fraction of what a tradition
 </div>
 
 <script>
+  import ResizedImage from '$lib/components/ResizedImage.svelte';
   import SubscribeForm from '$lib/components/SubscribeForm.svelte';
 </script>
 
@@ -113,20 +128,6 @@ Sustainability is the open question. This runs on a fraction of what a tradition
     font-size: 0.74rem;
     font-weight: 600;
     letter-spacing: 0.14em;
-    text-transform: uppercase;
-    color: rgb(100 116 139);
-  }
-  /* Placeholder marker for art that hasn't been shot yet. Delete the block
-     along with this rule once the real screenshot lands. */
-  .rf-tk {
-    margin: 2rem 0;
-    padding: 2.5rem 1.5rem;
-    border: 1px dashed rgba(15, 23, 42, 0.35);
-    font-family: "Jost", sans-serif;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-align: center;
     text-transform: uppercase;
     color: rgb(100 116 139);
   }
