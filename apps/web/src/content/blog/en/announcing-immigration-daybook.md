@@ -41,7 +41,7 @@ That's what we built Immigration Daybook to solve. Every weekday: a rundown of w
     <figure class="rf-shots__item">
       <img
         src="/images/immigration-daybook-edition-en.png"
-        alt="The top of an Immigration Daybook edition dated August 3, 2026, edited by David Eads. The lead story reports that a federal contract funding legal aid for unaccompanied migrant children has expired, leaving tens of thousands of minors facing immigration court without attorneys. Two bolded follow-up items each end in source links: NBC Chicago and Telemundo Washington DC, then El Paso Matters, Los Angeles Times, and Univision."
+        alt="The top of an Immigration Daybook edition dated August 3, 2026, edited by Tory Lysik. The lead story reports that a federal contract funding legal aid for unaccompanied migrant children has expired, leaving tens of thousands of minors facing immigration court without attorneys. Two bolded follow-up items each end in source links: NBC Chicago and Telemundo Washington DC, then El Paso Matters, Los Angeles Times, and Univision."
         loading="lazy"
         decoding="async"
       />
