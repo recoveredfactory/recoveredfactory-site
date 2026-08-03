@@ -6,7 +6,7 @@
   import SupportOptions from '$lib/components/SupportOptions.svelte';
   import { SITE_URL } from '$lib/config';
   import { formatDate } from '$lib/dates';
-  import { getResizedImageUrl } from '$lib/images';
+  import { getResizedImageUrl, getSocialImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
 
   const { data } = $props();
@@ -17,7 +17,7 @@
   const canonical = $derived(new URL(`/${lang}`, SITE_URL).href);
   const description = $derived(m.hero_subtitle());
   const ogImage = toAbsoluteUrl(
-    getResizedImageUrl('/images/factory-share--white-bg.png', { width: 1200 }),
+    getSocialImageUrl('/images/factory-share--white-bg.png'),
   );
 
   const redirectTo = $derived($page.url.pathname);

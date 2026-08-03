@@ -1,13 +1,32 @@
 // services/image-resizer.ts
 import sharp from 'sharp';
 
+// Output formats. WebP stays the default so on-page images are unaffected;
+// `f=jpeg` exists for social cards, because not every scraper reads WebP —
+// LinkedIn in particular may drop the image and render a card with no art.
+const CONTENT_TYPES = {
+  webp: 'image/webp',
+  jpeg: 'image/jpeg',
+  png: 'image/png',
+} as const;
+
+type OutputFormat = keyof typeof CONTENT_TYPES;
+
+const resolveFormat = (value: unknown): OutputFormat => {
+  const requested = String(value ?? '').toLowerCase();
+  if (requested === 'jpeg' || requested === 'jpg') return 'jpeg';
+  if (requested === 'png') return 'png';
+  return 'webp';
+};
+
 export const handler = async (event: any) => {
   const imageUrl = event.queryStringParameters?.url;
   const width = parseInt(event.queryStringParameters?.w || '400', 10);
   const qualityParam = parseInt(event.queryStringParameters?.q || '85', 10);
   const clamp = (val: number, min: number, max: number) =>
     Math.min(Math.max(val, min), max);
-  const webpQuality = clamp(isNaN(qualityParam) ? 85 : qualityParam, 50, 95);
+  const quality = clamp(isNaN(qualityParam) ? 85 : qualityParam, 50, 95);
+  const format = resolveFormat(event.queryStringParameters?.f);
 
   if (!imageUrl) {
     return {
@@ -82,14 +101,17 @@ export const handler = async (event: any) => {
       pipeline.resize(width);
     }
 
-    const resized = await pipeline
-      .toFormat('webp', { quality: webpQuality })
-      .toBuffer();
+    // PNG ignores `quality` in sharp's encoder, so it's set apart from the
+    // lossy formats rather than passed an option it would discard.
+    const resized = await (format === 'png'
+      ? pipeline.toFormat('png')
+      : pipeline.toFormat(format, { quality })
+    ).toBuffer();
 
     return {
       statusCode: 200,
       headers: {
-        'Content-Type': 'image/webp',
+        'Content-Type': CONTENT_TYPES[format],
         'Cache-Control': 'public, max-age=31536000',
       },
       body: resized.toString('base64'),

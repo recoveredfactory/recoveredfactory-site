@@ -3,7 +3,7 @@ import { sequence } from '@sveltejs/kit/hooks';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { getEntry } from '$lib/blog/loader';
 import { SITE_URL } from '$lib/config';
-import { getResizedImageUrl } from '$lib/images';
+import { getSocialImageUrl } from '$lib/images';
 import { resolveLocaleForRequest } from '$lib/locale-request';
 
 const preserveLangPrefix = (pathname: string) => /^\/(en|es)(\/|$)/.test(pathname);
@@ -40,7 +40,7 @@ const parkedDomainBody = (lang: 'en' | 'es', slug: string, target: string) => {
   const title = meta?.title ?? 'Immigration Daybook';
   const description = meta?.description ?? '';
   const image = meta?.previewImage
-    ? new URL(getResizedImageUrl(meta.previewImage, { width: 1600 }), SITE_URL).href
+    ? new URL(getSocialImageUrl(meta.previewImage, 1600), SITE_URL).href
     : '';
 
   return `<!doctype html>

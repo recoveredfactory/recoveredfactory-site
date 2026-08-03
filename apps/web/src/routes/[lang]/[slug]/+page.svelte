@@ -5,7 +5,7 @@
   import SubscribeForm from '$lib/components/SubscribeForm.svelte';
   import { SITE_URL } from '$lib/config';
   import { formatDate, parseDate } from '$lib/dates';
-  import { getResizedImageUrl } from '$lib/images';
+  import { getSocialImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
   import { setLocale } from '$lib/paraglide/runtime';
 
@@ -29,12 +29,12 @@
   );
   const defaultOgImage = $derived(
     toAbsoluteUrl(
-      getResizedImageUrl('/images/factory-share--white-bg.png', { width: 1200 }),
+      getSocialImageUrl('/images/factory-share--white-bg.png'),
     ),
   );
   const previewImageUrl = $derived(
     entry?.meta.previewImage
-      ? toAbsoluteUrl(getResizedImageUrl(entry.meta.previewImage, { width: 1600 }))
+      ? toAbsoluteUrl(getSocialImageUrl(entry.meta.previewImage, 1600))
       : null,
   );
   const canonical = $derived(new URL(`/${data.lang}/${data.slug}`, SITE_URL).href);

@@ -1,7 +1,7 @@
 <script lang="ts">
   import { SITE_URL } from '$lib/config';
   import { formatDate } from '$lib/dates';
-  import { getResizedImageUrl } from '$lib/images';
+  import { getResizedImageUrl, getSocialImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
 
   const { data } = $props();
@@ -11,7 +11,7 @@
   const canonical = $derived(new URL(`/${data.lang}/posts`, SITE_URL).href);
   const description = 'Full archive';
   const ogImage = toAbsoluteUrl(
-    getResizedImageUrl('/images/factory-share--white-bg.png', { width: 1200 }),
+    getSocialImageUrl('/images/factory-share--white-bg.png'),
   );
   const pageTitle = `${m.site_name()} · Posts`;
 </script>

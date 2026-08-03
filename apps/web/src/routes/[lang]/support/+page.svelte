@@ -1,7 +1,7 @@
 <script lang="ts">
   import { SITE_URL } from '$lib/config';
   import { formatDate } from '$lib/dates';
-  import { getResizedImageUrl } from '$lib/images';
+  import { getResizedImageUrl, getSocialImageUrl } from '$lib/images';
   import SupportOptions from '$lib/components/SupportOptions.svelte';
   import { m } from '$lib/paraglide/messages';
 
@@ -12,7 +12,7 @@
   const description = $derived(m.support_subtitle());
   const pageTitle = $derived(`${m.site_name()} · ${m.nav_donate()}`);
   const ogImage = toAbsoluteUrl(
-    getResizedImageUrl('/images/factory-share--white-bg.png', { width: 1200 }),
+    getSocialImageUrl('/images/factory-share--white-bg.png'),
   );
 
   const editedLabel = $derived(data.lang === 'es' ? 'Editado por' : 'Edited by');
