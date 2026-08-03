@@ -75,6 +75,29 @@ lang: "en"
       </div>
     </div>
   </div>
+
+  <div class="rf-shots-wrap">
+    <div class="rf-shots">
+      <figure class="rf-shots__item">
+        <img
+          src="/images/immigration-daybook-edition-en.png"
+          alt="The top of an Immigration Daybook edition dated August 3, 2026, edited by David Eads. The lead story reports that a federal contract funding legal aid for unaccompanied migrant children has expired, leaving tens of thousands of minors facing immigration court without attorneys. Two bolded follow-up items each end in source links: NBC Chicago and Telemundo Washington DC, then El Paso Matters, Los Angeles Times, and Univision."
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="rf-shots__cap">The rundown: what happened, what it means, and who reported it. (Screenshots taken from a recent prototype.)</figcaption>
+      </figure>
+      <figure class="rf-shots__item">
+        <img
+          src="/images/immigration-daybook-upcoming-en.png"
+          alt="The Upcoming section of the same edition, a dated calendar split into TODAY and THIS WEEK. Two Aug. 3 entries cover new H-2A wage rates and a proposed visa bond rule; an Aug. 4 entry covers a court decision on Temporary Protected Status renewals; an Aug. 5 entry covers a decision on shortened work permits for asylum seekers. Each carries a source link to the Federal Register or WR Immigration."
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="rf-shots__cap">The calendar: What's coming, with the primary source or expert citation for each date.</figcaption>
+      </figure>
+    </div>
+  </div>
 </section>
 
 <section class="rf-section">
@@ -135,7 +158,7 @@ lang: "en"
     calendar:
       'A rundown of what happened in the immigration system — and a calendar of what’s coming.',
     smoke:
-      'There’s a lot of fire in U.S. immigration right now. There’s far more smoke. Every weekday, we go find the fire.',
+      'There’s a lot of metaphorical fire in U.S. immigration right now. There’s far more smoke. Every weekday, we go find the fire.',
     dates:
       'Effective dates, comment deadlines, court dates — before they land on you, not after.',
   };
@@ -264,11 +287,13 @@ lang: "en"
      entirely the scale in this block. */
   .rf-body { display: flow-root; }
 
+  /* Sized as body copy, not as a standfirst — the dropcap does the work of
+     marking the opening, so the type does not also have to. */
   .rf-lede {
     margin: 0;
     font-family: var(--font-body);
-    font-size: clamp(1.32rem, 2.6vw, 1.6rem);
-    line-height: 1.45;
+    font-size: 1.05rem;
+    line-height: 1.68;
     font-weight: 400;
     color: rgb(15 23 42);
     text-wrap: pretty;
@@ -284,9 +309,9 @@ lang: "en"
     font-weight: 500;
     color: rgb(51 65 85);
     float: left;
-    font-size: 3.2rem;
+    font-size: 2.5rem;
     line-height: 0.9;
-    padding: 0.2rem 0.45rem 0 0;
+    padding: 0.2rem 0.4rem 0 0;
   }
 
   @supports (initial-letter: 2) or (-webkit-initial-letter: 2) {
@@ -431,5 +456,50 @@ lang: "en"
     font-family: var(--font-display);
     font-style: italic;
     color: rgb(71 85 105);
+  }
+
+  /* ── Edition screenshots ──────────────────────────────────
+     Two shots of the same edition side by side, widened past the
+     text column. Negative margins are measured from the column
+     itself rather than the viewport, so the pair cannot drift off
+     centre. Both files share one canvas, so the columns match
+     height without a rule forcing it. */
+  .rf-shots-wrap {
+    margin: 2.75rem 0 0;
+  }
+  @media (min-width: 1024px) {
+    .rf-shots-wrap { margin-left: -6rem; margin-right: -6rem; }
+  }
+  @media (min-width: 1280px) {
+    .rf-shots-wrap { margin-left: -10rem; margin-right: -10rem; }
+  }
+  .rf-shots {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+    max-width: 34rem;
+    margin: 0 auto;
+  }
+  @media (min-width: 900px) {
+    .rf-shots {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2rem;
+      max-width: none;
+    }
+  }
+  .rf-shots__item { margin: 0; display: flex; flex-direction: column; }
+  .rf-shots__item img {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* White shots on a cream page need an edge or they bleed into it. */
+    border: 1px solid rgba(15, 23, 42, 0.15);
+  }
+  .rf-shots__cap {
+    margin-top: 0.65rem;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: rgb(100 116 139);
   }
 </style>

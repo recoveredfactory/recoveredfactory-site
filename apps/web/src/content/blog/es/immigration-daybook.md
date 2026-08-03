@@ -75,6 +75,29 @@ lang: "es"
       </div>
     </div>
   </div>
+
+  <div class="rf-shots-wrap">
+    <div class="rf-shots">
+      <figure class="rf-shots__item">
+        <img
+          src="/images/immigration-daybook-edition-en.png"
+          alt="El encabezado de una edición de Immigration Daybook del 3 de agosto de 2026, editada por David Eads. La nota principal informa que venció un contrato federal que financiaba asistencia legal para menores migrantes no acompañados, y que decenas de miles de menores quedan sin abogado ante los tribunales de inmigración. Dos entradas en negrita terminan con sus fuentes: NBC Chicago y Telemundo Washington DC, y después El Paso Matters, Los Angeles Times y Univision."
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="rf-shots__cap">El resumen: qué pasó, qué significa y quién lo reportó. (Capturas de un prototipo reciente.) <span class="rf-shots__lang">Edición en inglés</span></figcaption>
+      </figure>
+      <figure class="rf-shots__item">
+        <img
+          src="/images/immigration-daybook-upcoming-en.png"
+          alt="La sección Upcoming de la misma edición: un calendario con fechas, dividido en TODAY y THIS WEEK. Dos entradas del 3 de agosto tratan sobre nuevos salarios mínimos para trabajadores H-2A y una norma propuesta de fianzas para visas; una del 4 de agosto, sobre una decisión judicial acerca de las renovaciones del Estatus de Protección Temporal; una del 5 de agosto, sobre permisos de trabajo acortados para solicitantes de asilo. Cada una enlaza a su fuente, el Federal Register o WR Immigration."
+          loading="lazy"
+          decoding="async"
+        />
+        <figcaption class="rf-shots__cap">El calendario: Lo que viene, con la fuente primaria o la cita experta de cada fecha. <span class="rf-shots__lang">Edición en inglés</span></figcaption>
+      </figure>
+    </div>
+  </div>
 </section>
 
 <section class="rf-section">
@@ -124,9 +147,9 @@ lang: "es"
     thesis:
       'Las redadas se llevan los titulares. El procedimiento decide el resultado. Seguimos los dos, de lunes a viernes.',
     cull:
-      'Cada día leemos decenas de artículos en español e inglés para poder descartar casi todos. Queda la ley, los expedientes y las redadas.',
+      'Cada día leemos cientos de artículos en español e inglés para poder descartar casi todos. Queda la ley, los expedientes y las redadas.',
     discard:
-      'Decenas de artículos al día, casi todos descartados. Lo que sobrevive: las normas, los litigios y la aplicación de la ley.',
+      'Cientos de artículos al día, casi todos descartados. Lo que sobrevive: las normas, los litigios y la aplicación de la ley.',
     lawyer:
       'Lo que un buen abogado de inmigración querría que hubieras leído esta mañana.',
     machine:
@@ -137,7 +160,7 @@ lang: "es"
     calendar:
       'Un resumen de lo que pasó en el sistema migratorio y un calendario de lo que viene.',
     smoke:
-      'Ahora mismo hay mucho fuego en la inmigración estadounidense. Hay muchísimo más humo. Cada día vamos a buscar el fuego.',
+      'Ahora mismo hay mucho fuego metafórico en la inmigración estadounidense. Hay muchísimo más humo. Cada día vamos a buscar el fuego.',
     dates:
       'Fechas de entrada en vigor, plazos para comentar, audiencias: antes de que te caigan encima, no después.',
   };
@@ -267,11 +290,13 @@ lang: "es"
      actuar y el ritmo lo fija la escala de este bloque. */
   .rf-body { display: flow-root; }
 
+  /* Con tamaño de texto corrido, no de entradilla: la capitular ya marca el
+     arranque, así que la tipografía no tiene que hacerlo también. */
   .rf-lede {
     margin: 0;
     font-family: var(--font-body);
-    font-size: clamp(1.32rem, 2.6vw, 1.6rem);
-    line-height: 1.45;
+    font-size: 1.05rem;
+    line-height: 1.68;
     font-weight: 400;
     color: rgb(15 23 42);
     text-wrap: pretty;
@@ -287,9 +312,9 @@ lang: "es"
     font-weight: 500;
     color: rgb(51 65 85);
     float: left;
-    font-size: 3.2rem;
+    font-size: 2.5rem;
     line-height: 0.9;
-    padding: 0.2rem 0.45rem 0 0;
+    padding: 0.2rem 0.4rem 0 0;
   }
 
   @supports (initial-letter: 2) or (-webkit-initial-letter: 2) {
@@ -433,5 +458,61 @@ lang: "es"
     font-family: var(--font-display);
     font-style: italic;
     color: rgb(71 85 105);
+  }
+
+  /* ── Edition screenshots ──────────────────────────────────
+     Two shots of the same edition side by side, widened past the
+     text column. Negative margins are measured from the column
+     itself rather than the viewport, so the pair cannot drift off
+     centre. Both files share one canvas, so the columns match
+     height without a rule forcing it. */
+  .rf-shots-wrap {
+    margin: 2.75rem 0 0;
+  }
+  @media (min-width: 1024px) {
+    .rf-shots-wrap { margin-left: -6rem; margin-right: -6rem; }
+  }
+  @media (min-width: 1280px) {
+    .rf-shots-wrap { margin-left: -10rem; margin-right: -10rem; }
+  }
+  .rf-shots {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.75rem;
+    max-width: 34rem;
+    margin: 0 auto;
+  }
+  @media (min-width: 900px) {
+    .rf-shots {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 2rem;
+      max-width: none;
+    }
+  }
+  .rf-shots__item { margin: 0; display: flex; flex-direction: column; }
+  .rf-shots__item img {
+    display: block;
+    width: 100%;
+    height: auto;
+    /* White shots on a cream page need an edge or they bleed into it. */
+    border: 1px solid rgba(15, 23, 42, 0.15);
+  }
+  .rf-shots__cap {
+    margin-top: 0.65rem;
+    font-family: var(--font-body);
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: rgb(100 116 139);
+  }
+  /* Son capturas de la edición en inglés hasta que corra la de español. */
+  .rf-shots__lang {
+    display: block;
+    margin-top: 0.15rem;
+    font-family: "Jost", sans-serif;
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(148 163 184);
   }
 </style>
