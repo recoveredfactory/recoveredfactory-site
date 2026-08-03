@@ -136,34 +136,26 @@ lang: "en"
    * Keep the ids in step with the Spanish page so a test spans both editions.
    */
   const DECKS = {
+    evidence:
+      'We turn the spectacle of the immigration system into evidence, every weekday.',
     raids:
-      'The raids — and the paperwork that authorized them. Every weekday, in English and Spanish.',
+      'The raids — and the policies that authorized them. Every weekday, in English and Spanish.',
     weekday:
-      'Every weekday we read the immigration news in two languages — the procedure, the litigation, and the enforcement everyone’s already bracing for.',
+      'Every weekday we read the immigration news in two languages — the procedure, the litigation, and the enforcement everyone’s bracing for.',
     rule:
       'For people who need to know what the rule says, not just what happened. The day’s immigration news in English and Spanish.',
     thesis:
       'Immigration enforcement makes the headlines. The procedure decides the outcome. We follow both, every weekday, in two languages.',
-    cull:
-      'We read hundreds of articles in English and Spanish every weekday so we can throw most of them away. What’s left is the law, the filings, and the raids.',
-    discard:
-      'Hundreds of articles a day, most of them discarded. What survives: the rulemaking, the litigation, and the enforcement.',
-    lawyer:
-      'What a good immigration lawyer would want you to have read this morning.',
     machine:
-      'A machine reads hundreds of stories in two languages. A person decides what matters. You get it every weekday.',
+      'A machine reads hundreds of stories in two languages. We decide what matters. You get it every weekday.',
     // From the announcement draft — these say what the thing actually is.
-    quiet:
-      'The rules that quietly take force while the spectacle continues.',
     calendar:
       'A rundown of what happened in the immigration system — and a calendar of what’s coming.',
-    smoke:
-      'There’s a lot of metaphorical fire in U.S. immigration right now. There’s far more smoke. Every weekday, we go find the fire.',
     dates:
-      'Effective dates, comment deadlines, court dates — before they land on you, not after.',
+      'Effective dates, comment deadlines, court dates — before they land, not after.',
   };
 
-  const ACTIVE_DECK = 'quiet';
+  const ACTIVE_DECK = 'evidence';
 </script>
 
 <style>

@@ -138,34 +138,26 @@ lang: "es"
    * quien lee en español no le dice lo mismo la coletilla "en dos idiomas".
    */
   const DECKS = {
+    evidence:
+      'Convertimos el espectáculo del sistema migratorio en evidencia, de lunes a viernes.',
     raids:
-      'Las redadas — y los papeles que las autorizaron. De lunes a viernes, en español e inglés.',
+      'Las redadas — y las políticas que las autorizaron. De lunes a viernes, en español e inglés.',
     weekday:
-      'Cada día leemos las noticias migratorias en dos idiomas: el trámite, los litigios y las redadas que ya todos tememos.',
+      'Cada día leemos las noticias migratorias en dos idiomas: el trámite, los litigios y las redadas que todos tememos.',
     rule:
       'Para quien necesita saber qué dice la norma, no solo qué pasó. Las noticias migratorias del día, en español e inglés.',
     thesis:
       'Las redadas se llevan los titulares. El procedimiento decide el resultado. Seguimos los dos, de lunes a viernes.',
-    cull:
-      'Cada día leemos cientos de artículos en español e inglés para poder descartar casi todos. Queda la ley, los expedientes y las redadas.',
-    discard:
-      'Cientos de artículos al día, casi todos descartados. Lo que sobrevive: las normas, los litigios y la aplicación de la ley.',
-    lawyer:
-      'Lo que un buen abogado de inmigración querría que hubieras leído esta mañana.',
     machine:
-      'Una máquina lee cientos de historias en dos idiomas. Una persona decide qué importa. Te llega de lunes a viernes.',
+      'Una máquina lee cientos de historias en dos idiomas. Nosotros decidimos qué importa. Te llega de lunes a viernes.',
     // Del borrador del anuncio: estas sí dicen qué es la cosa.
-    quiet:
-      'Las normas que entran en vigor en voz baja mientras sigue el espectáculo.',
     calendar:
       'Un resumen de lo que pasó en el sistema migratorio y un calendario de lo que viene.',
-    smoke:
-      'Ahora mismo hay mucho fuego metafórico en la inmigración estadounidense. Hay muchísimo más humo. Cada día vamos a buscar el fuego.',
     dates:
-      'Fechas de entrada en vigor, plazos para comentar, audiencias: antes de que te caigan encima, no después.',
+      'Fechas de entrada en vigor, plazos para comentar, audiencias: antes de que caigan, no después.',
   };
 
-  const ACTIVE_DECK = 'quiet';
+  const ACTIVE_DECK = 'evidence';
 </script>
 
 <style>
