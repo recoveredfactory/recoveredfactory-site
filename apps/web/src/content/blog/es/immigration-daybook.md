@@ -81,7 +81,7 @@ lang: "es"
       <figure class="rf-shots__item">
         <img
           src="/images/immigration-daybook-edition-en.png"
-          alt="El encabezado de una edición de Immigration Daybook del 3 de agosto de 2026, editada por Tory Lysik. La nota principal informa que venció un contrato federal que financiaba asistencia legal para menores migrantes no acompañados, y que decenas de miles de menores quedan sin abogado ante los tribunales de inmigración. Dos entradas en negrita terminan con sus fuentes: NBC Chicago y Telemundo Washington DC, y después El Paso Matters, Los Angeles Times y Univision."
+          alt="El encabezado de una edición de Immigration Daybook del 3 de agosto de 2026, un proyecto de Recovered Factory. La nota principal informa que venció un contrato federal que financiaba asistencia legal para menores migrantes no acompañados, y que decenas de miles de menores quedan sin abogado ante los tribunales de inmigración. Dos entradas en negrita terminan con sus fuentes: NBC Chicago y Telemundo Washington DC, y después El Paso Matters, Los Angeles Times y Univision."
           loading="lazy"
           decoding="async"
         />
