@@ -5,7 +5,6 @@ date: "2026-08-03"
 description: "Un resumen diario del sistema migratorio y un calendario de lo que viene. Orgullosamente algorítmico, editado cada día hábil por David Eads. El piloto gratuito empieza el miércoles 5 de agosto."
 type: "post"
 hideSubscribe: true
-draft: true
 byline: "David Eads"
 tags:
   - "field-notes"
@@ -31,15 +30,13 @@ previewImage: "/images/immigration-daybook-announce-og-es.png"
 
 ---
 
-**El 24 de agosto se cierra el plazo para comentar [una norma del DHS](https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments) que subiría 75% la tarifa de naturalización y eliminaría por completo las exenciones de pago.**
-
-Si estás haciendo el trámite, es dinero real que vas a tener que presupuestar. Si eres abogado, es una semana de llamadas que preferirías agendar tú antes de recibirlas. Si eres periodista, es una nota que quieres publicar el 23 y no el 25.
+**El 24 de agosto se cierra el plazo para comentar [una norma del DHS](https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments) que subiría 75% la tarifa de naturalización y eliminaría por completo las exenciones de pago.** Si estás haciendo el trámite, es dinero real que vas a tener que presupuestar. Si eres abogado, es una semana de llamadas que preferirías agendar tú antes de recibirlas. Si eres periodista, es una nota que quieres publicar el 23 y no el 25.
 
 Puede que ya lo supieras, porque le sigues la pista a estas cosas. Mucha gente no lo sabe, y no tendría por qué tener que averiguarlo sola.
 
 Para eso construimos Immigration Daybook. Cada día de lunes a viernes: un resumen de lo que pasó en el sistema migratorio y, la parte que más ilusión me hace, **un calendario de todo lo que sabemos que viene.** Fechas de entrada en vigor, plazos para enviar comentarios, audiencias, todo respaldado por fuentes primarias y con enlaces al análisis de quienes saben. Las normas que entran en vigor en voz baja mientras todo el mundo discute la indignación del día.
 
-<div class="rf-shots-wrap not-prose relative left-1/2 right-1/2 -mx-[50vw] w-screen">
+<div class="rf-shots-wrap not-prose">
   <div class="rf-shots">
     <figure class="rf-shots__item">
       <img
@@ -144,8 +141,26 @@ Lo que queda abierto es la sostenibilidad. Esto cuesta una fracción de lo que c
      ancho y solo pasa a dos columnas cuando hay espacio. Los dos
      archivos comparten un mismo lienzo, así que las columnas
      quedan a la misma altura sin forzarlo. */
+  /* Se ensancha de forma simétrica respecto a la columna, en vez de salirse
+     hasta el ancho de la ventana. Un full-bleed con `-50vw` solo cuadra si la
+     columna está exactamente centrada y 100vw no cuenta la barra de scroll;
+     si algo de eso falla, el bloque se corre hacia un lado. Los márgenes
+     negativos se miden desde esta columna, así que el par queda centrado
+     sobre el texto sin importar qué lo envuelva. */
   .rf-shots-wrap {
     margin: 2.5rem 0;
+  }
+  @media (min-width: 1024px) {
+    .rf-shots-wrap {
+      margin-left: -6rem;
+      margin-right: -6rem;
+    }
+  }
+  @media (min-width: 1280px) {
+    .rf-shots-wrap {
+      margin-left: -10rem;
+      margin-right: -10rem;
+    }
   }
   .rf-shots {
     display: grid;

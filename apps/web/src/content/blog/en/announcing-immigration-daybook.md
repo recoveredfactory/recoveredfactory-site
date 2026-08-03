@@ -5,7 +5,6 @@ date: "2026-08-03"
 description: "A weekday rundown of the immigration system — and a calendar of what's coming. Proudly algorithmic, edited every weekday by David Eads. Free pilot starts Wednesday, Aug. 5."
 type: "post"
 hideSubscribe: true
-draft: true
 byline: "David Eads"
 tags:
   - "field-notes"
@@ -31,15 +30,13 @@ previewImage: "/images/immigration-daybook-announce-og-en.png"
 
 ---
 
-**On Aug. 24, the comment window closes on [a DHS rule](https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments) that would raise the naturalization filing fee by 75% and eliminate fee waivers outright.**
-
-If you're filing, that's real money you have to budget for. If you're a lawyer, that's a week of phone calls you'd rather schedule than receive. If you're a reporter, that's a story you want to file on the 23rd, not the 25th.
+**On Aug. 24, the comment window closes on [a DHS rule](https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments) that would raise the naturalization filing fee by 75% and eliminate fee waivers outright.** If you're filing, that's real money you have to budget for. If you're a lawyer, that's a week of phone calls you'd rather schedule than receive. If you're a reporter, that's a story you want to file on the 23rd, not the 25th.
 
 Maybe you already knew, because you track this stuff yourself. A lot of people don't, and shouldn't have to.
 
 That's what we built Immigration Daybook to solve. Every weekday: a rundown of what happened in the immigration system, along with the part I'm most excited about — **a calendar of everything we know that's coming.** Effective dates, comment deadlines, court dates, all backed by primary sources and links to expert analysis. The rules that quietly take force while everyone's arguing about the outrage of the day.
 
-<div class="rf-shots-wrap not-prose relative left-1/2 right-1/2 -mx-[50vw] w-screen">
+<div class="rf-shots-wrap not-prose">
   <div class="rf-shots">
     <figure class="rf-shots__item">
       <img
@@ -144,8 +141,25 @@ Sustainability is the open question. This runs on a fraction of what a tradition
      so the pair breaks out and only goes two-column once there
      is room for it. Both files share one canvas, so the columns
      match height without a rule to force it. */
+  /* Widened symmetrically about the column rather than broken out to the
+     viewport. A `-50vw` full-bleed only lands if the column is exactly
+     centred and 100vw excludes the scrollbar, and when either is untrue the
+     block slides off to one side. Negative margins are measured from this
+     column, so the pair stays centred on the text no matter what wraps it. */
   .rf-shots-wrap {
     margin: 2.5rem 0;
+  }
+  @media (min-width: 1024px) {
+    .rf-shots-wrap {
+      margin-left: -6rem;
+      margin-right: -6rem;
+    }
+  }
+  @media (min-width: 1280px) {
+    .rf-shots-wrap {
+      margin-left: -10rem;
+      margin-right: -10rem;
+    }
   }
   .rf-shots {
     display: grid;
