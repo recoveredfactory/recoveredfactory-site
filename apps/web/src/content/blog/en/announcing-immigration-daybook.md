@@ -1,7 +1,7 @@
 ---
 id: "announcing-immigration-daybook"
 title: "Announcing Immigration Daybook"
-date: "2026-08-02"
+date: "2026-08-03"
 description: "A weekday rundown of the immigration system — and a calendar of what's coming. Proudly algorithmic, edited every morning by a person. Free pilot starts Wednesday, August 5."
 type: "post"
 byline: "David Eads"
@@ -16,9 +16,9 @@ previewImage: "/images/immigration-daybook-og-en.png"
 
 ---
 
-**On August 24, DHS intends to implement a rule that nearly doubles the filing fees on naturalization forms.**
+**On August 24, the comment window closes on [a DHS rule](https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments) that would raise the naturalization filing fee by 75% and eliminate fee waivers outright.**
 
-If you're filing, that's real money and a real deadline. If you're a lawyer, that's a week of phone calls you'd rather schedule than receive. If you're a reporter, that's a story you want to file on the 23rd, not the 25th.
+If you're filing, that's real money coming — $760 today, $1,330 proposed — and a reason to move now. If you're a lawyer, that's a week of phone calls you'd rather schedule than receive. If you're a reporter, that's a story you want to file on the 23rd, not the 25th.
 
 Maybe you already knew, because you track this stuff yourself. A lot of people don't, and shouldn't have to.
 
@@ -36,7 +36,7 @@ So this newsletter is proudly algorithmic, and we intend to make it the most car
 
 But the machine doesn't get the last word, and it can't do the part that matters most. The system reads all day and surfaces the patterns it finds. Then I edit: what it means, whether it's accurate, and who covered it best.
 
-I've been on this beat a while. I was the de facto immigration editor at [The Marshall Project](https://www.themarshallproject.org/) for my first several years there, and my team did a lot of the lifting on their pop-up immigration newsletter last summer. So when we write about detention trends, we check the latest data from the Deportation Data Project. When we write about 287(g), we pull [the roster](https://287g.recoveredfactory.net) and read the actual agreements. When we write about a rule or policy change, we look it up in the Federal Register and the USCIS Policy Manual first.
+I've been on this beat a while. I was the de facto immigration editor at [The Marshall Project](https://www.themarshallproject.org/) for my first several years there, and my team did a lot of the lifting on their pop-up immigration newsletter last summer. So when we write about detention trends, we check the latest data from the [Deportation Data Project](https://deportationdata.org). When we write about 287(g), we pull [the roster](https://287g.recoveredfactory.net) and read the actual agreements. When we write about a rule or policy change, we look it up in the [Federal Register](https://www.federalregister.gov) and the [USCIS Policy Manual](https://www.uscis.gov/policy-manual) first.
 
 ## The newsroom brain
 
@@ -44,7 +44,7 @@ Our bet here isn't "AI reads the news." Lots of people are doing that and a lot 
 
 We're using a tool called [PromptQL](https://promptql.io) for that. Rather than handing a pile of documents to a chatbot and hoping its guesses are good, it writes an explicit plan that runs outside the language model, so we can read the steps, reproduce them, and check them. It drafts into a Google Doc, lets us know the draft is ready for edits, and finally picks the edited draft back up to produce the final newsletter.
 
-We think tools like this are going to be a major part of how news gets made. Immigration Daybook is an experiment in how far that takes a small, scrappy shop like Recovered Factory.
+We think tools like this are going to be a major part of how news gets made. Immigration Daybook is an experiment in how far that takes a small, scrappy shop like [Recovered Factory](/en/introducing-recovered-factory).
 
 ## The pilot
 

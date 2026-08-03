@@ -40,7 +40,7 @@ lang: "es"
 
 <div class="rf-body not-prose">
 
-<p class="rf-lede">El 24 de agosto, el DHS pretende poner en marcha una norma que casi duplica las tarifas de los formularios de naturalización. Si estás haciendo el trámite, eso es dinero real y una fecha límite real. Si eres abogado, es una semana de llamadas que preferirías agendar tú antes de recibirlas. Si eres periodista, es una nota que quieres publicar el 23 y no el 25.</p>
+<p class="rf-lede">El 24 de agosto se cierra el plazo para comentar <a href="https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments">una norma del DHS</a> que subiría 75% la tarifa de naturalización y eliminaría por completo las exenciones de pago. Si estás haciendo el trámite, eso es dinero real en camino —$760 hoy, $1,330 propuesto— y una razón para moverte ya. Si eres abogado, es una semana de llamadas que preferirías agendar tú antes de recibirlas. Si eres periodista, es una nota que quieres publicar el 23 y no el 25.</p>
 
 <p class="rf-graf">Puede que ya lo supieras, porque le sigues la pista a estas cosas. Mucha gente no lo sabe, y no tendría por qué tener que averiguarlo sola. Para eso construimos Immigration Daybook, y por eso lo que más ilusión nos hace no son las noticias sino el calendario de lo que viene.</p>
 
@@ -70,7 +70,7 @@ lang: "es"
       <p class="rf-spec__num">02</p>
       <div class="rf-spec__text">
         <p class="rf-spec__label">El resumen del día, contrastado con el registro</p>
-        <p class="rf-spec__body">Las tendencias de detención van contra los datos más recientes. El 287(g) va contra <a href="https://287g.recoveredfactory.net/es">el registro</a> y los acuerdos mismos. Un cambio de norma se busca primero en el Federal Register y en el Manual de Políticas de USCIS.</p>
+        <p class="rf-spec__body">Las tendencias de detención van contra las cifras más recientes del <a href="https://deportationdata.org">Deportation Data Project</a>. El 287(g) va contra <a href="https://287g.recoveredfactory.net/es">el registro</a> y los acuerdos mismos. Un cambio de norma se busca primero en el <a href="https://www.federalregister.gov">Federal Register</a> y en el <a href="https://www.uscis.gov/policy-manual">Manual de Políticas de USCIS</a>.</p>
       </div>
     </div>
     <div class="rf-spec__row">

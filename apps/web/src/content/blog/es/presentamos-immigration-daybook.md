@@ -1,7 +1,7 @@
 ---
 id: "announcing-immigration-daybook"
 title: "Presentamos Immigration Daybook"
-date: "2026-08-02"
+date: "2026-08-03"
 description: "Un resumen diario del sistema migratorio y un calendario de lo que viene. Orgullosamente algorítmico, editado cada mañana por una persona. El piloto gratuito empieza el miércoles 5 de agosto."
 type: "post"
 byline: "David Eads"
@@ -16,9 +16,9 @@ previewImage: "/images/immigration-daybook-og-es.png"
 
 ---
 
-**El 24 de agosto, el DHS pretende poner en marcha una norma que casi duplica las tarifas de los formularios de naturalización.**
+**El 24 de agosto se cierra el plazo para comentar [una norma del DHS](https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments) que subiría 75% la tarifa de naturalización y eliminaría por completo las exenciones de pago.**
 
-Si estás haciendo el trámite, eso es dinero real y una fecha límite real. Si eres abogado, es una semana de llamadas que preferirías agendar tú antes de recibirlas. Si eres periodista, es una nota que quieres publicar el 23 y no el 25.
+Si estás haciendo el trámite, eso es dinero real en camino —$760 hoy, $1,330 propuesto— y una razón para moverte ya. Si eres abogado, es una semana de llamadas que preferirías agendar tú antes de recibirlas. Si eres periodista, es una nota que quieres publicar el 23 y no el 25.
 
 Puede que ya lo supieras, porque le sigues la pista a estas cosas. Mucha gente no lo sabe, y no tendría por qué tener que averiguarlo sola.
 
@@ -36,7 +36,7 @@ Por eso este boletín es orgullosamente algorítmico, y queremos que sea el text
 
 Pero la máquina no tiene la última palabra, y no puede hacer lo que más importa. El sistema lee todo el día y saca a la luz los patrones que encuentra. Después yo edito: qué significa, si es exacto y quién lo cubrió mejor.
 
-Llevo tiempo en esta fuente. Fui el editor de inmigración de facto en [The Marshall Project](https://www.themarshallproject.org/) durante mis primeros años ahí, y mi equipo cargó con buena parte del trabajo de su boletín temporal de inmigración el verano pasado. Así que cuando escribimos sobre tendencias de detención, revisamos los datos más recientes del Deportation Data Project. Cuando escribimos sobre 287(g), sacamos [el registro](https://287g.recoveredfactory.net/es) y leemos los acuerdos. Cuando escribimos sobre un cambio de norma o de política, primero lo buscamos en el Federal Register y en el Manual de Políticas de USCIS.
+Llevo tiempo en esta fuente. Fui el editor de inmigración de facto en [The Marshall Project](https://www.themarshallproject.org/) durante mis primeros años ahí, y mi equipo cargó con buena parte del trabajo de su boletín temporal de inmigración el verano pasado. Así que cuando escribimos sobre tendencias de detención, revisamos los datos más recientes del [Deportation Data Project](https://deportationdata.org). Cuando escribimos sobre 287(g), sacamos [el registro](https://287g.recoveredfactory.net/es) y leemos los acuerdos. Cuando escribimos sobre un cambio de norma o de política, primero lo buscamos en el [Federal Register](https://www.federalregister.gov) y en el [Manual de Políticas de USCIS](https://www.uscis.gov/policy-manual).
 
 ## El cerebro de la redacción
 
@@ -44,7 +44,7 @@ Nuestra apuesta no es "la IA lee las noticias". Mucha gente hace eso y buena par
 
 Para eso usamos una herramienta que se llama [PromptQL](https://promptql.io). En vez de entregarle un montón de documentos a un chatbot y confiar en que adivine bien, escribe un plan explícito que corre fuera del modelo de lenguaje, así podemos leer los pasos, reproducirlos y comprobarlos. Redacta en un documento de Google, nos avisa de que el borrador está listo para editar y al final retoma la versión editada para producir el boletín final.
 
-Creemos que herramientas así van a ser una parte importante de cómo se hacen las noticias. Immigration Daybook es un experimento sobre hasta dónde llega eso en un taller pequeño y con pocos recursos como Recovered Factory.
+Creemos que herramientas así van a ser una parte importante de cómo se hacen las noticias. Immigration Daybook es un experimento sobre hasta dónde llega eso en un taller pequeño y con pocos recursos como [Recovered Factory](/es/presentamos-recovered-factory).
 
 ## El piloto
 

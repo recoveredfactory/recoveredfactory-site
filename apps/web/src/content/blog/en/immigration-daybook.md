@@ -40,7 +40,7 @@ lang: "en"
 
 <div class="rf-body not-prose">
 
-<p class="rf-lede">On August 24, DHS intends to implement a rule that nearly doubles the filing fees on naturalization forms. If you're filing, that's real money and a real deadline. If you're a lawyer, that's a week of phone calls you'd rather schedule than receive. If you're a reporter, that's a story you want to file on the 23rd, not the 25th.</p>
+<p class="rf-lede">On August 24, the comment window closes on <a href="https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments">a DHS rule</a> that would raise the naturalization filing fee by 75% and eliminate fee waivers outright. If you're filing, that's real money coming — $760 today, $1,330 proposed — and a reason to move now. If you're a lawyer, that's a week of phone calls you'd rather schedule than receive. If you're a reporter, that's a story you want to file on the 23rd, not the 25th.</p>
 
 <p class="rf-graf">Maybe you already knew, because you track this stuff yourself. A lot of people don't, and shouldn't have to. That's what we built Immigration Daybook to solve — and it's why the part we're most excited about isn't the news, it's the calendar of what's coming.</p>
 
@@ -70,7 +70,7 @@ lang: "en"
       <p class="rf-spec__num">02</p>
       <div class="rf-spec__text">
         <p class="rf-spec__label">The day's rundown, checked against the record</p>
-        <p class="rf-spec__body">Detention trends go against the latest data. 287(g) goes against <a href="https://287g.recoveredfactory.net">the roster</a> and the actual agreements. A rule change gets looked up in the Federal Register and the USCIS Policy Manual first.</p>
+        <p class="rf-spec__body">Detention trends go against the latest <a href="https://deportationdata.org">Deportation Data Project</a> figures. 287(g) goes against <a href="https://287g.recoveredfactory.net">the roster</a> and the actual agreements. A rule change gets looked up in the <a href="https://www.federalregister.gov">Federal Register</a> and the <a href="https://www.uscis.gov/policy-manual">USCIS Policy Manual</a> first.</p>
       </div>
     </div>
     <div class="rf-spec__row">
