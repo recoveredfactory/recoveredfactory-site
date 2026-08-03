@@ -42,11 +42,13 @@ lang: "en"
 
 <div class="rf-body not-prose">
 
-<p class="rf-lede">On August 24, the comment window closes on <a href="https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments">a DHS rule</a> that would raise the naturalization filing fee by 75% and eliminate fee waivers outright. If you're filing, that's real money coming — $760 today, $1,330 proposed — and a reason to move now. If you're a lawyer, that's a week of phone calls you'd rather schedule than receive. If you're a reporter, that's a story you want to file on the 23rd, not the 25th.</p>
+<p class="rf-lede">On August 24th, the comment window closes on <a href="https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments">a DHS rule</a> that raises the naturalization filing fee by 75% and eliminates fee waivers outright. If you're filing, that's a big jump you have to budget for. If you're a lawyer, that's a week of phone calls you'd rather schedule than receive. If you're a reporter, that's a story you want to file on the 23rd, not the 25th.</p>
 
-<p class="rf-graf">Maybe you already knew, because you track this stuff yourself. A lot of people don't, and shouldn't have to. That's what we built Immigration Daybook to solve — and it's why the part we're most excited about isn't the news, it's the calendar of what's coming.</p>
+<p class="rf-graf">Maybe you already knew, because you track this stuff yourself. A lot of people don't, and shouldn't have to.</p>
 
-<p class="rf-graf">There's a lot of fire in US immigration right now. There's far more smoke: thousands of articles, videos, threads, and posts a day, often covering actions that seem designed to create confusion, chaos, and spectacle. Machines are good at telling you where the smoke is thickest. Finding the fire takes judgement and expertise.</p>
+<p class="rf-graf">That's what we built Immigration Daybook to solve: a broad, daily view of news about US immigration with the key upcoming events front and center.</p>
+
+<p class="rf-graf">There's a lot of fire in US immigration right now, but there's even more smoke: thousands of articles, videos, threads, and posts a day, often covering actions that seem designed to create confusion, chaos, and spectacle. We're using algorithms to show where the smoke is thickest and using our judgement and expertise to reveal what really matters.</p>
 
 <section class="rf-section">
   <p class="rf-kicker">What's in it</p>
@@ -61,15 +63,15 @@ lang: "en"
     <div class="rf-spec__row">
       <p class="rf-spec__num">02</p>
       <div class="rf-spec__text">
-        <p class="rf-spec__label">The day's rundown, checked against the record</p>
-        <p class="rf-spec__body">Detention trends go against the latest <a href="https://deportationdata.org">Deportation Data Project</a> figures. 287(g) goes against <a href="https://287g.recoveredfactory.net">the roster</a> and the actual agreements. A rule change gets looked up in the <a href="https://www.federalregister.gov">Federal Register</a> and the <a href="https://www.uscis.gov/policy-manual">USCIS Policy Manual</a> first.</p>
+        <p class="rf-spec__label">The day's rundown, grounded in reporting and evidence</p>
+        <p class="rf-spec__body">When we cite links about deportation, we check them against the <a href="https://deportationdata.org">Deportation Data Project</a>. A reported rule change is checked against the <a href="https://www.federalregister.gov">Federal Register</a> and <a href="https://www.uscis.gov/policy-manual">USCIS Policy Manual</a>.</p>
       </div>
     </div>
     <div class="rf-spec__row">
       <p class="rf-spec__num">03</p>
       <div class="rf-spec__text">
-        <p class="rf-spec__label">Read past the headlines, in two languages</p>
-        <p class="rf-spec__body">Not just the big stories and prestige investigations you're already seeing. Deeply technical policy blogs, Substack newsletters, social video, and whatever's actually hot in Spanish-language media — YouTube coverage of ICE raids included.</p>
+        <p class="rf-spec__label">The headlines… from English <em>and</em> Spanish media</p>
+        <p class="rf-spec__body">Our innovative technology goes beyond the big stories and prestige investigations you probably saw. Spanish language TV news, deeply technical policy blogs, Substack newsletters, social video — from nerdy law blogs to YouTube coverage of ICE raids, we're watching and bringing you what's relevant.</p>
       </div>
     </div>
   </div>
@@ -78,8 +80,7 @@ lang: "en"
 <section class="rf-section">
   <p class="rf-kicker">How it's made</p>
   <p class="rf-graf">This newsletter is proudly algorithmic, and we intend to make it the most carefully crafted algorithmic writing you've ever read. The bet isn't "AI reads the news" — lots of people are doing that, and a lot of it is slop. The bet is that a newsroom can have a brain: something you can actually <em>query</em> about everything it knows, that shows its work instead of asking you to trust it.</p>
-  <p class="rf-graf">The system reads all day and surfaces the patterns it finds. Then a person edits — what it means, whether it's accurate, and who covered it best. That person is <a href="/en/introducing-recovered-factory">David Eads</a>, an immigrant himself, and the de facto immigration editor at The Marshall Project for several years.</p>
-  <p class="rf-graf">The machinery is <a href="/en/one-story-two-languages">written up in full here</a>, including the parts we're still unsure about.</p>
+  <p class="rf-graf">The system reads the day's news and surfaces the patterns it finds. Then a person edits — what it means, whether it's accurate, and who covered it best. That person is <a href="/en/introducing-recovered-factory">David Eads</a>, a data journalist with years of experience covering immigration for publications including NPR and The Marshall Project, and an immigrant himself.</p>
 </section>
 
 <section class="rf-section rf-section--cta">
@@ -121,13 +122,13 @@ lang: "en"
     thesis:
       'Immigration enforcement makes the headlines. The procedure decides the outcome. We follow both, every weekday, in two languages.',
     cull:
-      'We read dozens of articles in English and Spanish every weekday so we can throw most of them away. What’s left is the law, the filings, and the raids.',
+      'We read hundreds of articles in English and Spanish every weekday so we can throw most of them away. What’s left is the law, the filings, and the raids.',
     discard:
-      'Dozens of articles a day, most of them discarded. What survives: the rulemaking, the litigation, and the enforcement.',
+      'Hundreds of articles a day, most of them discarded. What survives: the rulemaking, the litigation, and the enforcement.',
     lawyer:
       'What a good immigration lawyer would want you to have read this morning.',
     machine:
-      'A machine reads everything published in two languages. A person decides what matters. You get it every weekday.',
+      'A machine reads hundreds of stories in two languages. A person decides what matters. You get it every weekday.',
     // From the announcement draft — these say what the thing actually is.
     quiet:
       'The rules that quietly take force while the spectacle continues.',
@@ -266,11 +267,38 @@ lang: "en"
   .rf-lede {
     margin: 0;
     font-family: var(--font-body);
-    font-size: clamp(1.2rem, 2.2vw, 1.38rem);
-    line-height: 1.5;
-    font-weight: 500;
+    font-size: clamp(1.32rem, 2.6vw, 1.6rem);
+    line-height: 1.45;
+    font-weight: 400;
     color: rgb(15 23 42);
     text-wrap: pretty;
+  }
+
+  /* Follows the house dropcap in app.css — Lora against the Inter body, with
+     `initial-letter` where it lands and a float fallback where it does not.
+     Sized to this lede rather than reusing the prose values, and defined here
+     because .rf-body is `not-prose` and never sees .dropcap-prose. */
+  .rf-lede::first-letter {
+    font-family: var(--font-display);
+    font-style: normal;
+    font-weight: 500;
+    color: rgb(51 65 85);
+    float: left;
+    font-size: 3.2rem;
+    line-height: 0.9;
+    padding: 0.2rem 0.45rem 0 0;
+  }
+
+  @supports (initial-letter: 2) or (-webkit-initial-letter: 2) {
+    .rf-lede::first-letter {
+      float: none;
+      font-size: inherit;
+      line-height: inherit;
+      padding: 0;
+      margin-right: 0.4rem;
+      initial-letter: 2;
+      -webkit-initial-letter: 2;
+    }
   }
 
   .rf-graf {
