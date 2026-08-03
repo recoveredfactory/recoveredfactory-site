@@ -66,7 +66,7 @@ We think tools like this are going to be a major part of how news gets made. Imm
 
 We're running August as a pilot for free, while we figure out what this should be and how to sustain it. We'd rather have you in the room for the early version than polish it in a vacuum, so tell us what's missing and what you'd actually use.
 
-Sustainability is the open question. This runs on a fraction of what a traditional link newsletter takes, but it isn't free: there's real compute, plus the time I spent building the system and the time I'll spend editing it every day. We're not chasing philanthropic money — we'd rather be accountable to our audience than to a program officer — which means at some point we sell something at a fair price that covers costs and pays for the work. This month is how we find out what that is.
+Sustainability is the open question. This runs on a fraction of what a traditional link newsletter takes, but it isn't free: there's real computing costs, plus the time we spent building the system and the time I'll spend editing it every day. We're not chasing philanthropic money — while we will accept it under some circumstances, we'd rather be accountable to our audience than to a program officer — which means at some point we sell something at a fair price that covers costs and pays for the work. This month is how we find out what that is.
 
 <div class="rf-signup not-prose">
   <p class="rf-signup__lead">Starts Wednesday, Aug. 5.</p>

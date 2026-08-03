@@ -66,7 +66,7 @@ Creemos que herramientas así van a ser una parte importante de cómo se hacen l
 
 Agosto es un piloto gratuito, mientras averiguamos qué debe ser esto y cómo sostenerlo. Preferimos tenerte dentro desde la versión temprana a pulirla en el vacío, así que dinos qué falta y qué usarías de verdad.
 
-Lo que queda abierto es la sostenibilidad. Esto cuesta una fracción de lo que cuesta un boletín de enlaces tradicional, pero no es gratis: hay cómputo real, más el tiempo que dediqué a construir el sistema y el que dedicaré a editarlo cada día. No vamos detrás del dinero filantrópico —preferimos rendirle cuentas a nuestra audiencia y no a un oficial de programa—, lo que significa que en algún momento venderemos algo a un precio justo que cubra los costos y pague el trabajo. Este mes es como lo averiguamos.
+Lo que queda abierto es la sostenibilidad. Esto cuesta una fracción de lo que cuesta un boletín de enlaces tradicional, pero no es gratis: hay costos reales de cómputo, más el tiempo que dedicamos a construir el sistema y el que dedicaré a editarlo cada día. No vamos detrás del dinero filantrópico —aunque lo aceptaremos en ciertas circunstancias, preferimos rendirle cuentas a nuestra audiencia y no a un oficial de programa—, lo que significa que en algún momento venderemos algo a un precio justo que cubra los costos y pague el trabajo. Este mes es como lo averiguamos.
 
 <div class="rf-signup not-prose">
   <p class="rf-signup__lead">Empieza el miércoles 5 de agosto.</p>

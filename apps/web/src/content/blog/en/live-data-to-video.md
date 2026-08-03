@@ -95,7 +95,7 @@ If fresh data lands, the job rebuilds and redeploys the site, bakes all four cut
 
 The final step is automated upload of [draft posts to YouTube](https://github.com/recoveredfactory/287g-explorer/blob/main/packages/web/scripts/publish-social-youtube.mjs), a [notification to publish](https://github.com/recoveredfactory/287g-explorer/blob/main/packages/web/scripts/notify-social-ready.mjs) to Instagram, and soon TikTok integration as well.
 
-We’re not categorically opposed to full automation, but for this project we wanted to draw a deliberate line: We want human involvement, editorial control over headlines and captions, and final review of every video that goes out. We know even the best systems can get fouled by bad input data or generate the wrong thing. We’d rather use our judgement every few days about how best to publish and characterize these videos than blindly publishing.
+We’re not categorically opposed to full automation, but for this project we wanted to draw a deliberate line: We want human involvement, editorial control over headlines and captions, and final review of every video that goes out. We know even the best systems can get fouled by bad input data or generate the wrong thing. We’d rather use our judgment every few days about how best to publish and characterize these videos than blindly publishing.
 
 In the case of YouTube, we use the platform’s official API and create an unpublished draft video. Unfortunately, Instagram only supports posting straight-to-public via their API. And so in both cases, every time there’s new data, we generate a draft on YouTube and send an email alert that it’s time to check the draft post and manually create an Instagram post.
 
