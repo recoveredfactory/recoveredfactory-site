@@ -37,7 +37,7 @@ Si estás haciendo el trámite, eso es dinero real en camino —$760 hoy, $1,330
 
 Puede que ya lo supieras, porque le sigues la pista a estas cosas. Mucha gente no lo sabe, y no tendría por qué tener que averiguarlo sola.
 
-Para eso construimos Immigration Daybook. Cada mañana de lunes a viernes: un resumen de lo que pasó en el sistema migratorio y, la parte que más ilusión me hace, **un calendario de lo que viene.** Fechas de entrada en vigor, plazos para enviar comentarios, audiencias, todo respaldado por fuentes primarias y con enlaces al análisis de quienes saben. Las normas que entran en vigor en voz baja mientras todo el mundo discute la indignación del día.
+Para eso construimos Immigration Daybook. Cada día de lunes a viernes: un resumen de lo que pasó en el sistema migratorio y, la parte que más ilusión me hace, **un calendario de lo que viene.** Fechas de entrada en vigor, plazos para enviar comentarios, audiencias, todo respaldado por fuentes primarias y con enlaces al análisis de quienes saben. Las normas que entran en vigor en voz baja mientras todo el mundo discute la indignación del día.
 
 <div class="rf-tk">CAPTURA TK — la sección del calendario, ojalá con 2 o 3 fechas reales a la vista</div>
 
@@ -65,7 +65,7 @@ Creemos que herramientas así van a ser una parte importante de cómo se hacen l
 
 Agosto es un piloto gratuito, mientras averiguamos qué debe ser esto y cómo sostenerlo. Preferimos tenerte dentro desde la versión temprana a pulirla en el vacío, así que dinos qué falta y qué usarías de verdad.
 
-Lo que queda abierto es la sostenibilidad. Esto cuesta una fracción de lo que cuesta un boletín de enlaces tradicional, pero no es gratis: hay cómputo real, más el tiempo que dediqué a construir el sistema y el que dedicaré a editarlo cada mañana. No vamos detrás del dinero filantrópico —preferimos rendirle cuentas a nuestra audiencia y no a un oficial de programa—, lo que significa que en algún momento venderemos algo a un precio justo que cubra los costos y pague el trabajo. Este mes es como lo averiguamos.
+Lo que queda abierto es la sostenibilidad. Esto cuesta una fracción de lo que cuesta un boletín de enlaces tradicional, pero no es gratis: hay cómputo real, más el tiempo que dediqué a construir el sistema y el que dedicaré a editarlo cada día. No vamos detrás del dinero filantrópico —preferimos rendirle cuentas a nuestra audiencia y no a un oficial de programa—, lo que significa que en algún momento venderemos algo a un precio justo que cubra los costos y pague el trabajo. Este mes es como lo averiguamos.
 
 <div class="rf-signup not-prose">
   <p class="rf-signup__lead">Empieza el miércoles 5 de agosto.</p>

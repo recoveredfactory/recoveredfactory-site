@@ -37,7 +37,7 @@ If you're filing, that's real money coming — $760 today, $1,330 proposed — a
 
 Maybe you already knew, because you track this stuff yourself. A lot of people don't, and shouldn't have to.
 
-That's what we built Immigration Daybook to solve. Every weekday morning: a rundown of what happened in the immigration system, along with the part I'm most excited about — **a calendar of what's coming.** Effective dates, comment deadlines, court dates, all backed by primary sources and links to expert analysis. The rules that quietly take force while everyone's arguing about the outrage of the day.
+That's what we built Immigration Daybook to solve. Every weekday: a rundown of what happened in the immigration system, along with the part I'm most excited about — **a calendar of what's coming.** Effective dates, comment deadlines, court dates, all backed by primary sources and links to expert analysis. The rules that quietly take force while everyone's arguing about the outrage of the day.
 
 <div class="rf-tk">SCREENSHOT TK — the calendar section, ideally with 2–3 real upcoming dates visible</div>
 
@@ -65,7 +65,7 @@ We think tools like this are going to be a major part of how news gets made. Imm
 
 We're running August as a pilot for free, while we figure out what this should be and how to sustain it. We'd rather have you in the room for the early version than polish it in a vacuum, so tell us what's missing and what you'd actually use.
 
-Sustainability is the open question. This runs on a fraction of what a traditional link newsletter takes, but it isn't free: there's real compute, plus the time I spent building the system and the time I'll spend editing it every morning. We're not chasing philanthropic money — we'd rather be accountable to our audience than to a program officer — which means at some point we sell something at a fair price that covers costs and pays for the work. This month is how we find out what that is.
+Sustainability is the open question. This runs on a fraction of what a traditional link newsletter takes, but it isn't free: there's real compute, plus the time I spent building the system and the time I'll spend editing it every day. We're not chasing philanthropic money — we'd rather be accountable to our audience than to a program officer — which means at some point we sell something at a fair price that covers costs and pays for the work. This month is how we find out what that is.
 
 <div class="rf-signup not-prose">
   <p class="rf-signup__lead">Starts Wednesday, August 5.</p>

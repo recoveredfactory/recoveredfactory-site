@@ -13,12 +13,10 @@ lang: "en"
 
 <div class="rf-hero not-prose">
   <div class="rf-hero__inner">
-    <p class="rf-eyebrow">Starts Wednesday, August 5</p>
     <h1 class="rf-wordmark">Immigration<br />Daybook</h1>
     <p class="rf-deck">{DECKS[ACTIVE_DECK]}</p>
     <ul class="rf-facts">
-      <li>Every weekday</li>
-      <li>Edited by David Eads</li>
+      <li>Monday–Friday</li>
       <li>English &amp; Spanish</li>
       <li>Free in August</li>
     </ul>
@@ -34,7 +32,10 @@ lang: "en"
         successClass="mt-6 border border-white/20 bg-cream p-6 text-center sm:p-8"
         tag="newsletter:immigration-daybook"
       />
-      <p class="rf-hero__note">Free August pilot. No spam. Unsubscribe anytime.</p>
+      <ul class="rf-hero__meta">
+        <li>Starts Weds, Aug. 5</li>
+        <li>Edited by David Eads</li>
+      </ul>
     </div>
   </div>
 </div>
@@ -140,7 +141,7 @@ lang: "en"
       'A machine reads everything published in two languages. A person decides what matters. You get it every weekday.',
     // From the announcement draft — these say what the thing actually is.
     quiet:
-      'The rules that quietly take force while everyone’s arguing about the outrage of the day.',
+      'The rules that quietly take force while the spectacle continues.',
     calendar:
       'A rundown of what happened in the immigration system — and a calendar of what’s coming.',
     smoke:
@@ -197,16 +198,6 @@ lang: "en"
     .rf-hero { margin-bottom: 4.5rem; }
   }
 
-  .rf-eyebrow {
-    margin: 0 0 1.75rem;
-    font-family: "Jost", sans-serif;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--color-fern-strong);
-  }
-
   /* Poster scale. The line break is authored in the markup so the
      two words stack deliberately rather than wrapping wherever the
      viewport happens to put them. */
@@ -256,15 +247,23 @@ lang: "en"
      never has to scroll to act. */
   .rf-hero__cta { margin-top: 2.25rem; }
 
-  .rf-hero__note {
-    margin: 1rem 0 0;
+  /* Terms that belong to the ask rather than the pitch — the launch date and
+     the byline — set under the form instead of above the headline. */
+  .rf-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    margin: 1.15rem 0 0;
+    padding: 0;
+    list-style: none;
     font-family: "Jost", sans-serif;
     font-size: 0.74rem;
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(243, 241, 233, 0.5);
+    color: rgba(243, 241, 233, 0.52);
   }
+  .rf-hero__meta li { margin: 0; }
 
   /* ── Body ─────────────────────────────────────────────────
      One wrapper owns every gap below the hero. The route puts the

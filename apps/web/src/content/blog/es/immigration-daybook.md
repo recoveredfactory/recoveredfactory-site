@@ -13,12 +13,10 @@ lang: "es"
 
 <div class="rf-hero not-prose">
   <div class="rf-hero__inner">
-    <p class="rf-eyebrow">Empieza el miércoles 5 de agosto</p>
     <h1 class="rf-wordmark">Immigration<br />Daybook</h1>
     <p class="rf-deck">{DECKS[ACTIVE_DECK]}</p>
     <ul class="rf-facts">
       <li>De lunes a viernes</li>
-      <li>Editado por David Eads</li>
       <li>Español e inglés</li>
       <li>Gratis en agosto</li>
     </ul>
@@ -34,7 +32,10 @@ lang: "es"
         successClass="mt-6 border border-white/20 bg-cream p-6 text-center sm:p-8"
         tag="newsletter:immigration-daybook"
       />
-      <p class="rf-hero__note">Piloto gratuito de agosto. Sin spam. Te das de baja cuando quieras.</p>
+      <ul class="rf-hero__meta">
+        <li>Empieza el miér. 5 de agosto</li>
+        <li>Editado por David Eads</li>
+      </ul>
     </div>
   </div>
 </div>
@@ -142,7 +143,7 @@ lang: "es"
       'Una máquina lee todo lo que se publica en dos idiomas. Una persona decide qué importa. Te llega de lunes a viernes.',
     // Del borrador del anuncio: estas sí dicen qué es la cosa.
     quiet:
-      'Las normas que entran en vigor en voz baja mientras todo el mundo discute la indignación del día.',
+      'Las normas que entran en vigor en voz baja mientras sigue el espectáculo.',
     calendar:
       'Un resumen de lo que pasó en el sistema migratorio y un calendario de lo que viene.',
     smoke:
@@ -201,16 +202,6 @@ lang: "es"
     .rf-hero { margin-bottom: 4.5rem; }
   }
 
-  .rf-eyebrow {
-    margin: 0 0 1.75rem;
-    font-family: "Jost", sans-serif;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--color-fern-strong);
-  }
-
   /* Escala de cartel. El salto de línea va en el marcado para que
      las dos palabras se apilen a propósito y no donde al viewport
      le toque romper. */
@@ -259,15 +250,23 @@ lang: "es"
      convencido no tiene que bajar para actuar. */
   .rf-hero__cta { margin-top: 2.25rem; }
 
-  .rf-hero__note {
-    margin: 1rem 0 0;
+  /* Datos que pertenecen a la petición y no al argumento —la fecha de inicio
+     y la firma—, debajo del formulario en vez de encima del titular. */
+  .rf-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    margin: 1.15rem 0 0;
+    padding: 0;
+    list-style: none;
     font-family: "Jost", sans-serif;
     font-size: 0.74rem;
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(243, 241, 233, 0.5);
+    color: rgba(243, 241, 233, 0.52);
   }
+  .rf-hero__meta li { margin: 0; }
 
   /* ── Cuerpo ───────────────────────────────────────────────
      Un solo contenedor manda sobre todas las separaciones debajo
