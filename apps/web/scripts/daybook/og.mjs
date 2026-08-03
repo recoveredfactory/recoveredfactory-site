@@ -18,8 +18,10 @@
 //                  the wordmark to a lockup.
 //
 // The announcement headline is deliberately its own string rather than a
-// reference to ACTIVE_DECK. The deck is under A/B test and this card should not
-// silently change when a different variant goes live.
+// reference to ACTIVE_DECK. It currently matches the live `evidence` deck, but
+// the deck is under A/B test and this card should not silently change when a
+// different variant goes live — a card that shifts under a shared link is worse
+// than one that lags the page.
 //
 // Composed on a 1200x630 canvas, shot at 2x, and downsampled to 1600x840 —
 // same 1.91:1 frame the platforms want. The extra size is deliberate: the OG
@@ -153,31 +155,38 @@ const landingCard = ({ eyebrow, wordmark, facts, factsSize }) =>
 const ANNOUNCEMENT = {
   en: {
     lockup: 'Immigration Daybook',
-    headline: 'The rules that quietly take force while the spectacle continues.',
-    headlineSize: 62,
-    meta: ['Starts Wednesday, August 5', 'Edited by David Eads'],
-    metaSize: 21,
+    lockupSize: 56,
+    headline: 'We turn the spectacle of the immigration system into evidence, every weekday.',
+    headlineSize: 58,
+    meta: ['Starts Wednesday, Aug. 5', 'Edited by David Eads'],
+    metaSize: 30,
   },
   es: {
     lockup: 'Immigration Daybook',
-    headline: 'Las normas que entran en vigor en voz baja mientras sigue el espectáculo.',
-    headlineSize: 56,
+    lockupSize: 56,
+    headline:
+      'Convertimos el espectáculo del sistema migratorio en evidencia, de lunes a viernes.',
+    headlineSize: 54,
+    // 25px overruns the rule by ~13px: the Spanish strip is 6 characters longer
+    // than the English one and `nowrap` spills rather than wrapping.
     meta: ['Empieza el miércoles 5 de agosto', 'Editado por David Eads'],
-    metaSize: 19,
+    metaSize: 24,
   },
 };
 
-const announcementCard = ({ lockup, headline, headlineSize, meta, metaSize }) =>
+const announcementCard = ({ lockup, lockupSize, headline, headlineSize, meta, metaSize }) =>
   shell(
     `
+  /* Tracking comes down as the size goes up: 0.28em is set for a 21px caption
+     and reads as gappy once the lockup is display-sized. */
   .lockup {
     font-family: "Jost", sans-serif;
-    font-size: 21px;
+    font-size: ${lockupSize}px;
     font-weight: 700;
-    letter-spacing: 0.28em;
+    letter-spacing: 0.14em;
     text-transform: uppercase;
     color: ${CRIMSON};
-    margin-bottom: 38px;
+    margin-bottom: 40px;
   }
   .headline {
     font-family: "Lora", serif;
@@ -188,10 +197,14 @@ const announcementCard = ({ lockup, headline, headlineSize, meta, metaSize }) =>
     color: ${CREAM};
     text-wrap: balance;
   }
+  /* Spread to the ends rather than bunched at the left: the crimson rule above
+     already spans the full measure, and a short strip under a full-width rule
+     reads as unfinished. */
   .meta {
     display: flex;
     flex-wrap: nowrap;
     white-space: nowrap;
+    justify-content: space-between;
     gap: ${Math.round(metaSize * 1.6)}px;
     margin-top: 44px;
     padding-top: 30px;
