@@ -2,7 +2,7 @@
 id: "announcing-immigration-daybook"
 title: "Presentamos Immigration Daybook"
 date: "2026-08-03"
-description: "Un resumen diario del sistema migratorio y un calendario de lo que viene. Orgullosamente algorítmico, editado cada mañana por David Eads. El piloto gratuito empieza el miércoles 5 de agosto."
+description: "Un resumen diario del sistema migratorio y un calendario de lo que viene. Orgullosamente algorítmico, editado cada día hábil por David Eads. El piloto gratuito empieza el miércoles 5 de agosto."
 type: "post"
 hideSubscribe: true
 byline: "David Eads"

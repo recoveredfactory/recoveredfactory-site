@@ -2,7 +2,7 @@
 id: "announcing-immigration-daybook"
 title: "Announcing Immigration Daybook"
 date: "2026-08-03"
-description: "A weekday rundown of the immigration system — and a calendar of what's coming. Proudly algorithmic, edited every weekday morning by David Eads. Free pilot starts Wednesday, August 5."
+description: "A weekday rundown of the immigration system — and a calendar of what's coming. Proudly algorithmic, edited every weekday by David Eads. Free pilot starts Wednesday, August 5."
 type: "post"
 hideSubscribe: true
 byline: "David Eads"
