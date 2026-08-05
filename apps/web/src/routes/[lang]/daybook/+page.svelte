@@ -13,9 +13,10 @@
   const pageTitle = $derived(
     data.lang === 'es' ? 'Immigration Daybook · Archivo' : 'Immigration Daybook · Archive',
   );
-  // The newest edition's dek, so the archive describes what is in it rather than
-  // what it is. Falls back to a plain line only before the first edition ships,
-  // when there is nothing to describe.
+  // The newest edition's dek, used for the meta description only. It reads as a
+  // contents line in a search result, which is what an archive index wants, but
+  // it is visibly a machine-joined list of headlines — so it does not go on the
+  // page. Falls back to a plain line before the first edition ships.
   const description = $derived(
     data.dek ??
       (data.lang === 'es'
@@ -50,15 +51,9 @@
 <main class="min-h-dvh px-6 py-12 sm:px-10 lg:px-16">
   <div class="mx-auto flex max-w-3xl flex-col gap-12">
     <header class="space-y-3">
-      <p class="text-xs font-semibold uppercase tracking-[0.3em] text-slate-500">
-        {data.lang === 'es' ? 'Archivo' : 'Archive'}
-      </p>
       <h1 class="font-display text-4xl font-semibold tracking-tight text-slate-900 sm:text-5xl">
-        Immigration Daybook
+        {data.lang === 'es' ? 'Archivo de Immigration Daybook' : 'Immigration Daybook Archive'}
       </h1>
-      {#if data.dek}
-        <p class="max-w-2xl text-base leading-relaxed text-slate-600">{data.dek}</p>
-      {/if}
       <p class="text-sm text-slate-600">
         <a class="underline" href={`/${data.lang}/immigration-daybook`}>
           {data.lang === 'es' ? 'Sobre el boletín' : 'About the newsletter'}
@@ -84,7 +79,7 @@
             {#each month.editions as edition}
               <li>
                 <a class="group block space-y-1" href={`/${data.lang}/daybook/${edition.date}`}>
-                  <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
+                  <p class="text-sm text-slate-500">
                     {formatEditionDate(edition.date, data.lang, { weekday: true })}
                     {#if edition.pilot}
                       <span class="ml-2 text-amber-700">
@@ -92,14 +87,17 @@
                       </span>
                     {/if}
                   </p>
+                  <!-- Date and headline, nothing else. The dek is a list of an
+                       edition's section headlines joined with middots — it
+                       opens by repeating the headline directly above it, and a
+                       column of those reads like machine output rather than an
+                       index. It stays in the meta description, where a contents
+                       line is the right thing. -->
                   <h3
                     class="font-display text-lg font-semibold text-slate-900 transition group-hover:text-slate-700"
                   >
                     {edition.title}
                   </h3>
-                  {#if edition.description}
-                    <p class="text-sm text-slate-600">{edition.description}</p>
-                  {/if}
                 </a>
               </li>
             {/each}
