@@ -50,6 +50,20 @@ lang: "es"
 
 <p class="rf-graf">Ahora mismo hay mucho fuego metafórico en el sistema migratorio estadounidense, pero hay todavía más humo: miles de artículos, videos, hilos y publicaciones al día, muchas veces sobre acciones que parecen diseñadas para producir confusión, caos y espectáculo. Usamos algoritmos para mostrar dónde está más espeso el humo, y nuestro criterio y experiencia para revelar lo que de verdad importa.</p>
 
+{#if latestEdition}
+<section class="rf-section">
+  <LatestEdition
+    archiveHref="/es/daybook"
+    archiveLabel="Todas las ediciones →"
+    blurb={latestEdition.description}
+    dateline={latestEdition.dateline}
+    href={latestEdition.href}
+    kicker="Última edición"
+    title={latestEdition.title}
+  />
+</section>
+{/if}
+
 <section class="rf-section">
   <p class="rf-kicker">Qué vas a recibir</p>
   <div class="rf-spec">
@@ -125,7 +139,16 @@ lang: "es"
 </div>
 
 <script>
+  import LatestEdition from '$lib/components/LatestEdition.svelte';
   import SubscribeForm from '$lib/components/SubscribeForm.svelte';
+
+  /**
+   * La edición publicada más reciente, resuelta en el servidor en
+   * [lang]/[slug]/+page.server.ts. Es null hasta que salga la primera — y en
+   * producción sigue siendo null durante el piloto, así que la placa
+   * sencillamente no aparece en lugar de quedar vacía.
+   */
+  let { latestEdition = null } = $props();
 
   /**
    * Variantes del lema en prueba. Corre una a la vez: rotarlas en cada recarga

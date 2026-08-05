@@ -50,6 +50,20 @@ lang: "en"
 
 <p class="rf-graf">There's a lot of metaphorical fire in the U.S. immigration system right now, but there's even more smoke: thousands of articles, videos, threads, and posts a day, often covering actions that seem designed to create confusion, chaos, and spectacle. We're using algorithms to show where the smoke is thickest and using our judgment and expertise to reveal what really matters.</p>
 
+{#if latestEdition}
+<section class="rf-section">
+  <LatestEdition
+    archiveHref="/en/daybook"
+    archiveLabel="All editions →"
+    blurb={latestEdition.description}
+    dateline={latestEdition.dateline}
+    href={latestEdition.href}
+    kicker="Latest edition"
+    title={latestEdition.title}
+  />
+</section>
+{/if}
+
 <section class="rf-section">
   <p class="rf-kicker">What's in it</p>
   <div class="rf-spec">
@@ -125,7 +139,16 @@ lang: "en"
 </div>
 
 <script>
+  import LatestEdition from '$lib/components/LatestEdition.svelte';
   import SubscribeForm from '$lib/components/SubscribeForm.svelte';
+
+  /**
+   * The newest published edition, resolved server-side in
+   * [lang]/[slug]/+page.server.ts. Null until the first one ships — and in
+   * production it stays null through the pilot, so the plate simply is not
+   * there rather than standing empty.
+   */
+  let { latestEdition = null } = $props();
 
   /**
    * Deck variants under test. One runs at a time — rotating per reload would

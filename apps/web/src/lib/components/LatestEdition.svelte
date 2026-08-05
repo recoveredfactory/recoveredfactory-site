@@ -1,19 +1,29 @@
 <script lang="ts">
   /**
-   * Highlights the most recent edition of a newsletter. Deliberately holds one
-   * edition and nothing else — there is no archive index behind it yet.
+   * Highlights the most recent edition of a newsletter, with a way through to
+   * the rest of them.
    *
-   * DESIGN TK: the treatment here is a placeholder. Content is passed in as
-   * props so the copy stays in the page that uses it, in its own language.
+   * Holds exactly one edition on purpose. This sits on a page whose job is the
+   * subscribe ask, and one edition is enough to judge the writing by — several,
+   * readable in place, would be a free sample standing in for the thing being
+   * asked for. The archive link is the release valve: a reader who wants more
+   * can have all of it, one click away and not in the hero.
+   *
+   * DESIGN TK: the treatment here is a placeholder. Copy is passed in as props
+   * so it stays in the page that uses it, in its own language; the edition
+   * itself comes from the server (see [lang]/[slug]/+page.server.ts), so there
+   * is nothing to hand-edit when a new one ships.
    */
   type LatestEditionProps = {
     kicker: string;
     dateline?: string;
     title: string;
     blurb?: string;
+    /** The edition itself — the title links here. */
     href?: string;
-    linkLabel?: string;
-    note?: string;
+    /** The archive index. Deliberately a separate, quieter destination. */
+    archiveHref?: string;
+    archiveLabel?: string;
   };
 
   let {
@@ -22,13 +32,24 @@
     title,
     blurb = '',
     href = '',
-    linkLabel = '',
-    note = '',
+    archiveHref = '',
+    archiveLabel = '',
   }: LatestEditionProps = $props();
 </script>
 
 <section class="rf-edition not-prose">
-  <p class="rf-edition__kicker">{kicker}</p>
+  <!-- The archive link rides in the section header rather than under the card.
+       At the foot of a card, accented and arrowed, it is the "read more" idiom
+       and reads as a continuation of the edition — which is wrong twice over:
+       the headline is already the link to the edition, and the archive is a
+       different place, not more of this one. Up here against the kicker it
+       reads as what it is: the section's other destination. -->
+  <div class="rf-edition__head">
+    <p class="rf-edition__kicker">{kicker}</p>
+    {#if archiveHref && archiveLabel}
+      <a class="rf-edition__archive" href={archiveHref}>{archiveLabel}</a>
+    {/if}
+  </div>
 
   <div class="rf-edition__card">
     {#if dateline}
@@ -47,15 +68,6 @@
       <p class="rf-edition__blurb">{blurb}</p>
     {/if}
 
-    {#if href && linkLabel}
-      <p class="rf-edition__more">
-        <a href={href}>{linkLabel}</a>
-      </p>
-    {/if}
-
-    {#if note}
-      <p class="rf-edition__note">{note}</p>
-    {/if}
   </div>
 </section>
 
@@ -64,9 +76,23 @@
     margin: 0;
   }
 
+  /* A masthead rule, not a card header: the kicker and the archive link sit on
+     one baseline with a hairline under both, which is a sectioning idiom rather
+     than a call to action. */
+  .rf-edition__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.4rem 1.5rem;
+    margin: 0 0 1.1rem;
+    padding-bottom: 0.7rem;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.15);
+  }
+
   /* Kept in step with `.rf-kicker` on the pages that use this. */
   .rf-edition__kicker {
-    margin: 0 0 1.1rem;
+    margin: 0;
     font-family: 'Jost', sans-serif;
     font-size: 1rem;
     font-weight: 700;
@@ -128,34 +154,24 @@
     text-wrap: pretty;
   }
 
-  .rf-edition__more {
-    margin: 1.25rem 0 0;
-  }
-  .rf-edition__more a {
-    font-family: 'Jost', sans-serif;
-    font-size: 0.78rem;
-    font-weight: 600;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--color-fern);
-    text-decoration: none;
-  }
-  .rf-edition__more a:hover {
-    text-decoration: underline;
-    text-underline-offset: 5px;
-  }
-
-  /* Placeholder marker — delete this along with the `note` prop once the real
-     edition and its design land. */
-  .rf-edition__note {
-    margin: 1.5rem 0 0;
-    padding-top: 1rem;
-    border-top: 1px dashed rgba(15, 23, 42, 0.2);
+  /* Muted slate, not the fern accent. The accent is what the subscribe button
+     uses; spending it here would put a second call to action on a page that
+     wants exactly one. */
+  .rf-edition__archive {
+    flex: none;
     font-family: 'Jost', sans-serif;
     font-size: 0.72rem;
     font-weight: 600;
-    letter-spacing: 0.14em;
+    letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgb(148 163 184);
+    white-space: nowrap;
+    color: rgb(100 116 139);
+    text-decoration: none;
   }
+  .rf-edition__archive:hover {
+    color: var(--color-fern);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
 </style>
