@@ -1,10 +1,23 @@
 <script lang="ts">
+  import { trackEvent } from '$lib/analytics';
+  import DaybookSubscribe from '$lib/components/DaybookSubscribe.svelte';
   import { SITE_URL } from '$lib/config';
   import { formatEditionDate, formatMonth } from '$lib/daybook/format';
   import { archiveSchema, editionSchema } from '$lib/daybook/schema';
   import { m } from '$lib/paraglide/messages';
+  import { setLocale } from '$lib/paraglide/runtime';
 
   const { data } = $props();
+
+  // Editions are published in both languages on the same date, so the pair is
+  // resolved server-side and there is at most one of these. Same treatment as
+  // the cross-link on a post: the label is written in the language being
+  // switched to, because it is addressed to a reader of that language.
+  const otherLang = $derived(data.lang === 'en' ? 'es' : 'en');
+  const translation = $derived(data.alternates[0] ?? null);
+  const switchLabel = $derived(
+    otherLang === 'es' ? 'Leer en español →' : 'Read in English →',
+  );
 
   const canonical = $derived(new URL(`/${data.lang}/daybook/${data.ref}`, SITE_URL).href);
   const isEdition = $derived(data.kind === 'edition');
@@ -79,7 +92,26 @@
           {formatMonth(data.ref.slice(0, 7), data.lang)}
         </a>
       {/if}
+      {#if translation}
+        <a
+          class="ml-3 inline-flex items-center text-xs font-semibold uppercase tracking-[0.25em] text-fern-strong transition hover:text-fern-strong/80"
+          href={translation.href}
+          onclick={() => {
+            setLocale(translation.lang, { reload: false });
+            trackEvent('language_switch', {
+              from: data.lang,
+              to: translation.lang,
+              source: 'daybook',
+              slug: data.ref,
+            });
+          }}
+        >
+          {switchLabel}
+        </a>
+      {/if}
     </nav>
+
+    <DaybookSubscribe lang={data.lang} placement="archive-top" />
 
     {#if isEdition && data.edition}
       {@const edition = data.edition}
@@ -161,7 +193,7 @@
 
       {#each data.editions as edition}
         <article class="space-y-4 border-t border-slate-200 pt-8">
-          <p class="text-xs uppercase tracking-[0.2em] text-slate-500">
+          <p class="text-sm text-slate-500">
             <a class="hover:underline" href={`/${data.lang}/daybook/${edition.date}`}>
               {formatEditionDate(edition.date, data.lang, { weekday: true })}
             </a>
@@ -175,5 +207,7 @@
         </article>
       {/each}
     {/if}
+
+    <DaybookSubscribe lang={data.lang} placement="archive-bottom" />
   </div>
 </main>

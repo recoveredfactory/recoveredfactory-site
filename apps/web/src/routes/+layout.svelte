@@ -57,6 +57,14 @@
   const DAYBOOK_BANNER_KEY = 'rf:daybook-banner-dismissed';
   const DAYBOOK_PAGES =
     /^\/(en|es)\/(immigration-daybook|announcing-immigration-daybook|presentamos-immigration-daybook)\/?$/;
+  // The archive and every edition under it: /en/daybook, /es/daybook/2026-08-05,
+  // month roundups, all of it. These pages carry their own subscribe form, so
+  // the house sign-up button and the promo strip are both noise here — a reader
+  // already reading the newsletter does not need to be told it exists, and the
+  // nav button points at the house list rather than the Daybook one, which is
+  // the wrong ask on this page.
+  const DAYBOOK_ARCHIVE = /^\/(en|es)\/daybook(\/|$)/;
+  const onDaybookArchive = $derived(DAYBOOK_ARCHIVE.test($page.url.pathname));
 
   let daybookBannerDismissed = $state(false);
 
@@ -75,7 +83,10 @@
   // Always on locally and on non-prod stages, where it needs reviewing.
   const daybookBannerEnabled = isPreview || env.PUBLIC_DAYBOOK_BANNER === '1';
   const showDaybookBanner = $derived(
-    daybookBannerEnabled && !daybookBannerDismissed && !DAYBOOK_PAGES.test($page.url.pathname),
+    daybookBannerEnabled &&
+      !daybookBannerDismissed &&
+      !DAYBOOK_PAGES.test($page.url.pathname) &&
+      !onDaybookArchive,
   );
 
   const dismissDaybookBanner = () => {
@@ -316,13 +327,15 @@
         <span class="sr-only">{m.site_name()}</span>
       </a>
       <div class="ml-auto flex items-center gap-3">
-        <a
-          class="hidden bg-fern-strong px-2.5 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern md:inline-flex"
-          href={signupHref}
-          onclick={handleSignupAnchorClick}
-        >
-          {navSubscribeLabel}
-        </a>
+        {#if !onDaybookArchive}
+          <a
+            class="hidden bg-fern-strong px-2.5 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern md:inline-flex"
+            href={signupHref}
+            onclick={handleSignupAnchorClick}
+          >
+            {navSubscribeLabel}
+          </a>
+        {/if}
         <a
           class="hidden bg-donate px-2.5 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-donate/90 md:inline-flex"
           href={supportHref}
@@ -369,16 +382,18 @@
       >
         <div class="mx-auto flex min-h-full max-w-6xl flex-col gap-12 px-6 py-10 sm:px-10 lg:px-16">
           <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-3">
-            <a
-              class="inline-flex items-center justify-center bg-fern-strong px-4 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:text-sm"
-              href={signupHref}
-              onclick={(event) => {
-                handleSignupAnchorClick(event);
-                closeMenu('nav');
-              }}
-            >
-              {navSubscribeLabel}
-            </a>
+            {#if !onDaybookArchive}
+              <a
+                class="inline-flex items-center justify-center bg-fern-strong px-4 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:text-sm"
+                href={signupHref}
+                onclick={(event) => {
+                  handleSignupAnchorClick(event);
+                  closeMenu('nav');
+                }}
+              >
+                {navSubscribeLabel}
+              </a>
+            {/if}
             <a
               class="inline-flex items-center justify-center bg-donate px-4 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-donate/90 sm:text-sm"
               href={supportHref}

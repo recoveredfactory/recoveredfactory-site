@@ -1,4 +1,5 @@
 <script lang="ts">
+  import DaybookSubscribe from '$lib/components/DaybookSubscribe.svelte';
   import { SITE_URL } from '$lib/config';
   import { formatEditionDate, formatMonth } from '$lib/daybook/format';
   import { archiveSchema } from '$lib/daybook/schema';
@@ -63,6 +64,8 @@
       </p>
     </header>
 
+    <DaybookSubscribe lang={data.lang} placement="archive-top" />
+
     {#if editions.length === 0}
       <p class="text-sm text-slate-600">
         {data.lang === 'es' ? 'Aún no hay ediciones.' : 'No editions yet.'}
@@ -105,5 +108,7 @@
         </section>
       {/each}
     {/if}
+
+    <DaybookSubscribe lang={data.lang} placement="archive-bottom" />
   </div>
 </main>
