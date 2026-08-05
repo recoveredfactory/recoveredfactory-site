@@ -1,0 +1,341 @@
+#!/usr/bin/env node
+// Pull an Immigration Daybook edition from the PromptQL automation and write it
+// into the archive as plain markdown: src/content/daybook/{en,es}/YYYY-MM-DD.md.
+//
+// Usage: node scripts/daybook/pull.mjs [--raw-only] [--offline] [--force]
+//   --raw-only   fetch and save scripts/daybook/out/response.json, write nothing
+//   --offline    re-template from the saved response.json instead of hitting the
+//                API (deterministic re-runs; no LLM spend)
+//   --force      write even when the manifest says the edition isn't shippable
+//
+// Reads PQL_DAYBOOK_URL / PQL_DAYBOOK_KEY from apps/web/.env.
+//
+// The endpoint takes no parameters that select an edition: a run always returns
+// the latest row on the `immigration_daybook_finals` shelf, and passing an
+// `edition_date` in the manifest is silently ignored (verified 2026-08-04). So
+// this script is a daily "fetch whatever is current" job, not a backfill tool.
+// Editions already on disk are left alone unless their date matches the one that
+// comes back. Reaching further back means going at the shelf table directly.
+//
+// Unlike the DDP pull, this writes plain markdown with no <script> block and no
+// Svelte components. Editions are loaded by src/lib/daybook/loader.ts with ?raw
+// and rendered with `marked` — deliberately NOT through mdsvex, which compiles
+// every matched file into the bundle at build time. That is fine for a few dozen
+// essays and would not be fine for a weekday newsletter that adds ~500 files a
+// year, in two languages.
+
+import { readFileSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const here = dirname(fileURLToPath(import.meta.url));
+const webRoot = join(here, '..', '..');
+
+const LANGS = ['en', 'es'];
+
+// The standing note at the top of every edition ("Welcome to the free pilot
+// run…"). It is the same italic paragraph in every issue, so it is split off the
+// body and stored separately: it renders as a standing note rather than as
+// indexed prose, and it never becomes the meta description. Boilerplate repeated
+// across 500 pages is exactly what gets an archive classified as thin.
+const STANDING_NOTE = /^\*(?!\*)([\s\S]+?)\*\s*$/m;
+
+// Dek tuning. These live up here with the rest of the configuration rather than
+// beside deriveDek because the script does its work at module top level, and a
+// `const` declared below that point is still in its dead zone when the templating
+// runs.
+const DEK_BEATS = 3;
+// Sized so three Spanish headlines fit: Spanish runs materially longer than
+// English, and a tighter budget silently gave the ES edition two beats where EN
+// got three. Search engines truncate a long description for display rather than
+// penalizing it, so the cost of the extra room is nil.
+const DEK_MAX_CHARS = 380;
+
+// Standing rubrics ("Upcoming", "Around the system", "Who saw what?",
+// "Próximamente", "¿Quién vio qué?") are section furniture, not beats. They are
+// reliably short where a story headline is a full clause, so length separates
+// them without hardcoding a list per language.
+const RUBRIC_MAX_CHARS = 35;
+
+const args = new Set(process.argv.slice(2));
+const offline = args.has('--offline');
+const rawOnly = args.has('--raw-only');
+const force = args.has('--force');
+
+const env = Object.fromEntries(
+  readFileSync(join(webRoot, '.env'), 'utf8')
+    .split('\n')
+    .filter((line) => line.includes('=') && !line.startsWith('#'))
+    .map((line) => [line.slice(0, line.indexOf('=')), line.slice(line.indexOf('=') + 1)]),
+);
+
+const url = env.PQL_DAYBOOK_URL;
+const key = env.PQL_DAYBOOK_KEY;
+if (!url || !key) {
+  console.error('Missing PQL_DAYBOOK_URL / PQL_DAYBOOK_KEY in apps/web/.env');
+  process.exit(1);
+}
+
+const outDir = join(here, 'out');
+mkdirSync(outDir, { recursive: true });
+const responsePath = join(outDir, 'response.json');
+
+let response;
+if (offline) {
+  if (!existsSync(responsePath)) {
+    console.error(`No saved response at ${responsePath}; run once without --offline first.`);
+    process.exit(1);
+  }
+  response = JSON.parse(readFileSync(responsePath, 'utf8'));
+  console.log('Offline: re-templating from scripts/daybook/out/response.json');
+} else {
+  // Same contract as the DDP automation: multipart/form-data, 'manifest' first.
+  const form = new FormData();
+  form.append('manifest', '{}');
+
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { Authorization: `pat ${key}` },
+    body: form,
+  });
+
+  const text = await res.text();
+  if (!res.ok) {
+    console.error(`PromptQL request failed: HTTP ${res.status}`);
+    console.error(text.slice(0, 2000));
+    process.exit(1);
+  }
+
+  response = JSON.parse(text);
+  writeFileSync(responsePath, JSON.stringify(response, null, 2));
+  console.log(`Saved raw response (${text.length} bytes) to scripts/daybook/out/response.json`);
+}
+
+if (response.error) {
+  console.error(`Automation reported error: ${JSON.stringify(response.error)}`);
+  process.exit(1);
+}
+
+if (rawOnly) process.exit(0);
+
+const artifact = (name) => response.artifacts?.find((a) => a.name === name);
+
+const manifestArtifact = artifact('daybook_final_manifest');
+if (!manifestArtifact?.data) {
+  console.error("Artifact 'daybook_final_manifest' missing; cannot place the edition.");
+  process.exit(1);
+}
+const manifest = JSON.parse(manifestArtifact.data);
+
+const editionDate = manifest.edition_date;
+if (!/^\d{4}-\d{2}-\d{2}$/.test(editionDate ?? '')) {
+  console.error(`Manifest has no usable edition_date (got ${JSON.stringify(editionDate)}).`);
+  process.exit(1);
+}
+
+// The publish gate. `faithfulness_blocked` is the automation's own signal that a
+// claim in the edition did not survive its source check — that must never reach
+// the archive on autopilot, so --force has to be typed by a human who has read
+// the edition. `url_parity` false means the EN and ES editions cite different
+// URLs, which is a real editorial problem but not a correctness one, so it warns.
+const shippable = manifest.status === 'ship_ready' && !manifest.faithfulness_blocked;
+if (!shippable) {
+  const why = [
+    manifest.status !== 'ship_ready' && `status=${manifest.status}`,
+    manifest.faithfulness_blocked && 'faithfulness_blocked=true',
+  ]
+    .filter(Boolean)
+    .join(', ');
+  if (!force) {
+    console.error(`Edition ${editionDate} is not shippable (${why}). Refusing to write.`);
+    console.error('Read the edition, then re-run with --force if it is genuinely fine.');
+    process.exit(1);
+  }
+  console.warn(`WARNING: writing ${editionDate} despite ${why} (--force).`);
+}
+if (manifest.url_parity === false) {
+  console.warn(`WARNING: ${editionDate} has url_parity=false — EN and ES cite different sources.`);
+}
+
+let wrote = 0;
+for (const lang of LANGS) {
+  const md = artifact(`daybook_final_${lang}_md`);
+  if (!md?.data) {
+    console.error(`Artifact 'daybook_final_${lang}_md' missing; skipping ${lang}.`);
+    continue;
+  }
+
+  const path = join(webRoot, 'src', 'content', 'daybook', lang, `${editionDate}.md`);
+  mkdirSync(dirname(path), { recursive: true });
+  writeFileSync(path, toEdition(md.data, lang, editionDate, manifest));
+  console.log(`Wrote src/content/daybook/${lang}/${editionDate}.md`);
+  wrote += 1;
+}
+
+if (!wrote) {
+  console.error('No editions written.');
+  process.exit(1);
+}
+
+// ---------------------------------------------------------------------------
+
+// Turn the automation's edition markdown into an archive file: split off the
+// standing note, derive a title and description from what the edition actually
+// says (never invented here — the archive should not put words in the
+// newsletter's mouth), and record the provenance the manifest carries.
+function toEdition(markdown, lang, date, manifest) {
+  let body = markdown.trim();
+
+  let standing = '';
+  const noteMatch = body.match(STANDING_NOTE);
+  if (noteMatch && body.startsWith(noteMatch[0])) {
+    standing = noteMatch[1].trim();
+    body = body.slice(noteMatch[0].length).trim();
+  }
+
+  body = stripUnresolvedSections(body, lang, date);
+  body = repairCalendarBullets(body);
+
+  // The lede story's headline is the first H2. It is the searchable thing about
+  // an edition — nobody looks for "Immigration Daybook August 3", they look for
+  // the story — so it becomes the title, and the date brands it in the route.
+  const headline = body.match(/^## (.+)$/m)?.[1]?.trim() ?? '';
+
+  const description = deriveDek(body);
+
+  const perLang = manifest[lang] ?? {};
+  const frontmatter = [
+    '---',
+    `date: "${date}"`,
+    `lang: "${lang}"`,
+    `title: "${escapeYaml(headline)}"`,
+    `description: "${escapeYaml(description)}"`,
+    standing ? `standing: "${escapeYaml(standing)}"` : null,
+    perLang.kit_broadcast_id ? `kitBroadcastId: ${perLang.kit_broadcast_id}` : null,
+    perLang.doc_url ? `docUrl: "${perLang.doc_url}"` : null,
+    `sourceStatus: "${manifest.status}"`,
+    '---',
+  ]
+    .filter((line) => line !== null)
+    .join('\n');
+
+  return `${frontmatter}\n\n${body}\n`;
+}
+
+// The automation's markdown carries template placeholders that a later stage in
+// the email pipeline fills in — `## Upcoming` comes through as a literal
+// `{{ replace }}`. Whatever fills it does not run before this artifact, so the
+// calendar is not available here. Dropping the section is the only honest
+// option: a heading with nothing under it reads as a bug, and shipping the raw
+// placeholder to readers is worse. The warning is loud because the calendar is
+// the Daybook's whole differentiator and this archive is poorer without it.
+function stripUnresolvedSections(body, lang, date) {
+  const sections = body.split(/\n(?=## )/);
+  const kept = sections.filter((section) => {
+    if (!/\{\{\s*\w+\s*\}\}/.test(section)) return true;
+    const heading = section.match(/^## (.+)$/m)?.[1]?.trim() ?? '(untitled)';
+    console.warn(
+      `WARNING: ${date} ${lang}: dropped section "${heading}" — unresolved placeholder ` +
+        `(${section.match(/\{\{\s*\w+\s*\}\}/)[0]}). The calendar is missing from the archive.`,
+    );
+    return false;
+  });
+  return kept.join('\n');
+}
+
+// Calendar entries come off the automation as `**- 4 de agosto — …**  trailing
+// prose`: the opening bold swallows the list marker, so markdown sees a
+// paragraph beginning with a literal `**-` instead of a list item. Swapping the
+// two characters puts the marker outside the emphasis and leaves the closing
+// `**` — which lands mid-line, before the entry's explanatory sentence — exactly
+// where it was. Lines that do not start this way are untouched.
+function repairCalendarBullets(body) {
+  return body.replace(/^\*\*-[ \t]+/gm, '- **');
+}
+
+// The dek: what the edition covered, used as the meta description, as the blurb
+// on the landing page's latest-edition plate, and as the standfirst on the
+// archive index.
+//
+// Built from the edition's own section headlines rather than from its lede. A
+// dek drawn from the top story alone says "Delaney Hall" and implies that is all
+// the edition was about; three beats say what a reader is actually getting. The
+// headlines are already editorial copy, written tight, so joining them invents
+// nothing — this deliberately does not paraphrase or compress the newsletter's
+// prose into words nobody wrote.
+function deriveDek(body) {
+  const beats = [...body.matchAll(/^## (.+)$/gm)]
+    .map((match) => stripInlineMd(match[1]))
+    .filter((headline) => headline.length > RUBRIC_MAX_CHARS);
+
+  const picked = [];
+  for (const beat of beats.slice(0, DEK_BEATS)) {
+    if (picked.length && [...picked, beat].join(' · ').length > DEK_MAX_CHARS) break;
+    picked.push(beat);
+  }
+  if (picked.length) return picked.join(' · ');
+
+  // Fallback for an edition with no story headlines: the bolded nut of the
+  // opening item, which is the automation's own one-line version of it.
+  const bold = firstProsePara(body).match(/\*\*(?!\s)([^*]+?)\*\*/)?.[1];
+  if (bold) {
+    const dek = stripInlineMd(bold);
+    if (dek.length >= 40 && dek.length <= 200) {
+      return /[.?!]$/.test(dek) ? dek : `${dek}.`;
+    }
+  }
+
+  return firstSentences(body);
+}
+
+// A function declaration, not a const arrow: these helpers are called during
+// module evaluation, before a `const` further down the file is initialized.
+function stripInlineMd(value) {
+  return value
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
+    .replace(/\*\*|\*|`/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// The first real paragraph of the body: not a heading, not a list item, and not
+// one of the italic production notes the editions open with.
+function firstProsePara(body) {
+  const isNote = (p) => /^\*(?!\*)[\s\S]+\*$/.test(p);
+  return (
+    body
+      .replace(/^## .+$/m, '')
+      .split('\n\n')
+      .map((p) => p.trim())
+      .find((p) => p && !p.startsWith('#') && !p.startsWith('-') && !isNote(p)) ?? ''
+  );
+}
+
+// Fallback dek. Strips inline markdown so the description does not leak `**` or
+// link syntax into search results, and stops at ~180 chars on a sentence
+// boundary.
+//
+// Wholly-italic paragraphs are skipped. Editions open with production notes set
+// that way — the standing welcome, and in Spanish a "Nota del traductor"
+// explaining that the edition was built in parallel from the English draft.
+// Those are disclosures for readers, not summaries, and letting one become the
+// meta description puts an internal process note in the search result.
+function firstSentences(body) {
+  const plain = stripInlineMd(firstProsePara(body));
+
+  if (plain.length <= 180) return plain;
+
+  // Prefer ending on a sentence. Failing that, end on a word — a description
+  // that stops mid-word ("…Customs Enforcemen…") reads as broken software, and
+  // this string is on the landing page and in every search result.
+  const cut = plain.slice(0, 180);
+  const stop = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('? '), cut.lastIndexOf('! '));
+  if (stop > 80) return cut.slice(0, stop + 1);
+
+  const space = cut.lastIndexOf(' ');
+  return `${(space > 80 ? cut.slice(0, space) : cut).replace(/[\s,;:—–-]+$/, '')}…`;
+}
+
+function escapeYaml(s) {
+  return s.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+}
