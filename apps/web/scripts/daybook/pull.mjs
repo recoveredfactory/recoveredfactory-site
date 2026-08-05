@@ -138,10 +138,17 @@ if (!/^\d{4}-\d{2}-\d{2}$/.test(editionDate ?? '')) {
 // the archive on autopilot, so --force has to be typed by a human who has read
 // the edition. `url_parity` false means the EN and ES editions cite different
 // URLs, which is a real editorial problem but not a correctness one, so it warns.
-const shippable = manifest.status === 'ship_ready' && !manifest.faithfulness_blocked;
+// `ship_ready` is the automation's own verdict that an edition is fit to go.
+// `final` is stronger and means a human finished it — the Aug. 5 edition came
+// through as `final` with notes reading "hand-final; canonical editor bolding".
+// Both publish. Anything else is a state this script has not seen, and the right
+// response to an unknown state is to stop rather than to guess.
+const SHIPPABLE_STATUSES = new Set(['ship_ready', 'final']);
+
+const shippable = SHIPPABLE_STATUSES.has(manifest.status) && !manifest.faithfulness_blocked;
 if (!shippable) {
   const why = [
-    manifest.status !== 'ship_ready' && `status=${manifest.status}`,
+    !SHIPPABLE_STATUSES.has(manifest.status) && `status=${manifest.status}`,
     manifest.faithfulness_blocked && 'faithfulness_blocked=true',
   ]
     .filter(Boolean)
@@ -165,11 +172,30 @@ for (const lang of LANGS) {
     continue;
   }
 
-  const path = join(webRoot, 'src', 'content', 'daybook', lang, `${editionDate}.md`);
-  mkdirSync(dirname(path), { recursive: true });
+  const dir = join(webRoot, 'src', 'content', 'daybook', lang);
+  mkdirSync(dir, { recursive: true });
+
+  const path = join(dir, `${editionDate}.md`);
   writeFileSync(path, toEdition(md.data, lang, editionDate, manifest));
   console.log(`Wrote src/content/daybook/${lang}/${editionDate}.md`);
   wrote += 1;
+
+  // The edition as it went out, saved beside the markdown.
+  //
+  // The email HTML is the archive's record of what subscribers actually
+  // received, and it is the only place the Upcoming calendar exists — the
+  // markdown artifact ships that section empty. It comes back by reference
+  // rather than inline, so it has to be fetched from the artifacts endpoint.
+  const html = await fetchEmailHtml(lang);
+  if (html) {
+    writeFileSync(join(dir, `${editionDate}.html`), `${sanitizeEmailHtml(html)}\n`);
+    console.log(`Wrote src/content/daybook/${lang}/${editionDate}.html`);
+  } else {
+    console.warn(
+      `WARNING: ${editionDate} ${lang}: no email HTML. The edition will render from ` +
+        'markdown, without the Upcoming calendar.',
+    );
+  }
 }
 
 if (!wrote) {
@@ -178,6 +204,72 @@ if (!wrote) {
 }
 
 // ---------------------------------------------------------------------------
+
+/**
+ * Fetch a language's email HTML, which the automation returns by reference.
+ *
+ * The bytes are cached under out/ so --offline can re-template a full edition,
+ * HTML included, without going back to the network — same contract as
+ * response.json.
+ */
+async function fetchEmailHtml(lang) {
+  const name = `daybook_final_${lang}_html`;
+  const cachePath = join(outDir, `${name}.html`);
+
+  if (offline) {
+    return existsSync(cachePath) ? readFileSync(cachePath, 'utf8') : null;
+  }
+
+  const entry = artifact(name);
+  if (!entry) return null;
+  if (entry.data) {
+    writeFileSync(cachePath, entry.data);
+    return entry.data;
+  }
+
+  const artifactId = entry.metadata?.artifact_id;
+  if (!artifactId) return null;
+
+  const base = url.replace(/\/execute_program\/.*$/, '');
+  const res = await fetch(`${base}/artifacts/${artifactId}/data`, {
+    headers: { Authorization: `pat ${key}` },
+  });
+  if (!res.ok) {
+    console.warn(`Could not fetch '${name}' by reference: HTTP ${res.status}`);
+    return null;
+  }
+
+  const html = await res.text();
+  writeFileSync(cachePath, html);
+  return html;
+}
+
+/**
+ * Strip the parts of the email HTML that must not run in a page.
+ *
+ * This is generated markup from our own pipeline rather than arbitrary input,
+ * so the job is narrow: remove anything executable or document-scoped, and keep
+ * every inline style, because the inline styles are the thing being preserved.
+ *
+ * The <style> block is dropped rather than scoped. A <style> element in the page
+ * body applies to the whole document, and this one carries only a word-break
+ * rule, a max-width tweak for sub-384px screens, and an underline on .ck-link —
+ * nothing the inline styles do not already cover.
+ *
+ * Regex sanitising is not a general defence and should not be treated as one. It
+ * holds here because the input is a known generator; if editions ever carry
+ * third-party HTML, this needs a real parser.
+ */
+function sanitizeEmailHtml(html) {
+  return html
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, '')
+    .replace(/<\/?(script|style)\b[^>]*>/gi, '')
+    .replace(/\son[a-z]+\s*=\s*"[^"]*"/gi, '')
+    .replace(/\son[a-z]+\s*=\s*'[^']*'/gi, '')
+    .replace(/\son[a-z]+\s*=\s*[^\s>]+/gi, '')
+    .replace(/((?:href|src)\s*=\s*)(["'])\s*javascript:[^"']*\2/gi, '$1$2#$2')
+    .trim();
+}
 
 // Turn the automation's edition markdown into an archive file: split off the
 // standing note, derive a title and description from what the edition actually
@@ -222,24 +314,37 @@ function toEdition(markdown, lang, date, manifest) {
   return `${frontmatter}\n\n${body}\n`;
 }
 
-// The automation's markdown carries template placeholders that a later stage in
-// the email pipeline fills in — `## Upcoming` comes through as a literal
-// `{{ replace }}`. Whatever fills it does not run before this artifact, so the
-// calendar is not available here. Dropping the section is the only honest
-// option: a heading with nothing under it reads as a bug, and shipping the raw
-// placeholder to readers is worse. The warning is loud because the calendar is
-// the Daybook's whole differentiator and this archive is poorer without it.
+// Drop sections the upstream pipeline did not fill in.
+//
+// `## Upcoming` has arrived unfilled in two different ways: first as a literal
+// `{{ replace }}` placeholder, and after that was fixed upstream, as a bare
+// heading with nothing under it. Both mean the same thing — whatever renders the
+// calendar runs after this artifact is written — and both have to be caught,
+// because a heading followed by nothing reads as broken software just as surely
+// as a raw template tag does.
+//
+// The email HTML does carry the calendar, and that is what an edition page
+// renders — so this is no longer a hole in the archive. It is still a hole in
+// the markdown, which is what feeds RSS, the .md companions, and the month
+// roundups, so the warning stays.
 function stripUnresolvedSections(body, lang, date) {
   const sections = body.split(/\n(?=## )/);
+
   const kept = sections.filter((section) => {
-    if (!/\{\{\s*\w+\s*\}\}/.test(section)) return true;
     const heading = section.match(/^## (.+)$/m)?.[1]?.trim() ?? '(untitled)';
+    const placeholder = section.match(/\{\{\s*\w+\s*\}\}/)?.[0];
+    const empty = !section.replace(/^## .+$/m, '').trim();
+
+    if (!placeholder && !empty) return true;
+
     console.warn(
-      `WARNING: ${date} ${lang}: dropped section "${heading}" — unresolved placeholder ` +
-        `(${section.match(/\{\{\s*\w+\s*\}\}/)[0]}). The calendar is missing from the archive.`,
+      `WARNING: ${date} ${lang}: dropped section "${heading}" from the markdown — ` +
+        (placeholder ? `unresolved placeholder (${placeholder})` : 'no content under the heading') +
+        '. The email HTML still carries it; RSS and the .md companion will not.',
     );
     return false;
   });
+
   return kept.join('\n');
 }
 

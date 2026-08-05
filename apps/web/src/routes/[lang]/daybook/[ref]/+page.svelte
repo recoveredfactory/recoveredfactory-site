@@ -83,13 +83,25 @@
 
     {#if isEdition && data.edition}
       {@const edition = data.edition}
+      {@const asSent = Boolean(edition.emailHtml)}
       <article class="space-y-6">
-        <header class="space-y-2">
-          <p class="text-xs uppercase tracking-[0.2em] text-slate-500">{dateLabel}</p>
-          <h1 class="font-display text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl">
-            {edition.title}
-          </h1>
-        </header>
+        {#if asSent}
+          <!-- The sent email opens with its own masthead and headline, and the
+               point of showing it is that it looks the way it looked in the
+               inbox — so the page does not print a second header over it. The
+               heading stays in the document for structure and for anyone
+               reading by outline; it is just not drawn twice. -->
+          <h1 class="sr-only">{edition.title}</h1>
+        {:else}
+          <header class="space-y-2">
+            <p class="text-sm text-slate-500">{dateLabel}</p>
+            <h1
+              class="font-display text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl"
+            >
+              {edition.title}
+            </h1>
+          </header>
+        {/if}
 
         {#if edition.pilot}
           <p class="border border-amber-300 bg-amber-50 px-4 py-3 text-sm text-amber-900">
@@ -99,15 +111,21 @@
           </p>
         {/if}
 
-        {#if edition.standing}
-          <p class="border-l-2 border-slate-300 pl-4 text-sm italic text-slate-600">
-            {edition.standing}
-          </p>
-        {/if}
+        {#if asSent}
+          <div class="rf-daybook-email not-prose overflow-x-auto">
+            {@html edition.emailHtml}
+          </div>
+        {:else}
+          {#if edition.standing}
+            <p class="border-l-2 border-slate-300 pl-4 text-sm italic text-slate-600">
+              {edition.standing}
+            </p>
+          {/if}
 
-        <div class="rf-daybook prose prose-slate max-w-none">
-          {@html edition.html}
-        </div>
+          <div class="rf-daybook prose prose-slate max-w-none">
+            {@html edition.html}
+          </div>
+        {/if}
 
         <footer class="flex justify-between gap-4 border-t border-slate-200 pt-6 text-sm">
           {#if data.older}

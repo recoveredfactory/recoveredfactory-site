@@ -36,7 +36,17 @@ export type EditionSummary = EditionMeta & {
   pilot: boolean;
 };
 
-export type Edition = EditionSummary & { html: string; events: CalendarEvent[] };
+export type Edition = EditionSummary & {
+  /** The edition rendered from markdown — semantic, site-styled. */
+  html: string;
+  /**
+   * The edition as it was sent, sanitised at pull time. Null for editions
+   * archived before the email HTML was captured. This is the only place the
+   * Upcoming calendar exists: the markdown artifact ships that section empty.
+   */
+  emailHtml: string | null;
+  events: CalendarEvent[];
+};
 
 export type EditionMonth = {
   /** `YYYY-MM`. */
@@ -59,10 +69,40 @@ const rawByLang = {
   }),
 } satisfies Record<Lang, Record<string, string>>;
 
+// The sent email, keyed by date. Pulled alongside the markdown and stored as a
+// sibling file rather than inlined, so the archived artifact stays diffable and
+// the markdown file stays readable.
+const emailByLang = {
+  en: import.meta.glob<string>('/src/content/daybook/en/*.html', {
+    eager: true,
+    query: '?raw',
+    import: 'default',
+  }),
+  es: import.meta.glob<string>('/src/content/daybook/es/*.html', {
+    eager: true,
+    query: '?raw',
+    import: 'default',
+  }),
+} satisfies Record<Lang, Record<string, string>>;
+
 const editionsByLang = {
   en: parseAll(rawByLang.en, 'en'),
   es: parseAll(rawByLang.es, 'es'),
 } satisfies Record<Lang, Map<string, RawEdition>>;
+
+const emailsByDate = {
+  en: byDate(emailByLang.en),
+  es: byDate(emailByLang.es),
+} satisfies Record<Lang, Map<string, string>>;
+
+function byDate(modules: Record<string, string>): Map<string, string> {
+  const map = new Map<string, string>();
+  for (const [path, source] of Object.entries(modules)) {
+    const date = path.split('/').pop()?.replace(/\.html$/, '') ?? '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) map.set(date, source.trim());
+  }
+  return map;
+}
 
 function parseAll(modules: Record<string, string>, lang: Lang): Map<string, RawEdition> {
   const byDate = new Map<string, RawEdition>();
@@ -131,7 +171,7 @@ export function getEdition(lang: Lang, date: string): Edition | undefined {
 
   // An edition page puts the edition's own headline in the h1, so its sections
   // are h2s.
-  return { ...toSummary(entry), ...rendered(entry, lang, 2) };
+  return { ...toSummary(entry), ...rendered(entry, lang, 2, true) };
 }
 
 /** Visible editions grouped by `YYYY-MM`, newest month first. */
@@ -165,8 +205,12 @@ export function getMonth(lang: Lang, month: string): Edition[] {
     }));
 }
 
-const rendered = (entry: RawEdition, lang: Lang, baseLevel: 2 | 3) => ({
+// `withEmail` is false for the month roundups: thirty editions stacked on one
+// page, each carrying its own email masthead and 600px frame, would be absurd.
+// Those read from markdown; only the edition page shows the sent artifact.
+const rendered = (entry: RawEdition, lang: Lang, baseLevel: 2 | 3, withEmail = false) => ({
   html: render(entry.body, baseLevel),
+  emailHtml: withEmail ? (emailsByDate[lang].get(entry.meta.date) ?? null) : null,
   events: extractEvents(entry.body, lang, entry.meta.date),
 });
 
