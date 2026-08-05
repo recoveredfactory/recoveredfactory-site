@@ -4,7 +4,7 @@ title: "Immigration Daybook"
 date: "2026-07-31"
 type: "page"
 hideTitle: true
-description: "A weekday rundown of the immigration system — and a calendar of what's coming. Effective dates, comment deadlines, court dates. Free pilot starts Wednesday, Aug. 5."
+description: "A weekday rundown of the immigration system — and a calendar of what's coming. Effective dates, comment deadlines, court dates. Free pilot all August."
 byline: "Recovered Factory"
 previewImage: "/images/immigration-daybook-og-en.png"
 hidePreview: true
@@ -33,7 +33,7 @@ lang: "en"
         tag="newsletter:immigration-daybook"
       />
       <ul class="rf-hero__meta">
-        <li>Starts Weds, Aug. 5</li>
+        <li>Started Aug. 5</li>
         <li>Edited by David Eads</li>
       </ul>
     </div>
@@ -121,7 +121,7 @@ lang: "en"
 </section>
 
 <section class="rf-section rf-section--cta">
-  <p class="rf-subscribe__lead">Start Wednesday.</p>
+  <p class="rf-subscribe__lead">Start today.</p>
   <p class="rf-graf rf-pilot">August is a free pilot while we figure out what this should be and how to sustain it. We'd rather have you in the room for the early version than polish it in a vacuum.</p>
   <SubscribeForm
     buttonClass="bg-fern-strong px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"

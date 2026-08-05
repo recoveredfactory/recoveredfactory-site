@@ -2,7 +2,7 @@
 id: "announcing-immigration-daybook"
 title: "Presentamos Immigration Daybook"
 date: "2026-08-03"
-description: "Un resumen diario del sistema migratorio y un calendario de lo que viene. Orgullosamente algorítmico, hecho con cuidado. El piloto gratuito empieza el miércoles 5 de agosto."
+description: "Un resumen diario del sistema migratorio y un calendario de lo que viene. Orgullosamente algorítmico, hecho con cuidado. El piloto gratuito va todo agosto."
 type: "post"
 hideSubscribe: true
 byline: "David Eads"
@@ -16,7 +16,7 @@ previewImage: "/images/immigration-daybook-announce-og-es.png"
 ---
 
 <div class="rf-signup not-prose">
-  <p class="rf-signup__lead">Immigration Daybook empieza el miércoles 5 de agosto.</p>
+  <p class="rf-signup__lead">Immigration Daybook sale de lunes a viernes.</p>
   <SubscribeForm
     buttonClass="bg-fern-strong px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
     id="daybook-post-top"
@@ -92,7 +92,7 @@ Agosto es un piloto gratuito, mientras averiguamos qué debe ser esto y cómo so
 Lo que queda abierto es la sostenibilidad. Esto cuesta una fracción de lo que cuesta un boletín de enlaces tradicional, pero no es gratis: hay costos reales de cómputo, más el tiempo que dedicamos a construir el sistema y el que dedicaré a editarlo cada día. No vamos detrás del dinero filantrópico —aunque lo aceptaremos en ciertas circunstancias, preferimos rendirle cuentas a nuestra audiencia y no a un oficial de programa—, lo que significa que en algún momento venderemos algo a un precio justo que cubra los costos y pague el trabajo. Este mes es como lo averiguamos.
 
 <div class="rf-signup not-prose">
-  <p class="rf-signup__lead">Empieza el miércoles 5 de agosto.</p>
+  <p class="rf-signup__lead">Sale de lunes a viernes.</p>
   <SubscribeForm
     buttonClass="bg-fern-strong px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
     id="daybook-post-foot"

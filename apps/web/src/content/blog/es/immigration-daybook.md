@@ -4,7 +4,7 @@ title: "Immigration Daybook"
 date: "2026-07-31"
 type: "page"
 hideTitle: true
-description: "Un resumen diario del sistema migratorio y un calendario de lo que viene. Fechas de entrada en vigor, plazos de comentarios, audiencias. El piloto gratuito empieza el miércoles 5 de agosto."
+description: "Un resumen diario del sistema migratorio y un calendario de lo que viene. Fechas de entrada en vigor, plazos de comentarios, audiencias. El piloto gratuito va todo agosto."
 byline: "Recovered Factory"
 previewImage: "/images/immigration-daybook-og-es.png"
 hidePreview: true
@@ -33,7 +33,7 @@ lang: "es"
         tag="newsletter:immigration-daybook"
       />
       <ul class="rf-hero__meta">
-        <li>Empieza el miér. 5 de agosto</li>
+        <li>Empezó el 5 de agosto</li>
         <li>Editado por David Eads</li>
       </ul>
     </div>
@@ -121,7 +121,7 @@ lang: "es"
 </section>
 
 <section class="rf-section rf-section--cta">
-  <p class="rf-subscribe__lead">Empieza el miércoles.</p>
+  <p class="rf-subscribe__lead">Empieza hoy.</p>
   <p class="rf-graf rf-pilot">Agosto es un piloto gratuito mientras averiguamos qué debe ser esto y cómo sostenerlo. Preferimos tenerte dentro desde la versión temprana a pulirla en el vacío.</p>
   <SubscribeForm
     buttonClass="bg-fern-strong px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"

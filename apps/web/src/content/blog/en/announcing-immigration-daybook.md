@@ -2,7 +2,7 @@
 id: "announcing-immigration-daybook"
 title: "Announcing Immigration Daybook"
 date: "2026-08-03"
-description: "A weekday rundown of the immigration system — and a calendar of what's coming. Proudly algorithmic, crafted with care. Free pilot starts Wednesday, Aug. 5."
+description: "A weekday rundown of the immigration system — and a calendar of what's coming. Proudly algorithmic, crafted with care. Free pilot all August."
 type: "post"
 hideSubscribe: true
 byline: "David Eads"
@@ -16,7 +16,7 @@ previewImage: "/images/immigration-daybook-announce-og-en.png"
 ---
 
 <div class="rf-signup not-prose">
-  <p class="rf-signup__lead">Immigration Daybook starts Wednesday, Aug. 5.</p>
+  <p class="rf-signup__lead">Immigration Daybook is out every weekday.</p>
   <SubscribeForm
     buttonClass="bg-fern-strong px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
     id="daybook-post-top"
@@ -92,7 +92,7 @@ We're running August as a pilot for free, while we figure out what this should b
 Sustainability is the open question. This runs on a fraction of what a traditional link newsletter takes, but it isn't free: there's real computing costs, plus the time we spent building the system and the time I'll spend editing it every day. We're not chasing philanthropic money — while we will accept it under some circumstances, we'd rather be accountable to our audience than to a program officer — which means at some point we sell something at a fair price that covers costs and pays for the work. This month is how we find out what that is.
 
 <div class="rf-signup not-prose">
-  <p class="rf-signup__lead">Starts Wednesday, Aug. 5.</p>
+  <p class="rf-signup__lead">Out every weekday.</p>
   <SubscribeForm
     buttonClass="bg-fern-strong px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
     id="daybook-post-foot"
