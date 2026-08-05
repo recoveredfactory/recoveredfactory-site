@@ -45,6 +45,12 @@ const langs = flag('lang', 'en,es').split(',');
 const cards = flag('card', 'landing,announcement').split(',');
 const outDir = resolve(here, flag('out', '../../static/images'));
 
+// Edition cards only. The date names the file and sets the caption; the
+// headline is passed in rather than read back out of the archive so that
+// pull.mjs, which already derived it, stays the single source of that string.
+const editionDate = flag('edition', '');
+const editionHeadline = flag('headline', '');
+
 const OUT_SIZE = '1600x840';
 
 // Straight off the page's style block — see the .rf-hero rules in
@@ -225,6 +231,83 @@ const announcementCard = ({ lockup, lockupSize, headline, headlineSize, meta, me
   <ul class="meta">${meta.map((m) => `<li>${m}</li>`).join('')}</ul>`,
   );
 
+// ── Edition card ──────────────────────────────────────────────────────────
+// One per edition per language, carrying that day's lede headline. It reuses
+// the announcement layout because the job is the same — lead with the argument,
+// demote the wordmark to a lockup, date under the rule — and differs only in
+// that the copy arrives from the pull instead of being written here.
+//
+// An edition card is the one worth generating: a wordmark plate repeated under
+// every shared edition tells a reader nothing about the edition they are being
+// shown, and the headline is the whole reason to click.
+
+// Edition headlines are not written to a length. They have run from about 50 to
+// about 140 characters in the first editions, and a size that fits the short
+// ones overflows the frame on the long ones. Stepping the size by length keeps
+// the card full without ever spilling.
+const editionHeadlineSize = (text) => {
+  const n = text.length;
+  if (n <= 55) return 62;
+  if (n <= 80) return 54;
+  if (n <= 110) return 46;
+  if (n <= 140) return 40;
+  return 36;
+};
+
+const AP_MONTHS = [
+  'Jan.',
+  'Feb.',
+  'March',
+  'April',
+  'May',
+  'June',
+  'July',
+  'Aug.',
+  'Sept.',
+  'Oct.',
+  'Nov.',
+  'Dec.',
+];
+
+// Mirrors formatApDate in src/lib/dates.ts. Duplicated rather than imported
+// because this script runs as plain node, outside the app's module aliases.
+const formatCardDate = (iso, lang) => {
+  const date = new Date(`${iso}T00:00:00Z`);
+  if (lang === 'en') {
+    return `${AP_MONTHS[date.getUTCMonth()]} ${date.getUTCDate()}, ${date.getUTCFullYear()}`;
+  }
+  return new Intl.DateTimeFormat('es-ES', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).format(date);
+};
+
+// Headlines are editorial prose and carry ampersands, angle brackets and curly
+// quotes. They are interpolated straight into the card's HTML, so they have to
+// be escaped or a headline eventually breaks the render silently.
+const escapeHtml = (value) =>
+  value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+
+const editionCopy = (lang) => {
+  if (!editionDate || !editionHeadline) {
+    return null;
+  }
+  return {
+    lockup: 'Immigration Daybook',
+    lockupSize: 44,
+    headline: escapeHtml(editionHeadline),
+    headlineSize: editionHeadlineSize(editionHeadline),
+    meta: [formatCardDate(editionDate, lang)],
+    metaSize: 30,
+  };
+};
+
 const CARDS = {
   landing: {
     copy: LANDING,
@@ -235,6 +318,11 @@ const CARDS = {
     copy: ANNOUNCEMENT,
     render: announcementCard,
     file: (lang) => `immigration-daybook-announce-og-${lang}.png`,
+  },
+  edition: {
+    copy: editionCopy,
+    render: announcementCard,
+    file: (lang) => `immigration-daybook-og-${editionDate}-${lang}.png`,
   },
 };
 
@@ -251,17 +339,22 @@ for (const cardName of cards) {
   }
 
   for (const lang of langs) {
-    const copy = card.copy[lang];
+    // Edition copy is built per run from --edition/--headline; the other cards
+    // keep their copy in this file, keyed by language.
+    const copy = typeof card.copy === 'function' ? card.copy(lang) : card.copy[lang];
     if (!copy) {
       console.error(
-        `No ${cardName} copy for lang "${lang}" — known: ${Object.keys(card.copy).join(', ')}`,
+        typeof card.copy === 'function'
+          ? `The ${cardName} card needs --edition <YYYY-MM-DD> and --headline <text>.`
+          : `No ${cardName} copy for lang "${lang}" — known: ${Object.keys(card.copy).join(', ')}`,
       );
       process.exitCode = 1;
       continue;
     }
 
-    const html = join(workDir, `.${cardName}-${lang}.html`);
-    const raw = join(workDir, `.${cardName}-${lang}-2x.png`);
+    const stem = cardName === 'edition' ? `${cardName}-${editionDate}-${lang}` : `${cardName}-${lang}`;
+    const html = join(workDir, `.${stem}.html`);
+    const raw = join(workDir, `.${stem}-2x.png`);
     const out = join(outDir, card.file(lang));
 
     writeFileSync(html, card.render(copy));

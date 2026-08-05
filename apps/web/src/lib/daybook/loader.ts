@@ -26,6 +26,13 @@ export type EditionMeta = {
   title: string;
   description: string;
   standing?: string;
+  /**
+   * This edition's own social card, written by the pull only when the card
+   * actually rendered. static/images is gitignored by design, so the
+   * frontmatter is the committed record of which cards exist — the page falls
+   * back to the wordmark plate when this is absent.
+   */
+  socialImage?: string;
   kitBroadcastId?: number;
   docUrl?: string;
   sourceStatus?: string;

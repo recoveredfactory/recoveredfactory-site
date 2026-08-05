@@ -20,13 +20,22 @@
     otherLang === 'es' ? 'Leer en español →' : 'Read in English →',
   );
 
-  // The Daybook wordmark plate for now. An edition-specific card carrying the
-  // day's headline would earn far more clicks — the generator already renders a
-  // headline-led layout for the announcement — but that has to run per edition,
-  // so it waits for the daily pull to grow a card step.
+  // An edition's own card carries that day's headline, which is the whole
+  // reason anyone clicks a shared link. Editions pulled before the card step
+  // existed, and any whose render failed, fall back to the wordmark plate.
   const ogImage = $derived(
-    new URL(getSocialImageUrl(`/images/immigration-daybook-og-${data.lang}.png`, 1600), SITE_URL)
-      .href,
+    new URL(
+      getSocialImageUrl(
+        data.edition?.socialImage ?? `/images/immigration-daybook-og-${data.lang}.png`,
+        1600,
+      ),
+      SITE_URL,
+    ).href,
+  );
+  // Only an edition carries a socialImage, so its presence is the test — a
+  // month roundup has no `edition` at all.
+  const ogImageAlt = $derived(
+    data.edition?.socialImage ? data.edition.title : 'Immigration Daybook',
   );
 
   const canonical = $derived(new URL(`/${data.lang}/daybook/${data.ref}`, SITE_URL).href);
@@ -75,7 +84,7 @@
   <meta property="og:type" content={isEdition ? 'article' : 'website'} />
   <meta property="og:url" content={canonical} />
   <meta property="og:image" content={ogImage} />
-  <meta property="og:image:alt" content="Immigration Daybook" />
+  <meta property="og:image:alt" content={ogImageAlt} />
   <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content={pageTitle} />
   <meta name="twitter:description" content={description} />

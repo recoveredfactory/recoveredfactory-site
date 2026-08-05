@@ -7,6 +7,7 @@
 //   --offline    re-template from the saved response.json instead of hitting the
 //                API (deterministic re-runs; no LLM spend)
 //   --force      write even when the manifest says the edition isn't shippable
+//   --skip-cards don't render per-edition social cards (needs chrome + convert)
 //
 // Reads PQL_DAYBOOK_URL / PQL_DAYBOOK_KEY from apps/web/.env.
 //
@@ -24,6 +25,7 @@
 // essays and would not be fine for a weekday newsletter that adds ~500 files a
 // year, in two languages.
 
+import { execFileSync } from 'node:child_process';
 import { readFileSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -61,6 +63,9 @@ const args = new Set(process.argv.slice(2));
 const offline = args.has('--offline');
 const rawOnly = args.has('--raw-only');
 const force = args.has('--force');
+// Cards need headless Chrome and ImageMagick; --skip-cards is for environments
+// that have neither, and for re-running the templating quickly.
+const skipCards = args.has('--skip-cards');
 
 const env = Object.fromEntries(
   readFileSync(join(webRoot, '.env'), 'utf8')
@@ -175,9 +180,14 @@ for (const lang of LANGS) {
   const dir = join(webRoot, 'src', 'content', 'daybook', lang);
   mkdirSync(dir, { recursive: true });
 
+  const prepared = prepareEdition(md.data, lang, editionDate);
+  const socialImage = renderEditionCard(lang, editionDate, prepared.headline);
+
   const path = join(dir, `${editionDate}.md`);
-  writeFileSync(path, toEdition(md.data, lang, editionDate, manifest));
-  console.log(`Wrote src/content/daybook/${lang}/${editionDate}.md`);
+  writeFileSync(path, serializeEdition(prepared, lang, editionDate, socialImage));
+  console.log(
+    `Wrote src/content/daybook/${lang}/${editionDate}.md` + (socialImage ? ' (+ card)' : ''),
+  );
   wrote += 1;
 
   // The edition as it went out, saved beside the markdown.
@@ -275,7 +285,7 @@ function sanitizeEmailHtml(html) {
 // standing note, derive a title and description from what the edition actually
 // says (never invented here — the archive should not put words in the
 // newsletter's mouth), and record the provenance the manifest carries.
-function toEdition(markdown, lang, date, manifest) {
+function prepareEdition(markdown, lang, date) {
   let body = markdown.trim();
 
   let standing = '';
@@ -293,8 +303,10 @@ function toEdition(markdown, lang, date, manifest) {
   // the story — so it becomes the title, and the date brands it in the route.
   const headline = body.match(/^## (.+)$/m)?.[1]?.trim() ?? '';
 
-  const description = deriveDek(body);
+  return { body, standing, headline, description: deriveDek(body) };
+}
 
+function serializeEdition({ body, standing, headline, description }, lang, date, socialImage) {
   const perLang = manifest[lang] ?? {};
   const frontmatter = [
     '---',
@@ -303,6 +315,11 @@ function toEdition(markdown, lang, date, manifest) {
     `title: "${escapeYaml(headline)}"`,
     `description: "${escapeYaml(description)}"`,
     standing ? `standing: "${escapeYaml(standing)}"` : null,
+    // Written only when the card actually rendered, so the page can fall back
+    // to the wordmark plate rather than pointing at an image that is not there.
+    // static/images is gitignored by design, so the frontmatter — which is
+    // committed — is the record of which cards exist.
+    socialImage ? `socialImage: "${socialImage}"` : null,
     perLang.kit_broadcast_id ? `kitBroadcastId: ${perLang.kit_broadcast_id}` : null,
     perLang.doc_url ? `docUrl: "${perLang.doc_url}"` : null,
     `sourceStatus: "${manifest.status}"`,
@@ -312,6 +329,45 @@ function toEdition(markdown, lang, date, manifest) {
     .join('\n');
 
   return `${frontmatter}\n\n${body}\n`;
+}
+
+/**
+ * Render this edition's social card and return its public path, or '' if it
+ * could not be made.
+ *
+ * A card wants the day's headline on it — a wordmark plate repeated under every
+ * shared edition says nothing about the edition being shared. But rendering one
+ * needs headless Chrome and ImageMagick, which the rest of this script does
+ * not, so a missing toolchain degrades to the generic card instead of failing
+ * the pull. The archive is the point; the card is a bonus.
+ */
+function renderEditionCard(lang, date, headline) {
+  if (skipCards || !headline) return '';
+
+  try {
+    execFileSync(
+      'node',
+      [
+        join(here, 'og.mjs'),
+        '--card',
+        'edition',
+        '--lang',
+        lang,
+        '--edition',
+        date,
+        '--headline',
+        headline,
+      ],
+      { stdio: ['ignore', 'ignore', 'pipe'] },
+    );
+    return `/images/immigration-daybook-og-${date}-${lang}.png`;
+  } catch (err) {
+    console.warn(
+      `WARNING: ${date} ${lang}: could not render the social card ` +
+        `(${err.message.split('\n')[0]}). Falling back to the generic card.`,
+    );
+    return '';
+  }
 }
 
 // Drop sections the upstream pipeline did not fill in.
