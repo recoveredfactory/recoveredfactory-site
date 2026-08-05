@@ -3,9 +3,19 @@
   import { SITE_URL } from '$lib/config';
   import { formatEditionDate, formatMonth } from '$lib/daybook/format';
   import { archiveSchema } from '$lib/daybook/schema';
+  import { getSocialImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
 
   const { data } = $props();
+
+  // The Daybook wordmark plate, the same card the landing page shares. An
+  // edition is the thing people actually pass around, so having no image at all
+  // was the wrong way round — a bare unfurl on the most shareable page on the
+  // site.
+  const ogImage = $derived(
+    new URL(getSocialImageUrl(`/images/immigration-daybook-og-${data.lang}.png`, 1600), SITE_URL)
+      .href,
+  );
 
   const canonical = $derived(new URL(`/${data.lang}/daybook`, SITE_URL).href);
   const otherLang = $derived(data.lang === 'en' ? 'es' : 'en');
@@ -35,6 +45,12 @@
   <meta property="og:description" content={description} />
   <meta property="og:type" content="website" />
   <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:alt" content="Immigration Daybook" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
   <link rel="canonical" href={canonical} />
   <link rel="alternate" hreflang={data.lang} href={canonical} />
   <link rel="alternate" hreflang={otherLang} href={alternate} />

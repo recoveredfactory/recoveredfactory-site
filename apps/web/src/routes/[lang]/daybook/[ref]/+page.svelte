@@ -4,6 +4,7 @@
   import { SITE_URL } from '$lib/config';
   import { formatEditionDate, formatMonth } from '$lib/daybook/format';
   import { archiveSchema, editionSchema } from '$lib/daybook/schema';
+  import { getSocialImageUrl } from '$lib/images';
   import { m } from '$lib/paraglide/messages';
   import { setLocale } from '$lib/paraglide/runtime';
 
@@ -17,6 +18,15 @@
   const translation = $derived(data.alternates[0] ?? null);
   const switchLabel = $derived(
     otherLang === 'es' ? 'Leer en español →' : 'Read in English →',
+  );
+
+  // The Daybook wordmark plate for now. An edition-specific card carrying the
+  // day's headline would earn far more clicks — the generator already renders a
+  // headline-led layout for the announcement — but that has to run per edition,
+  // so it waits for the daily pull to grow a card step.
+  const ogImage = $derived(
+    new URL(getSocialImageUrl(`/images/immigration-daybook-og-${data.lang}.png`, 1600), SITE_URL)
+      .href,
   );
 
   const canonical = $derived(new URL(`/${data.lang}/daybook/${data.ref}`, SITE_URL).href);
@@ -64,6 +74,12 @@
   <meta property="og:description" content={description} />
   <meta property="og:type" content={isEdition ? 'article' : 'website'} />
   <meta property="og:url" content={canonical} />
+  <meta property="og:image" content={ogImage} />
+  <meta property="og:image:alt" content="Immigration Daybook" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content={pageTitle} />
+  <meta name="twitter:description" content={description} />
+  <meta name="twitter:image" content={ogImage} />
   {#if isEdition}
     <meta property="article:published_time" content={`${data.ref}T00:00:00Z`} />
     <meta property="article:section" content="Immigration" />
