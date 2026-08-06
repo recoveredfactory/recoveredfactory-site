@@ -288,6 +288,14 @@ function sanitizeEmailHtml(html) {
     // Anything document-scoped that was never in a <head> to begin with.
     .replace(/<(link|meta|base)\b[^>]*>/gi, '')
     .replace(/<title\b[^>]*>[\s\S]*?<\/title\s*>/gi, '')
+    // Temporary, and deliberately not general: the ES render currently leaks the
+    // markdown's own title and draft label into the sent HTML, which puts a bare
+    // second "Immigration Daybook" under the styled masthead and the words
+    // "Borrador en español" on a published edition. Being fixed upstream — delete
+    // this line once it is. The unstyled wordmark h1 is the tell, and the italic
+    // paragraph only comes off when that h1 is there, so the standing note (also
+    // wholly italic, immediately after) is left alone.
+    .replace(/<h1\b[^>]*>\s*Immigration Daybook\s*<\/h1>\s*<p\b[^>]*>\s*<em>[\s\S]*?<\/em>\s*<\/p>/i, '')
     .replace(/\son[a-z]+\s*=\s*"[^"]*"/gi, '')
     .replace(/\son[a-z]+\s*=\s*'[^']*'/gi, '')
     .replace(/\son[a-z]+\s*=\s*[^\s>]+/gi, '')
