@@ -3,8 +3,8 @@ import { tagSubscriberByName } from '$lib/kit';
 import { resolveTag } from '$lib/signup-tags';
 
 const FORM_IDS = {
-  en: '8972189',
-  es: '8981790',
+  en: '9769769',
+  es: '9769776',
 } as const;
 
 const resolveLang = (value: string) => (value === 'es' ? 'es' : 'en');
