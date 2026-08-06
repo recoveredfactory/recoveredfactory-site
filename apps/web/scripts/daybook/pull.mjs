@@ -266,6 +266,14 @@ async function fetchEmailHtml(lang) {
  * rule, a max-width tweak for sub-384px screens, and an underline on .ck-link —
  * nothing the inline styles do not already cover.
  *
+ * The two languages do not arrive in the same shape. EN comes back as the exact
+ * Kit broadcast, which is a fragment. ES has no Kit broadcast, so the automation
+ * hands over a whole standalone document — doctype, <head> with a Google Fonts
+ * <link>, styled <body> — and that gets injected mid-page, where the parser
+ * discards the structural tags and honours the stylesheet link the site's CSP
+ * would rather it did not. So the document scaffolding comes off and what was
+ * inside <body> is kept: a fragment either way, whatever the pipeline sends.
+ *
  * Regex sanitising is not a general defence and should not be treated as one. It
  * holds here because the input is a known generator; if editions ever carry
  * third-party HTML, this needs a real parser.
@@ -274,6 +282,12 @@ function sanitizeEmailHtml(html) {
   return html
     .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, '')
     .replace(/<\/?(script|style)\b[^>]*>/gi, '')
+    .replace(/<!doctype[^>]*>/gi, '')
+    .replace(/<head\b[^>]*>[\s\S]*?<\/head\s*>/gi, '')
+    .replace(/<\/?(html|head|body)\b[^>]*>/gi, '')
+    // Anything document-scoped that was never in a <head> to begin with.
+    .replace(/<(link|meta|base)\b[^>]*>/gi, '')
+    .replace(/<title\b[^>]*>[\s\S]*?<\/title\s*>/gi, '')
     .replace(/\son[a-z]+\s*=\s*"[^"]*"/gi, '')
     .replace(/\son[a-z]+\s*=\s*'[^']*'/gi, '')
     .replace(/\son[a-z]+\s*=\s*[^\s>]+/gi, '')
