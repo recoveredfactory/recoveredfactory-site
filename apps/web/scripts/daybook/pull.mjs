@@ -447,9 +447,16 @@ function repairCalendarBullets(body) {
 // nothing — this deliberately does not paraphrase or compress the newsletter's
 // prose into words nobody wrote.
 function deriveDek(body) {
+  // The first H2 is the lede — it is where the title comes from, and an edition
+  // never opens on a standing rubric — so it counts as a beat whatever its
+  // length, and the rubric filter applies only to what follows. Without that
+  // exemption a short lede reads as furniture and gets dropped: on 2026-08-06
+  // "Spotlight turns to children" (27 chars) fell out of the English dek while
+  // "La atención se vuelca hacia la niñez" (36) stayed, so the same edition
+  // summarized itself two different ways in its two languages.
   const beats = [...body.matchAll(/^## (.+)$/gm)]
     .map((match) => stripInlineMd(match[1]))
-    .filter((headline) => headline.length > RUBRIC_MAX_CHARS);
+    .filter((headline, i) => i === 0 || headline.length > RUBRIC_MAX_CHARS);
 
   const picked = [];
   for (const beat of beats.slice(0, DEK_BEATS)) {
