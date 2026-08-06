@@ -180,11 +180,22 @@ for (const lang of LANGS) {
   const dir = join(webRoot, 'src', 'content', 'daybook', lang);
   mkdirSync(dir, { recursive: true });
 
-  const prepared = prepareEdition(md.data, lang, editionDate);
-  const socialImage = renderEditionCard(lang, editionDate, prepared.headline);
-
   const path = join(dir, `${editionDate}.md`);
-  writeFileSync(path, serializeEdition(prepared, lang, editionDate, socialImage));
+  // Read before writing: this is where a hand-set hed or dek is recovered from
+  // the file that is about to be overwritten.
+  const edition = applyOverrides(
+    prepareEdition(md.data, lang, editionDate),
+    readFrontmatter(path),
+    lang,
+    editionDate,
+  );
+
+  // The card carries the hed, so it renders from the effective one — a card
+  // still showing the automation's headline under a hed you rewrote is the
+  // version everyone else sees when the edition is shared.
+  const socialImage = renderEditionCard(lang, editionDate, edition.headline);
+
+  writeFileSync(path, serializeEdition(edition, lang, editionDate, socialImage));
   console.log(
     `Wrote src/content/daybook/${lang}/${editionDate}.md` + (socialImage ? ' (+ card)' : ''),
   );
@@ -328,14 +339,94 @@ function prepareEdition(markdown, lang, date) {
   return { body, standing, headline, description: deriveDek(body) };
 }
 
-function serializeEdition({ body, standing, headline, description }, lang, date, socialImage) {
+/**
+ * Read an edition file's frontmatter, or {} if it is not there yet.
+ *
+ * Same flat `key: "value"` format the pull writes and src/lib/daybook/loader.ts
+ * reads — no YAML parser on either end, because nothing but this script ever
+ * writes the file.
+ */
+function readFrontmatter(path) {
+  if (!existsSync(path)) return {};
+
+  const match = readFileSync(path, 'utf8').match(/^---\n([\s\S]*?)\n---\n/);
+  if (!match) return {};
+
+  const meta = {};
+  for (const line of match[1].split('\n')) {
+    const at = line.indexOf(':');
+    if (at < 1) continue;
+    const value = line.slice(at + 1).trim();
+    meta[line.slice(0, at).trim()] =
+      value.startsWith('"') && value.endsWith('"')
+        ? value.slice(1, -1).replace(/\\"/g, '"').replace(/\\\\/g, '\\')
+        : value;
+  }
+  return meta;
+}
+
+/**
+ * Let a human's hed and dek outrank the derived ones.
+ *
+ * Both are derived from the edition's own section headlines, which is right
+ * most days and wrong on the days it matters: a lede headline can be accurate
+ * and still bury what the story is about. The Aug. 6 edition led on "Spotlight
+ * turns to children" when the news was a $150 million contract handing those
+ * children's legal representation to a politically connected firm — a hed that
+ * says nothing is worse in the archive than in the inbox, because it is also
+ * the page title, the social card, and the search result.
+ *
+ * So `titleOverride: true` / `descriptionOverride: true` in the frontmatter
+ * pin the values beside them and the next pull carries them forward instead of
+ * re-deriving. The flag is what makes it durable — editing `title:` alone is
+ * silently reverted on the next run, so an unflagged divergence warns rather
+ * than disappearing quietly.
+ *
+ * Overriding the hed also moves the card and the first beat of a derived dek,
+ * since both follow the hed. Pin the dek too when you want them to differ —
+ * which is the usual case for a question hed, where repeating it as the dek's
+ * lead beat asks the reader something twice instead of answering it.
+ */
+function applyOverrides(prepared, existing, lang, date) {
+  const held = (field, derived) => {
+    const previous = existing[field];
+    if (existing[`${field}Override`] === 'true' && previous) return previous;
+
+    if (previous && previous !== derived) {
+      console.warn(
+        `WARNING: ${date} ${lang}: replacing ${field} "${previous}" with the derived ` +
+          `"${derived}". Add ${field}Override: true to keep the hand-set one.`,
+      );
+    }
+    return derived;
+  };
+
+  return {
+    ...prepared,
+    headline: held('title', prepared.headline),
+    description: held('description', prepared.description),
+    titleOverride: existing.titleOverride === 'true',
+    descriptionOverride: existing.descriptionOverride === 'true',
+  };
+}
+
+function serializeEdition(
+  { body, standing, headline, description, titleOverride, descriptionOverride },
+  lang,
+  date,
+  socialImage,
+) {
   const perLang = manifest[lang] ?? {};
   const frontmatter = [
     '---',
     `date: "${date}"`,
     `lang: "${lang}"`,
     `title: "${escapeYaml(headline)}"`,
+    // Written only when set, so the frontmatter of an ordinary edition stays
+    // quiet and the flag reads as what it is: someone made a call here.
+    titleOverride ? 'titleOverride: true' : null,
     `description: "${escapeYaml(description)}"`,
+    descriptionOverride ? 'descriptionOverride: true' : null,
     standing ? `standing: "${escapeYaml(standing)}"` : null,
     // Written only when the card actually rendered, so the page can fall back
     // to the wordmark plate rather than pointing at an image that is not there.
