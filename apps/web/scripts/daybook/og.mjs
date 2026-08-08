@@ -469,6 +469,82 @@ const beatSlide = ({ headline, nut, index, total }) =>
     PORTRAIT,
   );
 
+// The calendar slide: dated entries, biggest thing on the card being the date.
+//
+// This is the slide the deck exists for. A headline tells someone what happened;
+// a date with a deadline attached tells them what to do about it, and it is the
+// one thing here worth screenshotting and keeping.
+const UPCOMING_LABEL = { en: 'What’s coming', es: 'Lo que viene' };
+
+// Two entries share the height, so the prose sizes down as it runs long. These
+// are set against real summaries, which run 120 to 240 characters after the
+// trim in pull.mjs.
+const entryTextSize = (text) => {
+  const n = text.length;
+  if (n <= 120) return 31;
+  if (n <= 180) return 28;
+  return 25;
+};
+
+const upcomingSlide = ({ entries, lang }) =>
+  shell(
+    PORTRAIT_CSS +
+      `
+  /* Centred rather than bottom-anchored like the prose slides: two entries do
+     not fill the frame, and hanging them off the strip leaves the whole top
+     half empty instead of splitting the space either side of them. */
+  .stage { justify-content: center; gap: 56px; }
+  .entry { display: flex; gap: 30px; align-items: flex-start; }
+  /* Fixed width so the prose of every entry starts on the same left edge —
+     a ragged text column is the fastest way to make a list look unconsidered. */
+  .chip {
+    flex: 0 0 132px;
+    border-top: 4px solid ${CRIMSON};
+    padding-top: 14px;
+  }
+  .chip .month {
+    font-family: "Jost", sans-serif;
+    font-size: 27px;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    color: ${CRIMSON};
+  }
+  .chip .day {
+    font-family: "Lora", serif;
+    font-size: 72px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    color: ${CREAM};
+  }
+  .entry p {
+    font-family: "Jost", sans-serif;
+    font-weight: 400;
+    line-height: 1.4;
+    color: rgba(243, 241, 233, 0.86);
+    padding-top: 10px;
+  }`,
+    portraitFrame(
+      entries
+        .map(
+          (entry) => `
+    <div class="entry">
+      <div class="chip">
+        <div class="month">${escapeHtml(entry.month)}</div>
+        <div class="day">${escapeHtml(entry.day)}</div>
+      </div>
+      <p style="font-size: ${entryTextSize(entry.text)}px;">${escapeHtml(entry.text)}</p>
+    </div>`,
+        )
+        .join(''),
+      {
+        kicker: UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en,
+        footer: `<span>${HOME_URL}</span>`,
+      },
+    ),
+    PORTRAIT,
+  );
+
 const closingSlide = ({ call, url, terms }) =>
   shell(
     PORTRAIT_CSS + `\n  .hed { font-size: ${coverHedSize(call)}px; }
@@ -507,23 +583,30 @@ const carouselSlides = (lang) => {
 
   const terms = LANDING[lang].facts;
   const beats = deck.beats ?? [];
-  const closing = CLOSING[lang];
+  const upcoming = deck.upcoming ?? [];
   const dir = `social/${deck.date}/${lang}`;
 
-  return [
-    {
-      file: `${dir}/01-cover.png`,
-      html: coverSlide({ hed: deck.hed, date: formatCardDate(deck.date, lang), terms }),
-    },
-    ...beats.map((beat, i) => ({
-      file: `${dir}/${String(i + 2).padStart(2, '0')}-beat.png`,
-      html: beatSlide({ ...beat, index: i + 1, total: beats.length }),
-    })),
-    {
-      file: `${dir}/${String(beats.length + 2).padStart(2, '0')}-subscribe.png`,
-      html: closingSlide({ ...closing, terms }),
-    },
+  // Cover, story, calendar, terms — in that order because the headline is what
+  // stops the scroll and the dates are what earn the follow. A deck that puts
+  // the payoff last is a deck most people never reach the payoff of.
+  const slides = [
+    coverSlide({ hed: deck.hed, date: formatCardDate(deck.date, lang), terms }),
+    ...beats.map((beat, i) => beatSlide({ ...beat, index: i + 1, total: beats.length })),
+    ...upcoming.map((slide) => upcomingSlide({ entries: slide.entries, lang })),
+    closingSlide({ ...CLOSING[lang], terms }),
   ];
+
+  const names = [
+    'cover',
+    ...beats.map(() => 'story'),
+    ...upcoming.map(() => 'upcoming'),
+    'subscribe',
+  ];
+
+  return slides.map((html, i) => ({
+    file: `${dir}/${String(i + 1).padStart(2, '0')}-${names[i]}.png`,
+    html,
+  }));
 };
 
 // Every card resolves to a list of {file, html}. Most produce one; the carousel
@@ -552,6 +635,12 @@ const CARDS = {
     frame: PORTRAIT,
     outSize: PORTRAIT_SIZE,
     needs: 'the carousel needs --deck <path to deck.json>',
+    // The deck's length and its slide names both change with the edition, so a
+    // re-render leaves the previous run's files behind under names the new run
+    // never writes. That matters more here than anywhere else in this script:
+    // the workflow is "save every image in this folder", and a stale slide is
+    // one that gets posted.
+    clean: true,
   },
 };
 
@@ -576,6 +665,12 @@ for (const cardName of cards) {
       console.error(card.needs ?? `No ${cardName} copy for lang "${lang}".`);
       process.exitCode = 1;
       continue;
+    }
+
+    if (card.clean) {
+      for (const dir of new Set(slides.map((slide) => dirname(join(outDir, slide.file))))) {
+        rmSync(dir, { recursive: true, force: true });
+      }
     }
 
     for (const slide of slides) {

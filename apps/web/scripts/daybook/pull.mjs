@@ -30,6 +30,8 @@ import { readFileSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
+import { fetchUpcoming, toCalendarEntry } from './watch.mjs';
+
 const here = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(here, '..', '..');
 
@@ -61,13 +63,21 @@ const RUBRIC_MAX_CHARS = 35;
 
 // Carousel tuning, up here for the same dead-zone reason as the dek settings.
 //
-// Three beats keeps the deck at five slides — cover, three stories, the terms —
-// which is about as far as anyone swipes and matches what an edition carries
-// before the standing rubrics start.
-const CAROUSEL_BEATS = 3;
+// One story beat, not three. The headline is the hook and the calendar is the
+// payoff — three more headlines is more of the hook and none of the payoff. That
+// makes a five-slide deck: cover, one story, two calendar slides, the terms.
+const CAROUSEL_BEATS = 1;
 
 // A nut sentence longer than this is one nobody reads off a phone.
 const NUT_MAX_CHARS = 320;
+
+// Two dated entries a slide, two slides. Four deadlines is a useful number to
+// screenshot; eight is a document.
+const UPCOMING_SLIDES = 2;
+const UPCOMING_PER_SLIDE = 2;
+
+// Watch-item summaries are written to explain a rule, not to fit a card.
+const UPCOMING_MAX_CHARS = 240;
 
 const args = new Set(process.argv.slice(2));
 const offline = args.has('--offline');
@@ -179,6 +189,14 @@ if (manifest.url_parity === false) {
   console.warn(`WARNING: ${editionDate} has url_parity=false — EN and ES cite different sources.`);
 }
 
+// The calendar is fetched once and shaped per language, because both languages
+// are columns on the same watch item — two queries would be the same rows twice.
+// Enough rows for the deck plus slack, since an item with no Spanish summary
+// drops out of the ES deck and the next one takes its place.
+const watchItems = await loadWatchItems(editionDate);
+const calendarFor = (lang) =>
+  watchItems.map((row) => toCalendarEntry(row, lang)).filter(Boolean);
+
 let wrote = 0;
 const decks = {};
 for (const lang of LANGS) {
@@ -205,13 +223,6 @@ for (const lang of LANGS) {
   // still showing the automation's headline under a hed you rewrote is the
   // version everyone else sees when the edition is shared.
   const socialImage = renderEditionCard(lang, editionDate, edition.headline);
-  decks[lang] = buildDeck(edition, editionDate);
-
-  writeFileSync(path, serializeEdition(edition, lang, editionDate, socialImage));
-  console.log(
-    `Wrote src/content/daybook/${lang}/${editionDate}.md` + (socialImage ? ' (+ card)' : ''),
-  );
-  wrote += 1;
 
   // The edition as it went out, saved beside the markdown.
   //
@@ -219,9 +230,20 @@ for (const lang of LANGS) {
   // received, and it is the only place the Upcoming calendar exists — the
   // markdown artifact ships that section empty. It comes back by reference
   // rather than inline, so it has to be fetched from the artifacts endpoint.
+  // Fetched before the deck is built because the carousel reads the calendar.
   const html = await fetchEmailHtml(lang);
+  const sanitized = html ? sanitizeEmailHtml(html) : '';
+
+  decks[lang] = buildDeck(edition, editionDate, calendarFor(lang));
+
+  writeFileSync(path, serializeEdition(edition, lang, editionDate, socialImage));
+  console.log(
+    `Wrote src/content/daybook/${lang}/${editionDate}.md` + (socialImage ? ' (+ card)' : ''),
+  );
+  wrote += 1;
+
   if (html) {
-    writeFileSync(join(dir, `${editionDate}.html`), `${sanitizeEmailHtml(html)}\n`);
+    writeFileSync(join(dir, `${editionDate}.html`), `${sanitized}\n`);
     console.log(`Wrote src/content/daybook/${lang}/${editionDate}.html`);
   } else {
     console.warn(
@@ -506,7 +528,39 @@ function renderEditionCard(lang, date, headline) {
  * which is the automation's own one-line version of that story, so the slide
  * says what the section says.
  */
-function buildDeck({ body, headline }, date) {
+/**
+ * Watch items for the calendar slides, or [] if they cannot be read.
+ *
+ * A missing NEWS_INGESTER_DB_URL is not an error: the archive, the cards and the
+ * story slides all work without it, and the pull should still run for anyone who
+ * has the PromptQL credentials but not the database. It just says so, because a
+ * carousel that quietly loses its most useful slides looks the same as one that
+ * never had them.
+ */
+async function loadWatchItems(date) {
+  if (!env.NEWS_INGESTER_DB_URL) {
+    console.warn(
+      'WARNING: no NEWS_INGESTER_DB_URL in apps/web/.env — the carousel will ship ' +
+        'without its Upcoming slides.',
+    );
+    return [];
+  }
+
+  try {
+    const rows = await fetchUpcoming({
+      connectionString: env.NEWS_INGESTER_DB_URL,
+      editionDate: date,
+      limit: UPCOMING_SLIDES * UPCOMING_PER_SLIDE + 4,
+    });
+    console.log(`Read ${rows.length} upcoming watch items for the carousel.`);
+    return rows;
+  } catch (err) {
+    console.warn(`WARNING: could not read the watch calendar (${err.message}).`);
+    return [];
+  }
+}
+
+function buildDeck({ body, headline }, date, events) {
   const beats = body
     .split(/\n(?=## )/)
     .map((section) => ({
@@ -516,7 +570,34 @@ function buildDeck({ body, headline }, date) {
     .filter((beat) => beat.headline.length > RUBRIC_MAX_CHARS)
     .slice(0, CAROUSEL_BEATS);
 
-  return { date, hed: headline, beats };
+  // The calendar is the payoff, so it goes in whole slides rather than as a
+  // footnote: two dated entries a slide, up to UPCOMING_SLIDES of them.
+  const trimmed = events.map((entry) => ({
+    ...entry,
+    text: trimToSentence(entry.text, UPCOMING_MAX_CHARS),
+  }));
+
+  const upcoming = [];
+  for (let i = 0; i < trimmed.length && upcoming.length < UPCOMING_SLIDES; i += UPCOMING_PER_SLIDE) {
+    const entries = trimmed.slice(i, i + UPCOMING_PER_SLIDE);
+    // A half-full final slide reads as a mistake rather than as a short week.
+    if (entries.length === UPCOMING_PER_SLIDE) upcoming.push({ entries });
+  }
+
+  return { date, hed: headline, beats, upcoming };
+}
+
+// Calendar prose is written to explain, not to fit a card. Cut on a sentence
+// where possible — a deadline that ends mid-clause is worse than a shorter one.
+function trimToSentence(text, max) {
+  if (text.length <= max) return text;
+
+  const cut = text.slice(0, max);
+  const stop = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('? '), cut.lastIndexOf('! '));
+  if (stop > max * 0.45) return cut.slice(0, stop + 1);
+
+  const space = cut.lastIndexOf(' ');
+  return `${(space > 0 ? cut.slice(0, space) : cut).replace(/[\s,;:—–-]+$/, '')}…`;
 }
 
 // The bolded lead of a section: the automation writes one at the top of each
