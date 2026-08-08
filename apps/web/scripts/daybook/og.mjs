@@ -29,7 +29,7 @@
 // 1200px card would be upscaled and softened on the way out.
 
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, rmSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -51,6 +51,13 @@ const outDir = resolve(here, flag('out', '../../static/images'));
 const editionDate = flag('edition', '');
 const editionHeadline = flag('headline', '');
 
+// Carousel decks only: a JSON file keyed by language, written by pull.mjs.
+const deckPath = flag('deck', '');
+
+// Every slide carries the domain, because the alternative is asking people to
+// go and find a link in a bio.
+const HOME_URL = 'immigrationdaybook.com';
+
 const OUT_SIZE = '1600x840';
 
 // Straight off the page's style block — see the .rf-hero rules in
@@ -62,7 +69,10 @@ const CRIMSON = '#e8244f';
 const FONTS =
   'https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Lora:wght@400;500;600&display=swap';
 
-const shell = (css, body) => `<!doctype html>
+// The open-graph frame. Portrait cards pass their own — see PORTRAIT.
+const LANDSCAPE = { width: 1200, height: 630, padding: '0 86px' };
+
+const shell = (css, body, frame = LANDSCAPE) => `<!doctype html>
 <html>
 <head>
 <meta charset="utf-8" />
@@ -71,14 +81,14 @@ const shell = (css, body) => `<!doctype html>
 <link href="${FONTS}" rel="stylesheet" />
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: 1200px; height: 630px; }
+  html, body { width: ${frame.width}px; height: ${frame.height}px; }
   body {
     background: ${INK};
     color: ${CREAM};
     display: flex;
     flex-direction: column;
     justify-content: center;
-    padding: 0 86px;
+    padding: ${frame.padding};
     -webkit-font-smoothing: antialiased;
   }
   .rule {
@@ -308,21 +318,240 @@ const editionCopy = (lang) => {
   };
 };
 
+// ── Carousel slides ───────────────────────────────────────────────────────
+// A 4:5 deck for Instagram, one per edition per language: cover, a slide per
+// story beat, and a closing plate with the terms.
+//
+// 4:5 rather than square because it is the tallest frame the feed will show
+// without cropping, and the whole asset here is words — vertical room is the
+// only thing that buys a readable size. Rendered at 1080x1350, which is what
+// the platforms downsample to anyway.
+//
+// The deck arrives as JSON from pull.mjs rather than as flags: the slides carry
+// full sentences, and a dozen of those on a command line is how quoting bugs
+// happen. It is also the same derivation the archive already did, so the cards
+// and the page cannot drift.
+const PORTRAIT = { width: 1080, height: 1350, padding: '92px 84px' };
+const PORTRAIT_SIZE = '1080x1350';
+
+// Portrait gives about 900px of usable width and 1150 of height. These steps
+// were set against the first week of real editions, whose headlines run 27 to
+// 125 characters and whose nut sentences run 120 to 320.
+const coverHedSize = (text) => {
+  const n = text.length;
+  if (n <= 40) return 88;
+  if (n <= 70) return 74;
+  if (n <= 100) return 62;
+  if (n <= 140) return 52;
+  return 44;
+};
+
+const beatHedSize = (text) => {
+  const n = text.length;
+  if (n <= 50) return 60;
+  if (n <= 90) return 50;
+  if (n <= 130) return 42;
+  return 36;
+};
+
+const nutSize = (text) => {
+  const n = text.length;
+  if (n <= 140) return 34;
+  if (n <= 220) return 30;
+  if (n <= 320) return 27;
+  return 24;
+};
+
+// Shared chrome: the wordmark sits top-left on every slide and the strip runs
+// along the bottom, so a slide saved out of context still says what it is.
+const portraitFrame = (body, { footer = '', kicker = '' }) => `
+  <header class="chrome">
+    <p class="lockup">Immigration Daybook</p>
+    ${kicker ? `<p class="kicker">${kicker}</p>` : ''}
+  </header>
+  <div class="stage">${body}</div>
+  <footer class="strip">${footer}</footer>`;
+
+const PORTRAIT_CSS = `
+  body { justify-content: flex-start; }
+  .chrome {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 24px;
+    padding-bottom: 26px;
+    border-bottom: 4px solid ${CRIMSON};
+  }
+  .lockup {
+    font-family: "Jost", sans-serif;
+    font-size: 30px;
+    font-weight: 700;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: ${CRIMSON};
+  }
+  .kicker {
+    font-family: "Jost", sans-serif;
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: rgba(243, 241, 233, 0.62);
+    white-space: nowrap;
+  }
+  /* Content sits on the strip rather than floating mid-frame. Anchoring to the
+     bottom means a one-line beat and a five-line one start at different heights
+     but end at the same one, so the deck holds its line across a swipe instead
+     of jumping about as the copy length changes. */
+  .stage {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-height: 0;
+    padding: 56px 0 12px;
+  }
+  .hed {
+    font-family: "Lora", serif;
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    color: ${CREAM};
+    text-wrap: balance;
+  }
+  .nut {
+    font-family: "Jost", sans-serif;
+    font-weight: 400;
+    line-height: 1.42;
+    color: rgba(243, 241, 233, 0.82);
+    margin-top: 30px;
+  }
+  .strip {
+    display: flex;
+    justify-content: space-between;
+    gap: 24px;
+    padding-top: 26px;
+    border-top: 3px solid rgba(243, 241, 233, 0.22);
+    font-family: "Jost", sans-serif;
+    font-size: 25px;
+    font-weight: 600;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+    color: rgba(243, 241, 233, 0.62);
+  }`;
+
+const coverSlide = ({ hed, date, terms }) =>
+  shell(
+    PORTRAIT_CSS + `\n  .hed { font-size: ${coverHedSize(hed)}px; }`,
+    portraitFrame(`<h1 class="hed">${escapeHtml(hed)}</h1>`, {
+      kicker: date,
+      // The domain and the bilingual fact. All three terms would overrun the
+      // strip at this size, and "which languages" is the one that earns its
+      // place on a cover shown to people who have never seen the thing.
+      footer: `<span>${HOME_URL}</span><span>${escapeHtml(terms[terms.length - 1])}</span>`,
+    }),
+    PORTRAIT,
+  );
+
+const beatSlide = ({ headline, nut, index, total }) =>
+  shell(
+    PORTRAIT_CSS +
+      `\n  .hed { font-size: ${beatHedSize(headline)}px; }` +
+      (nut ? `\n  .nut { font-size: ${nutSize(nut)}px; }` : ''),
+    portraitFrame(
+      `<h2 class="hed">${escapeHtml(headline)}</h2>` +
+        (nut ? `<p class="nut">${escapeHtml(nut)}</p>` : ''),
+      {
+        kicker: `${index}/${total}`,
+        footer: `<span>${HOME_URL}</span>`,
+      },
+    ),
+    PORTRAIT,
+  );
+
+const closingSlide = ({ call, url, terms }) =>
+  shell(
+    PORTRAIT_CSS + `\n  .hed { font-size: ${coverHedSize(call)}px; }
+  .url {
+    font-family: "Jost", sans-serif;
+    font-size: 40px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    color: ${CRIMSON};
+    margin-top: 34px;
+  }`,
+    portraitFrame(
+      `<h2 class="hed">${escapeHtml(call)}</h2><p class="url">${escapeHtml(url)}</p>`,
+      { footer: terms.map((t) => `<span>${escapeHtml(t)}</span>`).join('') },
+    ),
+    PORTRAIT,
+  );
+
+// The closing plate's copy. `terms` is lifted from the landing card rather than
+// rewritten so the two plates cannot drift apart, and the call is the plainest
+// statement of the offer — this slide exists to be acted on, not admired.
+const CLOSING = {
+  en: { call: 'Free, every weekday morning.', url: HOME_URL },
+  es: { call: 'Gratis, cada mañana entre semana.', url: HOME_URL },
+};
+
+// Build a language's carousel from the deck JSON that pull.mjs wrote.
+//
+// Numbered filenames because the only thing standing between a correct deck and
+// a shuffled one is upload order, and every picker sorts by name.
+const carouselSlides = (lang) => {
+  if (!deckPath) return null;
+
+  const deck = JSON.parse(readFileSync(deckPath, 'utf8'))[lang];
+  if (!deck) return null;
+
+  const terms = LANDING[lang].facts;
+  const beats = deck.beats ?? [];
+  const closing = CLOSING[lang];
+  const dir = `social/${deck.date}/${lang}`;
+
+  return [
+    {
+      file: `${dir}/01-cover.png`,
+      html: coverSlide({ hed: deck.hed, date: formatCardDate(deck.date, lang), terms }),
+    },
+    ...beats.map((beat, i) => ({
+      file: `${dir}/${String(i + 2).padStart(2, '0')}-beat.png`,
+      html: beatSlide({ ...beat, index: i + 1, total: beats.length }),
+    })),
+    {
+      file: `${dir}/${String(beats.length + 2).padStart(2, '0')}-subscribe.png`,
+      html: closingSlide({ ...closing, terms }),
+    },
+  ];
+};
+
+// Every card resolves to a list of {file, html}. Most produce one; the carousel
+// produces a deck, which is the only reason this is a list at all.
+const one = (file, html) => (html ? [{ file, html }] : null);
+
 const CARDS = {
   landing: {
-    copy: LANDING,
-    render: landingCard,
-    file: (lang) => `immigration-daybook-og-${lang}.png`,
+    slides: (lang) => one(`immigration-daybook-og-${lang}.png`, landingCard(LANDING[lang])),
   },
   announcement: {
-    copy: ANNOUNCEMENT,
-    render: announcementCard,
-    file: (lang) => `immigration-daybook-announce-og-${lang}.png`,
-  },
+    slides: (lang) =>
+      one(`immigration-daybook-announce-og-${lang}.png`, announcementCard(ANNOUNCEMENT[lang])),
+    },
   edition: {
-    copy: editionCopy,
-    render: announcementCard,
-    file: (lang) => `immigration-daybook-og-${editionDate}-${lang}.png`,
+    slides: (lang) => {
+      const copy = editionCopy(lang);
+      return copy
+        ? one(`immigration-daybook-og-${editionDate}-${lang}.png`, announcementCard(copy))
+        : null;
+    },
+    needs: 'the edition card needs --edition <YYYY-MM-DD> and --headline <text>',
+  },
+  carousel: {
+    slides: carouselSlides,
+    frame: PORTRAIT,
+    outSize: PORTRAIT_SIZE,
+    needs: 'the carousel needs --deck <path to deck.json>',
   },
 };
 
@@ -338,49 +567,53 @@ for (const cardName of cards) {
     continue;
   }
 
+  const frame = card.frame ?? LANDSCAPE;
+  const outSize = card.outSize ?? OUT_SIZE;
+
   for (const lang of langs) {
-    // Edition copy is built per run from --edition/--headline; the other cards
-    // keep their copy in this file, keyed by language.
-    const copy = typeof card.copy === 'function' ? card.copy(lang) : card.copy[lang];
-    if (!copy) {
-      console.error(
-        typeof card.copy === 'function'
-          ? `The ${cardName} card needs --edition <YYYY-MM-DD> and --headline <text>.`
-          : `No ${cardName} copy for lang "${lang}" — known: ${Object.keys(card.copy).join(', ')}`,
-      );
+    const slides = card.slides(lang);
+    if (!slides?.length) {
+      console.error(card.needs ?? `No ${cardName} copy for lang "${lang}".`);
       process.exitCode = 1;
       continue;
     }
 
-    const stem = cardName === 'edition' ? `${cardName}-${editionDate}-${lang}` : `${cardName}-${lang}`;
+    for (const slide of slides) {
+      renderSlide({ slide, cardName, lang, frame, outSize });
+    }
+  }
+}
+
+function renderSlide({ slide, cardName, lang, frame, outSize }) {
+  const stem = `${cardName}-${slide.file.replace(/[/\\]/g, '-').replace(/\.png$/, '')}-${lang}`;
     const html = join(workDir, `.${stem}.html`);
     const raw = join(workDir, `.${stem}-2x.png`);
-    const out = join(outDir, card.file(lang));
+  const out = join(outDir, slide.file);
+  mkdirSync(dirname(out), { recursive: true });
 
-    writeFileSync(html, card.render(copy));
+  writeFileSync(html, slide.html);
 
-    execFileSync(
-      'google-chrome',
-      [
-        '--headless=new',
-        '--disable-gpu',
-        '--hide-scrollbars',
-        '--force-device-scale-factor=2',
-        // Generous: the card must not shoot before the webfonts land, or it
-        // silently renders in a fallback face.
-        '--virtual-time-budget=20000',
-        '--window-size=1200,630',
-        `--screenshot=${raw}`,
-        `file://${html}`,
-      ],
-      // stderr is dropped: headless Chrome spews harmless dbus/UPower noise here.
-      { stdio: ['ignore', 'ignore', 'ignore'] },
-    );
+  execFileSync(
+    'google-chrome',
+    [
+      '--headless=new',
+      '--disable-gpu',
+      '--hide-scrollbars',
+      '--force-device-scale-factor=2',
+      // Generous: the card must not shoot before the webfonts land, or it
+      // silently renders in a fallback face.
+      '--virtual-time-budget=20000',
+      `--window-size=${frame.width},${frame.height}`,
+      `--screenshot=${raw}`,
+      `file://${html}`,
+    ],
+    // stderr is dropped: headless Chrome spews harmless dbus/UPower noise here.
+    { stdio: ['ignore', 'ignore', 'ignore'] },
+  );
 
-    execFileSync('convert', [raw, '-resize', OUT_SIZE, '-strip', out]);
-    rmSync(raw, { force: true });
-    rmSync(html, { force: true });
+  execFileSync('convert', [raw, '-resize', outSize, '-strip', out]);
+  rmSync(raw, { force: true });
+  rmSync(html, { force: true });
 
-    console.log(`Wrote static/images/${card.file(lang)}`);
-  }
+  console.log(`Wrote static/images/${slide.file}`);
 }

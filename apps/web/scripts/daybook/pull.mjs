@@ -59,6 +59,16 @@ const DEK_MAX_CHARS = 380;
 // them without hardcoding a list per language.
 const RUBRIC_MAX_CHARS = 35;
 
+// Carousel tuning, up here for the same dead-zone reason as the dek settings.
+//
+// Three beats keeps the deck at five slides — cover, three stories, the terms —
+// which is about as far as anyone swipes and matches what an edition carries
+// before the standing rubrics start.
+const CAROUSEL_BEATS = 3;
+
+// A nut sentence longer than this is one nobody reads off a phone.
+const NUT_MAX_CHARS = 320;
+
 const args = new Set(process.argv.slice(2));
 const offline = args.has('--offline');
 const rawOnly = args.has('--raw-only');
@@ -170,6 +180,7 @@ if (manifest.url_parity === false) {
 }
 
 let wrote = 0;
+const decks = {};
 for (const lang of LANGS) {
   const md = artifact(`daybook_final_${lang}_md`);
   if (!md?.data) {
@@ -194,6 +205,7 @@ for (const lang of LANGS) {
   // still showing the automation's headline under a hed you rewrote is the
   // version everyone else sees when the edition is shared.
   const socialImage = renderEditionCard(lang, editionDate, edition.headline);
+  decks[lang] = buildDeck(edition, editionDate);
 
   writeFileSync(path, serializeEdition(edition, lang, editionDate, socialImage));
   console.log(
@@ -223,6 +235,8 @@ if (!wrote) {
   console.error('No editions written.');
   process.exit(1);
 }
+
+renderCarousel(decks, editionDate);
 
 // ---------------------------------------------------------------------------
 
@@ -480,6 +494,76 @@ function renderEditionCard(lang, date, headline) {
         `(${err.message.split('\n')[0]}). Falling back to the generic card.`,
     );
     return '';
+  }
+}
+
+/**
+ * Build the Instagram deck for one language.
+ *
+ * Everything here is the edition's own copy, re-cut for a 4:5 frame: the hed
+ * (including a hand-set one, since this runs after the overrides), then a slide
+ * per story section carrying its headline and the bolded sentence underneath —
+ * which is the automation's own one-line version of that story, so the slide
+ * says what the section says.
+ */
+function buildDeck({ body, headline }, date) {
+  const beats = body
+    .split(/\n(?=## )/)
+    .map((section) => ({
+      headline: stripInlineMd(section.match(/^## (.+)$/m)?.[1] ?? ''),
+      nut: nutSentence(section),
+    }))
+    .filter((beat) => beat.headline.length > RUBRIC_MAX_CHARS)
+    .slice(0, CAROUSEL_BEATS);
+
+  return { date, hed: headline, beats };
+}
+
+// The bolded lead of a section: the automation writes one at the top of each
+// story, and it is already the compressed version. Nothing is paraphrased here.
+function nutSentence(section) {
+  const bold = section.match(/\*\*(?!\s)([^*]+?)\*\*/)?.[1];
+  if (!bold) return '';
+
+  const nut = stripInlineMd(bold);
+  if (nut.length <= NUT_MAX_CHARS) return nut;
+
+  const cut = nut.slice(0, NUT_MAX_CHARS);
+  const stop = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('? '), cut.lastIndexOf('! '));
+  return stop > 120 ? cut.slice(0, stop + 1) : `${cut.slice(0, cut.lastIndexOf(' '))}…`;
+}
+
+/**
+ * Render the carousels, and say where they are.
+ *
+ * They land under static/images/social/<date>/<lang>/ so they ship with the
+ * site: posting happens on a phone, and a file on a laptop is not on a phone.
+ * Opening the printed URL on the phone and long-pressing each slide is the
+ * whole workflow — no transfer, no cable, no link in a bio.
+ */
+function renderCarousel(decks, date) {
+  const langs = Object.keys(decks);
+  if (skipCards || !langs.length) return;
+
+  const deckFile = join(outDir, `deck-${date}.json`);
+  writeFileSync(deckFile, JSON.stringify(decks, null, 2));
+
+  try {
+    execFileSync(
+      'node',
+      [join(here, 'og.mjs'), '--card', 'carousel', '--lang', langs.join(','), '--deck', deckFile],
+      { stdio: ['ignore', 'ignore', 'pipe'] },
+    );
+  } catch (err) {
+    console.warn(
+      `WARNING: ${date}: could not render the carousels (${err.message.split('\n')[0]}).`,
+    );
+    return;
+  }
+
+  console.log('\nCarousels — open on the phone you post from:');
+  for (const lang of langs) {
+    console.log(`  ${lang}: https://immigrationdaybook.com/images/social/${date}/${lang}/`);
   }
 }
 
