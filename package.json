@@ -10,7 +10,8 @@
     "build:web": "pnpm -C apps/web build",
     "lint": "pnpm -C apps/web lint",
     "format": "pnpm -C apps/web format",
-    "deploy": "sst deploy"
+    "deploy": "sst deploy",
+    "backup:assets": "./scripts/backup-assets.sh"
   },
   "devDependencies": {
     "sst": "^3.0.0",
