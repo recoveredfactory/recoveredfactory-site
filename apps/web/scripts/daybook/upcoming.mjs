@@ -100,24 +100,36 @@ export async function loadUpcoming({ webRoot, url, key, date, offline }) {
  * composition — `selection.mode` reads `eligible_only` — and then the
  * deterministic slate is the best available answer and also, on the editions
  * seen so far, the same five the newsletter shipped.
+ *
+ * Ordering is per language. `render_order_es` is not always `render_order`:
+ * both sorts break ties on the summary text (`render_sort` / `render_sort_es`),
+ * and two items sharing a date can therefore fall differently in Spanish.
  */
-export function upcomingItems(doc) {
+export function upcomingItems(doc, lang = 'en') {
   if (!doc) return [];
 
   const selected = doc.selected_items ?? [];
   const items = selected.length ? selected : (doc.eligible_items ?? []);
+  const order = lang === 'es' ? 'render_order_es' : 'render_order';
 
-  return [...items].sort((a, b) => (a.render_order ?? 0) - (b.render_order ?? 0));
+  return [...items].sort((a, b) => (a[order] ?? a.render_order ?? 0) - (b[order] ?? b.render_order ?? 0));
 }
 
 /**
  * Shape one item for a card.
  *
- * `summary_preference` in the policy is the order the composer itself falls back
- * through, so this follows it rather than inventing a second preference.
+ * The policy carries the fallback chain the composer itself uses, per language
+ * — Spanish is `["plain_summary_es", "plain_summary", …]`, so an item with no
+ * Spanish summary shows the English one rather than vanishing from the deck.
+ * That is the composer's call to make, not this script's, so it is followed
+ * rather than second-guessed.
  */
 export function toCalendarEntry(item, lang, doc) {
-  const preference = doc?.policy?.summary_preference ?? ['plain_summary', 'what_to_watch_for', 'title'];
+  const preference =
+    (lang === 'es' ? doc?.policy?.summary_preference_es : doc?.policy?.summary_preference) ??
+    DEFAULT_PREFERENCE[lang] ??
+    DEFAULT_PREFERENCE.en;
+
   const text = preference.map((field) => item[field]).find((value) => value?.trim());
   if (!text || !item.key_date) return null;
 
@@ -130,6 +142,13 @@ export function toCalendarEntry(item, lang, doc) {
     text: text.trim(),
   };
 }
+
+// Only reached if the policy block goes missing, which would mean the artifact
+// changed shape under us.
+const DEFAULT_PREFERENCE = {
+  en: ['plain_summary', 'what_to_watch_for', 'title'],
+  es: ['plain_summary_es', 'plain_summary', 'what_to_watch_for', 'title'],
+};
 
 const MONTH_LABEL = {
   en: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],

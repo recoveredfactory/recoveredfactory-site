@@ -350,6 +350,14 @@ const coverHedSize = (text) => {
   return 50;
 };
 
+const beatHedSize = (text) => {
+  const n = text.length;
+  if (n <= 50) return 72;
+  if (n <= 90) return 62;
+  if (n <= 130) return 52;
+  return 44;
+};
+
 const nutSize = (text) => {
   const n = text.length;
   if (n <= 140) return 40;
@@ -474,6 +482,26 @@ const coverSlide = ({ hed, nut, date, terms }) =>
     PORTRAIT,
   );
 
+// A story slide: one of the edition's other beats, headline over its bolded
+// lead. The lede is not among them — it is on the cover — so these are what a
+// reader has not already been told.
+//
+// No kicker. The slide index would be the obvious thing to put there, but the
+// deck is not all stories, so "2/2" would count something a reader cannot see
+// the whole of. A rubric would want a word, and the words here are David's.
+const beatSlide = ({ headline, nut }) =>
+  shell(
+    portraitCss('') +
+      `\n  .hed { font-size: ${beatHedSize(headline)}px; }` +
+      (nut ? `\n  .nut { font-size: ${nutSize(nut)}px; }` : ''),
+    portraitFrame(
+      `<h2 class="hed">${escapeHtml(headline)}</h2>` +
+        (nut ? `<p class="nut">${escapeHtml(nut)}</p>` : ''),
+      { footer: `<span>${HOME_URL}</span>` },
+    ),
+    PORTRAIT,
+  );
+
 // The calendar slide: dated entries, biggest thing on the card being the date.
 //
 // This is the slide the deck exists for. A headline tells someone what happened;
@@ -488,7 +516,8 @@ const entryTextSize = (text) => {
   const n = text.length;
   if (n <= 140) return 38;
   if (n <= 220) return 34;
-  return 31;
+  if (n <= 320) return 31;
+  return 28;
 };
 
 const upcomingSlide = ({ entries, lang }) =>
@@ -584,19 +613,27 @@ const carouselSlides = (lang) => {
   if (!deck) return null;
 
   const terms = LANDING[lang].facts;
+  const beats = deck.beats ?? [];
   const upcoming = deck.upcoming ?? [];
   const dir = `social/${deck.date}/${lang}`;
 
-  // Cover, calendar, terms. The headline stops the scroll and the dates earn
-  // the follow, so there is nothing in between: a deck that puts the payoff
-  // last is a deck most people never reach the payoff of.
+  // Cover, the day's other stories, the calendar, the terms. The news earns the
+  // swipe and the dates earn the follow, so the calendar sits after the stories
+  // but well before the end — a deck that puts the payoff last is a deck most
+  // people never reach the payoff of.
   const slides = [
     coverSlide({ hed: deck.hed, nut: deck.nut, date: formatCardDate(deck.date, lang), terms }),
+    ...beats.map((beat) => beatSlide(beat)),
     ...upcoming.map((slide) => upcomingSlide({ entries: slide.entries, lang })),
     closingSlide({ ...CLOSING[lang], terms }),
   ];
 
-  const names = ['cover', ...upcoming.map(() => 'upcoming'), 'subscribe'];
+  const names = [
+    'cover',
+    ...beats.map(() => 'story'),
+    ...upcoming.map(() => 'upcoming'),
+    'subscribe',
+  ];
 
   return slides.map((html, i) => ({
     file: `${dir}/${String(i + 1).padStart(2, '0')}-${names[i]}.png`,

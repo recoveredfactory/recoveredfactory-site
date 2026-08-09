@@ -30,7 +30,6 @@ import { readFileSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { fetchUpcoming, toCalendarEntry as toEntryFromDb } from './watch.mjs';
 import { loadUpcoming, upcomingItems, toCalendarEntry as toEntryFromSnapshot } from './upcoming.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -64,10 +63,11 @@ const RUBRIC_MAX_CHARS = 35;
 
 // Carousel tuning, up here for the same dead-zone reason as the dek settings.
 //
-// Four slides: cover, two calendar slides, the terms. There is no story slide —
-// the hed and the lede's nut sentence share the cover, and a separate slide for
-// the lede headline said the same thing a second time before anyone reached the
-// dates.
+// Six slides: cover, two stories, two calendar, the terms. The lede has no
+// slide of its own — its nut sentence shares the cover with the hed that was
+// written off it — so these two beats are the stories a reader has not been
+// told yet.
+const CAROUSEL_BEATS = 2;
 
 // A nut sentence longer than this is one nobody reads off a phone.
 const NUT_MAX_CHARS = 320;
@@ -77,8 +77,11 @@ const NUT_MAX_CHARS = 320;
 const UPCOMING_SLIDES = 2;
 const UPCOMING_PER_SLIDE = 2;
 
-// Watch-item summaries are written to explain a rule, not to fit a card.
-const UPCOMING_MAX_CHARS = 300;
+// Watch-item summaries are written to explain a rule, not to fit a card. Set
+// against Spanish rather than English: the same entry runs 20-30% longer in
+// Spanish, and a budget that fits the English cut "…de la Oficina de" off the
+// end of the Spanish one, which is worse than a smaller type size.
+const UPCOMING_MAX_CHARS = 420;
 
 const args = new Set(process.argv.slice(2));
 const offline = args.has('--offline');
@@ -190,41 +193,26 @@ if (manifest.url_parity === false) {
   console.warn(`WARNING: ${editionDate} has url_parity=false — EN and ES cite different sources.`);
 }
 
-// The calendar, from two sources for now — and that is temporary.
+// The calendar, both languages, from the one archived snapshot.
 //
-// English comes from the archived upcoming_json snapshot, which carries the
-// composer's own selection. Spanish cannot yet: the artifact is English-only
-// (no `_es` field, and `summary_preference` names English columns), while the
-// database has plain_summary_es sitting on the very rows the artifact is built
-// from. So ES still reads the database and still picks by nearest deadline,
-// which means the two languages can show different entries on the same day.
-//
-// That is the divergence this snapshot exists to end, and it closes the moment
-// upcoming_json emits the Spanish summary: delete loadWatchItems, watch.mjs and
-// the `pg` dependency, and point both languages at the snapshot.
-const snapshot = await loadUpcoming({
-  webRoot,
-  url,
-  key,
-  date: editionDate,
-  offline,
-});
-const snapshotItems = upcomingItems(snapshot);
-if (snapshotItems.length) {
-  const mode = snapshot?.selection?.mode ?? 'unknown';
-  console.log(`Upcoming: ${snapshotItems.length} items from the snapshot (selection.mode=${mode}).`);
+// This used to read the ingestion database and pick by nearest deadline, which
+// disagreed badly with what the newsletter ran — and then, briefly, English came
+// from the snapshot while Spanish still came from the database. Both paths are
+// gone. Selection and ordering are editorial, they happen upstream, and there is
+// one record of them.
+const snapshot = await loadUpcoming({ webRoot, url, key, date: editionDate, offline });
+if (snapshot) {
+  const { mode, eligible_count: eligible, selected_count: selected } = snapshot.selection ?? {};
+  console.log(
+    `Upcoming: selection.mode=${mode ?? 'unknown'} ` +
+      `(${selected || eligible || 0} items, policy ${snapshot.policy?.policy_sha256?.slice(0, 12) ?? '?'}).`,
+  );
 }
 
-// Still loaded even when the snapshot covers English, because Spanish has
-// nowhere else to read from yet.
-const watchItems = await loadWatchItems(editionDate);
-
-const calendarFor = (lang) => {
-  if (lang === 'en' && snapshotItems.length) {
-    return snapshotItems.map((item) => toEntryFromSnapshot(item, lang, snapshot)).filter(Boolean);
-  }
-  return watchItems.map((row) => toEntryFromDb(row, lang)).filter(Boolean);
-};
+const calendarFor = (lang) =>
+  upcomingItems(snapshot, lang)
+    .map((item) => toEntryFromSnapshot(item, lang, snapshot))
+    .filter(Boolean);
 
 let wrote = 0;
 const decks = {};
@@ -557,49 +545,21 @@ function renderEditionCard(lang, date, headline) {
  * which is the automation's own one-line version of that story, so the slide
  * says what the section says.
  */
-/**
- * Watch items for the calendar slides, or [] if they cannot be read.
- *
- * A missing NEWS_INGESTER_DB_URL is not an error: the archive, the cards and the
- * story slides all work without it, and the pull should still run for anyone who
- * has the PromptQL credentials but not the database. It just says so, because a
- * carousel that quietly loses its most useful slides looks the same as one that
- * never had them.
- */
-async function loadWatchItems(date) {
-  if (!env.NEWS_INGESTER_DB_URL) {
-    console.warn(
-      'WARNING: no NEWS_INGESTER_DB_URL in apps/web/.env — the carousel will ship ' +
-        'without its Upcoming slides.',
-    );
-    return [];
-  }
-
-  try {
-    const rows = await fetchUpcoming({
-      connectionString: env.NEWS_INGESTER_DB_URL,
-      editionDate: date,
-      limit: UPCOMING_SLIDES * UPCOMING_PER_SLIDE + 4,
-    });
-    console.log(`Read ${rows.length} upcoming watch items for the carousel.`);
-    return rows;
-  } catch (err) {
-    console.warn(`WARNING: could not read the watch calendar (${err.message}).`);
-    return [];
-  }
-}
-
 function buildDeck({ body, headline }, date, events) {
-  // The lede's bolded sentence, which rides on the cover under the hed. Taken
-  // from the first story section rather than the first section outright, so a
-  // standing rubric at the top of an edition cannot supply it.
-  const lede = body
+  // Story sections, in order, rubrics dropped.
+  const stories = body
     .split(/\n(?=## )/)
-    .find(
-      (section) =>
-        stripInlineMd(section.match(/^## (.+)$/m)?.[1] ?? '').length > RUBRIC_MAX_CHARS,
-    );
-  const nut = lede ? nutSentence(lede) : '';
+    .map((section) => ({
+      headline: stripInlineMd(section.match(/^## (.+)$/m)?.[1] ?? ''),
+      nut: nutSentence(section),
+    }))
+    .filter((story) => story.headline.length > RUBRIC_MAX_CHARS);
+
+  // The lede's bolded sentence rides on the cover under the hed, and the lede
+  // therefore does not get a slide of its own — the hed was written off it, so
+  // that slide said the same thing twice. The beats are what comes after.
+  const nut = stories[0]?.nut ?? '';
+  const beats = stories.slice(1, 1 + CAROUSEL_BEATS);
 
   // The calendar is the payoff, so it goes in whole slides rather than as a
   // footnote: two dated entries a slide, up to UPCOMING_SLIDES of them.
@@ -615,7 +575,7 @@ function buildDeck({ body, headline }, date, events) {
     if (entries.length === UPCOMING_PER_SLIDE) upcoming.push({ entries });
   }
 
-  return { date, hed: headline, nut, upcoming };
+  return { date, hed: headline, nut, beats, upcoming };
 }
 
 // Calendar prose is written to explain, not to fit a card. Cut on a sentence
