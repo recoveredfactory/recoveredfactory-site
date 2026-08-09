@@ -77,7 +77,7 @@ const UPCOMING_SLIDES = 2;
 const UPCOMING_PER_SLIDE = 2;
 
 // Watch-item summaries are written to explain a rule, not to fit a card.
-const UPCOMING_MAX_CHARS = 240;
+const UPCOMING_MAX_CHARS = 300;
 
 const args = new Set(process.argv.slice(2));
 const offline = args.has('--offline');

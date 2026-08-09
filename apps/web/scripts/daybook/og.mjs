@@ -337,33 +337,42 @@ const PORTRAIT_SIZE = '1080x1350';
 // Portrait gives about 900px of usable width and 1150 of height. These steps
 // were set against the first week of real editions, whose headlines run 27 to
 // 125 characters and whose nut sentences run 120 to 320.
+//
+// Sized for a phone held at arm's length, not for a 1080px PNG on a desktop
+// monitor — which is how the first pass got set, and why it read small on the
+// only screen that matters.
 const coverHedSize = (text) => {
   const n = text.length;
-  if (n <= 40) return 88;
-  if (n <= 70) return 74;
-  if (n <= 100) return 62;
-  if (n <= 140) return 52;
-  return 44;
+  if (n <= 40) return 104;
+  if (n <= 70) return 88;
+  if (n <= 100) return 74;
+  if (n <= 140) return 60;
+  return 50;
 };
 
 const beatHedSize = (text) => {
   const n = text.length;
-  if (n <= 50) return 60;
-  if (n <= 90) return 50;
-  if (n <= 130) return 42;
-  return 36;
+  if (n <= 50) return 72;
+  if (n <= 90) return 62;
+  if (n <= 130) return 52;
+  return 44;
 };
 
 const nutSize = (text) => {
   const n = text.length;
-  if (n <= 140) return 34;
-  if (n <= 220) return 30;
-  if (n <= 320) return 27;
-  return 24;
+  if (n <= 140) return 40;
+  if (n <= 220) return 36;
+  if (n <= 320) return 32;
+  return 29;
 };
 
 // Shared chrome: the wordmark sits top-left on every slide and the strip runs
 // along the bottom, so a slide saved out of context still says what it is.
+// "7 de agosto de 2026" is twice the width of "Aug. 7, 2026", and a slide index
+// ("2/3") is shorter still. The wordmark has first claim on the row, so the
+// kicker sizes to whatever is left.
+const kickerSize = (text) => (text.length <= 8 ? 29 : text.length <= 16 ? 26 : 22);
+
 const portraitFrame = (body, { footer = '', kicker = '' }) => `
   <header class="chrome">
     <p class="lockup">Immigration Daybook</p>
@@ -372,7 +381,7 @@ const portraitFrame = (body, { footer = '', kicker = '' }) => `
   <div class="stage">${body}</div>
   <footer class="strip">${footer}</footer>`;
 
-const PORTRAIT_CSS = `
+const portraitCss = (kicker) => `
   body { justify-content: flex-start; }
   .chrome {
     display: flex;
@@ -382,32 +391,36 @@ const PORTRAIT_CSS = `
     padding-bottom: 26px;
     border-bottom: 4px solid ${CRIMSON};
   }
+  /* The wordmark never breaks. At this size a long Spanish date in the kicker
+     was enough to wrap it to two lines, which reads as a broken masthead — so
+     the wordmark holds and the kicker gives way instead (see kickerSize). */
   .lockup {
     font-family: "Jost", sans-serif;
-    font-size: 30px;
+    font-size: 34px;
     font-weight: 700;
     letter-spacing: 0.13em;
     text-transform: uppercase;
+    white-space: nowrap;
     color: ${CRIMSON};
   }
   .kicker {
     font-family: "Jost", sans-serif;
-    font-size: 26px;
+    font-size: ${kickerSize(kicker)}px;
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: rgba(243, 241, 233, 0.62);
     white-space: nowrap;
   }
-  /* Content sits on the strip rather than floating mid-frame. Anchoring to the
-     bottom means a one-line beat and a five-line one start at different heights
-     but end at the same one, so the deck holds its line across a swipe instead
-     of jumping about as the copy length changes. */
+  /* Top-anchored, under the masthead rule. The bottom of a feed image is where
+     the app's own furniture lands, so anything put down there is being handed to
+     the caption row and the action buttons. Every slide therefore starts at the
+     same height and grows downward into the space that is cheapest to lose. */
   .stage {
     flex: 1;
     display: flex;
     flex-direction: column;
-    justify-content: flex-end;
+    justify-content: flex-start;
     min-height: 0;
     padding: 56px 0 12px;
   }
@@ -433,7 +446,7 @@ const PORTRAIT_CSS = `
     padding-top: 26px;
     border-top: 3px solid rgba(243, 241, 233, 0.22);
     font-family: "Jost", sans-serif;
-    font-size: 25px;
+    font-size: 27px;
     font-weight: 600;
     letter-spacing: 0.13em;
     text-transform: uppercase;
@@ -442,7 +455,7 @@ const PORTRAIT_CSS = `
 
 const coverSlide = ({ hed, date, terms }) =>
   shell(
-    PORTRAIT_CSS + `\n  .hed { font-size: ${coverHedSize(hed)}px; }`,
+    portraitCss(date) + `\n  .hed { font-size: ${coverHedSize(hed)}px; }`,
     portraitFrame(`<h1 class="hed">${escapeHtml(hed)}</h1>`, {
       kicker: date,
       // The domain and the bilingual fact. All three terms would overrun the
@@ -455,7 +468,7 @@ const coverSlide = ({ hed, date, terms }) =>
 
 const beatSlide = ({ headline, nut, index, total }) =>
   shell(
-    PORTRAIT_CSS +
+    portraitCss(`${index}/${total}`) +
       `\n  .hed { font-size: ${beatHedSize(headline)}px; }` +
       (nut ? `\n  .nut { font-size: ${nutSize(nut)}px; }` : ''),
     portraitFrame(
@@ -481,37 +494,34 @@ const UPCOMING_LABEL = { en: 'What’s coming', es: 'Lo que viene' };
 // trim in pull.mjs.
 const entryTextSize = (text) => {
   const n = text.length;
-  if (n <= 120) return 31;
-  if (n <= 180) return 28;
-  return 25;
+  if (n <= 140) return 38;
+  if (n <= 220) return 34;
+  return 31;
 };
 
 const upcomingSlide = ({ entries, lang }) =>
   shell(
-    PORTRAIT_CSS +
+    portraitCss(UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en) +
       `
-  /* Centred rather than bottom-anchored like the prose slides: two entries do
-     not fill the frame, and hanging them off the strip leaves the whole top
-     half empty instead of splitting the space either side of them. */
-  .stage { justify-content: center; gap: 56px; }
+  .stage { gap: 58px; }
   .entry { display: flex; gap: 30px; align-items: flex-start; }
   /* Fixed width so the prose of every entry starts on the same left edge —
      a ragged text column is the fastest way to make a list look unconsidered. */
   .chip {
-    flex: 0 0 132px;
+    flex: 0 0 148px;
     border-top: 4px solid ${CRIMSON};
     padding-top: 14px;
   }
   .chip .month {
     font-family: "Jost", sans-serif;
-    font-size: 27px;
+    font-size: 30px;
     font-weight: 700;
     letter-spacing: 0.14em;
     color: ${CRIMSON};
   }
   .chip .day {
     font-family: "Lora", serif;
-    font-size: 72px;
+    font-size: 84px;
     font-weight: 600;
     line-height: 1;
     letter-spacing: -0.03em;
@@ -547,10 +557,10 @@ const upcomingSlide = ({ entries, lang }) =>
 
 const closingSlide = ({ call, url, terms }) =>
   shell(
-    PORTRAIT_CSS + `\n  .hed { font-size: ${coverHedSize(call)}px; }
+    portraitCss('') + `\n  .hed { font-size: ${coverHedSize(call)}px; }
   .url {
     font-family: "Jost", sans-serif;
-    font-size: 40px;
+    font-size: 46px;
     font-weight: 600;
     letter-spacing: 0.04em;
     color: ${CRIMSON};
