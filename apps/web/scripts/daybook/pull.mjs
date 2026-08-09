@@ -30,7 +30,8 @@ import { readFileSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { fetchUpcoming, toCalendarEntry } from './watch.mjs';
+import { fetchUpcoming, toCalendarEntry as toEntryFromDb } from './watch.mjs';
+import { loadUpcoming, upcomingItems, toCalendarEntry as toEntryFromSnapshot } from './upcoming.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(here, '..', '..');
@@ -189,13 +190,41 @@ if (manifest.url_parity === false) {
   console.warn(`WARNING: ${editionDate} has url_parity=false — EN and ES cite different sources.`);
 }
 
-// The calendar is fetched once and shaped per language, because both languages
-// are columns on the same watch item — two queries would be the same rows twice.
-// Enough rows for the deck plus slack, since an item with no Spanish summary
-// drops out of the ES deck and the next one takes its place.
+// The calendar, from two sources for now — and that is temporary.
+//
+// English comes from the archived upcoming_json snapshot, which carries the
+// composer's own selection. Spanish cannot yet: the artifact is English-only
+// (no `_es` field, and `summary_preference` names English columns), while the
+// database has plain_summary_es sitting on the very rows the artifact is built
+// from. So ES still reads the database and still picks by nearest deadline,
+// which means the two languages can show different entries on the same day.
+//
+// That is the divergence this snapshot exists to end, and it closes the moment
+// upcoming_json emits the Spanish summary: delete loadWatchItems, watch.mjs and
+// the `pg` dependency, and point both languages at the snapshot.
+const snapshot = await loadUpcoming({
+  webRoot,
+  url,
+  key,
+  date: editionDate,
+  offline,
+});
+const snapshotItems = upcomingItems(snapshot);
+if (snapshotItems.length) {
+  const mode = snapshot?.selection?.mode ?? 'unknown';
+  console.log(`Upcoming: ${snapshotItems.length} items from the snapshot (selection.mode=${mode}).`);
+}
+
+// Still loaded even when the snapshot covers English, because Spanish has
+// nowhere else to read from yet.
 const watchItems = await loadWatchItems(editionDate);
-const calendarFor = (lang) =>
-  watchItems.map((row) => toCalendarEntry(row, lang)).filter(Boolean);
+
+const calendarFor = (lang) => {
+  if (lang === 'en' && snapshotItems.length) {
+    return snapshotItems.map((item) => toEntryFromSnapshot(item, lang, snapshot)).filter(Boolean);
+  }
+  return watchItems.map((row) => toEntryFromDb(row, lang)).filter(Boolean);
+};
 
 let wrote = 0;
 const decks = {};
