@@ -350,14 +350,6 @@ const coverHedSize = (text) => {
   return 50;
 };
 
-const beatHedSize = (text) => {
-  const n = text.length;
-  if (n <= 50) return 72;
-  if (n <= 90) return 62;
-  if (n <= 130) return 52;
-  return 44;
-};
-
 const nutSize = (text) => {
   const n = text.length;
   if (n <= 140) return 40;
@@ -453,30 +445,30 @@ const portraitCss = (kicker) => `
     color: rgba(243, 241, 233, 0.62);
   }`;
 
-const coverSlide = ({ hed, date, terms }) =>
+// The cover carries the hed and the lede's supporting sentence together.
+//
+// They used to be two slides — hed on the cover, then the lede headline and its
+// nut — which told the same story twice before anyone reached the dates. The
+// hed and the nut are complementary rather than repetitive (one is the claim,
+// the other the evidence for it), so they belong on one card, and the deck gets
+// to its payoff a slide sooner.
+//
+// The hed steps down a size when a nut rides with it: at full display size the
+// two compete instead of ranking.
+const coverSlide = ({ hed, nut, date, terms }) =>
   shell(
-    portraitCss(date) + `\n  .hed { font-size: ${coverHedSize(hed)}px; }`,
-    portraitFrame(`<h1 class="hed">${escapeHtml(hed)}</h1>`, {
-      kicker: date,
-      // The domain and the bilingual fact. All three terms would overrun the
-      // strip at this size, and "which languages" is the one that earns its
-      // place on a cover shown to people who have never seen the thing.
-      footer: `<span>${HOME_URL}</span><span>${escapeHtml(terms[terms.length - 1])}</span>`,
-    }),
-    PORTRAIT,
-  );
-
-const beatSlide = ({ headline, nut, index, total }) =>
-  shell(
-    portraitCss(`${index}/${total}`) +
-      `\n  .hed { font-size: ${beatHedSize(headline)}px; }` +
+    portraitCss(date) +
+      `\n  .hed { font-size: ${nut ? Math.round(coverHedSize(hed) * 0.82) : coverHedSize(hed)}px; }` +
       (nut ? `\n  .nut { font-size: ${nutSize(nut)}px; }` : ''),
     portraitFrame(
-      `<h2 class="hed">${escapeHtml(headline)}</h2>` +
+      `<h1 class="hed">${escapeHtml(hed)}</h1>` +
         (nut ? `<p class="nut">${escapeHtml(nut)}</p>` : ''),
       {
-        kicker: `${index}/${total}`,
-        footer: `<span>${HOME_URL}</span>`,
+        kicker: date,
+        // The domain and the bilingual fact. All three terms would overrun the
+        // strip at this size, and "which languages" is the one that earns its
+        // place on a cover shown to people who have never seen the thing.
+        footer: `<span>${HOME_URL}</span><span>${escapeHtml(terms[terms.length - 1])}</span>`,
       },
     ),
     PORTRAIT,
@@ -592,26 +584,19 @@ const carouselSlides = (lang) => {
   if (!deck) return null;
 
   const terms = LANDING[lang].facts;
-  const beats = deck.beats ?? [];
   const upcoming = deck.upcoming ?? [];
   const dir = `social/${deck.date}/${lang}`;
 
-  // Cover, story, calendar, terms — in that order because the headline is what
-  // stops the scroll and the dates are what earn the follow. A deck that puts
-  // the payoff last is a deck most people never reach the payoff of.
+  // Cover, calendar, terms. The headline stops the scroll and the dates earn
+  // the follow, so there is nothing in between: a deck that puts the payoff
+  // last is a deck most people never reach the payoff of.
   const slides = [
-    coverSlide({ hed: deck.hed, date: formatCardDate(deck.date, lang), terms }),
-    ...beats.map((beat, i) => beatSlide({ ...beat, index: i + 1, total: beats.length })),
+    coverSlide({ hed: deck.hed, nut: deck.nut, date: formatCardDate(deck.date, lang), terms }),
     ...upcoming.map((slide) => upcomingSlide({ entries: slide.entries, lang })),
     closingSlide({ ...CLOSING[lang], terms }),
   ];
 
-  const names = [
-    'cover',
-    ...beats.map(() => 'story'),
-    ...upcoming.map(() => 'upcoming'),
-    'subscribe',
-  ];
+  const names = ['cover', ...upcoming.map(() => 'upcoming'), 'subscribe'];
 
   return slides.map((html, i) => ({
     file: `${dir}/${String(i + 1).padStart(2, '0')}-${names[i]}.png`,

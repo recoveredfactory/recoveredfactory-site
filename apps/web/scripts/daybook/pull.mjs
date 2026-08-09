@@ -64,10 +64,10 @@ const RUBRIC_MAX_CHARS = 35;
 
 // Carousel tuning, up here for the same dead-zone reason as the dek settings.
 //
-// One story beat, not three. The headline is the hook and the calendar is the
-// payoff — three more headlines is more of the hook and none of the payoff. That
-// makes a five-slide deck: cover, one story, two calendar slides, the terms.
-const CAROUSEL_BEATS = 1;
+// Four slides: cover, two calendar slides, the terms. There is no story slide —
+// the hed and the lede's nut sentence share the cover, and a separate slide for
+// the lede headline said the same thing a second time before anyone reached the
+// dates.
 
 // A nut sentence longer than this is one nobody reads off a phone.
 const NUT_MAX_CHARS = 320;
@@ -590,14 +590,16 @@ async function loadWatchItems(date) {
 }
 
 function buildDeck({ body, headline }, date, events) {
-  const beats = body
+  // The lede's bolded sentence, which rides on the cover under the hed. Taken
+  // from the first story section rather than the first section outright, so a
+  // standing rubric at the top of an edition cannot supply it.
+  const lede = body
     .split(/\n(?=## )/)
-    .map((section) => ({
-      headline: stripInlineMd(section.match(/^## (.+)$/m)?.[1] ?? ''),
-      nut: nutSentence(section),
-    }))
-    .filter((beat) => beat.headline.length > RUBRIC_MAX_CHARS)
-    .slice(0, CAROUSEL_BEATS);
+    .find(
+      (section) =>
+        stripInlineMd(section.match(/^## (.+)$/m)?.[1] ?? '').length > RUBRIC_MAX_CHARS,
+    );
+  const nut = lede ? nutSentence(lede) : '';
 
   // The calendar is the payoff, so it goes in whole slides rather than as a
   // footnote: two dated entries a slide, up to UPCOMING_SLIDES of them.
@@ -613,7 +615,7 @@ function buildDeck({ body, headline }, date, events) {
     if (entries.length === UPCOMING_PER_SLIDE) upcoming.push({ entries });
   }
 
-  return { date, hed: headline, beats, upcoming };
+  return { date, hed: headline, nut, upcoming };
 }
 
 // Calendar prose is written to explain, not to fit a card. Cut on a sentence
