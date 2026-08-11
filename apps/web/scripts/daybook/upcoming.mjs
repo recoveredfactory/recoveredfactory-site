@@ -123,6 +123,14 @@ export function upcomingItems(doc, lang = 'en') {
  * Spanish summary shows the English one rather than vanishing from the deck.
  * That is the composer's call to make, not this script's, so it is followed
  * rather than second-guessed.
+ *
+ * Beyond the date and the summary the entry carries the two facts the snapshot
+ * holds that survive translation: the weekday, and the publisher standing
+ * behind the date. `status` was a third — 'Comments open' off
+ * `comment_period_open` — and came back off the card: it needed a label nobody
+ * wrote, in two languages, for a vocabulary of one known value. `theme` is out
+ * for the same kind of reason: it exists in English only ('Naturalization Fees
+ * — Rulemaking'), and an English rubric over Spanish prose is worse than none.
  */
 export function toCalendarEntry(item, lang, doc) {
   const preference =
@@ -139,8 +147,21 @@ export function toCalendarEntry(item, lang, doc) {
     iso: item.key_date,
     month: MONTH_LABEL[lang][date.getUTCMonth()],
     day: String(date.getUTCDate()),
+    weekday: weekdayLabel(date, lang),
+    publisher: (item.publisher ?? '').trim(),
     text: text.trim(),
   };
+}
+
+/** 'MON' / 'LUN'. Intl gives 'lun.' in Spanish; the period is furniture here. */
+function weekdayLabel(date, lang) {
+  return new Intl.DateTimeFormat(lang === 'es' ? 'es-ES' : 'en-US', {
+    weekday: 'short',
+    timeZone: 'UTC',
+  })
+    .format(date)
+    .replace(/\.$/, '')
+    .toUpperCase();
 }
 
 // Only reached if the policy block goes missing, which would mean the artifact

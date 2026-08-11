@@ -72,6 +72,67 @@ const CAROUSEL_BEATS = 2;
 // A nut sentence longer than this is one nobody reads off a phone.
 const NUT_MAX_CHARS = 320;
 
+// The supporting sentence that rides under the nut on a story slide. The nut is
+// the claim; this is the first thing the edition offers in support of it, and
+// without it a slide is a headline and a restatement of the headline.
+//
+// Budgeted against Spanish, which runs 20-30% longer than the English it is
+// translated from. The slide scales its own type to fill the frame, so a long
+// one costs a size step rather than an overflow — but past this the step is one
+// nobody reads at arm's length.
+const DETAIL_MAX_CHARS = 280;
+
+// Publications credited on a story slide. Beyond three the credit line stops
+// reading as attribution and starts reading as a list, and the fourth name is
+// always the one nobody has heard of.
+const CAROUSEL_SOURCES = 3;
+
+// When the bolded claim only says the headline again.
+//
+// The automation writes a compressed lead for every section, and on a section
+// whose headline is already specific that lead can come out as the headline in
+// longer words — "Trump signs birthright-citizenship and birth-tourism orders",
+// then "President Trump signed two immigration executive orders on Aug. 6." Two
+// tiers of a slide saying one thing, and the actual news (what the two orders
+// do) pushed off the card.
+//
+// So a claim that is both short and largely built from the headline's own words
+// is dropped, and the sentences under it move up a tier. Both conditions have
+// to hold: a long claim carries specifics whatever it shares with the headline
+// — the TPS lead repeats "TPS" and "Haitians" and then gives a date, a court
+// and an outcome — and a short claim with fresh words is a real second beat.
+//
+// This edits the edition rather than copying it, which is a bigger licence than
+// the rest of this file takes. It is bounded to dropping a sentence the
+// headline has already made, it says so on the console when it fires, and no
+// deck posts without someone looking at it.
+const RESTATEMENT_MAX_CHARS = 100;
+const RESTATEMENT_OVERLAP = 0.3;
+
+// A promoted sentence is prose written to run under a claim, not to be one, so
+// it gets a tighter budget than a claim written for the job.
+const PROMOTED_NUT_MAX = 240;
+
+// Not a linguistic stoplist — just the words common enough on both sides to
+// make an overlap ratio meaningless. English and Spanish together, because the
+// test runs on whichever language the edition was written in.
+const STOPWORDS = new Set(
+  ('the and for that with from has have had its are was were will would this these those but not '
+    + 'который los las del por con que una unos unas sus son han fue este esta estas estos como para '
+    + 'sobre entre mientras donde their there they them then than also into over under after before '
+    + 'been being more most some such only other another where which while about')
+    .split(/\s+/)
+    .filter(Boolean),
+);
+
+// Abbreviations that end in a period without ending a sentence. Three-letter
+// capitals are deliberately absent: a sentence ending in ICE, DHS or ORR is far
+// commoner in this corpus than one that does not.
+const ABBREVIATIONS = new Set(
+  ('mr mrs ms dr sr sra st no inc rep sen gov vs jan feb mar apr aug sept sep oct nov dec')
+    .split(' '),
+);
+
 // Two dated entries a slide, two slides. Four deadlines is a useful number to
 // screenshot; eight is a document.
 const UPCOMING_SLIDES = 2;
@@ -216,6 +277,15 @@ const calendarFor = (lang) =>
 
 let wrote = 0;
 const decks = {};
+
+// Which stories had their claim dropped as a restatement, decided once and
+// carried across languages. The Spanish edition is built in parallel from the
+// English draft, section for section, so a per-language decision would let the
+// same edition come out as two differently shaped decks — and a test run on a
+// translation is a test run on different words. English decides; Spanish
+// follows.
+let deckShape = null;
+
 for (const lang of LANGS) {
   const md = artifact(`daybook_final_${lang}_md`);
   if (!md?.data) {
@@ -251,7 +321,9 @@ for (const lang of LANGS) {
   const html = await fetchEmailHtml(lang);
   const sanitized = html ? sanitizeEmailHtml(html) : '';
 
-  decks[lang] = buildDeck(edition, editionDate, calendarFor(lang));
+  const built = buildDeck(edition, editionDate, calendarFor(lang), deckShape, lang);
+  decks[lang] = built.deck;
+  deckShape = built.shape;
 
   writeFileSync(path, serializeEdition(edition, lang, editionDate, socialImage));
   console.log(
@@ -541,24 +613,38 @@ function renderEditionCard(lang, date, headline) {
  *
  * Everything here is the edition's own copy, re-cut for a 4:5 frame: the hed
  * (including a hand-set one, since this runs after the overrides), then a slide
- * per story section carrying its headline and the bolded sentence underneath —
- * which is the automation's own one-line version of that story, so the slide
- * says what the section says.
+ * per story section carrying its headline, the bolded sentence underneath, the
+ * sentence that follows it, and the publications credited at the end of that
+ * paragraph — all of it the automation's own copy, so the slide says what the
+ * section says.
  */
-function buildDeck({ body, headline }, date, events) {
+function buildDeck({ body, headline }, date, events, shape, lang) {
   // Story sections, in order, rubrics dropped.
-  const stories = body
+  const raw = body
     .split(/\n(?=## )/)
-    .map((section) => ({
-      headline: stripInlineMd(section.match(/^## (.+)$/m)?.[1] ?? ''),
-      nut: nutSentence(section),
-    }))
+    .map(readStory)
     .filter((story) => story.headline.length > RUBRIC_MAX_CHARS);
 
-  // The lede's bolded sentence rides on the cover under the hed, and the lede
-  // therefore does not get a slide of its own — the hed was written off it, so
-  // that slide said the same thing twice. The beats are what comes after.
-  const nut = stories[0]?.nut ?? '';
+  // The hed on the cover is the deck's hed, which may be hand-set and is what a
+  // reader actually sees; the beats are tested against their own headlines.
+  const decided =
+    shape?.length === raw.length
+      ? shape
+      : raw.map((story, i) => restatesHeadline(story.claim, i === 0 ? headline : story.headline));
+
+  if (shape && shape.length !== raw.length) {
+    console.warn(
+      `WARNING: ${date} ${lang}: ${raw.length} story sections where the first language had ` +
+        `${shape.length}. Deciding this deck's shape on its own copy — check the two decks match.`,
+    );
+  }
+
+  const stories = raw.map((story, i) => shapeStory(story, decided[i], date, lang));
+
+  // The lede rides on the cover under the hed and gets no slide of its own —
+  // the hed was written off it, so that slide said the same thing twice. The
+  // beats are what comes after.
+  const { nut = '', detail = '', sources = [] } = stories[0] ?? {};
   const beats = stories.slice(1, 1 + CAROUSEL_BEATS);
 
   // The calendar is the payoff, so it goes in whole slides rather than as a
@@ -575,7 +661,176 @@ function buildDeck({ body, headline }, date, events) {
     if (entries.length === UPCOMING_PER_SLIDE) upcoming.push({ entries });
   }
 
-  return { date, hed: headline, nut, beats, upcoming };
+  return {
+    deck: { date, hed: headline, nut, detail, sources, beats, upcoming },
+    shape: decided,
+  };
+}
+
+/**
+ * One story section, read but not yet cut.
+ *
+ * Everything comes off the section's lead paragraph, which is where the
+ * automation puts the compressed version of the story: a bolded claim, the
+ * prose that supports it, and the links it was built from.
+ */
+function readStory(section) {
+  const headline = stripInlineMd(section.match(/^## (.+)$/m)?.[1] ?? '');
+  const { prose, sources } = splitCredits(leadParagraph(section));
+
+  return {
+    headline,
+    claim: stripInlineMd(prose.match(/\*\*(?!\s)([^*]+?)\*\*/)?.[1] ?? ''),
+    rest: stripInlineMd(prose.replace(/^[\s\S]*?\*\*(?!\s)[^*]+?\*\*/, '')),
+    sources: sources.slice(0, CAROUSEL_SOURCES),
+  };
+}
+
+/**
+ * Cut a story into the slide's two tiers: the claim, and what supports it.
+ *
+ * Normally those are the bolded lead and the prose under it, straight off the
+ * edition. When `promote` is set the claim only said the headline again, so it
+ * comes off and everything moves up — the first sentence under it becomes the
+ * claim, and the rest becomes the support. See RESTATEMENT_MAX_CHARS.
+ */
+function shapeStory({ headline, claim, rest, sources }, promote, date, lang) {
+  if (!promote) {
+    return {
+      headline,
+      nut: trimToClause(claim, NUT_MAX_CHARS),
+      detail: trimToClause(rest, DETAIL_MAX_CHARS),
+      sources,
+    };
+  }
+
+  const [first = '', ...others] = splitSentences(rest);
+  console.log(`${date} ${lang}: "${headline}" — dropped a claim the headline already made.`);
+
+  return {
+    headline,
+    nut: trimToClause(first, PROMOTED_NUT_MAX),
+    detail: trimToClause(others.join(' '), DETAIL_MAX_CHARS),
+    sources,
+  };
+}
+
+/**
+ * Is this claim just the headline again?
+ *
+ * Content words on both sides, accents folded and a crude suffix stripped so
+ * "signs" and "signed" match "sign". A short claim mostly built from the
+ * headline's own words is a restatement; a long one is carrying specifics
+ * whatever it shares. See RESTATEMENT_MAX_CHARS for why both tests.
+ */
+function restatesHeadline(claim, headline) {
+  if (!claim || claim.length > RESTATEMENT_MAX_CHARS) return false;
+
+  const words = contentWords(claim);
+  if (!words.length) return false;
+
+  const inHeadline = new Set(contentWords(headline));
+  const shared = words.filter((word) => inHeadline.has(word)).length;
+  return shared / words.length >= RESTATEMENT_OVERLAP;
+}
+
+function contentWords(text) {
+  return text
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .split(/[^a-z0-9]+/)
+    .filter((word) => word.length > 2 && !STOPWORDS.has(word))
+    .map((word) => word.replace(/(ing|ed|es|s)$/, ''));
+}
+
+/**
+ * Split prose into sentences, without breaking on abbreviations.
+ *
+ * A period only ends a sentence when what follows is capitalised, and when the
+ * token before it is not an abbreviation. Both halves earn their keep in this
+ * corpus: "Aug. 6" is saved by the capital test (a digit follows), and the
+ * Spanish "de EE. UU. donde" by the abbreviation one. Three-letter capitals are
+ * deliberately NOT treated as abbreviations — a sentence ending in ICE, DHS or
+ * ORR is far commoner here than one that does not.
+ */
+function splitSentences(text) {
+  const boundary = /([.?!])\s+(?=[“"'(\[]?\p{Lu})/gu;
+  const out = [];
+  let start = 0;
+
+  for (const match of text.matchAll(boundary)) {
+    const token = text.slice(start, match.index).match(/([\p{L}.]+)$/u)?.[1] ?? '';
+    const bare = token.toLowerCase().replace(/\.$/, '');
+    if (ABBREVIATIONS.has(bare) || /^\p{Lu}{1,2}$/u.test(token)) continue;
+
+    out.push(text.slice(start, match.index + 1).trim());
+    start = match.index + match[0].length;
+  }
+
+  const tail = text.slice(start).trim();
+  if (tail) out.push(tail);
+  return out;
+}
+
+
+// The section's lead paragraph: the first one carrying a bolded claim. Sections
+// open with it, but the Spanish editions sometimes carry a translator's note
+// above it, and a rubric section opens with a list.
+function leadParagraph(section) {
+  return (
+    section
+      .replace(/^## .+$/m, '')
+      .split('\n\n')
+      .map((p) => p.trim())
+      .find((p) => /\*\*(?!\s)[^*]+?\*\*/.test(p)) ?? ''
+  );
+}
+
+/**
+ * Split a paragraph into its prose and the publications credited at the end.
+ *
+ * Editions credit sources as a run of links after the final sentence —
+ * `… reduce backlogs. [Axios](…), [USCIS](…)`. Only that trailing run counts:
+ * links inside a sentence are part of the prose ("The [citizenship order](…)
+ * requires guidance within 30 days"), and reading those as credits would put
+ * half a sentence in the credit line.
+ *
+ * The run is allowed to close with a period, because roughly half of them do —
+ * `[Newsweek](…), [Bloomberg Law](…).` — and an anchored match without it read
+ * that whole edition as having no sources at all. The period belongs to the
+ * citation list rather than to the prose, so it goes out with the credits.
+ */
+function splitCredits(paragraph) {
+  const tail = paragraph.match(/((?:\[[^\]]+\]\([^)]*\)(?:\s*,\s*)?)+)\s*\.?\s*$/);
+  if (!tail) return { prose: paragraph, sources: [] };
+
+  const sources = [...tail[1].matchAll(/\[([^\]]+)\]\([^)]*\)/g)].map((m) => stripInlineMd(m[1]));
+  return { prose: paragraph.slice(0, tail.index).trim(), sources };
+}
+
+/**
+ * Trim prose to a budget without leaving it mid-thought.
+ *
+ * A whole sentence where one lands near the budget; a whole clause where none
+ * does — which is the usual case, because the sentence under a claim is often a
+ * single long one carrying a list. An ellipsis after "…births in US territories
+ * or" strands half that list and reads as software that ran out of room; one
+ * after the item before it reads as a card that stopped, which is the truth.
+ * Word-break is the last resort, for prose with no clause marks at all.
+ */
+function trimToClause(text, max) {
+  if (!text) return '';
+  if (text.length <= max) return text;
+
+  const cut = text.slice(0, max);
+
+  const sentence = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('? '), cut.lastIndexOf('! '));
+  if (sentence > max * 0.45) return cut.slice(0, sentence + 1);
+
+  const clause = Math.max(cut.lastIndexOf(', '), cut.lastIndexOf('; '), cut.lastIndexOf(' — '));
+  const at = clause > max * 0.5 ? clause : cut.lastIndexOf(' ');
+  return `${cut.slice(0, at).replace(/[\s,;:—–-]+$/, '')}…`;
 }
 
 // Calendar prose is written to explain, not to fit a card. Cut on a sentence
@@ -589,20 +844,6 @@ function trimToSentence(text, max) {
 
   const space = cut.lastIndexOf(' ');
   return `${(space > 0 ? cut.slice(0, space) : cut).replace(/[\s,;:—–-]+$/, '')}…`;
-}
-
-// The bolded lead of a section: the automation writes one at the top of each
-// story, and it is already the compressed version. Nothing is paraphrased here.
-function nutSentence(section) {
-  const bold = section.match(/\*\*(?!\s)([^*]+?)\*\*/)?.[1];
-  if (!bold) return '';
-
-  const nut = stripInlineMd(bold);
-  if (nut.length <= NUT_MAX_CHARS) return nut;
-
-  const cut = nut.slice(0, NUT_MAX_CHARS);
-  const stop = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('? '), cut.lastIndexOf('! '));
-  return stop > 120 ? cut.slice(0, stop + 1) : `${cut.slice(0, cut.lastIndexOf(' '))}…`;
 }
 
 /**

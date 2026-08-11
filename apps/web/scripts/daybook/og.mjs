@@ -334,6 +334,80 @@ const editionCopy = (lang) => {
 const PORTRAIT = { width: 1080, height: 1350, padding: '92px 84px' };
 const PORTRAIT_SIZE = '1080x1350';
 
+
+// ── Filling the frame ─────────────────────────────────────────────────────
+// Every type size on a portrait slide is `calc(var(--fit) * Npx)`, and the
+// script below searches for the largest --fit whose content still fits the
+// stage. One multiplier scales a whole slide, line wrapping included, so the
+// search is monotonic and a binary one lands in a dozen steps.
+//
+// This exists because stepping type by character count can only ever be
+// conservative: the step that keeps a 140-character headline inside the frame
+// is the step a 60-character one also gets, and the difference came out as dead
+// space — better than half the card on the editions this was set against. The
+// step functions below still set the *ratio* between a hed and the prose under
+// it, which is a typographic judgement and not something a fitter can make.
+// They are now a starting point rather than a final size.
+//
+// The bounds are the honest limits of that judgement. Below FIT_MIN the prose
+// is too small to read on a phone, so an overlong slide is clipped instead —
+// which is loud, and meant to be: it is a copy problem, not a layout one. Above
+// FIT_MAX a thin slide starts shouting, and a headline set at poster size to
+// use up space reads as having nothing to say.
+const FIT_MIN = 0.62;
+const FIT_MAX = 1.34;
+
+const fitpx = (n) => `calc(var(--fit) * ${n}px)`;
+
+// Runs before the screenshot: Chrome's virtual clock does not advance past the
+// screenshot until the page is quiet, so the await and the layout reads here
+// resolve first. Fonts are awaited because a fit measured in the fallback face
+// is a fit for the wrong metrics.
+const FIT_SCRIPT = `
+<script>
+  (async () => {
+    if (document.fonts) {
+      try { await document.fonts.ready; } catch (err) {}
+    }
+
+    const root = document.documentElement;
+    const stage = document.querySelector('.stage');
+    if (!stage || !stage.firstElementChild) return;
+
+    // Padding is deliberately not scaled — it is the slide's margin against the
+    // masthead and the bottom of the card, and it should not breathe with the type.
+    const room = () => {
+      const style = getComputedStyle(stage);
+      return (
+        stage.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom)
+      );
+    };
+
+    // Measured off rendered geometry rather than scrollHeight, which drops a
+    // last child's margin and a container's bottom padding.
+    const used = () =>
+      stage.lastElementChild.getBoundingClientRect().bottom -
+      stage.firstElementChild.getBoundingClientRect().top;
+
+    const fits = (k) => {
+      root.style.setProperty('--fit', String(k));
+      return used() <= room();
+    };
+
+    if (!fits(${FIT_MIN})) return;
+    if (fits(${FIT_MAX})) return;
+
+    let lo = ${FIT_MIN};
+    let hi = ${FIT_MAX};
+    for (let i = 0; i < 16; i += 1) {
+      const mid = (lo + hi) / 2;
+      if (fits(mid)) lo = mid;
+      else hi = mid;
+    }
+    fits(lo);
+  })();
+</script>`;
+
 // Portrait gives about 900px of usable width and 1150 of height. These steps
 // were set against the first week of real editions, whose headlines run 27 to
 // 125 characters and whose nut sentences run 120 to 320.
@@ -366,34 +440,55 @@ const nutSize = (text) => {
   return 29;
 };
 
-// Shared chrome: the wordmark sits top-left on every slide and the strip runs
-// along the bottom, so a slide saved out of context still says what it is.
-// "7 de agosto de 2026" is twice the width of "Aug. 7, 2026", and a slide index
-// ("2/3") is shorter still. The wordmark has first claim on the row, so the
-// kicker sizes to whatever is left.
-const kickerSize = (text) => (text.length <= 8 ? 29 : text.length <= 16 ? 26 : 22);
+// Shared chrome: wordmark and date on one line at the top, the domain centred
+// at the foot. Three fixed points, and everything between them is the slide.
+//
+// Every slide is dated, not just the cover — a slide screenshotted out of a
+// deck travels alone, and one about a system that changes weekly needs to say
+// when it was true. "7 de agosto de 2026" is half again the width of "Aug. 7,
+// 2026", and the wordmark has first claim on the line: it must never break to
+// two, which reads as a broken masthead, so the date sizes to what is left.
+const dateSize = (text) => (text.length <= 8 ? 29 : text.length <= 16 ? 26 : 22);
 
-const portraitFrame = (body, { footer = '', kicker = '' }) => `
-  <header class="chrome">
+const portraitFrame = (body, { date = '', site = true }) => `
+  <header class="masthead">
     <p class="lockup">Immigration Daybook</p>
-    ${kicker ? `<p class="kicker">${kicker}</p>` : ''}
+    ${date ? `<p class="date">${escapeHtml(date)}</p>` : ''}
   </header>
   <div class="stage">${body}</div>
-  <footer class="strip">${footer}</footer>`;
+  ${site ? `<footer class="site">${HOME_URL}</footer>` : ''}
+${FIT_SCRIPT}`;
 
-const portraitCss = (kicker) => `
+// The publications a story slide was built from, named under a hairline.
+//
+// Not favicons. They arrive at 16-32px and would have to be blown up four times
+// to sit beside 40px type; fetching them at render time makes the deck depend
+// on a dozen third-party servers being up, and the failure is silent, which is
+// the one thing a card must never be. And a row of brand-coloured squares
+// across an ink-and-crimson card reads as an aggregator's link farm. The names
+// are the thing the favicon was standing in for anyway, and they are legible at
+// a thumb's distance.
+const creditLine = (sources) =>
+  sources?.length
+    ? `<p class="credit">${sources
+        .map((s) => escapeHtml(s))
+        .join('<span class="sep">·</span>')}</p>`
+    : '';
+
+const portraitCss = (date) => `
+  :root { --fit: 1; }
   body { justify-content: flex-start; }
-  .chrome {
+  /* No rule under the wordmark. There was a 4px crimson bar here doing two jobs
+     badly at once: branding a masthead that is already crimson and already the
+     loudest thing on the card, and dividing it. The wordmark and the spacing
+     hold the top without it, and the hairlines between calendar entries are now
+     the only rule system on the deck. */
+  .masthead {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 24px;
-    padding-bottom: 26px;
-    border-bottom: 4px solid ${CRIMSON};
   }
-  /* The wordmark never breaks. At this size a long Spanish date in the kicker
-     was enough to wrap it to two lines, which reads as a broken masthead — so
-     the wordmark holds and the kicker gives way instead (see kickerSize). */
   .lockup {
     font-family: "Jost", sans-serif;
     font-size: 34px;
@@ -403,26 +498,41 @@ const portraitCss = (kicker) => `
     white-space: nowrap;
     color: ${CRIMSON};
   }
-  .kicker {
+  /* Furniture rather than argument, so it takes the quiet value and lets the
+     crimson wordmark lead. */
+  .date {
     font-family: "Jost", sans-serif;
-    font-size: ${kickerSize(kicker)}px;
+    font-size: ${dateSize(date)}px;
     font-weight: 600;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: rgba(243, 241, 233, 0.62);
     white-space: nowrap;
+    color: rgba(243, 241, 233, 0.58);
   }
-  /* Top-anchored, under the masthead rule. The bottom of a feed image is where
-     the app's own furniture lands, so anything put down there is being handed to
-     the caption row and the action buttons. Every slide therefore starts at the
-     same height and grows downward into the space that is cheapest to lose. */
+  /* Centred at the foot, and the only centred thing on the deck — which is the
+     point: it is not part of the reading, it is where to go afterwards. */
+  .site {
+    padding-top: 30px;
+    text-align: center;
+    font-family: "Jost", sans-serif;
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: rgba(243, 241, 233, 0.5);
+  }
+  /* Top-anchored under the masthead, so every slide starts at the same height
+     and grows downward. */
   .stage {
     flex: 1;
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
     min-height: 0;
-    padding: 56px 0 12px;
+    padding: 52px 0 16px;
+    /* The fitter's floor is a real floor: a slide whose copy will not come down
+       to a readable size is cropped here rather than allowed off the card. */
+    overflow: hidden;
   }
   .hed {
     font-family: "Lora", serif;
@@ -432,72 +542,99 @@ const portraitCss = (kicker) => `
     color: ${CREAM};
     text-wrap: balance;
   }
+  /* Three tiers of prose, and they have to rank without changing typeface:
+     the nut is the claim (heavier, brighter), the detail is the evidence for it
+     (lighter, quieter), the credit is who reported it. Two Jost paragraphs at
+     the same weight and value read as one long paragraph broken in half. */
+  /* text-wrap: pretty is for the widow. A nut ending "…orders on Aug. 6."
+     breaks after the abbreviation and leaves "6." alone on a line of its own,
+     which at this size is a hole in the middle of the card. */
   .nut {
     font-family: "Jost", sans-serif;
-    font-weight: 400;
-    line-height: 1.42;
-    color: rgba(243, 241, 233, 0.82);
-    margin-top: 30px;
+    font-weight: 500;
+    line-height: 1.4;
+    color: rgba(243, 241, 233, 0.92);
+    margin-top: ${fitpx(30)};
+    text-wrap: pretty;
   }
-  .strip {
-    display: flex;
-    justify-content: space-between;
-    gap: 24px;
-    padding-top: 26px;
-    border-top: 3px solid rgba(243, 241, 233, 0.22);
+  .detail {
     font-family: "Jost", sans-serif;
-    font-size: 27px;
-    font-weight: 600;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
+    font-weight: 400;
+    line-height: 1.44;
     color: rgba(243, 241, 233, 0.62);
+    margin-top: ${fitpx(24)};
+    text-wrap: pretty;
+  }
+  .credit {
+    margin-top: ${fitpx(34)};
+    padding-top: ${fitpx(20)};
+    border-top: 2px solid rgba(243, 241, 233, 0.22);
+    font-family: "Jost", sans-serif;
+    font-size: ${fitpx(24)};
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: ${CRIMSON};
+  }
+  .credit .sep {
+    color: rgba(243, 241, 233, 0.34);
+    padding: 0 0.55em;
   }`;
 
-// The cover carries the hed and the lede's supporting sentence together.
+// The cover: the lede, cut the same way every other story on the deck is cut.
 //
-// They used to be two slides — hed on the cover, then the lede headline and its
-// nut — which told the same story twice before anyone reached the dates. The
-// hed and the nut are complementary rather than repetitive (one is the claim,
-// the other the evidence for it), so they belong on one card, and the deck gets
-// to its payoff a slide sooner.
+// It used to stop after the claim, on the argument that a cover is a poster and
+// a second sentence is just more of one story. That made the cover the one
+// slide with a different shape, which a reader reads as a different kind of
+// thing — and the lede is not a different kind of thing, it is the day's best
+// story. Same three tiers, same credit line.
 //
-// The hed steps down a size when a nut rides with it: at full display size the
+// The hed steps down a size when prose rides with it: at full display size the
 // two compete instead of ranking.
-const coverSlide = ({ hed, nut, date, terms }) =>
+const coverSlide = ({ hed, nut, detail, sources, date }) =>
   shell(
     portraitCss(date) +
-      `\n  .hed { font-size: ${nut ? Math.round(coverHedSize(hed) * 0.82) : coverHedSize(hed)}px; }` +
-      (nut ? `\n  .nut { font-size: ${nutSize(nut)}px; }` : ''),
+      `\n  .hed { font-size: ${fitpx(nut ? Math.round(coverHedSize(hed) * 0.82) : coverHedSize(hed))}; }` +
+      (nut ? `\n  .nut { font-size: ${fitpx(nutSize(nut))}; }` : '') +
+      (detail ? `\n  .detail { font-size: ${fitpx(Math.round(nutSize(detail) * 0.92))}; }` : ''),
     portraitFrame(
       `<h1 class="hed">${escapeHtml(hed)}</h1>` +
-        (nut ? `<p class="nut">${escapeHtml(nut)}</p>` : ''),
-      {
-        kicker: date,
-        // The domain and the bilingual fact. All three terms would overrun the
-        // strip at this size, and "which languages" is the one that earns its
-        // place on a cover shown to people who have never seen the thing.
-        footer: `<span>${HOME_URL}</span><span>${escapeHtml(terms[terms.length - 1])}</span>`,
-      },
+        (nut ? `<p class="nut">${escapeHtml(nut)}</p>` : '') +
+        (detail ? `<p class="detail">${escapeHtml(detail)}</p>` : '') +
+        creditLine(sources),
+      { date },
     ),
     PORTRAIT,
   );
 
-// A story slide: one of the edition's other beats, headline over its bolded
-// lead. The lede is not among them — it is on the cover — so these are what a
-// reader has not already been told.
+// A story slide: one of the edition's other beats — headline, the bolded claim,
+// the sentence the edition offers in support of it, and who reported it. The
+// lede is not among them (it is on the cover), so these are what a reader has
+// not already been told.
 //
-// No kicker. The slide index would be the obvious thing to put there, but the
-// deck is not all stories, so "2/2" would count something a reader cannot see
-// the whole of. A rubric would want a word, and the words here are David's.
-const beatSlide = ({ headline, nut }) =>
+// The claim used to stand alone here, which made the slide a headline followed
+// by the same headline in longer words. The supporting sentence is what turns
+// it into a story; the credit line is what makes it checkable.
+//
+// No rubric. The calendar slide has one because "What's coming" names a kind of
+// thing; a story slide would want a word for what this particular story is, and
+// the words here are David's. A slide index is the other obvious candidate and
+// is worse — the deck is not all stories, so "2/2" would count something a
+// reader cannot see the whole of.
+const beatSlide = ({ headline, nut, detail, sources, date }) =>
   shell(
-    portraitCss('') +
-      `\n  .hed { font-size: ${beatHedSize(headline)}px; }` +
-      (nut ? `\n  .nut { font-size: ${nutSize(nut)}px; }` : ''),
+    portraitCss(date) +
+      `\n  .hed { font-size: ${fitpx(beatHedSize(headline))}; }` +
+      (nut ? `\n  .nut { font-size: ${fitpx(nutSize(nut))}; }` : '') +
+      // A step under the claim, before opacity is counted. Ranked by size and
+      // value together, because either alone is a difference a thumb misses.
+      (detail ? `\n  .detail { font-size: ${fitpx(Math.round(nutSize(detail) * 0.92))}; }` : ''),
     portraitFrame(
       `<h2 class="hed">${escapeHtml(headline)}</h2>` +
-        (nut ? `<p class="nut">${escapeHtml(nut)}</p>` : ''),
-      { footer: `<span>${HOME_URL}</span>` },
+        (nut ? `<p class="nut">${escapeHtml(nut)}</p>` : '') +
+        (detail ? `<p class="detail">${escapeHtml(detail)}</p>` : '') +
+        creditLine(sources),
+      { date },
     ),
     PORTRAIT,
   );
@@ -509,94 +646,163 @@ const beatSlide = ({ headline, nut }) =>
 // one thing here worth screenshotting and keeping.
 const UPCOMING_LABEL = { en: 'What’s coming', es: 'Lo que viene' };
 
-// Two entries share the height, so the prose sizes down as it runs long. These
-// are set against real summaries, which run 120 to 240 characters after the
-// trim in pull.mjs.
-const entryTextSize = (text) => {
-  const n = text.length;
-  if (n <= 140) return 38;
-  if (n <= 220) return 34;
-  if (n <= 320) return 31;
-  return 28;
-};
+// One size for every entry on a slide, and the fitter takes the whole slide
+// down together. Stepping each entry by its own length was the old behaviour
+// and it set two paragraphs of the same kind at two different sizes, which
+// reads as one of them mattering more. In a calendar none of them does — the
+// dates rank the entries, not the type.
+const ENTRY_TEXT_SIZE = 36;
 
-const upcomingSlide = ({ entries, lang }) =>
+const upcomingSlide = ({ entries, lang, date }) =>
   shell(
-    portraitCss(UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en) +
+    portraitCss(date) +
       `
-  .stage { gap: 58px; }
-  .entry { display: flex; gap: 30px; align-items: flex-start; }
+  .stage { gap: ${fitpx(46)}; }
+  /* The rubric came off the wordmark's line, where it sat at caption size and
+     read as a footnote to the masthead rather than as the name of what follows.
+     Down here at the head of the stage, in the deck's one accent colour, it is
+     doing the job it was put there to do. */
+  .rubric {
+    font-family: "Jost", sans-serif;
+    font-size: ${fitpx(38)};
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: ${CRIMSON};
+    margin-bottom: ${fitpx(-6)};
+  }
+  .entry {
+    display: flex;
+    gap: ${fitpx(32)};
+    align-items: flex-start;
+  }
+  /* The rule goes between entries and nowhere else. Set on every entry it also
+     landed above the first one too, where it separates the entry from nothing.
+     A separator that separates nothing is just another line. */
+  .entry + .entry {
+    border-top: 2px solid rgba(243, 241, 233, 0.24);
+    padding-top: ${fitpx(46)};
+  }
   /* Fixed width so the prose of every entry starts on the same left edge —
-     a ragged text column is the fastest way to make a list look unconsidered. */
+     a ragged text column is the fastest way to make a list look unconsidered.
+     It scales with the type, or a grown numeral outruns its column. */
   .chip {
-    flex: 0 0 148px;
-    border-top: 4px solid ${CRIMSON};
-    padding-top: 14px;
+    flex: 0 0 ${fitpx(150)};
+    border-top: 5px solid ${CRIMSON};
+    padding-top: ${fitpx(16)};
   }
   .chip .month {
     font-family: "Jost", sans-serif;
-    font-size: 30px;
+    font-size: ${fitpx(30)};
     font-weight: 700;
     letter-spacing: 0.14em;
     color: ${CRIMSON};
   }
   .chip .day {
     font-family: "Lora", serif;
-    font-size: 84px;
+    font-size: ${fitpx(88)};
     font-weight: 600;
-    line-height: 1;
+    line-height: 0.98;
     letter-spacing: -0.03em;
     color: ${CREAM};
   }
-  .entry p {
+  /* The weekday is the one thing the snapshot knows that a reader has to work
+     out for themselves otherwise, and "a week Monday" is how people actually
+     hold a deadline. It closes the chip, so the date reads as a block rather
+     than as a numeral with a label stuck above it. */
+  .chip .dow {
     font-family: "Jost", sans-serif;
+    font-size: ${fitpx(23)};
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    color: rgba(243, 241, 233, 0.5);
+    margin-top: ${fitpx(6)};
+  }
+  .entry .body {
+    flex: 1;
+    min-width: 0;
+    padding-top: ${fitpx(14)};
+  }
+  .entry .text {
+    font-family: "Jost", sans-serif;
+    font-size: ${fitpx(ENTRY_TEXT_SIZE)};
     font-weight: 400;
     line-height: 1.4;
-    color: rgba(243, 241, 233, 0.86);
-    padding-top: 10px;
+    color: rgba(243, 241, 233, 0.88);
+    text-wrap: pretty;
+  }
+  /* Who says so — the authority behind the deadline, not a gloss on it. Quiet,
+     because the crimson on this slide belongs to the dates: it is the one thing
+     here worth acting on, and a source line set as loudly competes with it. */
+  .entry .meta {
+    margin-top: ${fitpx(18)};
+    font-family: "Jost", sans-serif;
+    font-size: ${fitpx(23)};
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: rgba(243, 241, 233, 0.5);
   }`,
     portraitFrame(
-      entries
-        .map(
-          (entry) => `
+      `<p class="rubric">${escapeHtml(UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en)}</p>` +
+        entries.map(upcomingEntry).join(''),
+      { date },
+    ),
+    PORTRAIT,
+  );
+
+// A snapshot with no publisher leaves the entry as it was before any of this.
+// Nothing here is invented to fill the row.
+const upcomingEntry = (entry) => `
     <div class="entry">
       <div class="chip">
         <div class="month">${escapeHtml(entry.month)}</div>
         <div class="day">${escapeHtml(entry.day)}</div>
+        ${entry.weekday ? `<div class="dow">${escapeHtml(entry.weekday)}</div>` : ''}
       </div>
-      <p style="font-size: ${entryTextSize(entry.text)}px;">${escapeHtml(entry.text)}</p>
-    </div>`,
-        )
-        .join(''),
-      {
-        kicker: UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en,
-        footer: `<span>${HOME_URL}</span>`,
-      },
-    ),
-    PORTRAIT,
-  );
+      <div class="body">
+        <p class="text">${escapeHtml(entry.text)}</p>
+        ${entry.publisher ? `<p class="meta">${escapeHtml(entry.publisher)}</p>` : ''}
+      </div>
+    </div>`;
 
-const closingSlide = ({ call, url, terms }) =>
+// The one slide that centres rather than hanging off the masthead.
+//
+// Every other slide starts at the same height so the deck holds still under a
+// thumb, and that rule is worth keeping where the slides carry news of
+// different lengths. This one carries an offer of fixed length, and the fitter
+// has nothing to fill with — six words will not reach the strip at any size a
+// closing plate should be set in. Top-anchored it reads as a slide missing its
+// second half; centred it reads as a plate, which is what it is.
+const closingSlide = ({ call, url, date }) =>
   shell(
-    portraitCss('') + `\n  .hed { font-size: ${coverHedSize(call)}px; }
+    portraitCss(date) + `\n  .stage { justify-content: center; }
+  .hed { font-size: ${fitpx(coverHedSize(call))}; }
   .url {
     font-family: "Jost", sans-serif;
-    font-size: 46px;
+    font-size: ${fitpx(46)};
     font-weight: 600;
     letter-spacing: 0.04em;
     color: ${CRIMSON};
-    margin-top: 34px;
+    margin-top: ${fitpx(34)};
   }`,
     portraitFrame(
       `<h2 class="hed">${escapeHtml(call)}</h2><p class="url">${escapeHtml(url)}</p>`,
-      { footer: terms.map((t) => `<span>${escapeHtml(t)}</span>`).join('') },
+      // The one slide that drops the domain out of the chrome: it is the whole
+      // point of this slide, set at display size, and printing it twice on one
+      // card makes the big one look like a caption for the small one.
+      { date, site: false },
     ),
     PORTRAIT,
   );
 
-// The closing plate's copy. `terms` is lifted from the landing card rather than
-// rewritten so the two plates cannot drift apart, and the call is the plainest
-// statement of the offer — this slide exists to be acted on, not admired.
+// The closing plate's copy: the plainest statement of the offer, since this
+// slide exists to be acted on rather than admired.
+//
+// It used to carry the terms off the landing card — "Monday–Friday", "English &
+// Spanish" — along the bottom. The languages came off because a deck is posted
+// per language, to an account that is already in that language, where the fact
+// answers a question nobody in the audience is asking.
 const CLOSING = {
   en: { call: 'Free, every weekday morning.', url: HOME_URL },
   es: { call: 'Gratis, cada mañana entre semana.', url: HOME_URL },
@@ -612,20 +818,24 @@ const carouselSlides = (lang) => {
   const deck = JSON.parse(readFileSync(deckPath, 'utf8'))[lang];
   if (!deck) return null;
 
-  const terms = LANDING[lang].facts;
   const beats = deck.beats ?? [];
   const upcoming = deck.upcoming ?? [];
   const dir = `social/${deck.date}/${lang}`;
 
-  // Cover, the day's other stories, the calendar, the terms. The news earns the
+  // Every slide is dated, not just the cover: a slide screenshotted out of a
+  // deck travels on its own, and an undated one about a system that changes
+  // weekly is worse than no slide.
+  const date = formatCardDate(deck.date, lang);
+
+  // Cover, the day's other stories, the calendar, the offer. The news earns the
   // swipe and the dates earn the follow, so the calendar sits after the stories
   // but well before the end — a deck that puts the payoff last is a deck most
   // people never reach the payoff of.
   const slides = [
-    coverSlide({ hed: deck.hed, nut: deck.nut, date: formatCardDate(deck.date, lang), terms }),
-    ...beats.map((beat) => beatSlide(beat)),
-    ...upcoming.map((slide) => upcomingSlide({ entries: slide.entries, lang })),
-    closingSlide({ ...CLOSING[lang], terms }),
+    coverSlide({ hed: deck.hed, nut: deck.nut, detail: deck.detail, sources: deck.sources, date }),
+    ...beats.map((beat) => beatSlide({ ...beat, date })),
+    ...upcoming.map((slide) => upcomingSlide({ entries: slide.entries, lang, date })),
+    closingSlide({ ...CLOSING[lang], date }),
   ];
 
   const names = [
