@@ -122,7 +122,8 @@ export function upcomingItems(doc, lang = 'en') {
  * — Spanish is `["plain_summary_es", "plain_summary", …]`, so an item with no
  * Spanish summary shows the English one rather than vanishing from the deck.
  * That is the composer's call to make, not this script's, so it is followed
- * rather than second-guessed.
+ * rather than second-guessed, up to the point where the chain stops offering
+ * prose anyone wrote. See COMPOSED_SUMMARY.
  *
  * Beyond the date and the summary the entry carries the two facts the snapshot
  * holds that survive translation: the weekday, and the publisher standing
@@ -138,8 +139,18 @@ export function toCalendarEntry(item, lang, doc) {
     DEFAULT_PREFERENCE[lang] ??
     DEFAULT_PREFERENCE.en;
 
-  const text = preference.map((field) => item[field]).find((value) => value?.trim());
-  if (!text || !item.key_date) return null;
+  const field = preference.find((name) => item[name]?.trim());
+  if (!field || !item.key_date) return null;
+
+  if (!COMPOSED_SUMMARY.has(field)) {
+    console.warn(
+      `WARNING: ${item.key_date} ${lang}: "${(item.title ?? '').slice(0, 60)}" has no composed ` +
+        `summary — off the calendar slide, still in the edition.`,
+    );
+    return null;
+  }
+
+  const text = item[field];
 
   const date = new Date(`${item.key_date}T00:00:00Z`);
 
@@ -163,6 +174,22 @@ function weekdayLabel(date, lang) {
     .replace(/\.$/, '')
     .toUpperCase();
 }
+
+// The fields the composer actually wrote plain language into.
+//
+// The policy's chain runs past them to `what_to_watch_for` and then `title`,
+// which are the raw record — the Federal Register's own abstract, English only,
+// whichever language is being rendered. That tail is right for the newsletter,
+// where a rough entry sits in a long list and the reader has the rest of the
+// page for context. It is wrong for a card: on 2026-08-11 the two items missing
+// a composed summary both fell on the edition date, sorted first, and took the
+// whole first calendar slide — "Final rule. The Energy Security and Lightering
+// Independence Act of 2022 amended the nonimmigrant classifications for aliens
+// in transit (C)…", set in Spanish type on the Spanish deck.
+//
+// So a slide takes composed prose or nothing. This drops the item from the
+// carousel only; the edition still carries it, and the console says which.
+const COMPOSED_SUMMARY = new Set(['plain_summary', 'plain_summary_es']);
 
 // Only reached if the policy block goes missing, which would mean the artifact
 // changed shape under us.
