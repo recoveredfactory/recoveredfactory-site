@@ -357,13 +357,27 @@ renderCarousel(decks, editionDate);
  * The bytes are cached under out/ so --offline can re-template a full edition,
  * HTML included, without going back to the network — same contract as
  * response.json.
+ *
+ * The cache is keyed by edition date, and that is not decoration. It used to be
+ * one file per language, which is correct as long as --offline only ever
+ * re-templates the edition the cache was filled from. Refresh response.json
+ * with --raw-only and then re-template, and the two halves come from different
+ * editions: on 2026-08-11 the markdown was the 11th and the archived email was
+ * the 7th, which is the whole sent-edition view on the page — and the only
+ * place the Upcoming calendar renders at all. Keyed by date, a mismatch is a
+ * cache miss and says so, instead of shipping the wrong edition quietly.
  */
 async function fetchEmailHtml(lang) {
   const name = `daybook_final_${lang}_html`;
-  const cachePath = join(outDir, `${name}.html`);
+  const cachePath = join(outDir, `${name}-${editionDate}.html`);
 
   if (offline) {
-    return existsSync(cachePath) ? readFileSync(cachePath, 'utf8') : null;
+    if (existsSync(cachePath)) return readFileSync(cachePath, 'utf8');
+    console.warn(
+      `WARNING: ${editionDate} ${lang}: no cached email HTML for this edition and --offline; ` +
+        'the archived .html will be empty. Re-run without --offline to fetch it.',
+    );
+    return null;
   }
 
   const entry = artifact(name);
