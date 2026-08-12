@@ -8,6 +8,7 @@
 //                API (deterministic re-runs; no LLM spend)
 //   --force      write even when the manifest says the edition isn't shippable
 //   --skip-cards don't render per-edition social cards (needs chrome + convert)
+//   --no-upcoming leave the calendar off the carousel (see the note below)
 //
 // Reads PQL_DAYBOOK_URL / PQL_DAYBOOK_KEY from apps/web/.env.
 //
@@ -152,6 +153,19 @@ const force = args.has('--force');
 // that have neither, and for re-running the templating quickly.
 const skipCards = args.has('--skip-cards');
 
+// Leave the calendar off the carousel for this run.
+//
+// The deadlines are standing ones, so consecutive editions carry the same four
+// and the calendar slides come out byte-identical day to day — 2026-08-11 and
+// 2026-08-12 were the same two cards in both languages. That is not wrong; it
+// is what a deadline is. It is just not worth two of six slides on a feed where
+// the cadence is closer to a few times a week than daily.
+//
+// The snapshot is still fetched and still archived, because it is the record
+// and because the obvious home for this is a standalone weekly card of its own.
+// Only the slides go away.
+const noUpcoming = args.has('--no-upcoming');
+
 const env = Object.fromEntries(
   readFileSync(join(webRoot, '.env'), 'utf8')
     .split('\n')
@@ -271,9 +285,13 @@ if (snapshot) {
 }
 
 const calendarFor = (lang) =>
-  upcomingItems(snapshot, lang)
-    .map((item) => toEntryFromSnapshot(item, lang, snapshot))
-    .filter(Boolean);
+  noUpcoming
+    ? []
+    : upcomingItems(snapshot, lang)
+        .map((item) => toEntryFromSnapshot(item, lang, snapshot))
+        .filter(Boolean);
+
+if (noUpcoming) console.log('--no-upcoming: the calendar stays off the carousel this run.');
 
 let wrote = 0;
 const decks = {};
