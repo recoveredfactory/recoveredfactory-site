@@ -1,0 +1,780 @@
+{
+  "audit": {
+    "collapse_log": [
+      {
+        "action": "fr_blog_merge",
+        "blog_dates": [],
+        "blog_ids": [
+          236
+        ],
+        "concepts": [
+          "naturalization_fee"
+        ],
+        "fr_date": "2026-08-24",
+        "framing_source": "wolfsdorf-wr-rss",
+        "kept_id": 310,
+        "subject_key": "auth:2026-0265|2026-12542|91 fr 37500|docket no. uscis-2026-0265|rin 1615-ad08"
+      },
+      {
+        "action": "fr_blog_merge",
+        "blog_dates": [
+          "2026-08-28"
+        ],
+        "blog_ids": [
+          208,
+          209
+        ],
+        "concepts": [
+          "registration"
+        ],
+        "fr_date": "2026-08-28",
+        "framing_source": "wolfsdorf-wr-rss",
+        "kept_id": 316,
+        "subject_key": "auth:2025-0004|2026-13057|91 fr 39248|docket no. uscis-2025-0004|rin 1615-ac96"
+      },
+      {
+        "action": "fr_blog_merge",
+        "blog_dates": [
+          "2026-08-31",
+          "2026-09-01"
+        ],
+        "blog_ids": [
+          82,
+          157,
+          218,
+          219,
+          84,
+          206,
+          207,
+          200,
+          201,
+          202,
+          203,
+          161
+        ],
+        "concepts": [
+          "eb5_ria"
+        ],
+        "fr_date": "2026-08-31",
+        "framing_source": "wolfsdorf-wr-rss",
+        "kept_id": 322,
+        "subject_key": "auth:2026-0100|2026-13392|91 fr 40676|docket no. uscis-2026-0100|rin 1615-ac94"
+      },
+      {
+        "action": "fr_blog_merge",
+        "blog_dates": [
+          "2026-09-07"
+        ],
+        "blog_ids": [
+          193,
+          260,
+          76,
+          197,
+          198,
+          69,
+          176,
+          170,
+          171,
+          172,
+          173
+        ],
+        "concepts": [
+          "eb5_ria",
+          "h1b",
+          "registration"
+        ],
+        "fr_date": "2026-09-09",
+        "framing_source": "cyrusmehta-blog-rss",
+        "kept_id": 933,
+        "subject_key": "auth:2024-0009|2026-16231|91 fr 51360|docket no. uscbp-2024-0009|rin 1651-ab48"
+      },
+      {
+        "action": "fr_blog_merge",
+        "blog_dates": [
+          "2026-09-15",
+          "2026-09-17"
+        ],
+        "blog_ids": [
+          163,
+          167,
+          177,
+          164,
+          68
+        ],
+        "concepts": [
+          "duration_of_status"
+        ],
+        "fr_date": "2026-09-15",
+        "framing_source": "wolfsdorf-wr-rss",
+        "kept_id": 334,
+        "subject_key": "auth:2025-0001|2026-14439|91 fr 44976|docket no. iceb-2025-0001|rin 1653-aa95"
+      },
+      {
+        "action": "fr_blog_merge",
+        "blog_dates": [
+          "2026-09-18"
+        ],
+        "blog_ids": [
+          178
+        ],
+        "concepts": [
+          "public_charge"
+        ],
+        "fr_date": "2026-09-18",
+        "framing_source": "wolfsdorf-wr-rss",
+        "kept_id": 335,
+        "subject_key": "auth:2025-0304|2026-14539|91 fr 45324|docket no. uscis-2025-0304|rin 1615-ad06"
+      },
+      {
+        "action": "blog_same_event_collapse",
+        "dropped_ids": [
+          243,
+          158,
+          148
+        ],
+        "kept_id": 162,
+        "subject_key": "concept:eb5_ria"
+      },
+      {
+        "action": "blog_same_event_collapse",
+        "dropped_ids": [
+          199,
+          42
+        ],
+        "kept_id": 159,
+        "subject_key": "concept:eb5_ria"
+      },
+      {
+        "action": "blog_same_event_collapse",
+        "dropped_ids": [
+          259
+        ],
+        "kept_id": 261,
+        "subject_key": "concept:h1b"
+      },
+      {
+        "action": "blog_same_event_collapse",
+        "dropped_ids": [
+          232,
+          233,
+          234,
+          227,
+          216,
+          211,
+          188,
+          185,
+          151
+        ],
+        "kept_id": 192,
+        "subject_key": "concept:employment_authorization|tps"
+      }
+    ],
+    "collapsed_count": 78,
+    "eligible_count": 7,
+    "non_us_excluded_count": 14,
+    "other_past_excluded_count": 18,
+    "paperwork_excluded_count": 17,
+    "past_effective_review_count": 8,
+    "raw_selected_count": 125
+  },
+  "determinism": {
+    "eligible_slate": "Deterministic for the same source-view snapshot, edition_date, package version, and policy constants.",
+    "json_bytes": "Canonical serialization is UTF-8 JSON with sorted keys, two-space indentation, and no runtime timestamp.",
+    "published_subset": "Not deterministic when selection.mode is llm_editorial_ids; the stage-1 editorial model chooses upcoming_watch_ids and stage 2 locks them."
+  },
+  "edition_date": "2026-08-13",
+  "eligible_items": [
+    {
+      "bucket": "next_four_weeks",
+      "content_fingerprint": "90786bdd0033b5b8be62543e150d3752",
+      "date_authority": "federal-register",
+      "date_certainty": "scheduled",
+      "display_summary": "DHS wants to raise the cost of applying for US citizenship (Form N-400) from $760 to $1,330 on paper, and $710 to $1,280 online, with the appeal of a denial (Form N-336) going from $830 to $1,475. Reduced fees and fee waivers for naturalisation would end. Comments close Aug. 24 and implementation likely soon after.",
+      "display_summary_es": "El Departamento de Seguridad Nacional quiere aumentar el costo de solicitar la ciudadanía estadounidense (Formulario N-400) de $760 a $1,330 en papel, y de $710 a $1,280 en línea, y la apelación de una denegación (Formulario N-336) pasaría de $830 a $1,475. Las cuotas reducidas y las exenciones de cuotas para la naturalización terminarían. Los comentarios cierran el 24 de agosto e implementación probable poco después.",
+      "eligible_order": 1,
+      "framing_source": "wolfsdorf-wr-rss",
+      "id": 310,
+      "key_date": "2026-08-24",
+      "key_date_raw": "Submission of Public Comments: Written comments must be submitted on or before August 24, 2026. The electronic Federal Docket Management System will accept comments prior to midnight ET at the end of that day.",
+      "member_ids": [
+        310,
+        236
+      ],
+      "natural_key": "2026-12542",
+      "paperwork_allowlisted": false,
+      "plain_summary": "DHS wants to raise the cost of applying for US citizenship (Form N-400) from $760 to $1,330 on paper, and $710 to $1,280 online, with the appeal of a denial (Form N-336) going from $830 to $1,475. Reduced fees and fee waivers for naturalisation would end. Comments close Aug. 24 and implementation likely soon after.",
+      "plain_summary_edited": true,
+      "plain_summary_es": "El Departamento de Seguridad Nacional quiere aumentar el costo de solicitar la ciudadanía estadounidense (Formulario N-400) de $760 a $1,330 en papel, y de $710 a $1,280 en línea, y la apelación de una denegación (Formulario N-336) pasaría de $830 a $1,475. Las cuotas reducidas y las exenciones de cuotas para la naturalización terminarían. Los comentarios cierran el 24 de agosto e implementación probable poco después.",
+      "plain_summary_es_edited": true,
+      "primary_citation": {
+        "label": "Federal Register",
+        "match_reason": "federal-register-document",
+        "url": "https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments"
+      },
+      "publisher": "Federal Register",
+      "related_authorities": "91 FR 37500; RIN 1615-AD08; CIS No. 2834-25; DHS Docket No. USCIS-2026-0265; 8 CFR 106",
+      "render_order": 1,
+      "render_order_es": 1,
+      "secondary_citations": [],
+      "source_snapshot": {
+        "first_seen_at": "2026-08-01T19:07:24.347177",
+        "generated_as_of": "2026-06-23",
+        "last_seen_at": "2026-08-01T20:55:10.625778",
+        "updated_at": "2026-08-12T17:08:42.511567"
+      },
+      "status": "comment_period_open",
+      "theme": "Naturalization Fees — Rulemaking",
+      "tier": "horizon",
+      "title": "Naturalization Application Fee Adjustments",
+      "what_to_watch_for": "Whether DHS finalizes the fee increases after the comment period, and the effective date of any final rule — the post notes a final rule could take effect shortly after rulemaking concludes, which affects timing decisions for prospective naturalization applicants."
+    },
+    {
+      "bucket": "next_four_weeks",
+      "content_fingerprint": "c5241509f8cb2a9ff283c3b0ce747685",
+      "date_authority": "federal-register",
+      "date_certainty": "scheduled",
+      "display_summary": "Adults who want to take custody of an immigrant child who arrived without a parent or guardian would have to show more documents — proof of identity, proof of income, and information for background checks — before the Office of Refugee Resettlement (ORR) releases the child to them. Comments on the proposed rule are open until August 25, 2026.",
+      "display_summary_es": "Las personas que quieren hacerse cargo de un niño migrante bajo custodia del gobierno (el sponsor o patrocinador) tendrían que presentar documentos específicos de identidad y comprobante de ingresos, además de más datos para la verificación de antecedentes, según una propuesta de la Oficina de Reasentamiento de Refugiados (ORR). Todavía no está en vigor: es un proyecto de reglamento abierto a comentarios del público hasta el 25 de agosto de 2026.",
+      "eligible_order": 2,
+      "framing_source": "federal-register",
+      "id": 315,
+      "key_date": "2026-08-25",
+      "key_date_raw": "Consideration will be given to comments on this rulemaking received on or before August 25, 2026.",
+      "member_ids": [
+        315
+      ],
+      "natural_key": "2026-12946",
+      "paperwork_allowlisted": false,
+      "plain_summary": "Adults who want to take custody of an immigrant child who arrived without a parent or guardian would have to show more documents — proof of identity, proof of income, and information for background checks — before the Office of Refugee Resettlement (ORR) releases the child to them. Comments on the proposed rule are open until August 25, 2026.",
+      "plain_summary_edited": false,
+      "plain_summary_es": "Las personas que quieren hacerse cargo de un niño migrante bajo custodia del gobierno (el sponsor o patrocinador) tendrían que presentar documentos específicos de identidad y comprobante de ingresos, además de más datos para la verificación de antecedentes, según una propuesta de la Oficina de Reasentamiento de Refugiados (ORR). Todavía no está en vigor: es un proyecto de reglamento abierto a comentarios del público hasta el 25 de agosto de 2026.",
+      "plain_summary_es_edited": false,
+      "primary_citation": {
+        "label": "Federal Register",
+        "match_reason": "federal-register-document",
+        "url": "https://www.federalregister.gov/documents/2026/06/26/2026-12946/unaccompanied-children-program-foundational-rule-sponsor-assessment-update-to-include-proof-of"
+      },
+      "publisher": "Federal Register",
+      "related_authorities": "91 FR 38582; RIN 0970-AD26; 45 CFR 410",
+      "render_order": 2,
+      "render_order_es": 2,
+      "secondary_citations": [],
+      "source_snapshot": {
+        "first_seen_at": "2026-08-01T19:07:24.347177",
+        "generated_as_of": "2026-06-26",
+        "last_seen_at": "2026-08-01T20:55:10.625778",
+        "updated_at": "2026-08-01T20:55:10.625778"
+      },
+      "status": "comment_period_open",
+      "theme": "Proposed Rule — Children and Families Administration",
+      "tier": "horizon",
+      "title": "Unaccompanied Children Program Foundational Rule; Sponsor Assessment Update To Include Proof of Identity, Background Check, Placement, and Income Verification Standards",
+      "what_to_watch_for": "Notice of proposed rulemaking. This notice of proposed rulemaking (NPRM, or proposed rule) would establish certain additional requirements for sponsor suitability assessments related to proof of identity, proof of income, and other information required for background checks to promote the safe placement of unaccompanied alien children (UAC). This NPRM proposes acceptable documentation for proof of identity and would require proof of income from potential sponsors of UAC in ORR custody by reason of their immigration status, as described in the Homeland Security Act of 2002 (HSA) and the…"
+    },
+    {
+      "bucket": "next_four_weeks",
+      "content_fingerprint": "83bef1e424e1dd69adadd24d81267e97",
+      "date_authority": "federal-register",
+      "date_certainty": "scheduled",
+      "display_summary": "The comment deadline closes on the DHS rule requiring foreign nationals in the US to register with the government and give fingerprints (Form G-325R). DHS is asking whether more immigration filings should count as registration on their own, and whether to change biometrics rules for some travelers; further rulemaking may follow.",
+      "display_summary_es": "El Departamento de Seguridad Nacional (DHS) recibe comentarios del público sobre posibles cambios al registro obligatorio de inmigrantes (Formulario G-325R), entre ellos ampliar qué solicitudes de inmigración ya cuentan como registro y modificar la toma de datos biométricos a ciertos viajeros. Cualquier persona puede comentar hasta que cierre el expediente, y DHS podría emitir después una nueva regla basada en lo que reciba.",
+      "eligible_order": 3,
+      "framing_source": "wolfsdorf-wr-rss",
+      "id": 316,
+      "key_date": "2026-08-28",
+      "key_date_raw": "Comments close August 28, 2026",
+      "member_ids": [
+        316,
+        208,
+        209
+      ],
+      "natural_key": "2026-13057",
+      "paperwork_allowlisted": false,
+      "plain_summary": "The comment deadline closes on the DHS rule requiring foreign nationals in the US to register with the government and give fingerprints (Form G-325R). DHS is asking whether more immigration filings should count as registration on their own, and whether to change biometrics rules for some travelers; further rulemaking may follow.",
+      "plain_summary_edited": false,
+      "plain_summary_es": "El Departamento de Seguridad Nacional (DHS) recibe comentarios del público sobre posibles cambios al registro obligatorio de inmigrantes (Formulario G-325R), entre ellos ampliar qué solicitudes de inmigración ya cuentan como registro y modificar la toma de datos biométricos a ciertos viajeros. Cualquier persona puede comentar hasta que cierre el expediente, y DHS podría emitir después una nueva regla basada en lo que reciba.",
+      "plain_summary_es_edited": false,
+      "primary_citation": {
+        "label": "Federal Register",
+        "match_reason": "federal-register-document",
+        "url": "https://www.federalregister.gov/documents/2026/06/29/2026-13057/alien-registration-form-and-evidence-of-registration"
+      },
+      "publisher": "Federal Register",
+      "related_authorities": "91 FR 39248; RIN 1615-AC96; CIS No. 2810-25; DHS Docket No. USCIS-2025-0004; 8 CFR 264",
+      "render_order": 3,
+      "render_order_es": 3,
+      "secondary_citations": [],
+      "source_snapshot": {
+        "first_seen_at": "2026-08-01T19:07:24.347177",
+        "generated_as_of": "2026-06-29",
+        "last_seen_at": "2026-08-01T20:55:10.625778",
+        "updated_at": "2026-08-01T20:55:10.625778"
+      },
+      "status": "comment_period_open",
+      "theme": "Foreign National Registration",
+      "tier": "horizon",
+      "title": "Comment period closes on DHS foreign national registration final rule",
+      "what_to_watch_for": "DHS is taking public comment on possible future changes to the registration framework, including expanding the list of immigration filings that automatically satisfy registration and modifying biometric procedures for certain travelers. Watch for the docket closing and any follow-on rulemaking DHS issues based on the comments."
+    },
+    {
+      "bucket": "next_four_weeks",
+      "content_fingerprint": "ef20e2f4a1d334bac393b7fdb80bb2fa",
+      "date_authority": "federal-register",
+      "date_certainty": "scheduled",
+      "display_summary": "DHS is expected to publish a proposed rule on getting a green card by investing in a US business (EB-5). It would change how Regional Centers — entities approved to pool investor money into projects — are designated and terminated, how long money must stay invested, USCIS audit powers, protections for good-faith investors, and automatic revocation of petitions.",
+      "display_summary_es": "El DHS tiene pendiente publicar en el Federal Register una propuesta de reglamento (RIN 1615-AC94) para las personas que obtienen la green card invirtiendo en un negocio en Estados Unidos (EB-5), con cambios en cómo se aprueba o se termina a un Regional Center —la entidad que agrupa el dinero de los inversionistas— y en la revocación automática de peticiones, entre otros puntos. Al publicarse abre un período en el que cualquier persona puede enviar comentarios.",
+      "eligible_order": 4,
+      "framing_source": "wolfsdorf-wr-rss",
+      "id": 322,
+      "key_date": "2026-08-31",
+      "key_date_raw": "Submission of Public Comments: Written comments must be submitted on or before August 31, 2026. The electronic Federal Docket Management System will accept comments prior to midnight eastern time at the end of that day.",
+      "member_ids": [
+        322,
+        82,
+        157,
+        218,
+        219,
+        84,
+        206,
+        207,
+        200,
+        201,
+        202,
+        203,
+        161
+      ],
+      "natural_key": "2026-13392",
+      "paperwork_allowlisted": false,
+      "plain_summary": "DHS is expected to publish a proposed rule on getting a green card by investing in a US business (EB-5). It would change how Regional Centers — entities approved to pool investor money into projects — are designated and terminated, how long money must stay invested, USCIS audit powers, protections for good-faith investors, and automatic revocation of petitions.",
+      "plain_summary_edited": false,
+      "plain_summary_es": "El DHS tiene pendiente publicar en el Federal Register una propuesta de reglamento (RIN 1615-AC94) para las personas que obtienen la green card invirtiendo en un negocio en Estados Unidos (EB-5), con cambios en cómo se aprueba o se termina a un Regional Center —la entidad que agrupa el dinero de los inversionistas— y en la revocación automática de peticiones, entre otros puntos. Al publicarse abre un período en el que cualquier persona puede enviar comentarios.",
+      "plain_summary_es_edited": false,
+      "primary_citation": {
+        "label": "Federal Register",
+        "match_reason": "federal-register-document",
+        "url": "https://www.federalregister.gov/documents/2026/07/02/2026-13392/eb-5-reform-and-integrity-act-of-2022-ensuring-the-integrity-of-the-eb-5-program-automatic"
+      },
+      "publisher": "Federal Register",
+      "related_authorities": "91 FR 40676; RIN 1615-AC94; CIS No. 2770-24; DHS Docket No. USCIS-2026-0100; 8 CFR 204; 8 CFR 205; 8 CFR 216; 8 CFR 235",
+      "render_order": 4,
+      "render_order_es": 4,
+      "secondary_citations": [],
+      "source_snapshot": {
+        "first_seen_at": "2026-08-01T19:07:24.347177",
+        "generated_as_of": "2026-07-02",
+        "last_seen_at": "2026-08-01T20:55:10.625778",
+        "updated_at": "2026-08-01T20:55:10.625778"
+      },
+      "status": "comment_period_open",
+      "theme": "EB-5 — Rulemaking",
+      "tier": "horizon",
+      "title": "Publication of DHS EB-5 proposed rule (RIN 1615-AC94) in the Federal Register",
+      "what_to_watch_for": "Watch for the Federal Register publication of the NPRM \"EB-5 Reform and Integrity Act of 2022; Ensuring the Integrity of the EB-5 Program; Automatic Revocation of Petitions for Immigrant Classification,\" which would amend 8 C.F.R. Parts 204, 205, 216, and 235. Review the regulatory text on Regional Center designation/termination, Forms I-956, I-526E and I-829, investment sustainment, USCIS audit authority, good-faith investor protections, and automatic revocation."
+    },
+    {
+      "bucket": "next_four_weeks",
+      "content_fingerprint": "ed459d44ffa08812a9da08065bbab8aa",
+      "date_authority": "federal-register",
+      "date_certainty": "scheduled",
+      "display_summary": "Employers using the extra H-2B visas Congress allows for seasonal, non-farm jobs must file a sworn statement (attestation) that they meet the added conditions. The Labor Department is asking the White House budget office (OMB) to renew that collection — the requirement itself is not changing — and comments are open until August 31, 2026.",
+      "display_summary_es": "El Departamento del Trabajo pide autorización para seguir usando la declaración que los empleadores presentan cuando quieren contratar trabajadores temporales bajo los cupos adicionales de visas H-2B autorizados por el Congreso. No cambia el requisito en sí: es un trámite de renovación, y cualquier persona puede enviar comentarios hasta el 31 de agosto de 2026.",
+      "eligible_order": 5,
+      "framing_source": "federal-register",
+      "id": 347,
+      "key_date": "2026-08-31",
+      "key_date_raw": "The OMB will consider all written comments that the agency receives on or before August 31, 2026.",
+      "member_ids": [
+        347
+      ],
+      "natural_key": "2026-15424",
+      "paperwork_allowlisted": true,
+      "plain_summary": "Employers using the extra H-2B visas Congress allows for seasonal, non-farm jobs must file a sworn statement (attestation) that they meet the added conditions. The Labor Department is asking the White House budget office (OMB) to renew that collection — the requirement itself is not changing — and comments are open until August 31, 2026.",
+      "plain_summary_edited": false,
+      "plain_summary_es": "El Departamento del Trabajo pide autorización para seguir usando la declaración que los empleadores presentan cuando quieren contratar trabajadores temporales bajo los cupos adicionales de visas H-2B autorizados por el Congreso. No cambia el requisito en sí: es un trámite de renovación, y cualquier persona puede enviar comentarios hasta el 31 de agosto de 2026.",
+      "plain_summary_es_edited": false,
+      "primary_citation": {
+        "label": "Federal Register",
+        "match_reason": "federal-register-document",
+        "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15424/agency-information-collection-activities-submission-for-omb-review-comment-request-attestation-for"
+      },
+      "publisher": "Federal Register",
+      "related_authorities": "91 FR 48197",
+      "render_order": 5,
+      "render_order_es": 5,
+      "secondary_citations": [],
+      "source_snapshot": {
+        "first_seen_at": "2026-08-01T19:07:24.347177",
+        "generated_as_of": "2026-07-30",
+        "last_seen_at": "2026-08-06T08:31:22.062736",
+        "updated_at": "2026-08-06T08:31:22.062736"
+      },
+      "status": "comment_period_open",
+      "theme": "Paperwork notice — Labor Department",
+      "tier": "horizon",
+      "title": "Agency Information Collection Activities; Submission for OMB Review; Comment Request; Attestation for Employers Seeking To Employ H-2B Nonimmigrant Workers Under Section 105 of Division G, Title I of the Further Consolidated Appropriations Act, 2024, Public Law 118-47, as Extended by Public Law 119-37",
+      "what_to_watch_for": "Notice of availability; request for comments. The Department of Labor (DOL) is submitting this Employment and Training Administration (ETA)-sponsored information collection request (ICR) to the Office of Management and Budget (OMB) for review and approval in accordance with the Paperwork Reduction Act of 1995 (PRA). Public comments on the ICR are invited."
+    },
+    {
+      "bucket": "next_four_weeks",
+      "content_fingerprint": "4b240b86f45826566f2a8b40efb88f8b",
+      "date_authority": "federal-register",
+      "date_certainty": "scheduled",
+      "display_summary": "Starting September 9, the heaviest users of H-1B and L-1 visas owe a federal fee on every extension petition, not just when they hire someone new or take on another company's worker. The fee — $4,000 per H-1B petition, $4,500 per L-1 — applies to companies with 50 or more U.S. employees when more than half of them are on H-1B or L-1 visas. DHS says its old reading of a 2015 law wrongly let same-employer extensions skip the fee; this rule closes that gap through September 2027.",
+      "display_summary_es": "A partir del 9 de septiembre, los usuarios más grandes de visas H-1B y L-1 deben una cuota federal en toda petición de prórroga, no solo cuando contratan a alguien nuevo o toman un trabajador de otra compañía. La cuota — $4,000 por petición H-1B, $4,500 por L-1 — se aplica a compañías con 50 o más empleados estadounidenses cuando más de la mitad de ellos están en visas H-1B o L-1. El DHS dice que su interpretación anterior de una ley de 2015 permitió erróneamente que prórrogas del mismo empleador evitaran la cuota; esta regla cierra esa brecha hasta septiembre de 2027.",
+      "eligible_order": 6,
+      "framing_source": "cyrusmehta-blog-rss",
+      "id": 933,
+      "key_date": "2026-09-09",
+      "key_date_raw": "This rule is effective on September 9, 2026.",
+      "member_ids": [
+        933,
+        193,
+        260,
+        76,
+        197,
+        198,
+        69,
+        176,
+        170,
+        171,
+        172,
+        173
+      ],
+      "natural_key": "2026-16231",
+      "paperwork_allowlisted": false,
+      "plain_summary": "Starting September 9, the heaviest users of H-1B and L-1 visas owe a federal fee on every extension petition, not just when they hire someone new or take on another company's worker. The fee — $4,000 per H-1B petition, $4,500 per L-1 — applies to companies with 50 or more U.S. employees when more than half of them are on H-1B or L-1 visas. DHS says its old reading of a 2015 law wrongly let same-employer extensions skip the fee; this rule closes that gap through September 2027.",
+      "plain_summary_edited": true,
+      "plain_summary_es": "A partir del 9 de septiembre, los usuarios más grandes de visas H-1B y L-1 deben una cuota federal en toda petición de prórroga, no solo cuando contratan a alguien nuevo o toman un trabajador de otra compañía. La cuota — $4,000 por petición H-1B, $4,500 por L-1 — se aplica a compañías con 50 o más empleados estadounidenses cuando más de la mitad de ellos están en visas H-1B o L-1. El DHS dice que su interpretación anterior de una ley de 2015 permitió erróneamente que prórrogas del mismo empleador evitaran la cuota; esta regla cierra esa brecha hasta septiembre de 2027.",
+      "plain_summary_es_edited": true,
+      "primary_citation": {
+        "label": "Federal Register",
+        "match_reason": "federal-register-document",
+        "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16231/9-11-response-and-biometric-entry-exit-fee-for-h-1b-and-l-1-visas"
+      },
+      "publisher": "Federal Register",
+      "related_authorities": "91 FR 51360; RIN 1651-AB48; Docket No. USCBP-2024-0009; CBP Dec. No. 26-11; 8 CFR 106",
+      "render_order": 6,
+      "render_order_es": 6,
+      "secondary_citations": [],
+      "source_snapshot": {
+        "first_seen_at": "2026-08-08T08:31:53.860101",
+        "generated_as_of": "2026-08-10",
+        "last_seen_at": "2026-08-13T10:33:57.766697",
+        "updated_at": "2026-08-13T10:33:57.766697"
+      },
+      "status": "effective_upcoming",
+      "theme": "H-1B — Beneficiary-Owned Petitions",
+      "tier": "horizon",
+      "title": "9-11 Response and Biometric Entry-Exit Fee for H-1B and L-1 Visas",
+      "what_to_watch_for": "Under 8 C.F.R. § 214.2(h)(9)(iii)(E), an H-1B petition filed by an entity in which the beneficiary has a controlling interest is limited to 18 months for initial approval and 18 months for the first extension. Founders should watch their approval end dates and prepare early extension filings with updated evidence that the company is operating and that specialty-occupation duties remain the majority of the role."
+    },
+    {
+      "bucket": "next_four_weeks",
+      "content_fingerprint": "c22c314c3d503a3074639f80b882f97a",
+      "date_authority": "federal-register",
+      "date_certainty": "scheduled",
+      "display_summary": "Companies that match US clients with people abroad for marriage (international marriage brokers) face a set process for being fined. The Justice Department is spelling out how it will decide cases where a broker fails to give the people it recruits the information required by the International Marriage Broker Regulation Act (IMBRA), or discloses information it may not. Comments are open.",
+      "display_summary_es": "Las agencias internacionales que conectan a personas para fines matrimoniales (international marriage brokers) quedarán sujetas a un procedimiento del Departamento de Justicia para imponerles multas cuando no entreguen la información que la ley exige a las personas que reclutan, o cuando divulguen datos que tienen prohibido compartir. La regla es provisional pero entra en vigor el 10 de septiembre de 2026, y el gobierno está recibiendo comentarios del público.",
+      "eligible_order": 7,
+      "framing_source": "federal-register",
+      "id": 1009,
+      "key_date": "2026-09-10",
+      "key_date_raw": "Effective date: This interim final rule is effective September 10, 2026.",
+      "member_ids": [
+        1009
+      ],
+      "natural_key": "2026-16290",
+      "paperwork_allowlisted": false,
+      "plain_summary": "Companies that match US clients with people abroad for marriage (international marriage brokers) face a set process for being fined. The Justice Department is spelling out how it will decide cases where a broker fails to give the people it recruits the information required by the International Marriage Broker Regulation Act (IMBRA), or discloses information it may not. Comments are open.",
+      "plain_summary_edited": false,
+      "plain_summary_es": "Las agencias internacionales que conectan a personas para fines matrimoniales (international marriage brokers) quedarán sujetas a un procedimiento del Departamento de Justicia para imponerles multas cuando no entreguen la información que la ley exige a las personas que reclutan, o cuando divulguen datos que tienen prohibido compartir. La regla es provisional pero entra en vigor el 10 de septiembre de 2026, y el gobierno está recibiendo comentarios del público.",
+      "plain_summary_es_edited": false,
+      "primary_citation": {
+        "label": "Federal Register",
+        "match_reason": "federal-register-document",
+        "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16290/adjudication-of-civil-penalties-against-international-marriage-brokers"
+      },
+      "publisher": "Federal Register",
+      "related_authorities": "91 FR 51576; RIN 1125-AA45; Docket No. EOIR-26-AA45; Dir. Order No. 08-2026; 28 CFR 68",
+      "render_order": 7,
+      "render_order_es": 7,
+      "secondary_citations": [],
+      "source_snapshot": {
+        "first_seen_at": "2026-08-11T08:20:32.550928",
+        "generated_as_of": "2026-08-11",
+        "last_seen_at": "2026-08-13T10:33:57.766697",
+        "updated_at": "2026-08-13T10:33:57.766697"
+      },
+      "status": "effective_upcoming",
+      "theme": "Rule — Justice Department",
+      "tier": "horizon",
+      "title": "Adjudication of Civil Penalties Against International Marriage Brokers",
+      "what_to_watch_for": "Interim final rule; request for comments. This interim final rule (\"IFR\") amends Department of Justice (\"Department\") regulations to specify the procedures for adjudicating alleged violations of the International Marriage Broker Regulation Act of 2005 (\"IMBRA\") by international marriage brokers (\"IMBs\") doing business in the United States that fail to provide required information to persons recruited for matchmaking services or that improperly disclose prohibited information. This IFR is necessary to deter fraudulent marriages and the exploitation of immigrants recruited by IMBs."
+    }
+  ],
+  "horizon": {
+    "days": 28,
+    "end_inclusive": "2026-09-10",
+    "start_inclusive": "2026-08-13"
+  },
+  "policy": {
+    "active_tiers": [
+      "due",
+      "approaching",
+      "horizon",
+      "future",
+      "open_ended"
+    ],
+    "algorithm_version": "daybook-upcoming-eligible-v1",
+    "bands": {
+      "next_four_weeks": "remaining dates through edition_date + 28 inclusive",
+      "this_week": "other dates in the edition Mon–Fri workweek; Sat/Sun editions use the upcoming Mon–Fri",
+      "today": "key_date equals edition_date"
+    },
+    "citation_match_reasons_excluded": [
+      "sole-document"
+    ],
+    "cross_source_merge": "Federal Register owns the date; practitioner blog owns framing. Match by shared authority token, shared concept within ±3 days, or same-date lexical overlap >= 0.35.",
+    "exact_constants": {
+      "active_tiers": [
+        "approaching",
+        "due",
+        "future",
+        "horizon",
+        "open_ended"
+      ],
+      "authority_token_patterns": [
+        "\\b20\\d{2}-\\d{4,5}\\b",
+        "\\brin\\s+[a-z0-9-]+\\b",
+        "\\bdocket\\s*(?:no\\.?|number)?\\s*[a-z0-9-]+\\b",
+        "\\b\\d+\\s*fr\\s*\\d+\\b"
+      ],
+      "citation_match_reasons_excluded": [
+        "sole-document"
+      ],
+      "concept_date_bridge_days": 3,
+      "concept_patterns": [
+        {
+          "concept": "duration_of_status",
+          "patterns": [
+            "duration of status",
+            "fixed time period of admission",
+            "extension of stay procedure",
+            "ending duration of status",
+            "end of duration of status",
+            "fixed admission period",
+            "nonimmigrant academic students, exchange visitors"
+          ]
+        },
+        {
+          "concept": "public_charge",
+          "patterns": [
+            "public charge",
+            "public-charge"
+          ]
+        },
+        {
+          "concept": "eb5_ria",
+          "patterns": [
+            "eb-5",
+            "eb5",
+            "regional center",
+            "ria implementing",
+            "reform and integrity act"
+          ]
+        },
+        {
+          "concept": "registration",
+          "patterns": [
+            "alien registration",
+            "form g-325r",
+            "registration requirement",
+            "biometric",
+            "fingerprinting appointment"
+          ]
+        },
+        {
+          "concept": "visa_bond",
+          "patterns": [
+            "visa bond"
+          ]
+        },
+        {
+          "concept": "h1b",
+          "patterns": [
+            "h-1b",
+            "h1b",
+            "$100,000",
+            "100000 supplemental"
+          ]
+        },
+        {
+          "concept": "employment_authorization",
+          "patterns": [
+            "employment authorization",
+            "automatic ead extension",
+            "discretionary employment authorization"
+          ]
+        },
+        {
+          "concept": "naturalization_fee",
+          "patterns": [
+            "naturalization application fee",
+            "naturalization fee"
+          ]
+        },
+        {
+          "concept": "tps",
+          "patterns": [
+            "temporary protected status",
+            "tps designation",
+            "tps termination"
+          ]
+        },
+        {
+          "concept": "adverse_effect_wage",
+          "patterns": [
+            "adverse effect wage",
+            "aeew",
+            "adverse effect"
+          ]
+        }
+      ],
+      "federal_register_source": "federal-register",
+      "geo_focus_keep": [
+        "bilateral",
+        "us"
+      ],
+      "hard_out_ids": [
+        327,
+        336,
+        341,
+        346
+      ],
+      "horizon_days": 28,
+      "max_items": 12,
+      "max_open_ended": 0,
+      "max_per_normalized_theme": 2,
+      "paperwork_allow_patterns": [
+        "flight manifest",
+        "attestation for employers seeking to employ h-2",
+        "application for prevailing wage determination",
+        "petition to classify special immigrant",
+        "customs declaration",
+        "visa waiver signatory carrier",
+        "form i-9\\b",
+        "\\bi-765\\b",
+        "employment authorization document",
+        "\\bn-400\\b",
+        "naturalization application",
+        "\\bi-589\\b",
+        "alien registration",
+        "form g-325",
+        "mental health assessment form",
+        "certificate of eligibility for exchange"
+      ],
+      "paperwork_allowlist_cap": 3,
+      "paperwork_deny_patterns": [
+        "medical examination",
+        "unaccompanied refugee minors",
+        "extension,\\s*without\\s*change",
+        "generic clearance",
+        "generic for administration for children",
+        "generic information collection"
+      ],
+      "practitioner_blog_sources": [
+        "cyrusmehta-blog-rss",
+        "wolfsdorf-wr-rss"
+      ],
+      "same_date_lexical_overlap_threshold": 0.35
+    },
+    "geo_focus_keep": [
+      "us",
+      "bilateral"
+    ],
+    "hard_out_ids": [
+      327,
+      336,
+      341,
+      346
+    ],
+    "max_items": 12,
+    "max_per_normalized_theme": 2,
+    "paperwork_allowlist_cap": 3,
+    "past_effective_upcoming": "human_review_only",
+    "policy_sha256": "42cd455803ad1b17ed5e6ee60be08e385b1cb707f2afad868ed86ce102eec803",
+    "render_sort": [
+      "key_date",
+      "display_summary",
+      "id"
+    ],
+    "render_sort_es": [
+      "key_date",
+      "display_summary_es",
+      "id"
+    ],
+    "resolved_rows": "exclude",
+    "steps": [
+      "Read unresolved v_watch_items rows in stable tier/date/update/id order.",
+      "Default-exclude paperwork; restore only allow-pattern matches not denied.",
+      "Keep U.S./bilateral rows; use text fallback only when geo_focus is null.",
+      "Keep active tiers; isolate past+effective_upcoming for human review.",
+      "Collapse same events across sources; Federal Register date wins and blog framing wins.",
+      "Attach citations in deterministic non-legislation/legislation/textual order.",
+      "Apply hard-outs, inclusive edition_date..edition_date+28 horizon, theme cap, paperwork cap, and max-items cap.",
+      "Assign Today/This week/Next four weeks bands and render-sort by date then preferred summary."
+    ],
+    "summary_preference": [
+      "plain_summary",
+      "what_to_watch_for",
+      "title"
+    ],
+    "summary_preference_es": [
+      "plain_summary_es",
+      "plain_summary",
+      "what_to_watch_for",
+      "title"
+    ],
+    "undated_open_ended": "exclude"
+  },
+  "schema_version": "immigration-daybook-upcoming.v1",
+  "selected_items": [],
+  "selection": {
+    "eligible_count": 7,
+    "mode": "eligible_only",
+    "selected_count": 0,
+    "selected_watch_ids": [],
+    "unknown_selected_watch_ids": []
+  },
+  "source_contract": {
+    "source_freshness": [
+      {
+        "active_items": 27,
+        "dated_items": 6,
+        "days_since_seen": 18,
+        "last_seen_at": "2026-07-26T22:01:44.484377",
+        "latest_generated_as_of": "2026-07-19",
+        "source": "cyrusmehta-blog-rss"
+      },
+      {
+        "active_items": 104,
+        "dated_items": 78,
+        "days_since_seen": 0,
+        "last_seen_at": "2026-08-13T10:33:57.766697",
+        "latest_generated_as_of": "2026-08-12",
+        "source": "federal-register"
+      },
+      {
+        "active_items": 93,
+        "dated_items": 50,
+        "days_since_seen": 18,
+        "last_seen_at": "2026-07-26T22:00:30.682328",
+        "latest_generated_as_of": "2026-07-23",
+        "source": "wolfsdorf-wr-rss"
+      }
+    ],
+    "watch_item_citations": "app.v_watch_item_citations",
+    "watch_items": "app.v_watch_items",
+    "watch_sources": "app.v_watch_sources"
+  }
+}
