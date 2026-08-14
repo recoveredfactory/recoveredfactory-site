@@ -1,0 +1,63 @@
+{
+  "slug": "2026-08-13-promo",
+  "date": {
+    "en": "Aug. 13, 2026",
+    "es": "13 de agosto de 2026"
+  },
+  "slides": [
+    {
+      "type": "exhibit",
+      "name": "promo",
+      "panel": [
+        {
+          "img": "apfs-codes.png",
+          "marks": [
+            {
+              "l": 0.09,
+              "t": 0.06,
+              "w": 0.355,
+              "h": 0.235,
+              "style": "hl"
+            },
+            {
+              "l": 0.5,
+              "t": 0.06,
+              "w": 0.2,
+              "h": 0.235,
+              "style": "hl"
+            }
+          ]
+        },
+        {
+          "img": "apfs-dollars.png",
+          "marks": [
+            {
+              "l": 0.284,
+              "t": 0.212,
+              "w": 0.195,
+              "h": 0.26,
+              "style": "hl"
+            },
+            {
+              "l": 0.009,
+              "t": 0.596,
+              "w": 0.168,
+              "h": 0.26,
+              "style": "hl"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "Filed under spectator sports",
+        "nut": "ICE plans to spend $10m–$20m to buy a product with no competitive bidding. The category on the federal paperwork? “Other Spectator Sports”",
+        "caption": "DHS Acquisition Planning Forecast System, record F2026074524, Aug. 10, 2026"
+      },
+      "es": {
+        "hed": "Clasificado como deporte de espectadores",
+        "nut": "ICE planea gastar entre $10 y $20 millones en comprar un producto sin licitación competitiva. ¿La categoría en los documentos del gobierno? “Deportes para espectadores”",
+        "caption": "Sistema de Pronóstico de Planificación de Adquisiciones del DHS, registro F2026074524, 10 de agosto de 2026"
+      }
+    }
+  ]
+}
