@@ -1,0 +1,210 @@
+{
+  "slug": "2026-08-13-compliant",
+  "date": {
+    "en": "Aug. 13, 2026",
+    "es": "13 de agosto de 2026"
+  },
+  "slides": [
+    {
+      "type": "cover",
+      "name": "cover",
+      "panel": [
+        {
+          "img": "patent-fig.png",
+          "width": "38%"
+        },
+        {
+          "img": "patent-head.png"
+        }
+      ],
+      "en": {
+        "hed": "The company behind ICE’s shock gloves",
+        "nut": "ICE said they’re buying electric-shock gloves for immigration enforcement. We looked into Compliant Technologies, the Kentucky company selling them.",
+        "caption": "U.S. Patent 12,326,321 B2, Sheet 1 of 3"
+      },
+      "es": {
+        "hed": "La empresa detrás de los guantes de descarga de ICE",
+        "nut": "ICE dijo que comprará guantes de descarga eléctrica para operativos migratorios. Investigamos a Compliant Technologies, la empresa de Kentucky que los vende.",
+        "caption": "Patente de EE. UU. 12,326,321 B2, hoja 1 de 3"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "exhibit-a",
+      "panel": [
+        {
+          "img": "apfs.png",
+          "marks": [
+            {
+              "l": 0.5,
+              "t": 0.14,
+              "w": 0.2,
+              "h": 0.075,
+              "style": "hl"
+            },
+            {
+              "l": 0.283,
+              "t": 0.872,
+              "w": 0.195,
+              "h": 0.062,
+              "style": "hl"
+            },
+            {
+              "l": 0.005,
+              "t": 0.932,
+              "w": 0.155,
+              "h": 0.06,
+              "style": "hl"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "A no-bid buy",
+        "nut": "ICE went shopping for conducted-energy weapons in February. On Aug. 10, DHS’s own acquisition forecast listed the G.L.O.V.E. purchase — $10 million to $20 million, complete by March 2027 — with “Competition: NO.”",
+        "caption": "DHS Acquisition Planning Forecast System, record F2026074524, Aug. 10, 2026"
+      },
+      "es": {
+        "hed": "Una compra sin licitación",
+        "nut": "ICE salió a buscar armas de energía conducida en febrero. El 10 de agosto, el propio pronóstico de adquisiciones del DHS listó la compra del G.L.O.V.E. — de $10 a $20 millones, completa para marzo de 2027 — con “Competition: NO”.",
+        "caption": "Sistema de Pronóstico de Planificación de Adquisiciones del DHS, registro F2026074524, 10 de agosto de 2026"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "exhibit-b",
+      "panel": [
+        {
+          "img": "awardee-kw.png",
+          "marks": [
+            {
+              "l": 0.795,
+              "t": 0.05,
+              "w": 0.105,
+              "h": 0.15,
+              "style": "hl"
+            },
+            {
+              "l": 0,
+              "t": 0.25,
+              "w": 0.115,
+              "h": 0.15,
+              "style": "hl"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "Distributor, not manufacturer",
+        "nut": "News reports describe Compliant as the gloves’ maker. Its own federal contractor profile says “Exclusive Distributor” — which raises a question: what are they distributing?",
+        "caption": "Compliant’s federal contractor keywords, via HigherGov, captured Aug. 13, 2026"
+      },
+      "es": {
+        "hed": "Distribuidor, no fabricante",
+        "nut": "Las noticias describen a Compliant como el fabricante de los guantes. Su propio perfil federal de contratista dice “Exclusive Distributor” — lo que plantea una pregunta: ¿qué es lo que distribuyen?",
+        "caption": "Palabras clave del registro federal de Compliant, vía HigherGov, 13 de agosto de 2026"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "exhibit-c",
+      "panel": [
+        {
+          "img": "patent-parties.png",
+          "marks": [
+            {
+              "l": 0.295,
+              "t": 0.475,
+              "w": 0.52,
+              "h": 0.105,
+              "style": "box"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "Ties to China",
+        "nut": "The glove’s U.S. patent names Zhiyong Jiang of Shenzhen, China, ahead of Compliant’s founder, and traces back to a 2017 filing in China. The patent belongs to a third company: Far East-West Trading.",
+        "caption": "U.S. Patent 12,326,321 B2, granted June 10, 2025"
+      },
+      "es": {
+        "hed": "Lazos con China",
+        "nut": "La patente estadounidense del guante nombra a Zhiyong Jiang, de Shenzhen, China, antes que al fundador de Compliant, y se remonta a una solicitud presentada en China en 2017. La patente pertenece a una tercera empresa: Far East-West Trading.",
+        "caption": "Patente de EE. UU. 12,326,321 B2, concedida el 10 de junio de 2025"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "exhibit-d",
+      "panel": [
+        {
+          "img": "jiang-title.png"
+        },
+        {
+          "img": "jiang-bio.png",
+          "marks": [
+            {
+              "l": 0.465,
+              "t": 0.345,
+              "w": 0.21,
+              "h": 0.125,
+              "style": "hl"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "A supplier to China’s police",
+        "nut": "A Chinese police-equipment portal describes Jiang as general manager of Shenzhen Senxunda, a Ministry of Public Security–approved supplier, and lists a “police capture glove” among his patented products.",
+        "caption": "cpspew.com expert profile, 2015 · translation ours"
+      },
+      "es": {
+        "hed": "Un proveedor de la policía china",
+        "nut": "Un portal chino de equipo policial describe a Jiang como gerente general de Shenzhen Senxunda, un proveedor aprobado por el Ministerio de Seguridad Pública, y lista un “guante policial de captura” entre sus productos patentados.",
+        "caption": "Perfil de experto en cpspew.com, 2015 · traducción propia"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "exhibit-e",
+      "panel": [
+        {
+          "img": "refs.png",
+          "marks": [
+            {
+              "l": 0.004,
+              "t": 0.875,
+              "w": 0.992,
+              "h": 0.115,
+              "style": "box"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "The “bee sting” expert",
+        "nut": "The expert who told the AP the glove felt “like a bee sting” is listed on Compliant’s own website as its “Use of Force Expert.”",
+        "caption": "complianttechnologies.net/references, captured Aug. 13, 2026"
+      },
+      "es": {
+        "hed": "El experto del “piquete de abeja”",
+        "nut": "El experto que dijo a AP que el guante se siente “como un piquete de abeja” aparece en el propio sitio de Compliant como su “Experto en Uso de la Fuerza”.",
+        "caption": "complianttechnologies.net/references, 13 de agosto de 2026"
+      }
+    },
+    {
+      "type": "closer",
+      "name": "subscribe",
+      "en": {
+        "hed": "We turn spectacle into evidence.",
+        "nut": "Curated news, primary source context, useable data, and a calendar of what’s coming in the immigration system. Free every weekday in August.",
+        "facts": "Monday–Friday · English & Spanish"
+      },
+      "es": {
+        "hed": "Convertimos el espectáculo en evidencia.",
+        "nut": "Noticias curadas, contexto de fuentes primarias, datos utilizables y un calendario de lo que viene en el sistema migratorio. Gratis cada día hábil en agosto.",
+        "facts": "De lunes a viernes · Español e inglés"
+      }
+    }
+  ]
+}
