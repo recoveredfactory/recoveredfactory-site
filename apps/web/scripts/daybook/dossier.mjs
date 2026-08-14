@@ -1,9 +1,14 @@
 #!/usr/bin/env node
 // Render a document-driven carousel — a dossier — from a spec directory.
 //
-// Usage: node scripts/daybook/dossier.mjs <dossier-dir> [--lang en,es]
+// Usage: node scripts/daybook/dossier.mjs <dossier-dir> [--lang en,es] [--sizes portrait,square,story,landscape]
 //   <dossier-dir>  a directory under scripts/daybook/dossiers/ holding
 //                  spec.json and the exhibit crops it references
+//   --sizes        which frames to render (default portrait). portrait is the
+//                  4:5 feed card; square is 1:1; story is 9:16 with Meta's UI
+//                  safe zones held as padding; landscape is the 1.91:1 link
+//                  frame, which re-flows to two columns because a stacked deck
+//                  slide cannot stand in 628px.
 //
 // Where og.mjs renders the edition's own copy re-cut for a 4:5 frame, this
 // renders slides *about documents*: each one is a claim over a cropped exhibit
@@ -54,8 +59,27 @@ const PAPER = '#fdfcf9';
 const FONTS =
   'https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Lora:wght@400;500;600&display=swap';
 
-const PORTRAIT = { width: 1080, height: 1350, padding: '92px 84px' };
-const OUT_SIZE = '1080x1350';
+// The frames. Portrait is the deck's native shape and the others are cuts of
+// it for Meta placements: square for 1:1 feed slots, story for 9:16 — where
+// the padding is the platform's own UI safe zones (profile chip up top, CTA
+// stack at the bottom) held empty rather than designed around — and landscape
+// for the 1.91:1 link frame. fitMax is capped near 1 on landscape: the fitter
+// measures the column that carries the type, and letting it inflate toward
+// 1.34 against a short frame blows the text column past the document panel.
+const SIZES = {
+  portrait: { width: 1080, height: 1350, padding: '92px 84px', suffix: '', fitMax: 1.34 },
+  square: { width: 1080, height: 1080, padding: '72px 84px', suffix: '-1x1', fitMax: 1.34 },
+  story: { width: 1080, height: 1920, padding: '250px 84px 340px', suffix: '-9x16', fitMax: 1.34, bodyClass: 'story' },
+  landscape: { width: 1200, height: 628, padding: '52px 64px', suffix: '-191x1', fitMax: 1.05, landscape: true },
+};
+
+const sizeKeys = flag('sizes', 'portrait').split(',');
+for (const key of sizeKeys) {
+  if (!SIZES[key]) {
+    console.error(`Unknown size '${key}' (have: ${Object.keys(SIZES).join(', ')}).`);
+    process.exit(1);
+  }
+}
 
 const FIT_MIN = 0.62;
 const FIT_MAX = 1.34;
@@ -65,7 +89,7 @@ const fitpx = (n) => `calc(var(--fit) * ${n}px)`;
 // still fits the stage. The paper panels are excluded from scaling (a document
 // has a natural size; the type fits around it), but their height still counts
 // against the room, which is the point.
-const FIT_SCRIPT = `
+const fitScript = (fitMax) => `
 <script>
   (async () => {
     if (document.fonts) {
@@ -93,10 +117,10 @@ const FIT_SCRIPT = `
     };
 
     if (!fits(${FIT_MIN})) return;
-    if (fits(${FIT_MAX})) return;
+    if (fits(${fitMax})) return;
 
     let lo = ${FIT_MIN};
-    let hi = ${FIT_MAX};
+    let hi = ${fitMax};
     for (let i = 0; i < 16; i += 1) {
       const mid = (lo + hi) / 2;
       if (fits(mid)) lo = mid;
@@ -157,14 +181,14 @@ const panelHtml = (panel) => {
   return `<div class="panel">${strips}</div>`;
 };
 
-const frame = (body, { date, site = true }) => `
+const frame = (body, { date, site = true, size }) => `
   <header class="masthead">
     <p class="lockup">Immigration Daybook</p>
     ${date ? `<p class="date">${escapeHtml(date)}</p>` : ''}
   </header>
   <div class="stage">${body}</div>
   ${site ? `<footer class="site">${HOME_URL}</footer>` : ''}
-${FIT_SCRIPT}`;
+${fitScript(size.fitMax)}`;
 
 const css = (date) => `
   :root { --fit: 1; }
@@ -310,6 +334,30 @@ const css = (date) => `
     margin-top: ${fitpx(56)};
   }
   .closer .stage { justify-content: center; }
+  /* The story frame is taller than the deck's content wants to be even with
+     the type at fitMax, so the slack is split above and below instead of
+     pooling between the caption and the footer. */
+  .story .stage { justify-content: center; }
+  /* The 1.91:1 re-flow: document right, type left, reading order preserved by
+     row-reverse (the fitter measures from the panel's top to the type's
+     bottom, so the type column has to be the last child). Masthead, footer
+     and panel all drop a size — the frame is a third the height of the deck's
+     own, and furniture scaled for 1350px reads as shouting at 628. */
+  .landscape .stage {
+    flex-direction: row-reverse;
+    align-items: flex-start;
+    gap: 44px;
+    padding: 30px 0 10px;
+  }
+  .landscape .doc-col { width: 45%; flex-shrink: 0; }
+  .landscape .text-col { flex: 1; min-width: 0; }
+  .landscape .panel { margin-top: 0; padding: 16px; }
+  .landscape .strip + .strip { margin-top: 13px; padding-top: 13px; }
+  .landscape .nut { margin-top: ${fitpx(16)}; }
+  .landscape .caption { font-size: ${fitpx(17)}; margin-top: ${fitpx(12)}; }
+  .landscape .lockup { font-size: 24px; }
+  .landscape .date { font-size: 18px; }
+  .landscape .site { font-size: 18px; padding-top: 12px; }
   .facts {
     font-family: "Jost", sans-serif;
     font-size: ${fitpx(26)};
@@ -320,7 +368,7 @@ const css = (date) => `
     margin-top: ${fitpx(30)};
   }`;
 
-const shell = (extraCss, body) => `<!doctype html>
+const shell = (extraCss, body, size) => `<!doctype html>
 <html>
 <head>
 <meta charset="utf-8" />
@@ -329,13 +377,13 @@ const shell = (extraCss, body) => `<!doctype html>
 <link href="${FONTS}" rel="stylesheet" />
 <style>
   * { margin: 0; padding: 0; box-sizing: border-box; }
-  html, body { width: ${PORTRAIT.width}px; height: ${PORTRAIT.height}px; }
+  html, body { width: ${size.width}px; height: ${size.height}px; }
   body {
     background: ${INK};
     color: ${CREAM};
     display: flex;
     flex-direction: column;
-    padding: ${PORTRAIT.padding};
+    padding: ${size.padding};
     -webkit-font-smoothing: antialiased;
   }
 ${extraCss}
@@ -346,27 +394,55 @@ ${body}
 </body>
 </html>`;
 
-const slideHtml = (slide, lang, date) => {
+const slideHtml = (slide, lang, date, size) => {
   const copy = slide[lang];
   const rubric = slide.rubric?.[lang];
-  const body =
+
+  const text =
     (rubric ? `<p class="rubric">${escapeHtml(rubric)}</p>` : '') +
     `<h1 class="hed">${escapeHtml(copy.hed)}</h1>` +
-    (copy.nut ? `<p class="nut">${escapeHtml(copy.nut)}</p>` : '') +
+    (copy.nut ? `<p class="nut">${escapeHtml(copy.nut)}</p>` : '');
+  const doc =
     (slide.panel ? panelHtml(slide.panel) : '') +
-    (copy.caption ? `<p class="caption">${escapeHtml(copy.caption)}</p>` : '') +
-    (slide.type === 'closer'
+    (copy.caption ? `<p class="caption">${escapeHtml(copy.caption)}</p>` : '');
+  const closer =
+    slide.type === 'closer'
       ? `<p class="closer-url">${HOME_URL}</p>` +
         (copy.facts ? `<p class="facts">${escapeHtml(copy.facts)}</p>` : '')
-      : '');
+      : '';
+
+  // Landscape splits into columns; every other frame keeps the stack. The
+  // document column comes first so the fitter's first-to-last measurement
+  // spans from the panel's top edge to the type's bottom one.
+  const body = size.landscape
+    ? `<div class="doc-col">${doc}</div><div class="text-col">${text}${closer}</div>`
+    : text + doc + closer;
+
+  // Landscape drops the type a proportional step: the frame is short, and the
+  // fitter can only shrink so far before FIT_MIN.
+  const hedPx = size.landscape ? Math.round(hedSize(copy.hed) * 0.6) : hedSize(copy.hed);
+  const nutPx = copy.nut
+    ? size.landscape
+      ? Math.round(nutSize(copy.nut) * 0.72)
+      : nutSize(copy.nut)
+    : 0;
 
   const page = shell(
     css(date) +
-      `\n  .hed { font-size: ${fitpx(hedSize(copy.hed))}; }` +
-      (copy.nut ? `\n  .nut { font-size: ${fitpx(nutSize(copy.nut))}; }` : ''),
-    frame(body, { date, site: slide.type !== 'closer' }),
+      `\n  .hed { font-size: ${fitpx(hedPx)}; }` +
+      (copy.nut ? `\n  .nut { font-size: ${fitpx(nutPx)}; }` : ''),
+    frame(body, { date, site: slide.type !== 'closer', size }),
+    size,
   );
-  return slide.type === 'closer' ? page.replace('<body>', '<body class="closer">') : page;
+
+  const classes = [
+    slide.type === 'closer' && 'closer',
+    size.landscape && 'landscape',
+    size.bodyClass,
+  ]
+    .filter(Boolean)
+    .join(' ');
+  return classes ? page.replace('<body>', `<body class="${classes}">`) : page;
 };
 
 // ── Render ────────────────────────────────────────────────────────────────
@@ -380,35 +456,39 @@ for (const lang of langs) {
   rmSync(dir, { recursive: true, force: true });
   mkdirSync(dir, { recursive: true });
 
-  spec.slides.forEach((slide, i) => {
-    const name = slide.name ?? slide.type;
-    const out = join(dir, `${String(i + 1).padStart(2, '0')}-${name}.png`);
-    const html = slideHtml(slide, lang, spec.date[lang]);
+  for (const sizeKey of sizeKeys) {
+    const size = SIZES[sizeKey];
 
-    // The html sits in the spec directory so the exhibit <img> paths resolve
-    // relative to the documents they name.
-    const page = join(specDir, `.render-${lang}-${i}.html`);
-    const raw = join(workDir, `.dossier-${lang}-${i}-2x.png`);
-    writeFileSync(page, html);
+    spec.slides.forEach((slide, i) => {
+      const name = slide.name ?? slide.type;
+      const out = join(dir, `${String(i + 1).padStart(2, '0')}-${name}${size.suffix}.png`);
+      const html = slideHtml(slide, lang, spec.date[lang], size);
 
-    execFileSync(
-      'google-chrome',
-      [
-        '--headless=new',
-        '--disable-gpu',
-        '--hide-scrollbars',
-        '--force-device-scale-factor=2',
-        '--virtual-time-budget=20000',
-        `--window-size=${PORTRAIT.width},${PORTRAIT.height}`,
-        `--screenshot=${raw}`,
-        `file://${page}`,
-      ],
-      { stdio: ['ignore', 'ignore', 'ignore'] },
-    );
+      // The html sits in the spec directory so the exhibit <img> paths resolve
+      // relative to the documents they name.
+      const page = join(specDir, `.render-${lang}-${sizeKey}-${i}.html`);
+      const raw = join(workDir, `.dossier-${lang}-${sizeKey}-${i}-2x.png`);
+      writeFileSync(page, html);
 
-    execFileSync('convert', [raw, '-resize', OUT_SIZE, '-strip', out]);
-    rmSync(raw, { force: true });
-    rmSync(page, { force: true });
-    console.log(`Wrote ${out.replace(webRoot + '/', '')}`);
-  });
+      execFileSync(
+        'google-chrome',
+        [
+          '--headless=new',
+          '--disable-gpu',
+          '--hide-scrollbars',
+          '--force-device-scale-factor=2',
+          '--virtual-time-budget=20000',
+          `--window-size=${size.width},${size.height}`,
+          `--screenshot=${raw}`,
+          `file://${page}`,
+        ],
+        { stdio: ['ignore', 'ignore', 'ignore'] },
+      );
+
+      execFileSync('convert', [raw, '-resize', `${size.width}x${size.height}`, '-strip', out]);
+      rmSync(raw, { force: true });
+      rmSync(page, { force: true });
+      console.log(`Wrote ${out.replace(webRoot + '/', '')}`);
+    });
+  }
 }
