@@ -1,4 +1,5 @@
 import { error } from '@sveltejs/kit';
+import { getDossier } from '$lib/daybook/dossier';
 import { getEdition, getMonth, listEditions } from '$lib/daybook/loader';
 import { isLang, LANGS } from '$lib/i18n';
 
@@ -35,6 +36,9 @@ export const load = ({ params }) => {
       kind: 'edition' as const,
       ref,
       edition,
+      // Resolved here rather than in the component so the deck specs — which
+      // are globbed out of scripts/ — stay on the server and out of the bundle.
+      dossier: edition.dossier ? getDossier(edition.dossier, lang) : null,
       alternates,
       newer: at > 0 ? all[at - 1] : null,
       older: at >= 0 && at < all.length - 1 ? all[at + 1] : null,

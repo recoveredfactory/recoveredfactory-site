@@ -33,6 +33,18 @@ export type EditionMeta = {
    * back to the wordmark plate when this is absent.
    */
   socialImage?: string;
+  /**
+   * Slug of a dossier deck to show above this edition — a directory under
+   * scripts/daybook/dossiers/. Set by hand on the editions a campaign is
+   * pointing at; carried forward by the pull like the override flags, since
+   * nothing derives it.
+   */
+  dossier?: string;
+  /**
+   * Shortcode of the Instagram post that deck went out as — the `Db_3uMaoDj4`
+   * in an instagram.com/p/ URL. The card links out to it; it is never embedded.
+   */
+  instagramPost?: string;
   kitBroadcastId?: number;
   docUrl?: string;
   sourceStatus?: string;

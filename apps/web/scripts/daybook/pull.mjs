@@ -564,11 +564,24 @@ function applyOverrides(prepared, existing, lang, date) {
     description: held('description', prepared.description),
     titleOverride: existing.titleOverride === 'true',
     descriptionOverride: existing.descriptionOverride === 'true',
+    // Nothing derives these — they are set by hand on the editions a campaign
+    // is pointing at, so the pull's only job is to not lose them.
+    dossier: existing.dossier ?? '',
+    instagramPost: existing.instagramPost ?? '',
   };
 }
 
 function serializeEdition(
-  { body, standing, headline, description, titleOverride, descriptionOverride },
+  {
+    body,
+    standing,
+    headline,
+    description,
+    titleOverride,
+    descriptionOverride,
+    dossier,
+    instagramPost,
+  },
   lang,
   date,
   socialImage,
@@ -590,6 +603,8 @@ function serializeEdition(
     // static/images is gitignored by design, so the frontmatter — which is
     // committed — is the record of which cards exist.
     socialImage ? `socialImage: "${socialImage}"` : null,
+    dossier ? `dossier: "${escapeYaml(dossier)}"` : null,
+    instagramPost ? `instagramPost: "${escapeYaml(instagramPost)}"` : null,
     perLang.kit_broadcast_id ? `kitBroadcastId: ${perLang.kit_broadcast_id}` : null,
     perLang.doc_url ? `docUrl: "${perLang.doc_url}"` : null,
     `sourceStatus: "${manifest.status}"`,
