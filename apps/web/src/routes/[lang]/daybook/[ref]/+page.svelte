@@ -1,6 +1,8 @@
 <script lang="ts">
   import { trackEvent } from '$lib/analytics';
   import DaybookSubscribe from '$lib/components/DaybookSubscribe.svelte';
+  import DossierCarousel from '$lib/components/DossierCarousel.svelte';
+  import ShareRow from '$lib/components/ShareRow.svelte';
   import { SITE_URL } from '$lib/config';
   import { formatEditionDate, formatMonth } from '$lib/daybook/format';
   import { archiveSchema, editionSchema } from '$lib/daybook/schema';
@@ -64,6 +66,11 @@
         : `Every edition from ${dateLabel}.`,
   );
 
+  // What rides into a chat app beside the link. The edition's own headline
+  // rather than the page title — "Immigration Daybook, Aug. 13, 2026: …" reads
+  // like a filename once it is sitting in a group thread.
+  const shareTitle = $derived(isEdition ? data.edition!.title : pageTitle);
+
   const schema = $derived(
     isEdition
       ? editionSchema(data.edition!)
@@ -109,17 +116,25 @@
 
 <main class="min-h-dvh px-6 py-12 sm:px-10 lg:px-16">
   <div class="mx-auto flex max-w-2xl flex-col gap-8">
-    <nav class="text-xs uppercase tracking-[0.2em] text-slate-500">
-      <a class="hover:underline" href={`/${data.lang}/daybook`}>Immigration Daybook</a>
-      {#if isEdition}
-        <span aria-hidden="true"> / </span>
-        <a class="hover:underline" href={`/${data.lang}/daybook/${data.ref.slice(0, 7)}`}>
-          {formatMonth(data.ref.slice(0, 7), data.lang)}
-        </a>
-      {/if}
+    <!-- The crumb and the language switch are both letterspaced caps, which is
+         wide: on a phone they run past the column and the switch wraps inside
+         its own label. So they stack until there is room for the two of them on
+         one line. -->
+    <nav
+      class="flex flex-col items-start gap-2 text-xs uppercase tracking-[0.2em] text-slate-500 sm:flex-row sm:items-baseline sm:gap-4"
+    >
+      <span>
+        <a class="hover:underline" href={`/${data.lang}/daybook`}>Immigration Daybook</a>
+        {#if isEdition}
+          <span aria-hidden="true"> / </span>
+          <a class="hover:underline" href={`/${data.lang}/daybook/${data.ref.slice(0, 7)}`}>
+            {formatMonth(data.ref.slice(0, 7), data.lang)}
+          </a>
+        {/if}
+      </span>
       {#if translation}
         <a
-          class="ml-3 inline-flex items-center text-xs font-semibold uppercase tracking-[0.25em] text-fern-strong transition hover:text-fern-strong/80"
+          class="inline-flex shrink-0 items-center text-xs font-semibold uppercase tracking-[0.25em] text-fern-strong transition hover:text-fern-strong/80"
           href={translation.href}
           onclick={() => {
             setLocale(translation.lang, { reload: false });
@@ -137,6 +152,34 @@
     </nav>
 
     <DaybookSubscribe lang={data.lang} placement="archive-top" />
+
+    <!-- Between the ask and the edition, and only on the editions that name a
+         deck. An ad lands the reader here to read the day's edition; the deck
+         is the thing we want them to carry back out, so it sits where they pass
+         it on the way in rather than at the bottom, where a reader who is done
+         has already left. -->
+    {#if isEdition && data.dossier}
+      <div class="flex flex-col gap-4">
+        <DossierCarousel
+          instagramPost={data.edition?.instagramPost}
+          lang={data.lang}
+          slides={data.dossier.slides}
+        />
+        <!-- Attached to the deck rather than floated at the very top of the
+             page. Nobody forwards a thing they have not read — but the deck is
+             self-contained and reads in twenty seconds, so by the bottom of it
+             a reader has something to pass on. On editions with no deck the
+             same row runs after the edition instead. -->
+        <div class="flex justify-center">
+          <ShareRow
+            lang={data.lang}
+            placement="dossier"
+            title={shareTitle}
+            url={canonical}
+          />
+        </div>
+      </div>
+    {/if}
 
     {#if isEdition && data.edition}
       {@const edition = data.edition}
@@ -181,6 +224,14 @@
 
           <div class="rf-daybook prose prose-slate max-w-none">
             {@html edition.html}
+          </div>
+        {/if}
+
+        {#if !data.dossier}
+          <!-- No deck to hang it on, so the ask to pass it on waits until the
+               edition has been read. -->
+          <div class="border-t border-slate-200 pt-6">
+            <ShareRow lang={data.lang} placement="edition-end" title={shareTitle} url={canonical} />
           </div>
         {/if}
 
