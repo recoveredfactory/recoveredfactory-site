@@ -23,18 +23,56 @@
   let { lang, placement }: DaybookSubscribeProps = $props();
 
   const es = $derived(lang === 'es');
-  // The terms, not a pitch — the reader is already looking at the thing. Same
-  // three facts the landing page hero states.
-  const terms = $derived(
+  // What the thing is, then the terms. The same sentence the dossier decks
+  // close on and the ads run — a reader who arrives from one of those should
+  // meet the words they were promised, not a paraphrase.
+  // Split so the offer can carry weight the description does not. Emphasis is
+  // the one way to make this louder that costs no height, which is the whole
+  // constraint: the ask runs twice on every archive page and sits above the
+  // edition on the page the ads point at.
+  const pitch = $derived(
     es
-      ? 'De lunes a viernes, en español e inglés. Gratis en agosto.'
-      : 'Every weekday, in English and Spanish. Free in August.',
+      ? 'Noticias curadas, contexto de fuentes primarias, datos utilizables y un calendario de lo que viene en el sistema migratorio.'
+      : 'Curated news, primary source context, useable data, and a calendar of what’s coming in the immigration system.',
+  );
+  const offer = $derived(es ? 'Gratis cada día hábil en agosto.' : 'Free every weekday in August.');
+
+  /**
+   * What we do and don't do with the address.
+   *
+   * This is a newsletter about immigration enforcement, so the ask is not the
+   * ordinary one: a reader deciding whether to hand over an email is running a
+   * real risk calculation about themselves or their family, and silence on the
+   * question reads as an answer. It sits nearest the input because that is
+   * where the hesitation happens.
+   *
+   * TODO(david): stub copy, both languages. This is the line most worth getting
+   * exactly right and least worth having me guess at — say only what is true of
+   * how the Kit list is actually run.
+   */
+  const privacy = $derived(
+    es
+      ? 'Nunca vendemos ni compartimos tu correo. Cancela cuando quieras.'
+      : 'We never sell or share your email. Unsubscribe any time.',
   );
 </script>
 
-<section class="not-prose border-y border-slate-900/10 py-4">
+<!-- A panel rather than a pair of rules. On cream, white with a hairline reads
+     as a thing to act on instead of a caption, and it costs nothing vertically —
+     the padding is the padding the rules already had. -->
+<section class="not-prose border border-slate-900/15 bg-white px-4 py-4">
   <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-    <p class="text-sm text-slate-600 sm:flex-1">{terms}</p>
+    <div class="sm:flex-1">
+      <p class="text-sm leading-snug text-slate-700 sm:text-base sm:leading-normal">
+        {pitch}
+        <span class="font-semibold text-slate-900">{offer}</span>
+      </p>
+      <!-- Desktop keeps it under the pitch, where there is room in the column.
+           On a phone the pitch already runs several lines, so it moves below the
+           input instead — nearer the thing it is reassuring you about, and it
+           does not push the form further down the screen. -->
+      <p class="mt-1.5 hidden text-xs text-slate-500 sm:block">{privacy}</p>
+    </div>
     <SubscribeForm
       buttonClass="bg-fern-strong px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-fern sm:shrink-0"
       id={`daybook-${placement}`}
@@ -47,4 +85,5 @@
       tag="newsletter:immigration-daybook"
     />
   </div>
+  <p class="mt-2 text-xs text-slate-500 sm:hidden">{privacy}</p>
 </section>
