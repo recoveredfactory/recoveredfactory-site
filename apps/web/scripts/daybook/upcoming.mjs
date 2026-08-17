@@ -16,7 +16,16 @@
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
-const SCHEMA = 'immigration-daybook-upcoming.v1';
+// Schemas this script has been read against. v2 (first seen 2026-08-17) renamed
+// the artifact, moved the counts under `audit`, lifted `policy_sha256` to the
+// top level, and dropped `render_order` / `render_order_es` in favour of
+// `eligible_order` alone — so Spanish no longer gets its own tie-break. Both
+// readers here and in src/lib/daybook/upcoming.ts fall back to `eligible_order`,
+// which is why the change was survivable. A third one should still shout.
+const KNOWN_SCHEMAS = new Set([
+  'immigration-daybook-upcoming.v1',
+  'immigration-daybook-upcoming-manifest.v2',
+]);
 
 /** Where an edition's snapshot lives, committed alongside the markdown. */
 export const upcomingPath = (webRoot, date) =>
@@ -75,10 +84,11 @@ export async function loadUpcoming({ webRoot, url, key, date, offline }) {
   }
 
   const doc = JSON.parse(raw);
-  if (doc.schema_version !== SCHEMA) {
+  if (!KNOWN_SCHEMAS.has(doc.schema_version)) {
     console.warn(
-      `WARNING: ${date}: upcoming snapshot is ${doc.schema_version}, expected ${SCHEMA}. ` +
-        'Reading it anyway — check the item fields if the slides look wrong.',
+      `WARNING: ${date}: upcoming snapshot is ${doc.schema_version}, which this script has not ` +
+        `been read against (known: ${[...KNOWN_SCHEMAS].join(', ')}). Reading it anyway — ` +
+        'check the item fields if the slides look wrong.',
     );
   }
 
@@ -96,23 +106,39 @@ export async function loadUpcoming({ webRoot, url, key, date, offline }) {
  * The items to put on cards, in the order the composer would render them.
  *
  * `selected_items` is the published subset and wins whenever it is populated.
- * It is empty when the program is run on its own rather than as part of
- * composition — `selection.mode` reads `eligible_only` — and then the
- * deterministic slate is the best available answer and also, on the editions
- * seen so far, the same five the newsletter shipped.
+ * It is empty on every edition seen so far — `selection.mode` reads
+ * `eligible_only`, because the upcoming program runs on its own rather than as
+ * part of composition — and the eligible slate is then wider than what shipped.
  *
- * Ordering is per language. `render_order_es` is not always `render_order`:
- * both sorts break ties on the summary text (`render_sort` / `render_sort_es`),
- * and two items sharing a date can therefore fall differently in Spanish.
+ * `publishedIds` closes that gap: the ids the edition's manifest says went out,
+ * passed down by pull.mjs. When they resolve, they decide both the set and the
+ * order. When they do not — an older edition, or a manifest that never carried
+ * them — the eligible slate stands, which is the behaviour this had all along.
+ *
+ * Ordering is otherwise per language: v1 gave Spanish its own `render_order_es`
+ * because both sorts broke ties on the summary text, so two items sharing a date
+ * could fall differently. v2 ships neither and `eligible_order` carries both.
  */
-export function upcomingItems(doc, lang = 'en') {
+export function upcomingItems(doc, lang = 'en', publishedIds = null) {
   if (!doc) return [];
 
   const selected = doc.selected_items ?? [];
-  const items = selected.length ? selected : (doc.eligible_items ?? []);
-  const order = lang === 'es' ? 'render_order_es' : 'render_order';
+  const eligible = doc.eligible_items ?? [];
+  const items = selected.length ? selected : eligible;
 
-  return [...items].sort((a, b) => (a[order] ?? a.render_order ?? 0) - (b[order] ?? b.render_order ?? 0));
+  if (publishedIds?.length) {
+    const byId = new Map(items.map((item) => [item.id, item]));
+    const published = publishedIds.map((id) => byId.get(id)).filter(Boolean);
+    if (published.length) return published;
+  }
+
+  const order = (item) =>
+    (lang === 'es' ? item.render_order_es : item.render_order) ??
+    item.render_order ??
+    item.eligible_order ??
+    Number.MAX_SAFE_INTEGER;
+
+  return [...items].sort((a, b) => order(a) - order(b));
 }
 
 /**

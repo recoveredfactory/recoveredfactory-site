@@ -237,6 +237,32 @@ if (!/^\d{4}-\d{2}-\d{2}$/.test(editionDate ?? '')) {
   process.exit(1);
 }
 
+// Which calendar entries the composer actually published.
+//
+// The snapshot's own `selected_items` is empty on every edition seen so far and
+// `selection.mode` reads `eligible_only`, so the readers downstream fall back to
+// the whole eligible slate — which is one or two entries longer than what went
+// out. On 2026-08-17 the email carried five and the eligible set held six, the
+// sixth being an OMB paperwork renewal of exactly the kind the composer keeps
+// off the calendar.
+//
+// The one place the published set is written down is the per-language `notes`
+// blob on the manifest, as `upcoming_ids`. It is language-neutral — the snapshot
+// says so — and it is not always on both sides: on 2026-08-17 only `es` carried
+// it. So it is read from either, and archived into the edition frontmatter,
+// which is the committed record the page can reach.
+const upcomingIds = (() => {
+  for (const lang of LANGS) {
+    try {
+      const ids = JSON.parse(manifest[lang]?.notes ?? '{}').upcoming_ids;
+      if (Array.isArray(ids) && ids.length) return ids;
+    } catch {
+      // A notes blob that is not JSON is not worth stopping the pull over.
+    }
+  }
+  return null;
+})();
+
 // The publish gate. `faithfulness_blocked` is the automation's own signal that a
 // claim in the edition did not survive its source check — that must never reach
 // the archive on autopilot, so --force has to be typed by a human who has read
@@ -277,17 +303,36 @@ if (manifest.url_parity === false) {
 // one record of them.
 const snapshot = await loadUpcoming({ webRoot, url, key, date: editionDate, offline });
 if (snapshot) {
-  const { mode, eligible_count: eligible, selected_count: selected } = snapshot.selection ?? {};
+  // v2 moved the counts under `audit` and lifted `policy_sha256` to the top
+  // level; v1 kept both beside `selection`. Read either, because a log line that
+  // says "0 items" over a full calendar is worse than no log line.
+  const mode = snapshot.selection?.mode ?? 'unknown';
+  const eligible =
+    snapshot.audit?.eligible_count ??
+    snapshot.selection?.eligible_count ??
+    snapshot.eligible_items?.length ??
+    0;
+  const policy = snapshot.policy_sha256 ?? snapshot.policy?.policy_sha256 ?? '';
+  const published = upcomingIds ? `${upcomingIds.length} published` : 'no published set on the manifest';
   console.log(
-    `Upcoming: selection.mode=${mode ?? 'unknown'} ` +
-      `(${selected || eligible || 0} items, policy ${snapshot.policy?.policy_sha256?.slice(0, 12) ?? '?'}).`,
+    `Upcoming: selection.mode=${mode} ` +
+      `(${eligible} eligible, ${published}, policy ${policy ? policy.slice(0, 12) : '?'}).`,
   );
+
+  const known = new Set((snapshot.eligible_items ?? []).map((item) => item.id));
+  const missing = (upcomingIds ?? []).filter((id) => !known.has(id));
+  if (missing.length) {
+    console.warn(
+      `WARNING: ${editionDate}: the manifest publishes upcoming ids [${missing.join(', ')}] ` +
+        'that are not in the snapshot. Falling back to the full eligible slate for those.',
+    );
+  }
 }
 
 const calendarFor = (lang) =>
   noUpcoming
     ? []
-    : upcomingItems(snapshot, lang)
+    : upcomingItems(snapshot, lang, upcomingIds)
         .map((item) => toEntryFromSnapshot(item, lang, snapshot))
         .filter(Boolean);
 
@@ -605,6 +650,10 @@ function serializeEdition(
     socialImage ? `socialImage: "${socialImage}"` : null,
     dossier ? `dossier: "${escapeYaml(dossier)}"` : null,
     instagramPost ? `instagramPost: "${escapeYaml(instagramPost)}"` : null,
+    // The calendar the email actually carried, so the page renders that set
+    // rather than the whole eligible slate. Absent on editions pulled before
+    // this was read, which keep the old fall-back behaviour.
+    upcomingIds ? `upcomingIds: "${upcomingIds.join(',')}"` : null,
     perLang.kit_broadcast_id ? `kitBroadcastId: ${perLang.kit_broadcast_id}` : null,
     perLang.doc_url ? `docUrl: "${perLang.doc_url}"` : null,
     `sourceStatus: "${manifest.status}"`,

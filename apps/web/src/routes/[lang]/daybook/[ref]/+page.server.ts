@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import { getDossier } from '$lib/daybook/dossier';
 import { getEdition, getMonth, listEditions } from '$lib/daybook/loader';
-import { getUpcoming } from '$lib/daybook/upcoming';
+import { getUpcoming, parseUpcomingIds } from '$lib/daybook/upcoming';
 import { isLang, LANGS } from '$lib/i18n';
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -49,8 +49,10 @@ export const load = ({ params, url }) => {
       // are globbed out of scripts/ — stay on the server and out of the bundle.
       dossier: edition.dossier ? getDossier(edition.dossier, lang) : null,
       // The calendar lives only in the sent email, so a page rendered from
-      // markdown has to read the pipeline's snapshot to have one at all.
-      upcoming: getUpcoming(lang, ref),
+      // markdown has to read the pipeline's snapshot to have one at all — and
+      // the edition's own `upcomingIds` to render the entries that were sent
+      // rather than everything that was eligible.
+      upcoming: getUpcoming(lang, ref, parseUpcomingIds(edition.upcomingIds)),
       alternates,
       newer: at > 0 ? all[at - 1] : null,
       older: at >= 0 && at < all.length - 1 ? all[at + 1] : null,

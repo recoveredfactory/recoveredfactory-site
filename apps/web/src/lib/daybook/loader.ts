@@ -45,6 +45,12 @@ export type EditionMeta = {
    * in an instagram.com/p/ URL. The card links out to it; it is never embedded.
    */
   instagramPost?: string;
+  /**
+   * The calendar entries the sent email carried, as watch-item ids joined by
+   * commas — the frontmatter is a flat key/value format, so a list is a string.
+   * Written by the pull off the edition manifest; see `getUpcoming`.
+   */
+  upcomingIds?: string;
   kitBroadcastId?: number;
   docUrl?: string;
   sourceStatus?: string;

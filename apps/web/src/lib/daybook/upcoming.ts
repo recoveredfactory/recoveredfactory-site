@@ -22,6 +22,7 @@ import type { Lang } from '$lib/i18n';
 type Citation = { label?: string; url?: string };
 
 type SnapshotItem = {
+  id?: number;
   key_date?: string;
   display_summary?: string;
   display_summary_es?: string;
@@ -71,6 +72,15 @@ for (const [path, snapshot] of Object.entries(snapshots)) {
   if (/^\d{4}-\d{2}-\d{2}$/.test(date)) byDate.set(date, snapshot);
 }
 
+/** `"310,315,316"` from an edition's frontmatter, as ids. */
+export function parseUpcomingIds(value?: string): number[] {
+  if (!value) return [];
+  return value
+    .split(',')
+    .map((part) => Number(part.trim()))
+    .filter((id) => Number.isInteger(id));
+}
+
 const cite = (citation: Citation | undefined) =>
   citation?.url ? { label: citation.label?.trim() || citation.url, url: citation.url } : null;
 
@@ -80,14 +90,26 @@ const cite = (citation: Citation | undefined) =>
  *
  * `selection.mode` decides which list is authoritative. Every snapshot so far
  * runs `eligible_only`, where `selected_items` is empty and `eligible_items` is
- * the published set — reading the wrong one renders an empty calendar under a
- * heading, which is worse than no heading.
+ * the widest defensible set — reading the wrong one renders an empty calendar
+ * under a heading, which is worse than no heading.
+ *
+ * `publishedIds` narrows that set to what the email actually carried, off the
+ * edition's `upcomingIds` frontmatter. The eligible slate runs an entry or two
+ * long — on 2026-08-17 it held six against the email's five, the extra being an
+ * OMB paperwork renewal the composer had kept out — and the page and the inbox
+ * disagreeing about the same day's deadlines is a small lie the archive should
+ * not tell. Editions pulled before that field existed pass nothing and get the
+ * whole slate, as before.
  */
-export function getUpcoming(lang: Lang, date: string): Upcoming | null {
+export function getUpcoming(
+  lang: Lang,
+  date: string,
+  publishedIds?: number[] | null,
+): Upcoming | null {
   const snapshot = byDate.get(date);
   if (!snapshot) return null;
 
-  const items =
+  const eligible =
     snapshot.selection?.mode === 'eligible_only'
       ? (snapshot.eligible_items ?? [])
       : (snapshot.selected_items ?? snapshot.eligible_items ?? []);
@@ -97,8 +119,18 @@ export function getUpcoming(lang: Lang, date: string): Upcoming | null {
     item.eligible_order ??
     Number.MAX_SAFE_INTEGER;
 
+  // Published ids decide the order as well as the set: they are the sequence the
+  // composer rendered. A list that resolves to nothing is treated as no list at
+  // all rather than as an empty calendar.
+  const byId = new Map(eligible.map((item) => [item.id, item]));
+  const published = (publishedIds ?? [])
+    .map((id) => byId.get(id))
+    .filter((item): item is SnapshotItem => Boolean(item));
+
+  const items = published.length ? published : [...eligible].sort((a, b) => order(a) - order(b));
+
   const entries: UpcomingEntry[] = [];
-  for (const item of [...items].sort((a, b) => order(a) - order(b))) {
+  for (const item of items) {
     const summary = (
       lang === 'es'
         ? (item.display_summary_es ?? item.plain_summary_es)
