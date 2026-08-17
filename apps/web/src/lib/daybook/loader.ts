@@ -71,6 +71,8 @@ export type EditionSection = {
 export type Edition = EditionSummary & {
   /** The edition rendered from markdown — semantic, site-styled. */
   html: string;
+  /** The standing note with its markdown rendered. Empty when there is none. */
+  standingHtml: string;
   /**
    * Anything before the first section — the Spanish editions' translator's
    * note, mostly. Empty string when the body opens straight into a headline.
@@ -257,6 +259,11 @@ export function getMonth(lang: Lang, month: string): Edition[] {
 // Those read from markdown; only the edition page shows the sent artifact.
 const rendered = (entry: RawEdition, lang: Lang, baseLevel: 2 | 3, withEmail = false) => ({
   html: render(entry.body, baseLevel),
+  // The standing note is written in markdown like the rest of the edition and
+  // routinely carries a link — "we updated [287(g) Watch](…)". It lives in the
+  // frontmatter rather than the body, so it misses the body's render and was
+  // reaching the page as its own source text, brackets and URL and all.
+  standingHtml: entry.meta.standing ? renderInline(entry.meta.standing) : '',
   ...split(entry.body, baseLevel),
   emailHtml: withEmail ? (emailsByDate[lang].get(entry.meta.date) ?? null) : null,
   events: extractEvents(entry.body, lang, entry.meta.date),
@@ -345,6 +352,16 @@ function rendererFor(baseLevel: number) {
 const render = (body: string, baseLevel: number) =>
   marked.parse(neutralizeHtml(body), {
     renderer: rendererFor(baseLevel),
+    async: false,
+    gfm: true,
+  }) as string;
+
+// One line of markdown with no block wrapper around it — the standing note,
+// which the page sets as a note and puts in its own <p>. Same renderer as the
+// body, so its links open out the same way and the same escaping applies.
+const renderInline = (text: string) =>
+  marked.parseInline(neutralizeHtml(text), {
+    renderer: rendererFor(2),
     async: false,
     gfm: true,
   }) as string;

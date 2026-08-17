@@ -31,7 +31,9 @@
 </script>
 
 {#if entries.length}
-  <section class="rf-upcoming not-prose">
+  <!-- Set in the edition's own face, so the calendar reads as part of the
+       edition rather than as a widget parked in the middle of it. -->
+  <section class="rf-upcoming font-daybook">
     <svelte:element this={`h${level}`} class="rf-daybook__section">
       {heading}
     </svelte:element>
@@ -59,12 +61,12 @@
             {/if}
           </dt>
           <dd class="min-w-0 flex-1">
-            <p class="text-sm leading-relaxed text-slate-700">{entry.summary}</p>
+            <p class="text-[0.9375rem] leading-relaxed text-slate-700">{entry.summary}</p>
             {#if entry.sources.length}
               <p class="mt-1.5 flex flex-wrap gap-x-3 gap-y-1 text-xs">
                 {#each entry.sources as source}
                   <a
-                    class="text-link underline-offset-2 transition hover:underline"
+                    class="text-daybook-link underline-offset-2 transition hover:underline"
                     href={source.url}
                     rel="noopener"
                     target="_blank"

@@ -209,13 +209,14 @@
                reading by outline; it is just not drawn twice. -->
           <h1 class="sr-only">{edition.title}</h1>
         {:else}
-          <header class="space-y-2">
-            <p class="text-sm text-slate-500">{dateLabel}</p>
-            <h1
-              class="font-display text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl"
-            >
-              {edition.title}
-            </h1>
+          <!-- The date is the Daybook's masthead line — it is what the edition
+               is called — so it reads as a kicker over the headline rather than
+               as a byline under it. -->
+          <header class="space-y-3">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-fern-strong">
+              {dateLabel}
+            </p>
+            <h1 class="rf-daybook-hed">{edition.title}</h1>
           </header>
         {/if}
 
@@ -232,14 +233,12 @@
             {@html edition.emailHtml}
           </div>
         {:else}
-          {#if edition.standing}
-            <p class="border-l-2 border-slate-300 pl-4 text-sm italic text-slate-600">
-              {edition.standing}
-            </p>
+          {#if edition.standingHtml}
+            <p class="rf-daybook rf-daybook-standing">{@html edition.standingHtml}</p>
           {/if}
 
           {#if edition.intro}
-            <div class="rf-daybook prose prose-slate max-w-none">
+            <div class="rf-daybook">
               {@html edition.intro}
             </div>
           {/if}
@@ -249,7 +248,7 @@
                in the markdown, and one subscribe ask placed after the lede has
                made its case instead of stacked in front of it. -->
           {#each edition.sections as section, i}
-            <div class="rf-daybook prose prose-slate max-w-none">
+            <div class="rf-daybook">
               {@html section.html}
             </div>
 
@@ -336,10 +335,10 @@
               {formatEditionDate(edition.date, data.lang, { weekday: true })}
             </a>
           </p>
-          <h2 class="font-display text-2xl font-semibold text-slate-900">
+          <h2 class="rf-daybook-hed rf-daybook-hed--nested">
             {edition.title}
           </h2>
-          <div class="rf-daybook rf-daybook--nested prose prose-slate max-w-none">
+          <div class="rf-daybook rf-daybook--nested">
             {@html edition.html}
           </div>
         </article>
