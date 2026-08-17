@@ -1,0 +1,32 @@
+{
+  "slug": "2026-08-17-promo",
+  "date": {
+    "en": "Aug. 17, 2026",
+    "es": "17 de agosto de 2026"
+  },
+  "slides": [
+    {
+      "type": "exhibit",
+      "name": "promo",
+      "panel": [
+        {
+          "img": "bia-holding.png",
+          "marks": [
+            { "l": 0.392, "t": 0.55, "w": 0.384, "h": 0.15, "style": "hl" },
+            { "l": 0.148, "t": 0.738, "w": 0.121, "h": 0.169, "style": "hl" }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "Fourteen years of settled law, overruled",
+        "nut": "Since Aug. 13, leaving the United States on advance parole counts as a “departure” — which for people with more than 180 days of unlawful presence can start a three- or ten-year bar on coming back.",
+        "caption": "Matter of Delcarmen-Lara, 29 I&N Dec. 830 (BIA 2026), decided Aug. 13, 2026"
+      },
+      "es": {
+        "hed": "Catorce años de derecho consolidado, anulados",
+        "nut": "Desde el 13 de agosto, salir de Estados Unidos con advance parole cuenta como una “salida” — lo que para quienes acumulan más de 180 días de presencia ilegal puede activar un castigo de tres o diez años para regresar.",
+        "caption": "Matter of Delcarmen-Lara, 29 I&N Dec. 830 (BIA 2026), decidido el 13 de agosto de 2026"
+      }
+    }
+  ]
+}
