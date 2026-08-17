@@ -288,7 +288,12 @@
   font-size: clamp(1.375rem, 1.15rem + 0.95vw, 1.625rem);
   line-height: 1.16;
   letter-spacing: -0.01em;
-  text-wrap: balance;
+  /* Not `balance`. These headlines run to two and three lines, and balancing
+     evens the line lengths by pulling them all in — which on a 42rem column
+     reads as a heading set to some narrower measure than the story under it.
+     `pretty` keeps the last line off a single word without shortening the
+     others, so a headline fills the column the copy fills. */
+  text-wrap: pretty;
   color: var(--color-daybook-hed);
   margin: 0 0 0.85rem;
 }

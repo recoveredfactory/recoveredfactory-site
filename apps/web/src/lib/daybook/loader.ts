@@ -257,17 +257,47 @@ export function getMonth(lang: Lang, month: string): Edition[] {
 // `withEmail` is false for the month roundups: thirty editions stacked on one
 // page, each carrying its own email masthead and 600px frame, would be absurd.
 // Those read from markdown; only the edition page shows the sent artifact.
-const rendered = (entry: RawEdition, lang: Lang, baseLevel: 2 | 3, withEmail = false) => ({
-  html: render(entry.body, baseLevel),
-  // The standing note is written in markdown like the rest of the edition and
-  // routinely carries a link — "we updated [287(g) Watch](…)". It lives in the
-  // frontmatter rather than the body, so it misses the body's render and was
-  // reaching the page as its own source text, brackets and URL and all.
-  standingHtml: entry.meta.standing ? renderInline(entry.meta.standing) : '',
-  ...split(entry.body, baseLevel),
-  emailHtml: withEmail ? (emailsByDate[lang].get(entry.meta.date) ?? null) : null,
-  events: extractEvents(entry.body, lang, entry.meta.date),
-});
+/**
+ * Drop the lede story's own heading where the page already prints it.
+ *
+ * An edition's title is derived from its first section's headline — that is the
+ * design, and `titleOverride` is how an editor says otherwise. So on a page that
+ * draws the title as its headline, the lede's heading is the same words again,
+ * one type size down, directly underneath. A newspaper does not do this: the
+ * lede's headline *is* the page's headline, and its copy runs straight off it.
+ *
+ * Matched on text rather than position, because the Spanish editions open with a
+ * translator's note before the first heading. An edition whose title was
+ * overridden does not match and keeps both, which is right — there the two are
+ * genuinely different lines.
+ */
+const dropLedeHeading = (html: string, title: string) => {
+  const heading = html.match(/<h[1-6] class="rf-daybook__section">([\s\S]*?)<\/h[1-6]>\n?/);
+  if (!heading) return html;
+
+  const text = heading[1].replace(/<[^>]+>/g, '').trim();
+  return text === title.trim() ? html.replace(heading[0], '') : html;
+};
+
+const rendered = (entry: RawEdition, lang: Lang, baseLevel: 2 | 3, withEmail = false) => {
+  const title = entry.meta.title ?? '';
+  const { intro, sections } = split(entry.body, baseLevel);
+
+  return {
+    html: dropLedeHeading(render(entry.body, baseLevel), title),
+    intro,
+    sections: sections.map((section, i) =>
+      i === 0 ? { ...section, html: dropLedeHeading(section.html, title) } : section,
+    ),
+    // The standing note is written in markdown like the rest of the edition and
+    // routinely carries a link — "we updated [287(g) Watch](…)". It lives in the
+    // frontmatter rather than the body, so it misses the body's render and was
+    // reaching the page as its own source text, brackets and URL and all.
+    standingHtml: entry.meta.standing ? renderInline(entry.meta.standing) : '',
+    emailHtml: withEmail ? (emailsByDate[lang].get(entry.meta.date) ?? null) : null,
+    events: extractEvents(entry.body, lang, entry.meta.date),
+  };
+};
 
 /**
  * Cut the body at its section headings and render each piece on its own.
