@@ -17,7 +17,7 @@
   type DaybookSubscribeProps = {
     lang: Lang;
     /** Rides along on the signup event so the two slots can be told apart. */
-    placement: 'archive-top' | 'archive-bottom';
+    placement: 'archive-top' | 'archive-bottom' | 'edition-mid';
   };
 
   let { lang, placement }: DaybookSubscribeProps = $props();

@@ -3,6 +3,7 @@
   import DaybookSubscribe from '$lib/components/DaybookSubscribe.svelte';
   import DossierCarousel from '$lib/components/DossierCarousel.svelte';
   import ShareRow from '$lib/components/ShareRow.svelte';
+  import UpcomingCalendar from '$lib/components/UpcomingCalendar.svelte';
   import { SITE_URL } from '$lib/config';
   import { formatEditionDate, formatMonth } from '$lib/daybook/format';
   import { archiveSchema, editionSchema } from '$lib/daybook/schema';
@@ -70,6 +71,15 @@
   // rather than the page title — "Immigration Daybook, Aug. 13, 2026: …" reads
   // like a filename once it is sitting in a group thread.
   const shareTitle = $derived(isEdition ? data.edition!.title : pageTitle);
+
+  // The calendar sits second to last, where the sent email puts it — after the
+  // day's stories, before the closing round-up. An edition with a single
+  // section has no "before the last" to speak of, so it goes after that one.
+  const upcomingAfter = $derived(
+    (data.edition?.sections.length ?? 0) >= 2
+      ? data.edition!.sections.length - 2
+      : (data.edition?.sections.length ?? 0) - 1,
+  );
 
   const schema = $derived(
     isEdition
@@ -151,7 +161,13 @@
       {/if}
     </nav>
 
-    <DaybookSubscribe lang={data.lang} placement="archive-top" />
+    <!-- A month roundup has nowhere to put an ask except around the outside, so
+         it keeps both. An edition now carries one after the lede, where the
+         page has made its case — and three asks on one page is how you lose all
+         three. The as-sent view has no sections to break, so it keeps the pair. -->
+    {#if !isEdition || data.asSent}
+      <DaybookSubscribe lang={data.lang} placement="archive-top" />
+    {/if}
 
     <!-- Between the ask and the edition, and only on the editions that name a
          deck. An ad lands the reader here to read the day's edition; the deck
@@ -222,18 +238,64 @@
             </p>
           {/if}
 
-          <div class="rf-daybook prose prose-slate max-w-none">
-            {@html edition.html}
-          </div>
+          {#if edition.intro}
+            <div class="rf-daybook prose prose-slate max-w-none">
+              {@html edition.intro}
+            </div>
+          {/if}
+
+          <!-- The edition arrives in pieces so two things can sit between them:
+               the calendar, which lives in the pipeline's snapshot rather than
+               in the markdown, and one subscribe ask placed after the lede has
+               made its case instead of stacked in front of it. -->
+          {#each edition.sections as section, i}
+            <div class="rf-daybook prose prose-slate max-w-none">
+              {@html section.html}
+            </div>
+
+            {#if i === 0 && edition.sections.length > 1}
+              <DaybookSubscribe lang={data.lang} placement="edition-mid" />
+            {/if}
+
+            <!-- Second to last, where the email puts it: after the day's
+                 stories, before the closing round-up. -->
+            {#if data.upcoming && i === upcomingAfter}
+              <UpcomingCalendar entries={data.upcoming.entries} lang={data.lang} />
+            {/if}
+          {/each}
+
+          {#if data.upcoming && !edition.sections.length}
+            <UpcomingCalendar entries={data.upcoming.entries} lang={data.lang} />
+          {/if}
         {/if}
 
-        {#if !data.dossier}
-          <!-- No deck to hang it on, so the ask to pass it on waits until the
-               edition has been read. -->
-          <div class="border-t border-slate-200 pt-6">
+        <div class="flex flex-col gap-4 border-t border-slate-200 pt-6">
+          {#if !data.dossier}
+            <!-- No deck to hang it on, so the ask to pass it on waits until the
+                 edition has been read. -->
             <ShareRow lang={data.lang} placement="edition-end" title={shareTitle} url={canonical} />
-          </div>
-        {/if}
+          {/if}
+
+          <!-- The archive's record of what subscribers actually received. The
+               page is not that any more, so it says where that version is
+               rather than quietly replacing it. -->
+          <p class="text-xs text-slate-500">
+            <a
+              class="underline underline-offset-2 hover:text-slate-700"
+              href={asSent
+                ? `/${data.lang}/daybook/${data.ref}`
+                : `/${data.lang}/daybook/${data.ref}?sent`}
+            >
+              {asSent
+                ? es
+                  ? 'Volver a la versión web'
+                  : 'Back to the web version'
+                : es
+                  ? 'Ver esta edición como se envió'
+                  : 'View this edition as it was sent'}
+            </a>
+          </p>
+        </div>
 
         <footer class="flex justify-between gap-4 border-t border-slate-200 pt-6 text-sm">
           {#if data.older}

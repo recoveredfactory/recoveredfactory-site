@@ -55,9 +55,31 @@ export type EditionSummary = EditionMeta & {
   pilot: boolean;
 };
 
+export type EditionSection = {
+  /** The section's own headline, as written. */
+  heading: string;
+  /** That section rendered, heading included. */
+  html: string;
+};
+
 export type Edition = EditionSummary & {
   /** The edition rendered from markdown — semantic, site-styled. */
   html: string;
+  /**
+   * Anything before the first section — the Spanish editions' translator's
+   * note, mostly. Empty string when the body opens straight into a headline.
+   */
+  intro: string;
+  /**
+   * The same markdown, split at its section headings.
+   *
+   * The page needs somewhere to put things *between* an edition's sections —
+   * the Upcoming calendar, which lives outside the markdown entirely, and a
+   * subscribe ask that reads better after the lede than stacked above it.
+   * Neither is possible against one blob of rendered HTML, so the blob is also
+   * offered in pieces. `html` stays for the month roundups, which want it whole.
+   */
+  sections: EditionSection[];
   /**
    * The edition as it was sent, sanitised at pull time. Null for editions
    * archived before the email HTML was captured. This is the only place the
@@ -229,9 +251,30 @@ export function getMonth(lang: Lang, month: string): Edition[] {
 // Those read from markdown; only the edition page shows the sent artifact.
 const rendered = (entry: RawEdition, lang: Lang, baseLevel: 2 | 3, withEmail = false) => ({
   html: render(entry.body, baseLevel),
+  ...split(entry.body, baseLevel),
   emailHtml: withEmail ? (emailsByDate[lang].get(entry.meta.date) ?? null) : null,
   events: extractEvents(entry.body, lang, entry.meta.date),
 });
+
+/**
+ * Cut the body at its section headings and render each piece on its own.
+ *
+ * Rendering per block rather than slicing the finished HTML keeps this honest:
+ * marked never sees a partial document, so a section cannot inherit or leak
+ * state from the one above it.
+ */
+function split(body: string, baseLevel: 2 | 3): { intro: string; sections: EditionSection[] } {
+  const blocks = body.split(/\n(?=## )/);
+  const lead = blocks[0]?.startsWith('## ') ? '' : (blocks.shift() ?? '');
+
+  return {
+    intro: lead.trim() ? render(lead, baseLevel) : '',
+    sections: blocks.map((block) => ({
+      heading: block.match(/^## (.+)$/m)?.[1]?.trim() ?? '',
+      html: render(block, baseLevel),
+    })),
+  };
+}
 
 /** The raw markdown, for the `.md` companion routes. Undefined if not visible. */
 export function getEditionMarkdown(lang: Lang, date: string): string | undefined {

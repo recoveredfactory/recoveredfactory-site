@@ -20,6 +20,18 @@ export const formatEditionDate = (date: string, lang: Lang, { weekday = false } 
         day: 'numeric',
       });
 
+/**
+ * The two halves of a calendar chip: an abbreviated month over a bare day.
+ *
+ * Uppercased at the callsite rather than here — Spanish month abbreviations are
+ * lowercase in ordinary prose, and this is the one place they are set as a
+ * label instead.
+ */
+export const formatChipDate = (date: string, lang: Lang) => ({
+  month: formatDate(date, lang === 'en' ? 'en-US' : 'es-ES', { month: 'short' }).replace(/\.$/, ''),
+  day: formatDate(date, lang === 'en' ? 'en-US' : 'es-ES', { day: 'numeric' }),
+});
+
 export const formatMonth = (month: string, lang: Lang) =>
   formatDate(`${month}-01`, lang === 'en' ? 'en-US' : 'es-ES', {
     year: 'numeric',
