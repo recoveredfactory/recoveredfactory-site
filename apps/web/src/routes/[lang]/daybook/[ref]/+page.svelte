@@ -211,29 +211,28 @@
                reading by outline; it is just not drawn twice. -->
           <h1 class="sr-only">{edition.title}</h1>
         {:else}
-          <!-- The date is the Daybook's masthead line — it is what the edition
-               is called — so it reads as a kicker over the headline rather than
-               as a byline under it.
+          <!-- The masthead line, and the whole of what runs above the stories.
+               The date is what an edition is called, so it reads as a kicker —
+               and there is no edition headline under it, because a page does not
+               need one. The lede's own headline is the h1 and the first thing
+               set at size; see `ledeLevel` in the loader.
 
-               The two buttons ride that line, on their own. The panel above the
-               deck already made the ask, so this is not a second ask — it is the
-               affordance staying within reach at the point the edition actually
-               starts, which is a screen or more below where the reader came in.
-               No prompt, no note: both belong to the panels. -->
-          <header class="space-y-3">
-            <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-fern-strong">
-                {dateLabel}
-              </p>
-              <ShareRow
-                lang={data.lang}
-                placement="edition-hed"
-                title={shareTitle}
-                url={canonical}
-                variant="compact"
-              />
-            </div>
-            <h1 class="rf-daybook-hed">{edition.title}</h1>
+               The two buttons ride that line. The panel above the deck already
+               made the ask, so this is not a second ask — it is the affordance
+               staying within reach at the point the edition actually starts,
+               which is a screen or more below where the reader came in. No
+               prompt, no note: both belong to the panels. -->
+          <header class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-fern-strong">
+              {dateLabel}
+            </p>
+            <ShareRow
+              lang={data.lang}
+              placement="edition-hed"
+              title={shareTitle}
+              url={canonical}
+              variant="compact"
+            />
           </header>
         {/if}
 

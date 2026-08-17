@@ -218,9 +218,9 @@ export function getEdition(lang: Lang, date: string): Edition | undefined {
   const entry = editionsByLang[lang].get(date);
   if (!entry || !isVisible(date)) return undefined;
 
-  // An edition page puts the edition's own headline in the h1, so its sections
-  // are h2s.
-  return { ...toSummary(entry), ...rendered(entry, lang, 2, true) };
+  // An edition page draws no headline above the stories, so the lede's own
+  // heading is the h1 and the sections under it are h2s.
+  return { ...toSummary(entry), ...rendered(entry, lang, 2, { withEmail: true, ledeLevel: 1 }) };
 }
 
 /** Visible editions grouped by `YYYY-MM`, newest month first. */
@@ -279,16 +279,37 @@ const dropLedeHeading = (html: string, title: string) => {
   return text === title.trim() ? html.replace(heading[0], '') : html;
 };
 
-const rendered = (entry: RawEdition, lang: Lang, baseLevel: 2 | 3, withEmail = false) => {
+/**
+ * `ledeLevel` — the heading level the first story renders at.
+ *
+ * An edition page draws no headline of its own. A newsletter needs one because
+ * a subject line has to name a whole issue in one string; a page does not, and
+ * printing the lede's headline again at display size above the lede was the
+ * email's shape showing through. What the page has instead is a masthead — the
+ * publication in the crumb, the date under it — and then stories, which is how
+ * a front page has always worked. The judgment about what leads shows up as
+ * position rather than as a second headline.
+ *
+ * So on an edition the lede's own heading is the h1 and the rest are h2s, and
+ * the title goes on doing its real job in `<title>`, og tags, the share text,
+ * RSS and the archive listing, where a name for the whole thing is genuinely
+ * needed. A month roundup passes nothing and keeps its own hierarchy.
+ */
+const rendered = (
+  entry: RawEdition,
+  lang: Lang,
+  baseLevel: 2 | 3,
+  { withEmail = false, ledeLevel }: { withEmail?: boolean; ledeLevel?: 1 | 2 } = {},
+) => {
   const title = entry.meta.title ?? '';
-  const { intro, sections } = split(entry.body, baseLevel);
+  const { intro, sections } = split(entry.body, baseLevel, ledeLevel);
 
   return {
+    // The whole-body render is what the month roundups draw, and those print the
+    // edition's title above it — so there the duplicate heading still goes.
     html: dropLedeHeading(render(entry.body, baseLevel), title),
     intro,
-    sections: sections.map((section, i) =>
-      i === 0 ? { ...section, html: dropLedeHeading(section.html, title) } : section,
-    ),
+    sections,
     // The standing note is written in markdown like the rest of the edition and
     // routinely carries a link — "we updated [287(g) Watch](…)". It lives in the
     // frontmatter rather than the body, so it misses the body's render and was
@@ -306,15 +327,19 @@ const rendered = (entry: RawEdition, lang: Lang, baseLevel: 2 | 3, withEmail = f
  * marked never sees a partial document, so a section cannot inherit or leak
  * state from the one above it.
  */
-function split(body: string, baseLevel: 2 | 3): { intro: string; sections: EditionSection[] } {
+function split(
+  body: string,
+  baseLevel: 2 | 3,
+  ledeLevel?: 1 | 2,
+): { intro: string; sections: EditionSection[] } {
   const blocks = body.split(/\n(?=## )/);
   const lead = blocks[0]?.startsWith('## ') ? '' : (blocks.shift() ?? '');
 
   return {
     intro: lead.trim() ? render(lead, baseLevel) : '',
-    sections: blocks.map((block) => ({
+    sections: blocks.map((block, i) => ({
       heading: block.match(/^## (.+)$/m)?.[1]?.trim() ?? '',
-      html: render(block, baseLevel),
+      html: render(block, i === 0 ? (ledeLevel ?? baseLevel) : baseLevel),
     })),
   };
 }
