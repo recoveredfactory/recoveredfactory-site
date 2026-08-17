@@ -169,32 +169,34 @@
       <DaybookSubscribe lang={data.lang} placement="archive-top" />
     {/if}
 
+    <!-- The forward ask rides the very top, above the deck.
+         A reader who means to pass an edition on decides that while reading it,
+         not after arriving at the bottom — and for the WhatsApp audience this is
+         written for, the forward is the distribution rather than a courtesy, so
+         it should not be something you have to scroll to find. The same panel
+         runs again under the calendar; between them the edition's own headline
+         carries the two buttons on their own. -->
+    {#if isEdition && data.edition}
+      <ShareRow
+        lang={data.lang}
+        placement="edition-top"
+        title={shareTitle}
+        url={canonical}
+        variant="panel"
+      />
+    {/if}
+
     <!-- Between the ask and the edition, and only on the editions that name a
          deck. An ad lands the reader here to read the day's edition; the deck
          is the thing we want them to carry back out, so it sits where they pass
          it on the way in rather than at the bottom, where a reader who is done
          has already left. -->
     {#if isEdition && data.dossier}
-      <div class="flex flex-col gap-4">
-        <DossierCarousel
-          instagramPost={data.edition?.instagramPost}
-          lang={data.lang}
-          slides={data.dossier.slides}
-        />
-        <!-- Attached to the deck rather than floated at the very top of the
-             page. Nobody forwards a thing they have not read — but the deck is
-             self-contained and reads in twenty seconds, so by the bottom of it
-             a reader has something to pass on. On editions with no deck the
-             same row runs after the edition instead. -->
-        <div class="flex justify-center">
-          <ShareRow
-            lang={data.lang}
-            placement="dossier"
-            title={shareTitle}
-            url={canonical}
-          />
-        </div>
-      </div>
+      <DossierCarousel
+        instagramPost={data.edition?.instagramPost}
+        lang={data.lang}
+        slides={data.dossier.slides}
+      />
     {/if}
 
     {#if isEdition && data.edition}
@@ -211,11 +213,26 @@
         {:else}
           <!-- The date is the Daybook's masthead line — it is what the edition
                is called — so it reads as a kicker over the headline rather than
-               as a byline under it. -->
+               as a byline under it.
+
+               The two buttons ride that line, on their own. The panel above the
+               deck already made the ask, so this is not a second ask — it is the
+               affordance staying within reach at the point the edition actually
+               starts, which is a screen or more below where the reader came in.
+               No prompt, no note: both belong to the panels. -->
           <header class="space-y-3">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-fern-strong">
-              {dateLabel}
-            </p>
+            <div class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-fern-strong">
+                {dateLabel}
+              </p>
+              <ShareRow
+                lang={data.lang}
+                placement="edition-hed"
+                title={shareTitle}
+                url={canonical}
+                variant="compact"
+              />
+            </div>
             <h1 class="rf-daybook-hed">{edition.title}</h1>
           </header>
         {/if}
@@ -257,22 +274,48 @@
             {/if}
 
             <!-- Second to last, where the email puts it: after the day's
-                 stories, before the closing round-up. -->
+                 stories, before the closing round-up. The forward ask follows
+                 it, because a calendar of deadlines is the most forwardable
+                 thing an edition carries — dates are what people send each
+                 other, and a reader who has just read four of them is the
+                 reader most likely to know who needs them. -->
             {#if data.upcoming && i === upcomingAfter}
               <UpcomingCalendar entries={data.upcoming.entries} lang={data.lang} />
+              <ShareRow
+                lang={data.lang}
+                placement="edition-upcoming"
+                title={shareTitle}
+                url={canonical}
+                variant="panel"
+              />
             {/if}
           {/each}
 
           {#if data.upcoming && !edition.sections.length}
             <UpcomingCalendar entries={data.upcoming.entries} lang={data.lang} />
+            <ShareRow
+              lang={data.lang}
+              placement="edition-upcoming"
+              title={shareTitle}
+              url={canonical}
+              variant="panel"
+            />
           {/if}
         {/if}
 
         <div class="flex flex-col gap-4 border-t border-slate-200 pt-6">
-          {#if !data.dossier}
-            <!-- No deck to hang it on, so the ask to pass it on waits until the
-                 edition has been read. -->
-            <ShareRow lang={data.lang} placement="edition-end" title={shareTitle} url={canonical} />
+          {#if !data.upcoming || asSent}
+            <!-- Two panels an edition: one above it, one under the calendar. An
+                 edition with no calendar — and the as-sent view, which draws
+                 none of its own — has nowhere to put the second, so it runs
+                 here instead, after the reading. -->
+            <ShareRow
+              lang={data.lang}
+              placement="edition-end"
+              title={shareTitle}
+              url={canonical}
+              variant="panel"
+            />
           {/if}
 
           <!-- The archive's record of what subscribers actually received. The
