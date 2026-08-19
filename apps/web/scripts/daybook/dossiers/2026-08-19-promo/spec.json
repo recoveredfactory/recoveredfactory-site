@@ -1,0 +1,44 @@
+{
+  "slug": "2026-08-19-promo",
+  "date": {
+    "en": "Aug. 19, 2026",
+    "es": "19 de agosto de 2026"
+  },
+  "slides": [
+    {
+      "type": "exhibit",
+      "name": "promo",
+      "panel": [
+        {
+          "img": "uscis-publiccharge.png",
+          "marks": [
+            {
+              "l": 0.435,
+              "t": 0.063,
+              "w": 0.485,
+              "h": 0.156,
+              "style": "hl"
+            },
+            {
+              "l": 0.01,
+              "t": 0.532,
+              "w": 0.117,
+              "h": 0.156,
+              "style": "hl"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "The public charge rules change Sept. 18",
+        "nut": "DHS has issued a final rule rescinding the 2022 public charge regulations. From Sept. 18, officers weigh age, health, family status, finances, and education as a whole when deciding whether an applicant for permanent residence is likely to become a public charge.",
+        "caption": "USCIS, “Issues Guidance on Making Public Charge Inadmissibility Determination,” released Aug. 18, 2026"
+      },
+      "es": {
+        "hed": "Las reglas de carga pública cambian el 18 de septiembre",
+        "nut": "El DHS emitió un reglamento final que deroga las reglas de carga pública de 2022. Desde el 18 de septiembre, los funcionarios evalúan en conjunto la edad, la salud, la situación familiar, los recursos económicos y la educación de quienes solicitan la residencia permanente.",
+        "caption": "USCIS, “Issues Guidance on Making Public Charge Inadmissibility Determination”, publicado el 18 de agosto de 2026"
+      }
+    }
+  ]
+}
