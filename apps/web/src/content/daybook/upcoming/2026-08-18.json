@@ -1,0 +1,568 @@
+{
+  "audit": {
+    "collapsed_count": 73,
+    "eligible_count": 6,
+    "non_us_excluded_count": 14,
+    "other_past_excluded_count": 18,
+    "paperwork_excluded_count": 18,
+    "past_effective_review_count": 8,
+    "raw_selected_count": 130,
+    "selected_count": 0
+  },
+  "edition_date": "2026-08-18",
+  "eligible_items": [
+    {
+      "bucket": "next_four_weeks",
+      "correction_state": "edited",
+      "date_authority": "federal-register",
+      "document_status": "",
+      "eligible_order": 1,
+      "framing_source": "federal-register",
+      "id": 310,
+      "key_date": "2026-08-24",
+      "key_date_raw": "Submission of Public Comments: Written comments must be submitted on or before August 24, 2026. The electronic Federal Docket Management System will accept comments prior to midnight ET at the end of that day.",
+      "language_readiness": {
+        "en": {
+          "available": true,
+          "edited": true,
+          "sha256": "a949038d32086d5b389a6ec01b53216114afdde473a4608ed84e1f91fb195e06"
+        },
+        "es": {
+          "available": true,
+          "edited": true,
+          "sha256": "9efb72fb22d06be01efba33b141948a399e626e6505e1fe90a6f852088885cdb"
+        }
+      },
+      "logical_item_id": "2026-12542",
+      "member_ids": [
+        310,
+        328,
+        236
+      ],
+      "plain_summary": "DHS wants to raise the cost of applying for US citizenship (Form N-400) from $760 to $1,330 on paper, and $710 to $1,280 online, with the appeal of a denial (Form N-336) going from $830 to $1,475. Reduced fees and fee waivers for naturalisation would end. Comments close Aug. 24 and implementation likely soon after.",
+      "plain_summary_edited": true,
+      "plain_summary_es": "El Departamento de Seguridad Nacional quiere aumentar el costo de solicitar la ciudadanía estadounidense (Formulario N-400) de $760 a $1,330 en papel, y de $710 a $1,280 en línea, y la apelación de una denegación (Formulario N-336) pasaría de $830 a $1,475. Las cuotas reducidas y las exenciones de cuotas para la naturalización terminarían. Los comentarios cierran el 24 de agosto e implementación probable poco después.",
+      "plain_summary_es_edited": true,
+      "plain_summary_es_stale_since": "",
+      "primary_citation": {
+        "label": "Federal Register",
+        "match_reason": "federal-register-document",
+        "role": "primary_document",
+        "url": "https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments"
+      },
+      "primary_citation_url": "https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments",
+      "publisher": "Federal Register",
+      "row_revision": "2026-08-14T00:44:34.098469",
+      "row_sha256": "6b6f32548f6c1b0019c17bc01a5f396819bcb829af9fd0220c06318c12ce88c3",
+      "secondary_citations": [],
+      "source": "federal-register",
+      "source_label": "Federal Register",
+      "source_roles": [
+        {
+          "label": "Federal Register",
+          "match_reason": "federal-register-document",
+          "role": "primary_document",
+          "url": "https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments"
+        },
+        {
+          "label": "Federal Register",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "primary_document",
+          "url": "https://www.federalregister.gov/documents/2026/07/08/C1-2026-12542/naturalization-application-fee-adjustments"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/wr-immigration-news-digest-20260625/"
+        }
+      ],
+      "source_url": "https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments",
+      "spanish_selection_preference": "eligible",
+      "status": "comment_period_open",
+      "theme": "Proposed Rule — Homeland Security Department",
+      "tier": "approaching",
+      "title": "Naturalization Application Fee Adjustments"
+    },
+    {
+      "bucket": "next_four_weeks",
+      "correction_state": "row_owned",
+      "date_authority": "federal-register",
+      "document_status": "",
+      "eligible_order": 2,
+      "framing_source": "federal-register",
+      "id": 315,
+      "key_date": "2026-08-25",
+      "key_date_raw": "Consideration will be given to comments on this rulemaking received on or before August 25, 2026.",
+      "language_readiness": {
+        "en": {
+          "available": true,
+          "edited": false,
+          "sha256": "6f62ec5a4b6a3874cca88a430c3a994ae366a7a64a2fcee1bb39647d945da47e"
+        },
+        "es": {
+          "available": true,
+          "edited": false,
+          "sha256": "8232ebffeeadba7ba53895188e8ddd1c0a5aee43f17a9b41849749cd04f4eba9"
+        }
+      },
+      "logical_item_id": "2026-12946",
+      "member_ids": [
+        315
+      ],
+      "plain_summary": "Adults who want to take custody of an immigrant child who arrived without a parent or guardian would have to show more documents — proof of identity, proof of income, and information for background checks — before the Office of Refugee Resettlement (ORR) releases the child to them. Comments on the proposed rule are open until August 25, 2026.",
+      "plain_summary_edited": false,
+      "plain_summary_es": "Las personas que quieren hacerse cargo de un niño migrante bajo custodia del gobierno (el sponsor o patrocinador) tendrían que presentar documentos específicos de identidad y comprobante de ingresos, además de más datos para la verificación de antecedentes, según una propuesta de la Oficina de Reasentamiento de Refugiados (ORR). Todavía no está en vigor: es un proyecto de reglamento abierto a comentarios del público hasta el 25 de agosto de 2026.",
+      "plain_summary_es_edited": false,
+      "plain_summary_es_stale_since": "",
+      "primary_citation": {
+        "label": "Federal Register",
+        "match_reason": "federal-register-document",
+        "role": "primary_document",
+        "url": "https://www.federalregister.gov/documents/2026/06/26/2026-12946/unaccompanied-children-program-foundational-rule-sponsor-assessment-update-to-include-proof-of"
+      },
+      "primary_citation_url": "https://www.federalregister.gov/documents/2026/06/26/2026-12946/unaccompanied-children-program-foundational-rule-sponsor-assessment-update-to-include-proof-of",
+      "publisher": "Federal Register",
+      "row_revision": "2026-08-01T20:55:10.625778",
+      "row_sha256": "347424022389fc98e4b4f0c7dbdedc89a7860b43dafd8b5c253b27a82535339d",
+      "secondary_citations": [],
+      "source": "federal-register",
+      "source_label": "Federal Register",
+      "source_roles": [
+        {
+          "label": "Federal Register",
+          "match_reason": "federal-register-document",
+          "role": "primary_document",
+          "url": "https://www.federalregister.gov/documents/2026/06/26/2026-12946/unaccompanied-children-program-foundational-rule-sponsor-assessment-update-to-include-proof-of"
+        }
+      ],
+      "source_url": "https://www.federalregister.gov/documents/2026/06/26/2026-12946/unaccompanied-children-program-foundational-rule-sponsor-assessment-update-to-include-proof-of",
+      "spanish_selection_preference": "eligible",
+      "status": "comment_period_open",
+      "theme": "Proposed Rule — Children and Families Administration",
+      "tier": "approaching",
+      "title": "Unaccompanied Children Program Foundational Rule; Sponsor Assessment Update To Include Proof of Identity, Background Check, Placement, and Income Verification Standards"
+    },
+    {
+      "bucket": "next_four_weeks",
+      "correction_state": "edited",
+      "date_authority": "federal-register",
+      "document_status": "",
+      "eligible_order": 3,
+      "framing_source": "federal-register",
+      "id": 316,
+      "key_date": "2026-08-28",
+      "key_date_raw": "Comments close August 28, 2026",
+      "language_readiness": {
+        "en": {
+          "available": true,
+          "edited": true,
+          "sha256": "108c6d34ecc606d129264d075ac5fe2287e3df95464905f0614bfc1f3160831e"
+        },
+        "es": {
+          "available": true,
+          "edited": false,
+          "sha256": "70f6465febf3b2f6e2843e25413b7541db7e041f1e2ed65f8e8d5f49ac75bd1c"
+        }
+      },
+      "logical_item_id": "2026-13057",
+      "member_ids": [
+        316,
+        208,
+        209
+      ],
+      "plain_summary": "The comment deadline closes on the DHS rule requiring foreign nationals in the US to register with the government and give fingerprints (Form G-325R). DHS is asking whether more immigration filings should count as registration on their own, and whether to change biometrics rules for some travelers; further rulemaking may follow.",
+      "plain_summary_edited": true,
+      "plain_summary_es": "El gobierno finalizó la regla que creó un formulario de registro para las personas inmigrantes que la ley obliga a registrarse y a dar sus huellas, y ajustó qué formularios y trámites cuentan como registro y como comprobante de estar registrado (8 CFR 264). La regla ya responde a los comentarios del público, pero DHS abrió un nuevo plazo para recibir comentarios sobre otros posibles cambios, que cierra el 28 de agosto de 2026.",
+      "plain_summary_es_edited": false,
+      "plain_summary_es_stale_since": "",
+      "primary_citation": {
+        "label": "Federal Register",
+        "match_reason": "federal-register-document",
+        "role": "primary_document",
+        "url": "https://www.federalregister.gov/documents/2026/06/29/2026-13057/alien-registration-form-and-evidence-of-registration"
+      },
+      "primary_citation_url": "https://www.federalregister.gov/documents/2026/06/29/2026-13057/alien-registration-form-and-evidence-of-registration",
+      "publisher": "Federal Register",
+      "row_revision": "2026-08-16T19:34:56.550687",
+      "row_sha256": "f89206aac8856d94a3cb50897f8704310f1902c1b74f0ff511241d82bedfd4d6",
+      "secondary_citations": [],
+      "source": "federal-register",
+      "source_label": "Federal Register",
+      "source_roles": [
+        {
+          "label": "Federal Register",
+          "match_reason": "federal-register-document",
+          "role": "primary_document",
+          "url": "https://www.federalregister.gov/documents/2026/06/29/2026-13057/alien-registration-form-and-evidence-of-registration"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/wr-immigration-news-digest-20260702/"
+        }
+      ],
+      "source_url": "https://www.federalregister.gov/documents/2026/06/29/2026-13057/alien-registration-form-and-evidence-of-registration",
+      "spanish_selection_preference": "eligible",
+      "status": "comment_period_open",
+      "theme": "Rule — Homeland Security Department",
+      "tier": "horizon",
+      "title": "Alien Registration Form and Evidence of Registration"
+    },
+    {
+      "bucket": "next_four_weeks",
+      "correction_state": "row_owned",
+      "date_authority": "federal-register",
+      "document_status": "",
+      "eligible_order": 4,
+      "framing_source": "federal-register",
+      "id": 347,
+      "key_date": "2026-08-31",
+      "key_date_raw": "The OMB will consider all written comments that the agency receives on or before August 31, 2026.",
+      "language_readiness": {
+        "en": {
+          "available": true,
+          "edited": false,
+          "sha256": "6afca4be8d8880b96dfc2842b269111771ded62d8dee048380d3d3fab60de3b8"
+        },
+        "es": {
+          "available": true,
+          "edited": false,
+          "sha256": "0e7f972be8cbb96af0e9e33db3c11123cab3333f9a41ebf7acc6c6b416c314d8"
+        }
+      },
+      "logical_item_id": "2026-15424",
+      "member_ids": [
+        347
+      ],
+      "plain_summary": "Employers using the extra H-2B visas Congress allows for seasonal, non-farm jobs must file a sworn statement (attestation) that they meet the added conditions. The Labor Department is asking the White House budget office (OMB) to renew that collection — the requirement itself is not changing — and comments are open until August 31, 2026.",
+      "plain_summary_edited": false,
+      "plain_summary_es": "El Departamento del Trabajo pide autorización para seguir usando la declaración que los empleadores presentan cuando quieren contratar trabajadores temporales bajo los cupos adicionales de visas H-2B autorizados por el Congreso. No cambia el requisito en sí: es un trámite de renovación, y cualquier persona puede enviar comentarios hasta el 31 de agosto de 2026.",
+      "plain_summary_es_edited": false,
+      "plain_summary_es_stale_since": "",
+      "primary_citation": {
+        "label": "Federal Register",
+        "match_reason": "federal-register-document",
+        "role": "primary_document",
+        "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15424/agency-information-collection-activities-submission-for-omb-review-comment-request-attestation-for"
+      },
+      "primary_citation_url": "https://www.federalregister.gov/documents/2026/07/30/2026-15424/agency-information-collection-activities-submission-for-omb-review-comment-request-attestation-for",
+      "publisher": "Federal Register",
+      "row_revision": "2026-08-06T08:31:22.062736",
+      "row_sha256": "6dc192379b33e1f9ff2284698e08999b06784862a567b1606e98a40c505922ac",
+      "secondary_citations": [],
+      "source": "federal-register",
+      "source_label": "Federal Register",
+      "source_roles": [
+        {
+          "label": "Federal Register",
+          "match_reason": "federal-register-document",
+          "role": "primary_document",
+          "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15424/agency-information-collection-activities-submission-for-omb-review-comment-request-attestation-for"
+        }
+      ],
+      "source_url": "https://www.federalregister.gov/documents/2026/07/30/2026-15424/agency-information-collection-activities-submission-for-omb-review-comment-request-attestation-for",
+      "spanish_selection_preference": "eligible",
+      "status": "comment_period_open",
+      "theme": "Paperwork notice — Labor Department",
+      "tier": "horizon",
+      "title": "Agency Information Collection Activities; Submission for OMB Review; Comment Request; Attestation for Employers Seeking To Employ H-2B Nonimmigrant Workers Under Section 105 of Division G, Title I of the Further Consolidated Appropriations Act, 2024, Public Law 118-47, as Extended by Public Law 119-37"
+    },
+    {
+      "bucket": "next_four_weeks",
+      "correction_state": "edited",
+      "date_authority": "federal-register",
+      "document_status": "",
+      "eligible_order": 5,
+      "framing_source": "federal-register",
+      "id": 933,
+      "key_date": "2026-09-09",
+      "key_date_raw": "This rule is effective on September 9, 2026.",
+      "language_readiness": {
+        "en": {
+          "available": true,
+          "edited": true,
+          "sha256": "712bea653e68e979f34bea806016b2fa7cd7267e278578570007a11152c4c0f5"
+        },
+        "es": {
+          "available": true,
+          "edited": true,
+          "sha256": "c1ce8c46e8eae7f3b94bf0593a5872266d2cfcff30027cd7f13a2ee8baeb98bf"
+        }
+      },
+      "logical_item_id": "2026-16231",
+      "member_ids": [
+        193,
+        933
+      ],
+      "plain_summary": "Starting September 9, the heaviest users of H-1B and L-1 visas owe a federal fee on every extension petition, not just when they hire someone new or take on another company's worker. The fee — $4,000 per H-1B petition, $4,500 per L-1 — applies to companies with 50 or more U.S. employees when more than half of them are on H-1B or L-1 visas. DHS says its old reading of a 2015 law wrongly let same-employer extensions skip the fee; this rule closes that gap through September 2027.",
+      "plain_summary_edited": true,
+      "plain_summary_es": "A partir del 9 de septiembre, los usuarios más grandes de visas H-1B y L-1 deben una cuota federal en toda petición de prórroga, no solo cuando contratan a alguien nuevo o toman un trabajador de otra compañía. La cuota — $4,000 por petición H-1B, $4,500 por L-1 — se aplica a compañías con 50 o más empleados estadounidenses cuando más de la mitad de ellos están en visas H-1B o L-1. El DHS dice que su interpretación anterior de una ley de 2015 permitió erróneamente que prórrogas del mismo empleador evitaran la cuota; esta regla cierra esa brecha hasta septiembre de 2027.",
+      "plain_summary_es_edited": true,
+      "plain_summary_es_stale_since": "",
+      "primary_citation": {
+        "label": "Federal Register",
+        "match_reason": "federal-register-document",
+        "role": "primary_document",
+        "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16231/9-11-response-and-biometric-entry-exit-fee-for-h-1b-and-l-1-visas"
+      },
+      "primary_citation_url": "https://www.federalregister.gov/documents/2026/08/10/2026-16231/9-11-response-and-biometric-entry-exit-fee-for-h-1b-and-l-1-visas",
+      "publisher": "Federal Register",
+      "row_revision": "2026-08-17T02:20:29.736599",
+      "row_sha256": "89904c7f43769bbc173196edbffc0e963ba8ee4681c3f494ea17e44147a58495",
+      "secondary_citations": [],
+      "source": "federal-register",
+      "source_label": "Federal Register",
+      "source_roles": [
+        {
+          "label": "Federal Register",
+          "match_reason": "federal-register-document",
+          "role": "primary_document",
+          "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16231/9-11-response-and-biometric-entry-exit-fee-for-h-1b-and-l-1-visas"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/wr-immigration-news-digest-20260709/"
+        }
+      ],
+      "source_url": "https://www.federalregister.gov/documents/2026/08/10/2026-16231/9-11-response-and-biometric-entry-exit-fee-for-h-1b-and-l-1-visas",
+      "spanish_selection_preference": "eligible",
+      "status": "effective_upcoming",
+      "theme": "Rule — Homeland Security Department",
+      "tier": "horizon",
+      "title": "9-11 Response and Biometric Entry-Exit Fee for H-1B and L-1 Visas"
+    },
+    {
+      "bucket": "next_four_weeks",
+      "correction_state": "edited",
+      "date_authority": "editorial",
+      "document_status": "",
+      "eligible_order": 6,
+      "framing_source": "editorial",
+      "id": 1109,
+      "key_date": "2026-09-09",
+      "key_date_raw": "Designation ends September 9, 2026; DHS determination due July 11, 2026 and not published",
+      "language_readiness": {
+        "en": {
+          "available": true,
+          "edited": true,
+          "sha256": "e0cf470e66747ce334f046babe229e36a79378638b459b329b237fc1f018311f"
+        },
+        "es": {
+          "available": true,
+          "edited": true,
+          "sha256": "da003e7ac0fdc698107a60db2dbecdb0616ea7b831017bead5840405a029f6ee"
+        }
+      },
+      "logical_item_id": "942bfeeefe4107925202e7a9df23ff38",
+      "member_ids": [
+        1109,
+        232,
+        233,
+        234,
+        227,
+        216,
+        211,
+        192,
+        188,
+        185,
+        151
+      ],
+      "plain_summary": "Protection from deportation for Salvadorans in the US (TPS) is scheduled to end September 9, 2026. DHS's decision on whether to extend it was due July 11 and has not been published; by law, if no termination notice publishes, the designation continues automatically for six months.",
+      "plain_summary_edited": true,
+      "plain_summary_es": "El TPS de El Salvador — la protección contra la deportación — vence el 9 de septiembre de 2026. El DHS tenía plazo hasta el 11 de julio para decidir si lo extendía y no ha publicado nada; por ley, si no se publica un aviso de terminación, la designación continúa automáticamente por seis meses.",
+      "plain_summary_es_edited": true,
+      "plain_summary_es_stale_since": "",
+      "primary_citation": {
+        "label": "25-1083 Mullin v. Doe (06/25/2026)",
+        "match_reason": "caption",
+        "role": "primary_document",
+        "url": "https://supremecourt.gov/opinions/25pdf/25-1083_f204.pdf"
+      },
+      "primary_citation_url": "https://supremecourt.gov/opinions/25pdf/25-1083_f204.pdf",
+      "publisher": "",
+      "row_revision": "2026-08-16T19:39:02.277956",
+      "row_sha256": "79a1c475e3da57555a7d9471f68104ffb69748bc7d99a9b561bb7220b45a02ea",
+      "secondary_citations": [],
+      "source": "editorial",
+      "source_label": "25-1083 Mullin v. Doe (06/25/2026)",
+      "source_roles": [
+        {
+          "label": "25-1083 Mullin v. Doe (06/25/2026)",
+          "match_reason": "caption",
+          "role": "primary_document",
+          "url": "https://supremecourt.gov/opinions/25pdf/25-1083_f204.pdf"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/supreme-court-clears-the-way-for-tps-terminations-employers-must-prepare-now/"
+        },
+        {
+          "label": "The Insightful Immigration Blog (Cyrus D. Mehta & Partners)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://blog.cyrusmehta.com/2026/06/mullin-v-doe-blessing-a-race-neutral-cover-for-racial-animus.html"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/update-on-haiti-and-syria-tps-employment-authorization-placeholder-expiration-date-extended-until-july-10/"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/wr-immigration-news-digest-20260702/"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/wr-immigration-news-digest-20260709/"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/update-on-termination-of-temporary-protected-status-for-haiti-syria-burma-myanmar-ethiopia-somalia-south-sudan-and-yemen/"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/important-reminder-for-employers-certain-tps-employees-may-require-reverification-by-july-22-2026-despite-a-previously-calculated-540-day-automatic-ead-extension/"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/federal-court-temporarily-blocks-portions-of-usciss-implementation-of-h-r-1-affecting-tps-beneficiaries-and-asylum-applicants/"
+        }
+      ],
+      "source_url": "https://www.federalregister.gov/documents/2025/01/17/2025-00626/extension-of-the-designation-of-el-salvador-for-temporary-protected-status",
+      "spanish_selection_preference": "eligible",
+      "status": "pending",
+      "theme": "TPS — El Salvador",
+      "tier": "horizon",
+      "title": "El Salvador TPS designation ends September 9, 2026"
+    }
+  ],
+  "horizon": {
+    "days": 28,
+    "end_inclusive": "2026-09-15",
+    "start_inclusive": "2026-08-18"
+  },
+  "language_policy": {
+    "english_field": "plain_summary",
+    "english_missing_selected_ids": [],
+    "shared_structure": [
+      "logical_item_id",
+      "selected_order",
+      "key_date",
+      "source_roles"
+    ],
+    "spanish_field": "plain_summary_es",
+    "spanish_may_not_render_when_missing": true,
+    "spanish_missing_selected_ids": []
+  },
+  "manifest_sha256": "308ee4a1383ae49a831d37e61fdb6c2d4de462910df2e29448e3e8753a59d61d",
+  "policy": {
+    "active_tiers": [
+      "approaching",
+      "due",
+      "future",
+      "horizon",
+      "open_ended"
+    ],
+    "geo_focus_keep": [
+      "bilateral",
+      "us"
+    ],
+    "hard_out_ids": [
+      327,
+      336,
+      341,
+      346
+    ],
+    "horizon_days": 28,
+    "max_items": 12,
+    "max_open_ended": 0,
+    "max_per_normalized_theme": 2,
+    "summary_policy": {
+      "composer_rewriting": false,
+      "en": "plain_summary verbatim",
+      "es": "plain_summary_es verbatim",
+      "fallbacks": [],
+      "render_time_translation": false
+    }
+  },
+  "policy_sha256": "5a7a5843900e0a5fa396a2d9819fdf880a2bf731730e3a5892813a755d4b8fb4",
+  "schema_version": "immigration-daybook-upcoming-manifest.v2",
+  "selected_items": [],
+  "selection": {
+    "language_neutral": true,
+    "mode": "eligible_only",
+    "selected_count": 0,
+    "selected_ids_in_order": [],
+    "unknown_selected_ids": [],
+    "zero_selection_confirmed": false
+  },
+  "source_contract": {
+    "source_freshness": [
+      {
+        "active_items": 27,
+        "dated_items": 6,
+        "days_since_seen": 24,
+        "last_seen_at": "2026-07-26T22:01:44.484377",
+        "latest_generated_as_of": "2026-07-19",
+        "source": "cyrusmehta-blog-rss"
+      },
+      {
+        "active_items": 1,
+        "dated_items": 1,
+        "days_since_seen": 3,
+        "last_seen_at": "2026-08-16T19:39:02.277956",
+        "latest_generated_as_of": "2026-08-16",
+        "source": "editorial"
+      },
+      {
+        "active_items": 109,
+        "dated_items": 79,
+        "days_since_seen": 0,
+        "last_seen_at": "2026-08-19T02:28:57.956044",
+        "latest_generated_as_of": "2026-08-17",
+        "source": "federal-register"
+      },
+      {
+        "active_items": 93,
+        "dated_items": 50,
+        "days_since_seen": 24,
+        "last_seen_at": "2026-07-26T22:00:30.682328",
+        "latest_generated_as_of": "2026-07-23",
+        "source": "wolfsdorf-wr-rss"
+      }
+    ],
+    "upstream_logical_item_and_source_role_views_required": true,
+    "watch_item_citations": "app.v_watch_item_citations",
+    "watch_items": "app.v_watch_items",
+    "watch_sources": "app.v_watch_sources"
+  }
+}
