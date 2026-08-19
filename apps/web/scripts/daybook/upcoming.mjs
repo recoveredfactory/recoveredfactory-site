@@ -159,7 +159,7 @@ export function upcomingItems(doc, lang = 'en', publishedIds = null) {
  * for the same kind of reason: it exists in English only ('Naturalization Fees
  * — Rulemaking'), and an English rubric over Spanish prose is worse than none.
  */
-export function toCalendarEntry(item, lang, doc) {
+export function toCalendarEntry(item, lang, doc, from = null) {
   const preference =
     (lang === 'es' ? doc?.policy?.summary_preference_es : doc?.policy?.summary_preference) ??
     DEFAULT_PREFERENCE[lang] ??
@@ -185,10 +185,100 @@ export function toCalendarEntry(item, lang, doc) {
     month: MONTH_LABEL[lang][date.getUTCMonth()],
     day: String(date.getUTCDate()),
     weekday: weekdayLabel(date, lang),
+    countdown: countdownLabel(item.key_date, from, lang),
     publisher: (item.publisher ?? '').trim(),
     text: text.trim(),
   };
 }
+
+/**
+ * How far off the deadline is, counted from the edition's own date.
+ *
+ * This is the only thing on a calendar slide that changes day to day. The
+ * deadlines are standing ones — the N-400 fee comment period closed on Aug. 24
+ * whether the edition was the 7th, the 11th, the 13th or the 17th — so four
+ * consecutive decks carried the same three entries, word for word, and the
+ * calendar slides came out byte-identical. That is what --no-upcoming was for.
+ *
+ * A countdown is not a workaround for that: it is the fact the reader actually
+ * wants. "Aug. 24" answers when; "in six days" answers whether there is still
+ * time, which is the question someone reads a deadline to ask. It is derived
+ * from the date rather than written, it is true on the day it is posted, and it
+ * makes an entry the archive has carried for a fortnight new every morning.
+ *
+ * Counted in whole UTC days, because key_date is a date and not a moment. An
+ * entry already past gets nothing rather than a negative number: the composer
+ * puts same-day items on the calendar and the edition is read the day it is
+ * sent, so "0 days ago" would be a bug report rather than a fact.
+ */
+function countdownLabel(iso, from, lang) {
+  if (!from) return '';
+
+  const days = Math.round(
+    (Date.parse(`${iso}T00:00:00Z`) - Date.parse(`${from}T00:00:00Z`)) / 86_400_000,
+  );
+  if (!Number.isFinite(days) || days < 0) return '';
+
+  return (COUNTDOWN[lang] ?? COUNTDOWN.en)(days);
+}
+
+// Furniture, in the same register as the weekday above it: the shortest true
+// statement of the interval, not a call to act on it. Whether a deadline is
+// worth acting on is the edition's line to write, not the chip's.
+const COUNTDOWN = {
+  en: (days) => (days === 0 ? 'TODAY' : days === 1 ? 'TOMORROW' : `IN ${days} DAYS`),
+  es: (days) => (days === 0 ? 'HOY' : days === 1 ? 'MAÑANA' : `EN ${days} DÍAS`),
+};
+
+/**
+ * Recover the published calendar from the edition as it was actually sent.
+ *
+ * The manifest's per-language `notes` is meant to be the record of which watch
+ * items went out, and usually is. It is not always there: on 2026-08-18 neither
+ * language carried `upcoming_ids`, the readers fell back to the whole eligible
+ * slate, and the deck put an Aug. 31 H-2B attestation on the board — an item the
+ * composer had kept off — in place of the Sep. 9 H-1B fee the edition ran. The
+ * board was wrong about the one thing it exists to be right about.
+ *
+ * The email is the other record of what shipped, and pull.mjs already has it in
+ * hand before it builds the deck. The composer renders each item's own
+ * `plain_summary` into that email verbatim, so an item is published if and only
+ * if its summary is in the sent text — no guessing, no proximity heuristic, no
+ * second opinion about editorial selection.
+ *
+ * Matched on the item's own language, against that language's email.
+ */
+export function publishedFromText(doc, lang, text) {
+  const items = doc?.eligible_items ?? [];
+  if (!items.length || !text) return null;
+
+  const haystack = fold(text);
+
+  const ids = items
+    .filter((item) => {
+      const summary = (lang === 'es' ? item.plain_summary_es : item.plain_summary) || item.plain_summary;
+      const needle = fold(summary ?? '').slice(0, MATCH_CHARS);
+      return needle.length >= MATCH_CHARS && haystack.includes(needle);
+    })
+    .map((item) => item.id);
+
+  return ids.length ? ids : null;
+}
+
+// Case, accents, curly quotes, em dashes, HTML entities and tag whitespace all
+// differ between a summary in the snapshot's JSON and the same sentence set into
+// an email. Folding both sides to bare letters and digits makes the comparison
+// about the words and nothing else.
+const fold = (value) =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '');
+
+// Long enough that no two watch items share an opening. Short enough to survive
+// a copy edit made to the email after the snapshot was taken.
+const MATCH_CHARS = 60;
 
 /** 'MON' / 'LUN'. Intl gives 'lun.' in Spanish; the period is furniture here. */
 function weekdayLabel(date, lang) {

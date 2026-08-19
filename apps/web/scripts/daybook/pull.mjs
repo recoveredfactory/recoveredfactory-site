@@ -31,7 +31,12 @@ import { readFileSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { loadUpcoming, upcomingItems, toCalendarEntry as toEntryFromSnapshot } from './upcoming.mjs';
+import {
+  loadUpcoming,
+  publishedFromText,
+  upcomingItems,
+  toCalendarEntry as toEntryFromSnapshot,
+} from './upcoming.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(here, '..', '..');
@@ -134,16 +139,71 @@ const ABBREVIATIONS = new Set(
     .split(' '),
 );
 
-// Two dated entries a slide, two slides. Four deadlines is a useful number to
-// screenshot; eight is a document.
-const UPCOMING_SLIDES = 2;
-const UPCOMING_PER_SLIDE = 2;
+// One calendar slide, up to four dated entries on it, and never fewer than
+// three.
+//
+// This used to be two slides of two, on the reasoning that four deadlines is a
+// useful number to screenshot and eight is a document. Four was the right
+// number; two slides was not. The entries arrived at 420 characters apiece, so
+// each slide came out as two paragraphs of Federal Register prose under a date,
+// which is a document at two entries just as surely as at eight — and it cost a
+// third of the deck to say what one card says better.
+//
+// One board instead: every deadline the edition published, in date order, each
+// cut to the clause that carries the number. The full text is what the
+// newsletter is for.
+const UPCOMING_SLIDES = 1;
+const UPCOMING_PER_SLIDE = 4;
 
-// Watch-item summaries are written to explain a rule, not to fit a card. Set
-// against Spanish rather than English: the same entry runs 20-30% longer in
+// A board of two entries is a list; three is a board. Below that the slide is
+// dropped rather than shipped half-empty — which is the same rule the two-up
+// slides had, set at the number a single board needs.
+const UPCOMING_MIN_PER_SLIDE = 3;
+
+// Watch-item summaries are written to explain a rule, not to fit a card, and on
+// a board four of them share the room two used to have. So this is a clause
+// budget rather than a paragraph one: enough for the fact and the number under
+// it — "DHS wants to raise the cost of applying for US citizenship (Form N-400)
+// from $760 to $1,330 on paper, and $710 to $1,280 online" — and the rest of the
+// rule is in the edition, which is where someone acting on a deadline should be
+// reading it anyway.
+//
+// Set against Spanish rather than English: the same entry runs 20-30% longer in
 // Spanish, and a budget that fits the English cut "…de la Oficina de" off the
 // end of the Spanish one, which is worse than a smaller type size.
-const UPCOMING_MAX_CHARS = 420;
+const UPCOMING_MAX_CHARS = 190;
+
+// The round-up slide: the edition's last section, the one that is a list of
+// briefs under a short rubric rather than a story under a headline.
+//
+// The deck used to throw this away entirely. An edition carries three or four
+// stories and then six or seven items in a closing list, and the carousel read
+// the stories and stopped — so a reader who swiped the whole deck saw a third of
+// the day. The list is the cheapest breadth in the newsletter and it was going
+// nowhere.
+//
+// Four of them, and never fewer than three. They run in the edition's own
+// order: which item leads a round-up is an editorial call that was already made.
+//
+// Four rather than three because of how the slide is set. Every size on a
+// portrait slide is a multiple of --fit and the fitter grows the type until the
+// card is full, so a card with three short briefs on it does not come out
+// roomy — it comes out with the briefs set larger than the nut sentence on the
+// cover, which says a one-line item matters more than the day's lead. Four
+// items is the number that fills the frame at the size this prose should be.
+const BRIEFS = 4;
+const BRIEFS_MIN = 3;
+
+// One sentence each. The bullets open with the news and then qualify it for
+// another two sentences — "…the nonbinding resolutions came amid renewed
+// progressive anger after recent fatal ICE encounters" — and the qualification
+// is what the edition is for.
+const BRIEF_MAX_CHARS = 165;
+
+// One publication a brief, not three. A story slide has the room for a credit
+// line and the standing to want one; a brief is a single line, and three names
+// under it is longer than the news.
+const BRIEF_SOURCES = 1;
 
 const args = new Set(process.argv.slice(2));
 const offline = args.has('--offline');
@@ -155,15 +215,19 @@ const skipCards = args.has('--skip-cards');
 
 // Leave the calendar off the carousel for this run.
 //
-// The deadlines are standing ones, so consecutive editions carry the same four
-// and the calendar slides come out byte-identical day to day — 2026-08-11 and
-// 2026-08-12 were the same two cards in both languages. That is not wrong; it
-// is what a deadline is. It is just not worth two of six slides on a feed where
-// the cadence is closer to a few times a week than daily.
+// This was written when the calendar took two of six slides and the deadlines
+// were standing ones, so consecutive editions carried the same four entries and
+// the slides came out byte-identical — 2026-08-11 and 2026-08-12 were the same
+// two cards in both languages. That was not wrong; it is what a deadline is. It
+// was just not worth a third of the deck.
 //
-// The snapshot is still fetched and still archived, because it is the record
-// and because the obvious home for this is a standalone weekly card of its own.
-// Only the slides go away.
+// The board answers most of that: one slide instead of two, and a countdown
+// that is different every morning off the same row. The flag stays for the
+// other case it covers — a day whose slate is thin, or a deck that wants the
+// room for something else.
+//
+// The snapshot is still fetched and still archived either way, because it is
+// the record.
 const noUpcoming = args.has('--no-upcoming');
 
 const env = Object.fromEntries(
@@ -246,12 +310,24 @@ if (!/^\d{4}-\d{2}-\d{2}$/.test(editionDate ?? '')) {
 // sixth being an OMB paperwork renewal of exactly the kind the composer keeps
 // off the calendar.
 //
-// The one place the published set is written down is the per-language `notes`
-// blob on the manifest, as `upcoming_ids`. It is language-neutral — the snapshot
-// says so — and it is not always on both sides: on 2026-08-17 only `es` carried
-// it. So it is read from either, and archived into the edition frontmatter,
-// which is the committed record the page can reach.
-const upcomingIds = (() => {
+// So the set has to come from somewhere, and there are two candidates: the
+// manifest says what was meant to ship, and the email is what shipped. The email
+// wins. It is the artifact subscribers received, it is fetched on every run
+// anyway, and every item on it is matched by the composer's own summary text —
+// see publishedFromText. The manifest's `upcoming_ids` is bookkeeping written
+// alongside the send rather than by it, and its record has not held up: on
+// 2026-08-17 only `es` carried the field, on 2026-08-18 neither did, and the
+// deck that day put an Aug. 31 H-2B attestation on the board in place of the
+// Sep. 9 H-1B fee the edition ran.
+//
+// The manifest is still read, for two reasons. It covers an edition whose email
+// never came back, and where both exist a disagreement between them is worth
+// saying out loud — it is the cheapest signal there is that the bookkeeping
+// upstream has drifted.
+//
+// Whichever answers, it is archived into the edition frontmatter, which is the
+// committed record the page can reach.
+const manifestUpcomingIds = (() => {
   for (const lang of LANGS) {
     try {
       const ids = JSON.parse(manifest[lang]?.notes ?? '{}').upcoming_ids;
@@ -262,6 +338,9 @@ const upcomingIds = (() => {
   }
   return null;
 })();
+
+let upcomingIds = manifestUpcomingIds;
+let upcomingFrom = manifestUpcomingIds ? 'manifest' : null;
 
 // The publish gate. `faithfulness_blocked` is the automation's own signal that a
 // claim in the edition did not survive its source check — that must never reach
@@ -333,7 +412,7 @@ const calendarFor = (lang) =>
   noUpcoming
     ? []
     : upcomingItems(snapshot, lang, upcomingIds)
-        .map((item) => toEntryFromSnapshot(item, lang, snapshot))
+        .map((item) => toEntryFromSnapshot(item, lang, snapshot, editionDate))
         .filter(Boolean);
 
 if (noUpcoming) console.log('--no-upcoming: the calendar stays off the carousel this run.');
@@ -383,6 +462,36 @@ for (const lang of LANGS) {
   // Fetched before the deck is built because the carousel reads the calendar.
   const html = await fetchEmailHtml(lang);
   const sanitized = html ? sanitizeEmailHtml(html) : '';
+
+  // What the edition actually carried, read off the edition itself.
+  //
+  // Read here rather than up with the manifest because this is the first point
+  // the email exists, and it has to happen before the deck is built. Taken from
+  // the first language that yields a set and reused for the other: the snapshot
+  // says the published set is language-neutral, and two languages disagreeing
+  // about which deadlines the edition ran would be a worse bug than either of
+  // the ones this guards against.
+  if (upcomingFrom !== 'email' && html) {
+    const fromEmail = publishedFromText(snapshot, lang, emailText(html));
+    if (fromEmail) {
+      if (manifestUpcomingIds && manifestUpcomingIds.join(',') !== fromEmail.join(',')) {
+        console.warn(
+          `WARNING: ${editionDate}: the manifest and the ${lang} email disagree about the ` +
+            `calendar. Manifest [${manifestUpcomingIds.join(', ')}], email ` +
+            `[${fromEmail.join(', ')}]. Going with the email — it is what subscribers got.`,
+        );
+      }
+      upcomingIds = fromEmail;
+      upcomingFrom = 'email';
+      console.log(`Upcoming: ${fromEmail.length} published, read off the ${lang} email.`);
+    } else if (!upcomingIds) {
+      console.warn(
+        `WARNING: ${editionDate}: no calendar recoverable from the ${lang} email and none on ` +
+          'the manifest. Falling back to the whole eligible slate, which is wider than what ' +
+          'shipped — check the board before posting it.',
+      );
+    }
+  }
 
   const built = buildDeck(edition, editionDate, calendarFor(lang), deckShape, lang);
   decks[lang] = built.deck;
@@ -465,6 +574,21 @@ async function fetchEmailHtml(lang) {
   const html = await res.text();
   writeFileSync(cachePath, html);
   return html;
+}
+
+/**
+ * The email as words, for matching against the snapshot.
+ *
+ * Entity references come out rather than being decoded: every one in this
+ * corpus stands for punctuation — an em dash, a curly quote, an ampersand — and
+ * the match folds punctuation away regardless. Decoding them would only risk
+ * `&mdash;` arriving in the comparison as the letters "mdash".
+ */
+function emailText(html) {
+  return html
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&[#a-z0-9]+;/gi, ' ');
 }
 
 /**
@@ -715,9 +839,10 @@ function renderEditionCard(lang, date, headline) {
  * section says.
  */
 function buildDeck({ body, headline }, date, events, shape, lang) {
+  const sections = body.split(/\n(?=## )/);
+
   // Story sections, in order, rubrics dropped.
-  const raw = body
-    .split(/\n(?=## )/)
+  const raw = sections
     .map(readStory)
     .filter((story) => story.headline.length > RUBRIC_MAX_CHARS);
 
@@ -743,24 +868,83 @@ function buildDeck({ body, headline }, date, events, shape, lang) {
   const { nut = '', detail = '', sources = [] } = stories[0] ?? {};
   const beats = stories.slice(1, 1 + CAROUSEL_BEATS);
 
-  // The calendar is the payoff, so it goes in whole slides rather than as a
-  // footnote: two dated entries a slide, up to UPCOMING_SLIDES of them.
+  // The calendar is the payoff, so it goes on a whole slide rather than as a
+  // footnote: every deadline the edition published, up to UPCOMING_PER_SLIDE of
+  // them, on one board.
+  //
+  // Cut on a clause rather than a sentence. A watch item's first sentence is
+  // typically 200 characters carrying the whole fee schedule, so a
+  // sentence-only rule either printed all of it or none of it; the clause is
+  // where the number lands.
   const trimmed = events.map((entry) => ({
     ...entry,
-    text: trimToSentence(entry.text, UPCOMING_MAX_CHARS),
+    text: trimToClause(entry.text, UPCOMING_MAX_CHARS),
   }));
 
   const upcoming = [];
   for (let i = 0; i < trimmed.length && upcoming.length < UPCOMING_SLIDES; i += UPCOMING_PER_SLIDE) {
     const entries = trimmed.slice(i, i + UPCOMING_PER_SLIDE);
-    // A half-full final slide reads as a mistake rather than as a short week.
-    if (entries.length === UPCOMING_PER_SLIDE) upcoming.push({ entries });
+    // A half-empty board reads as a mistake rather than as a short week.
+    if (entries.length >= UPCOMING_MIN_PER_SLIDE) upcoming.push({ entries });
   }
 
   return {
-    deck: { date, hed: headline, nut, detail, sources, beats, upcoming },
+    deck: {
+      date,
+      hed: headline,
+      nut,
+      detail,
+      sources,
+      beats,
+      briefs: readBriefs(sections),
+      upcoming,
+    },
     shape: decided,
   };
+}
+
+/**
+ * The round-up slide: the edition's closing list of briefs.
+ *
+ * Found from the end rather than by name. The rubric is different in every
+ * Spanish edition — "Alrededor del sistema", "En el resto del sistema", "En todo
+ * el sistema" — so a list of headings to match would be wrong within the week.
+ * What is stable is the shape: a short rubric where a story has a headline, and
+ * bullets where a story has paragraphs. `## Upcoming` is the only other section
+ * of that shape, and it runs above this one when it survives at all, so the last
+ * match is the round-up.
+ *
+ * The slide takes the rubric the edition wrote. A word for what these items are
+ * is an editorial call and it has already been made three lines up the file.
+ */
+function readBriefs(sections) {
+  const section = [...sections]
+    .reverse()
+    .find(
+      (block) =>
+        (block.match(/^## (.+)$/m)?.[1]?.trim().length ?? Infinity) <= RUBRIC_MAX_CHARS &&
+        /^-\s+\S/m.test(block),
+    );
+  if (!section) return null;
+
+  const items = section
+    .split('\n')
+    .filter((line) => /^-\s+\S/.test(line))
+    .slice(0, BRIEFS)
+    .map((line) => {
+      const { prose, sources } = splitCredits(line.replace(/^-\s+/, '').trim());
+      const [first = ''] = splitSentences(stripInlineMd(prose));
+      return {
+        text: trimToClause(first, BRIEF_MAX_CHARS),
+        sources: sources.slice(0, BRIEF_SOURCES),
+      };
+    })
+    .filter((item) => item.text);
+
+  // Short of a card it is not a round-up, it is a leftover.
+  if (items.length < BRIEFS_MIN) return null;
+
+  return { rubric: stripInlineMd(section.match(/^## (.+)$/m)?.[1] ?? ''), items };
 }
 
 /**
@@ -929,19 +1113,6 @@ function trimToClause(text, max) {
   return `${cut.slice(0, at).replace(/[\s,;:—–-]+$/, '')}…`;
 }
 
-// Calendar prose is written to explain, not to fit a card. Cut on a sentence
-// where possible — a deadline that ends mid-clause is worse than a shorter one.
-function trimToSentence(text, max) {
-  if (text.length <= max) return text;
-
-  const cut = text.slice(0, max);
-  const stop = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('? '), cut.lastIndexOf('! '));
-  if (stop > max * 0.45) return cut.slice(0, stop + 1);
-
-  const space = cut.lastIndexOf(' ');
-  return `${(space > 0 ? cut.slice(0, space) : cut).replace(/[\s,;:—–-]+$/, '')}…`;
-}
-
 /**
  * Render the carousels, and say where they are.
  *
@@ -952,10 +1123,18 @@ function trimToSentence(text, max) {
  */
 function renderCarousel(decks, date) {
   const langs = Object.keys(decks);
-  if (skipCards || !langs.length) return;
+  if (!langs.length) return;
 
+  // Written before the --skip-cards gate: the deck is templating output, which
+  // is what that flag keeps, and it is the file a layout change is tested
+  // against. Skipping it too meant the only way to see a new slide was a full
+  // render of the live edition directory.
   const deckFile = join(outDir, `deck-${date}.json`);
   writeFileSync(deckFile, JSON.stringify(decks, null, 2));
+  if (skipCards) {
+    console.log(`\nWrote scripts/daybook/out/deck-${date}.json (--skip-cards: nothing rendered).`);
+    return;
+  }
 
   try {
     execFileSync(
