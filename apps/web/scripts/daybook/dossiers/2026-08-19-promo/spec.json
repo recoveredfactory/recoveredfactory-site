@@ -10,33 +10,33 @@
       "name": "promo",
       "panel": [
         {
-          "img": "uscis-publiccharge.png",
+          "img": "benefits.png",
           "marks": [
             {
-              "l": 0.435,
-              "t": 0.063,
-              "w": 0.485,
-              "h": 0.156,
+              "l": 0.762,
+              "t": 0.06,
+              "w": 0.203,
+              "h": 0.132,
               "style": "hl"
             },
             {
               "l": 0.01,
-              "t": 0.532,
-              "w": 0.117,
-              "h": 0.156,
+              "t": 0.247,
+              "w": 0.268,
+              "h": 0.132,
               "style": "hl"
             }
           ]
         }
       ],
       "en": {
-        "hed": "The public charge rules change Sept. 18",
-        "nut": "DHS has issued a final rule rescinding the 2022 public charge regulations. From Sept. 18, officers weigh age, health, family status, finances, and education as a whole when deciding whether an applicant for permanent residence is likely to become a public charge.",
+        "hed": "From Sept. 18, food stamps count",
+        "nut": "USCIS will weigh housing assistance, food stamps and college financial aid when deciding a permanent residence application. Anything received before that date is judged under the older, narrower rule: cash assistance and long-term institutionalization only.",
         "caption": "USCIS, “Issues Guidance on Making Public Charge Inadmissibility Determination,” released Aug. 18, 2026"
       },
       "es": {
-        "hed": "Las reglas de carga pública cambian el 18 de septiembre",
-        "nut": "El DHS emitió un reglamento final que deroga las reglas de carga pública de 2022. Desde el 18 de septiembre, los funcionarios evalúan en conjunto la edad, la salud, la situación familiar, los recursos económicos y la educación de quienes solicitan la residencia permanente.",
+        "hed": "Desde el 18 de septiembre, los cupones de alimentos cuentan",
+        "nut": "USCIS tomará en cuenta la vivienda subsidiada, los cupones de alimentos y la ayuda universitaria al decidir una solicitud de residencia permanente. Lo recibido antes de esa fecha se evalúa con la regla anterior, más estrecha: solo asistencia en efectivo e institucionalización a largo plazo.",
         "caption": "USCIS, “Issues Guidance on Making Public Charge Inadmissibility Determination”, publicado el 18 de agosto de 2026"
       }
     }
