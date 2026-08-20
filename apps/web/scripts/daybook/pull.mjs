@@ -652,6 +652,19 @@ function prepareEdition(markdown, lang, date) {
   if (noteMatch && body.startsWith(noteMatch[0])) {
     standing = noteMatch[1].trim();
     body = body.slice(noteMatch[0].length).trim();
+  } else {
+    // Upstream stopped italicising the note on Aug. 19, and an un-split note is
+    // boilerplate indexed as prose on every edition that carries it. An edition
+    // opens on its lede's H2, so anything ahead of the first heading is the
+    // note whatever its markup. Only a single paragraph is taken: the
+    // frontmatter is one flat `key: "value"` line per key with no newline
+    // escaping, and the note renders inline with no block wrapper around it.
+    const firstHeading = body.search(/^## /m);
+    const lead = firstHeading > 0 ? body.slice(0, firstHeading).trim() : '';
+    if (lead && !/\n\s*\n/.test(lead)) {
+      standing = lead;
+      body = body.slice(firstHeading).trim();
+    }
   }
 
   body = stripUnresolvedSections(body, lang, date);
