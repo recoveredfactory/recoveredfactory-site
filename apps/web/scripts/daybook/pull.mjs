@@ -67,6 +67,12 @@ const DEK_MAX_CHARS = 380;
 // them without hardcoding a list per language.
 const RUBRIC_MAX_CHARS = 35;
 
+// The Upcoming calendar flattened to text: an indented month abbreviation, then
+// an indented day. See stripFlattenedCalendar. Declared up here with the rest of
+// the configuration for the dead-zone reason the dek settings give.
+const FLATTENED_CALENDAR = /^[ \t]+\p{Lu}{3,12}[ \t]*\n[ \t]+\d{1,2}[ \t]*$/mu;
+
+
 // Carousel tuning, up here for the same dead-zone reason as the dek settings.
 //
 // Six slides: cover, two stories, two calendar, the terms. The lede has no
@@ -668,6 +674,7 @@ function prepareEdition(markdown, lang, date) {
   }
 
   body = stripUnresolvedSections(body, lang, date);
+  body = stripFlattenedCalendar(body, lang, date);
   body = repairCalendarBullets(body);
 
   // The lede story's headline is the first H2. It is the searchable thing about
@@ -1195,6 +1202,38 @@ function stripUnresolvedSections(body, lang, date) {
       `WARNING: ${date} ${lang}: dropped section "${heading}" from the markdown — ` +
         (placeholder ? `unresolved placeholder (${placeholder})` : 'no content under the heading') +
         '. The email HTML still carries it; RSS and the .md companion will not.',
+    );
+    return false;
+  });
+
+  return kept.join('\n');
+}
+
+// The third way `## Upcoming` has arrived wrong: filled, but with the email's
+// calendar block flattened to text — an indented month abbreviation, an indented
+// day, then the entry's prose and its source link, each on its own indented
+// line. Markdown reads that as a run of paragraphs, so the page would print
+// "AUG" and "24" as two lines of body copy, and print them directly under the
+// real calendar the page already injects from the upcoming snapshot.
+//
+// Matched on shape rather than on the rubric's name, for the reason readBriefs
+// gives: the Spanish rubric is not stable across editions. An indented line of
+// capitals followed by an indented bare number is the calendar's layout and is
+// nothing prose does.
+//
+// Dropping it holds the invariant the loader states — the calendar lives outside
+// the markdown, and the page is the only thing that renders it. If the markdown
+// is ever meant to carry the calendar, that is a change to how the page composes
+// an edition, not a block to leave sitting in the body.
+function stripFlattenedCalendar(body, lang, date) {
+  const kept = body.split(/\n(?=## )/).filter((section) => {
+    if (!FLATTENED_CALENDAR.test(section)) return true;
+
+    const heading = section.match(/^## (.+)$/m)?.[1]?.trim() ?? '(untitled)';
+    console.warn(
+      `WARNING: ${date} ${lang}: dropped section "${heading}" from the markdown — ` +
+        'it arrived as the email calendar flattened to text. The page renders the ' +
+        'calendar from the upcoming snapshot; RSS and the .md companion will not.',
     );
     return false;
   });
