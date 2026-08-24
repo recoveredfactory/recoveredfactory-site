@@ -6,8 +6,20 @@
       {
         "img": "adelanto-order.png",
         "marks": [
-          { "l": 0.3934, "t": 0.2087, "w": 0.3676, "h": 0.0902, "style": "hl" },
-          { "l": 0.2665, "t": 0.8043, "w": 0.528, "h": 0.0902, "style": "hl" }
+          {
+            "l": 0.3934,
+            "t": 0.2087,
+            "w": 0.3676,
+            "h": 0.0902,
+            "style": "hl"
+          },
+          {
+            "l": 0.2665,
+            "t": 0.8043,
+            "w": 0.528,
+            "h": 0.0902,
+            "style": "hl"
+          }
         ]
       }
     ],
@@ -20,6 +32,48 @@
       "hed": "STUB — lo que la orden exige",
       "nut": "STUB — la medida cautelar que el Noveno Circuito acaba de negarse a suspender. Los puntos (a) a (c) de lo que el tribunal ordenó proporcionar en Adelanto.",
       "caption": "L.T. v. ICE, núm. 5:26-cv-00322-SSS-SP (C.D. Cal.), orden que concede la medida cautelar preliminar, presentada el 16 de julio de 2026, pág. 2"
+    }
+  },
+  {
+    "name": "adelanto-odo",
+    "afterBeat": "Adelanto",
+    "panel": [
+      {
+        "img": "adelanto-odo.png",
+        "marks": [
+          {
+            "l": 0.6801,
+            "t": 0.4129,
+            "w": 0.2342,
+            "h": 0.0677,
+            "style": "hl"
+          },
+          {
+            "l": 0.0575,
+            "t": 0.4806,
+            "w": 0.9267,
+            "h": 0.0661,
+            "style": "hl"
+          },
+          {
+            "l": 0.0014,
+            "t": 0.55,
+            "w": 0.1233,
+            "h": 0.0661,
+            "style": "hl"
+          }
+        ]
+      }
+    ],
+    "en": {
+      "hed": "STUB — ICE's own inspectors, on the way down",
+      "nut": "STUB — the conclusion of ICE's September 2025 oversight inspection of Adelanto. It gives no overall rating; it gives a direction.",
+      "caption": "ICE Office of Professional Responsibility, Office of Detention Oversight, Inspection 2025-001-082, Adelanto ICE Processing Center, Sept. 16–18, 2025, at 7"
+    },
+    "es": {
+      "hed": "STUB — los propios inspectores de ICE",
+      "nut": "STUB — la conclusión de la inspección de supervisión de ICE sobre Adelanto, de septiembre de 2025. No da una calificación general; da una dirección.",
+      "caption": "ICE, Oficina de Responsabilidad Profesional, Oficina de Supervisión de Detención, inspección 2025-001-082, Adelanto ICE Processing Center, 16–18 de septiembre de 2025, pág. 7"
     }
   }
 ]
