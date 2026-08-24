@@ -1134,6 +1134,38 @@ function trimToClause(text, max) {
 }
 
 /**
+ * Fold the day's hand-authored exhibits into every language's deck.
+ *
+ * Which document backs a story, where it is cropped and which line is marked is
+ * an editorial call and is not derivable from the edition, so none of it is
+ * derived: it is written by hand into
+ * scripts/daybook/exhibits/<date>/exhibits.json beside the crops it names, and
+ * this only carries it through. Most editions have no such file and get the deck
+ * they always got.
+ *
+ * The whole array goes to both languages. An exhibit carries per-language copy
+ * under `en` / `es` and og.mjs picks the one it is rendering, so a document that
+ * is only worth showing in one language is a matter of writing copy for one —
+ * not of splitting the spec.
+ *
+ * A malformed file throws rather than rendering the deck without it. A deck that
+ * quietly drops the document is the failure mode this whole slide type exists to
+ * avoid.
+ */
+function attachExhibits(decks, date) {
+  const specFile = join(here, 'exhibits', date, 'exhibits.json');
+  if (!existsSync(specFile)) return;
+
+  const exhibits = JSON.parse(readFileSync(specFile, 'utf8'));
+  if (!Array.isArray(exhibits) || !exhibits.length) return;
+
+  for (const deck of Object.values(decks)) deck.exhibits = exhibits;
+  console.log(
+    `Exhibits: ${exhibits.length} on the deck, from scripts/daybook/exhibits/${date}/exhibits.json.`,
+  );
+}
+
+/**
  * Render the carousels, and say where they are.
  *
  * They land under static/images/social/<date>/<lang>/ so they ship with the
@@ -1144,6 +1176,8 @@ function trimToClause(text, max) {
 function renderCarousel(decks, date) {
   const langs = Object.keys(decks);
   if (!langs.length) return;
+
+  attachExhibits(decks, date);
 
   // Written before the --skip-cards gate: the deck is templating output, which
   // is what that flag keeps, and it is the file a layout change is tested

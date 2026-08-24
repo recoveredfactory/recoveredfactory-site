@@ -65,6 +65,8 @@ const OUT_SIZE = '1600x840';
 const INK = '#12161d';
 const CREAM = '#f3f1e9';
 const CRIMSON = '#e8244f';
+// The sheet an exhibit is set on. See exhibitSlide.
+const PAPER = '#fdfcf9';
 
 const FONTS =
   'https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Lora:wght@400;500;600&display=swap';
@@ -459,6 +461,22 @@ const portraitFrame = (body, { date = '', site = true }) => `
   ${site ? `<footer class="site">${HOME_URL}</footer>` : ''}
 ${FIT_SCRIPT}`;
 
+// Publications whose own mark is mixed case, and which the house all-caps would
+// otherwise misspell. LAist is LAist: the lowercase "ist" is the mark, and
+// LAIST reads as an outlet that does not exist. The uppercase is CSS, not the
+// string, so the exception has to ride in a span that turns it back off.
+//
+// Keyed on what the edition's link text says and matched case-insensitively, so
+// an upstream "LAIST" is corrected here too rather than passed through. Anything
+// not on this list takes the all-caps, which is nearly everything — this is a
+// list of marks, not a list of preferences.
+const VERBATIM_SOURCES = new Map([['laist', 'LAist']]);
+
+const sourceName = (name) => {
+  const verbatim = VERBATIM_SOURCES.get(String(name).trim().toLowerCase());
+  return verbatim ? `<span class="asis">${escapeHtml(verbatim)}</span>` : escapeHtml(name);
+};
+
 // The publications a story slide was built from, named under a hairline.
 //
 // Not favicons. They arrive at 16-32px and would have to be blown up four times
@@ -471,7 +489,7 @@ ${FIT_SCRIPT}`;
 const creditLine = (sources) =>
   sources?.length
     ? `<p class="credit">${sources
-        .map((s) => escapeHtml(s))
+        .map((s) => sourceName(s))
         .join('<span class="sep">·</span>')}</p>`
     : '';
 
@@ -579,6 +597,13 @@ const portraitCss = (date) => `
   .credit .sep {
     color: rgba(243, 241, 233, 0.34);
     padding: 0 0.55em;
+  }
+  /* The one opt-out of the house all-caps. See VERBATIM_SOURCES.
+     The tracking goes with it: 0.15em is set for capitals, and on mixed case it
+     pulls the word apart into "L A i s t" — which is not the mark either. */
+  .asis {
+    text-transform: none;
+    letter-spacing: 0.02em;
   }`;
 
 // The cover: the lede, cut the same way every other story on the deck is cut.
@@ -814,6 +839,105 @@ const upcomingEntry = (entry) => `
       </div>
     </div>`;
 
+// An exhibit slide: the daily deck holding up a document.
+//
+// dossier.mjs already renders slides about documents, but a dossier is a whole
+// separate deck, hand-built for a story big enough to carry seven slides of its
+// own. Most days there is one document worth showing and no case for a second
+// deck nobody will find. This is that middle: the daily carousel, which people
+// already swipe, with the primary source set into it beside the story it backs.
+//
+// The form is dossier.mjs's and is deliberately identical — paper panel, crimson
+// marks over the operative words, a caption naming the document. The two files
+// carry it twice for the reason dossier.mjs's header gives: og.mjs is a CLI, not
+// a module, and entangling the daily deck with a special is worse than the
+// duplication. If they drift, this one is right.
+//
+// Which document, cropped where, marked at which line: none of that is derivable
+// from the edition, so none of it is derived. It is hand-authored per edition in
+// scripts/daybook/exhibits/<date>/exhibits.json and read at pull time.
+//
+// The crop is inlined as a data URI rather than referenced by path. The slide
+// HTML is written to scripts/daybook/out/ and the crops live two directories up,
+// so a relative src would resolve to nothing — and a missing document that
+// renders as an empty panel is exactly the silent failure the credit line's
+// comment refuses. Inlining makes an unreadable file throw at build time.
+const exhibitPanel = (panel, specDir) =>
+  `<div class="panel">${panel
+    .map(({ img, width, marks = [] }) => {
+      const data = readFileSync(join(specDir, img)).toString('base64');
+      const overlays = marks
+        .map(
+          ({ l, t, w, h, style }) =>
+            `<i class="mark ${style === 'rule' ? 'rule-mark' : style === 'hl' ? 'hl-mark' : 'box-mark'}" style="left:${l * 100}%;top:${t * 100}%;width:${w * 100}%;height:${h * 100}%;"></i>`,
+        )
+        .join('');
+      return `<figure class="strip"${width ? ` style="width:${width}"` : ''}>
+        <div class="shot"><img src="data:image/png;base64,${data}" />${overlays}</div>
+      </figure>`;
+    })
+    .join('')}</div>`;
+
+const exhibitSlide = ({ hed, nut, caption, panel, specDir, date }) =>
+  shell(
+    portraitCss(date) +
+      `
+  .hed { font-size: ${fitpx(Math.round(coverHedSize(hed) * 0.78))}; }
+  ${nut ? `.nut { font-size: ${fitpx(Math.round(nutSize(nut) * 0.94))}; }` : ''}
+  /* The sheet. Flat, like everything else on the deck — the value jump off the
+     ink is all the lift a document needs. The panel does not scale with --fit:
+     type negotiates for the space around a document, and the document does not
+     shrink to flatter the type. */
+  .panel {
+    background: ${PAPER};
+    padding: 24px;
+    margin-top: ${fitpx(30)};
+  }
+  .strip { width: 100%; margin: 0 auto; }
+  /* Marks anchor to the image, not the figure: a second strip carries the
+     divider's padding-top, and a percentage top measured against the padding
+     box lands every mark high by that padding. */
+  .shot { position: relative; }
+  .strip + .strip {
+    margin-top: 22px;
+    padding-top: 22px;
+    border-top: 1px solid #d9d5c9;
+  }
+  .strip img { display: block; width: 100%; height: auto; }
+  .mark { position: absolute; display: block; }
+  .box-mark { border: 5px solid ${CRIMSON}; border-radius: 6px; opacity: 0.85; }
+  .rule-mark { background: ${CRIMSON}; border-radius: 3px; opacity: 0.8; }
+  /* Marker over the text rather than a rule under it: at phone scale a thin rule
+     reads as underlined furniture, a swipe of highlighter reads as a human
+     having marked the operative words. Multiply keeps the type legible through
+     the wash. */
+  .hl-mark {
+    background: ${CRIMSON};
+    mix-blend-mode: multiply;
+    opacity: 0.33;
+    border-radius: 5px;
+  }
+  /* Who this document is — the checkable line, and the reason the slide is not
+     just a screenshot. */
+  .caption {
+    font-family: "Jost", sans-serif;
+    font-size: ${fitpx(22)};
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: rgba(243, 241, 233, 0.55);
+    margin-top: ${fitpx(18)};
+    text-wrap: pretty;
+  }`,
+    portraitFrame(
+      `<h1 class="hed">${escapeHtml(hed)}</h1>` +
+        (nut ? `<p class="nut">${escapeHtml(nut)}</p>` : '') +
+        exhibitPanel(panel, specDir) +
+        (caption ? `<p class="caption">${escapeHtml(caption)}</p>` : ''),
+      { date },
+    ),
+    PORTRAIT,
+  );
+
 // The round-up slide: the edition's closing briefs, three of them.
 //
 // An edition runs three or four stories and then six or seven one-line items,
@@ -873,7 +997,7 @@ const briefsSlide = ({ rubric, items, date }) =>
           .map(
             (item) => `
     <div class="brief">
-      ${item.sources?.length ? `<p class="slug">${escapeHtml(item.sources[0])}</p>` : ''}
+      ${item.sources?.length ? `<p class="slug">${sourceName(item.sources[0])}</p>` : ''}
       <p class="text">${escapeHtml(item.text)}</p>
     </div>`,
           )
@@ -954,25 +1078,60 @@ const carouselSlides = (lang) => {
   // widens the deck at exactly the point where a reader who came for one story
   // has finished it: three more places the same system turned up this morning,
   // and then the dates.
+  // Exhibits sit immediately after the story they back, not in a block of their
+  // own: a document is evidence for a claim, and a reader who has just been told
+  // the claim is the only reader it means anything to. `afterBeat` names the
+  // beat by a fragment of its headline rather than by index, because the beat
+  // order is derived from the edition and can change under a re-pull — an index
+  // would silently file the Adelanto order behind the Haiti flight.
+  //
+  // An exhibit whose beat is not on the deck is dropped with a warning rather
+  // than appended somewhere plausible. The alternative is a document held up
+  // beside a story the deck never told.
+  const exhibits = deck.exhibits ?? [];
+  // The crops live beside the spec that names them, keyed by edition date, so
+  // og.mjs resolves them from the date it was handed rather than from a path
+  // baked into the deck JSON.
+  const specDir = join(here, 'exhibits', deck.date);
+  const beatKey = (headline) => String(headline ?? '').toLowerCase();
+  const placed = new Set();
+  const exhibitsFor = (headline) =>
+    exhibits.filter((exhibit) => {
+      const hit = beatKey(headline).includes(String(exhibit.afterBeat ?? '').toLowerCase());
+      if (hit) placed.add(exhibit);
+      return hit;
+    });
+
+  const stories = beats.flatMap((beat) => [
+    { name: 'story', html: beatSlide({ ...beat, date }) },
+    ...exhibitsFor(beat.headline).map((exhibit) => ({
+      name: 'exhibit',
+      html: exhibitSlide({ ...exhibit, ...(exhibit[lang] ?? {}), specDir, date }),
+    })),
+  ]);
+
+  for (const exhibit of exhibits) {
+    if (!placed.has(exhibit)) {
+      console.warn(
+        `WARNING: ${deck.date} ${lang}: exhibit "${exhibit.name ?? exhibit.afterBeat}" matches no beat on the deck — dropped.`,
+      );
+    }
+  }
+
   const slides = [
-    coverSlide({ hed: deck.hed, nut: deck.nut, detail: deck.detail, sources: deck.sources, date }),
-    ...beats.map((beat) => beatSlide({ ...beat, date })),
-    ...(briefs ? [briefsSlide({ ...briefs, date })] : []),
-    ...upcoming.map((slide) => upcomingSlide({ entries: slide.entries, lang, date })),
-    closingSlide({ ...CLOSING[lang], date }),
+    { name: 'cover', html: coverSlide({ hed: deck.hed, nut: deck.nut, detail: deck.detail, sources: deck.sources, date }) },
+    ...stories,
+    ...(briefs ? [{ name: 'roundup', html: briefsSlide({ ...briefs, date }) }] : []),
+    ...upcoming.map((slide) => ({
+      name: 'upcoming',
+      html: upcomingSlide({ entries: slide.entries, lang, date }),
+    })),
+    { name: 'subscribe', html: closingSlide({ ...CLOSING[lang], date }) },
   ];
 
-  const names = [
-    'cover',
-    ...beats.map(() => 'story'),
-    ...(briefs ? ['roundup'] : []),
-    ...upcoming.map(() => 'upcoming'),
-    'subscribe',
-  ];
-
-  return slides.map((html, i) => ({
-    file: `${dir}/${String(i + 1).padStart(2, '0')}-${names[i]}.png`,
-    html,
+  return slides.map((slide, i) => ({
+    file: `${dir}/${String(i + 1).padStart(2, '0')}-${slide.name}.png`,
+    html: slide.html,
   }));
 };
 
