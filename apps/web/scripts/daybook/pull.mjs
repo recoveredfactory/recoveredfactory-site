@@ -676,6 +676,7 @@ function prepareEdition(markdown, lang, date) {
   body = stripUnresolvedSections(body, lang, date);
   body = stripFlattenedCalendar(body, lang, date);
   body = repairCalendarBullets(body);
+  body = dropOrphanBullets(body, lang, date);
 
   // The lede story's headline is the first H2. It is the searchable thing about
   // an edition — nobody looks for "Immigration Daybook August 3", they look for
@@ -1163,6 +1164,33 @@ function attachExhibits(decks, date) {
   console.log(
     `Exhibits: ${exhibits.length} on the deck, from scripts/daybook/exhibits/${date}/exhibits.json.`,
   );
+}
+
+/**
+ * Drop a list marker that has lost its item.
+ *
+ * Seen first on 2026-08-25, in both languages: the round-up arrived with four
+ * lines holding nothing but "-", each followed by a blank line and then the item
+ * as its own paragraph. Markdown reads that as four empty list items, so the
+ * page would have printed four empty bullets above four paragraphs.
+ *
+ * Safe to do unconditionally rather than by section, because a bare hyphen on a
+ * line of its own is not something prose does — a real bullet carries its text
+ * on the same line, and a horizontal rule needs three. The only markdown a lone
+ * "-" can make is an empty list item, which is never what anybody meant.
+ *
+ * Counted and reported rather than done silently: this is the fourth distinct
+ * shape the composer's round-trip has produced, and the count is how we notice
+ * when it changes again.
+ */
+function dropOrphanBullets(body, lang, date) {
+  const orphan = /^[ \t]*-[ \t]*$\n?/gm;
+  const hits = body.match(orphan)?.length ?? 0;
+  if (!hits) return body;
+  console.warn(
+    `WARNING: ${date} ${lang}: dropped ${hits} empty list marker${hits === 1 ? '' : 's'} — a "-" on a line with no item after it.`,
+  );
+  return body.replace(orphan, '');
 }
 
 /**
