@@ -51,10 +51,41 @@ const spec = JSON.parse(readFileSync(join(specDir, 'spec.json'), 'utf8'));
 const langs = flag('lang', 'en,es').split(',');
 
 const HOME_URL = 'immigrationdaybook.com';
-const INK = '#12161d';
-const CREAM = '#f3f1e9';
-const CRIMSON = '#e8244f';
-const PAPER = '#fdfcf9';
+// Two grounds. `ink` is the deck's — near-black, cream type, the look every
+// daily carousel has had. `paper` is the website's: cream ground, dark type, the
+// fern crimson the site already uses for its accents. A dossier that is its own
+// post rather than a slide inside the daily deck reads better in the second,
+// and the site is where the post sends people.
+//
+// Only the ground and the type flip. The paper panel, the crimson marks and the
+// whole type system are the same in both, which is the point — this is a change
+// of stock, not a different publication.
+const THEMES = {
+  ink: {
+    ground: '#12161d',
+    type: '#f3f1e9',
+    accent: '#e8244f',
+    paper: '#fdfcf9',
+    // On the ink ground the sheet's own value separates it. On cream it does
+    // not — #fdfcf9 on #f3f1e9 is a two-point difference — so the paper theme
+    // draws the edge the value cannot.
+    panelEdge: 'none',
+    soft: (a) => `rgba(243, 241, 233, ${a})`,
+  },
+  paper: {
+    ground: '#f3f1e9',
+    type: '#252525',
+    accent: '#d81f48',
+    paper: '#fdfcf9',
+    panelEdge: '2px solid rgba(37, 37, 37, 0.16)',
+    soft: (a) => `rgba(37, 37, 37, ${a})`,
+  },
+};
+const T = THEMES[spec.theme] ?? THEMES.ink;
+const INK = T.ground;
+const CREAM = T.type;
+const CRIMSON = T.accent;
+const PAPER = T.paper;
 
 const FONTS =
   'https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Lora:wght@400;500;600&display=swap';
@@ -215,7 +246,7 @@ const css = (date) => `
     letter-spacing: 0.14em;
     text-transform: uppercase;
     white-space: nowrap;
-    color: rgba(243, 241, 233, 0.58);
+    color: ${T.soft(0.58)};
   }
   .site {
     padding-top: 30px;
@@ -225,7 +256,7 @@ const css = (date) => `
     font-weight: 600;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgba(243, 241, 233, 0.5);
+    color: ${T.soft(0.5)};
   }
   .stage {
     flex: 1;
@@ -260,7 +291,7 @@ const css = (date) => `
     font-family: "Jost", sans-serif;
     font-weight: 500;
     line-height: 1.4;
-    color: rgba(243, 241, 233, 0.92);
+    color: ${T.soft(0.92)};
     margin-top: ${fitpx(24)};
     text-wrap: pretty;
   }
@@ -268,6 +299,7 @@ const css = (date) => `
      ink is all the lift a document needs. */
   .panel {
     background: ${PAPER};
+    border: ${T.panelEdge};
     padding: 24px;
     margin-top: ${fitpx(30)};
   }
@@ -316,7 +348,7 @@ const css = (date) => `
     font-size: ${fitpx(22)};
     font-weight: 600;
     letter-spacing: 0.05em;
-    color: rgba(243, 241, 233, 0.55);
+    color: ${T.soft(0.55)};
     margin-top: ${fitpx(18)};
     text-wrap: pretty;
   }
@@ -364,7 +396,7 @@ const css = (date) => `
     font-weight: 600;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(243, 241, 233, 0.58);
+    color: ${T.soft(0.58)};
     margin-top: ${fitpx(30)};
   }`;
 
