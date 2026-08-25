@@ -42,38 +42,31 @@
         "img": "adelanto-odo.png",
         "marks": [
           {
-            "l": 0.6801,
-            "t": 0.4129,
-            "w": 0.2342,
-            "h": 0.0677,
+            "l": 0.0028,
+            "t": 0.4702,
+            "w": 0.9944,
+            "h": 0.0877,
             "style": "hl"
           },
           {
-            "l": 0.0575,
-            "t": 0.4806,
-            "w": 0.9267,
-            "h": 0.0661,
-            "style": "hl"
-          },
-          {
-            "l": 0.0014,
-            "t": 0.55,
-            "w": 0.1233,
-            "h": 0.0661,
+            "l": 0.0028,
+            "t": 0.8684,
+            "w": 0.9944,
+            "h": 0.0895,
             "style": "hl"
           }
         ]
       }
     ],
     "en": {
-      "hed": "STUB — ICE's own inspectors, on the way down",
-      "nut": "STUB — the conclusion of ICE's September 2025 oversight inspection of Adelanto. It gives no overall rating; it gives a direction.",
-      "caption": "ICE Office of Professional Responsibility, Office of Detention Oversight, Inspection 2025-001-082, Adelanto ICE Processing Center, Sept. 16–18, 2025, at 7"
+      "hed": "STUB — ICE's own scorecard",
+      "nut": "STUB — the comparison table ICE's oversight office put at the back of its September 2025 Adelanto inspection. Deficiencies went from one to six. The rating went from Superior to Good.",
+      "caption": "ICE Office of Professional Responsibility, Office of Detention Oversight, Inspection 2025-001-082, Adelanto ICE Processing Center, Sept. 16–18, 2025, at 8"
     },
     "es": {
-      "hed": "STUB — los propios inspectores de ICE",
-      "nut": "STUB — la conclusión de la inspección de supervisión de ICE sobre Adelanto, de septiembre de 2025. No da una calificación general; da una dirección.",
-      "caption": "ICE, Oficina de Responsabilidad Profesional, Oficina de Supervisión de Detención, inspección 2025-001-082, Adelanto ICE Processing Center, 16–18 de septiembre de 2025, pág. 7"
+      "hed": "STUB — el propio balance de ICE",
+      "nut": "STUB — la tabla comparativa que la oficina de supervisión de ICE colocó al final de su inspección de Adelanto de septiembre de 2025. Las deficiencias pasaron de una a seis. La calificación pasó de Superior a Good.",
+      "caption": "ICE, Oficina de Responsabilidad Profesional, Oficina de Supervisión de Detención, inspección 2025-001-082, Adelanto ICE Processing Center, 16–18 de septiembre de 2025, pág. 8"
     }
   }
 ]
