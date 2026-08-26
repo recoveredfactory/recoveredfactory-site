@@ -72,6 +72,22 @@ const RUBRIC_MAX_CHARS = 35;
 // the configuration for the dead-zone reason the dek settings give.
 const FLATTENED_CALENDAR = /^[ \t]+\p{Lu}{3,12}[ \t]*\n[ \t]+\d{1,2}[ \t]*$/mu;
 
+// The same calendar arriving well-formed: each entry a paragraph that opens with
+// a bolded date, an em dash and the rule's name — `**Aug. 28 — Alien
+// Registration…**`, `**28 de agosto — Formulario…**`. See stripCalendarSection.
+//
+// The date has to sit at the head of the bold run, which is what separates a
+// calendar entry from a story's bolded lead: a lead runs a full clause before it
+// reaches an em dash, if it reaches one at all. Thirty characters holds the
+// longest date either language writes and nothing longer.
+const DATED_CALENDAR_ENTRY = /^\*\*([^*\n]{1,30}?)\s+—\s+/gm;
+
+// The email's sign-off, which the markdown began carrying on 2026-08-26: the
+// project line, the sibling-project links and the copyright. Recognised by where
+// its links go — everything in it points at our own sites, PromptQL or the
+// licence. See stripEmailFooter.
+const FOOTER_HOSTS = /^(?:[a-z0-9-]+\.)*(?:recoveredfactory\.net|promptql\.io|creativecommons\.org)$/;
+
 
 // Carousel tuning, up here for the same dead-zone reason as the dek settings.
 //
@@ -674,9 +690,10 @@ function prepareEdition(markdown, lang, date) {
   }
 
   body = stripUnresolvedSections(body, lang, date);
-  body = stripFlattenedCalendar(body, lang, date);
+  body = stripCalendarSection(body, lang, date);
   body = repairCalendarBullets(body);
   body = dropOrphanBullets(body, lang, date);
+  body = stripEmailFooter(body, lang, date);
 
   // The lede story's headline is the first H2. It is the searchable thing about
   // an edition — nobody looks for "Immigration Daybook August 3", they look for
@@ -1271,36 +1288,99 @@ function stripUnresolvedSections(body, lang, date) {
   return kept.join('\n');
 }
 
-// The third way `## Upcoming` has arrived wrong: filled, but with the email's
-// calendar block flattened to text — an indented month abbreviation, an indented
-// day, then the entry's prose and its source link, each on its own indented
-// line. Markdown reads that as a run of paragraphs, so the page would print
-// "AUG" and "24" as two lines of body copy, and print them directly under the
-// real calendar the page already injects from the upcoming snapshot.
+// The calendar section, in either shape it has arrived in.
 //
-// Matched on shape rather than on the rubric's name, for the reason readBriefs
-// gives: the Spanish rubric is not stable across editions. An indented line of
-// capitals followed by an indented bare number is the calendar's layout and is
-// nothing prose does.
+// The third way `## Upcoming` came through wrong was filled but flattened: the
+// email's calendar block reduced to text — an indented month abbreviation, an
+// indented day, then the entry's prose and its source link, each on its own
+// indented line. Markdown reads that as a run of paragraphs, so the page would
+// print "AUG" and "24" as two lines of body copy.
+//
+// On 2026-08-26 it arrived properly set instead — one paragraph an entry, opening
+// with a bolded date and the rule's name, and carrying the rule's title, which
+// the email's own card does not. Better markdown, same problem here: the page
+// injects the calendar itself, so a section in the body prints a second one
+// directly above it.
+//
+// Both matched on shape rather than on the rubric's name, for the reason
+// readBriefs gives: the Spanish rubric is not stable across editions. An indented
+// line of capitals over an indented bare number is nothing prose does, and two or
+// more paragraphs that open on a bolded date are a calendar and not a story —
+// one such paragraph could be a lead about a deadline, so one is left alone.
 //
 // Dropping it holds the invariant the loader states — the calendar lives outside
 // the markdown, and the page is the only thing that renders it. If the markdown
 // is ever meant to carry the calendar, that is a change to how the page composes
 // an edition, not a block to leave sitting in the body.
-function stripFlattenedCalendar(body, lang, date) {
+function stripCalendarSection(body, lang, date) {
   const kept = body.split(/\n(?=## )/).filter((section) => {
-    if (!FLATTENED_CALENDAR.test(section)) return true;
+    const flattened = FLATTENED_CALENDAR.test(section);
+    const dated = [...section.matchAll(DATED_CALENDAR_ENTRY)].filter(([, head]) =>
+      /\d/.test(head),
+    );
+    if (!flattened && dated.length < 2) return true;
 
     const heading = section.match(/^## (.+)$/m)?.[1]?.trim() ?? '(untitled)';
     console.warn(
       `WARNING: ${date} ${lang}: dropped section "${heading}" from the markdown — ` +
-        'it arrived as the email calendar flattened to text. The page renders the ' +
-        'calendar from the upcoming snapshot; RSS and the .md companion will not.',
+        (flattened
+          ? 'it arrived as the email calendar flattened to text.'
+          : `it arrived as the calendar set as markdown (${dated.length} dated entries).`) +
+        ' The page renders the calendar from the upcoming snapshot; RSS and the .md ' +
+        'companion will not.',
     );
     return false;
   });
 
   return kept.join('\n');
+}
+
+// The email's sign-off, which the markdown began carrying on 2026-08-26: the
+// project line, the row of sibling-project links, the copyright. It is the
+// email's chrome, and on the page it would print inside the article, above the
+// site's own footer saying much the same thing.
+//
+// Recognised by where its links go rather than by its words, which are different
+// in each language and have been rewritten before: a trailing paragraph that
+// links only to our own sites, to PromptQL or to the licence is furniture. The
+// walk stops at the first paragraph that is anything else, so it cannot eat into
+// the round-up — those are list items, and every one of them cites somebody.
+function stripEmailFooter(body, lang, date) {
+  // Split keeping the separators, so what is left is byte-for-byte what came in.
+  const parts = body.trimEnd().split(/(\n[ \t]*\n)/);
+  let end = parts.length;
+  let dropped = 0;
+
+  while (end > 0 && isFooterBlock(parts[end - 1])) {
+    end -= 2;
+    dropped += 1;
+  }
+
+  if (!dropped) return body;
+
+  console.warn(
+    `WARNING: ${date} ${lang}: dropped ${dropped} paragraph${dropped === 1 ? '' : 's'} of ` +
+      "email sign-off from the markdown — the page and the .md companion have their own.",
+  );
+
+  return `${parts.slice(0, Math.max(end, 0)).join('').trimEnd()}\n`;
+}
+
+function isFooterBlock(block) {
+  const text = block.trim();
+  // A heading, a quote, a list item or a bolded lead is the edition talking.
+  if (!text || /^(#|>|[-*+]\s|\d+\.\s|\*\*)/.test(text)) return false;
+
+  const links = [...text.matchAll(/\]\((https?:\/\/[^)\s]+)\)/g)].map(([, href]) => href);
+  if (!links.length) return false;
+
+  return links.every((href) => {
+    try {
+      return FOOTER_HOSTS.test(new URL(href).hostname);
+    } catch {
+      return false;
+    }
+  });
 }
 
 // Calendar entries come off the automation as `**- 4 de agosto — …**  trailing
