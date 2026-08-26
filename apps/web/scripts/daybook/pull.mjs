@@ -72,16 +72,6 @@ const RUBRIC_MAX_CHARS = 35;
 // the configuration for the dead-zone reason the dek settings give.
 const FLATTENED_CALENDAR = /^[ \t]+\p{Lu}{3,12}[ \t]*\n[ \t]+\d{1,2}[ \t]*$/mu;
 
-// The same calendar arriving well-formed: each entry a paragraph that opens with
-// a bolded date, an em dash and the rule's name — `**Aug. 28 — Alien
-// Registration…**`, `**28 de agosto — Formulario…**`. See stripCalendarSection.
-//
-// The date has to sit at the head of the bold run, which is what separates a
-// calendar entry from a story's bolded lead: a lead runs a full clause before it
-// reaches an em dash, if it reaches one at all. Thirty characters holds the
-// longest date either language writes and nothing longer.
-const DATED_CALENDAR_ENTRY = /^\*\*([^*\n]{1,30}?)\s+—\s+/gm;
-
 // The email's sign-off, which the markdown began carrying on 2026-08-26: the
 // project line, the sibling-project links and the copyright. Recognised by where
 // its links go — everything in it points at our own sites, PromptQL or the
@@ -690,7 +680,7 @@ function prepareEdition(markdown, lang, date) {
   }
 
   body = stripUnresolvedSections(body, lang, date);
-  body = stripCalendarSection(body, lang, date);
+  body = stripFlattenedCalendar(body, lang, date);
   body = repairCalendarBullets(body);
   body = dropOrphanBullets(body, lang, date);
   body = stripEmailFooter(body, lang, date);
@@ -1288,52 +1278,39 @@ function stripUnresolvedSections(body, lang, date) {
   return kept.join('\n');
 }
 
-// The calendar section, in either shape it has arrived in.
+// The calendar section when it arrives flattened.
 //
-// The third way `## Upcoming` came through wrong was filled but flattened: the
+// The third way `## Upcoming` came through wrong was filled but unusable: the
 // email's calendar block reduced to text — an indented month abbreviation, an
 // indented day, then the entry's prose and its source link, each on its own
 // indented line. Markdown reads that as a run of paragraphs, so the page would
 // print "AUG" and "24" as two lines of body copy.
 //
-// On 2026-08-26 it arrived properly set instead — one paragraph an entry, opening
-// with a bolded date and the rule's name, and carrying the rule's title, which
-// the email's own card does not. Better markdown, same problem here: the page
-// injects the calendar itself, so a section in the body prints a second one
-// directly above it.
+// Matched on shape rather than on the rubric's name, for the reason readBriefs
+// gives: the Spanish rubric is not stable across editions. An indented line of
+// capitals over an indented bare number is nothing prose does.
 //
-// Both matched on shape rather than on the rubric's name, for the reason
-// readBriefs gives: the Spanish rubric is not stable across editions. An indented
-// line of capitals over an indented bare number is nothing prose does, and two or
-// more paragraphs that open on a bolded date are a calendar and not a story —
-// one such paragraph could be a lead about a deadline, so one is left alone.
-//
-// Dropping it holds the invariant the loader states — the calendar lives outside
-// the markdown, and the page is the only thing that renders it. If the markdown
-// is ever meant to carry the calendar, that is a change to how the page composes
-// an edition, not a block to leave sitting in the body.
-function stripCalendarSection(body, lang, date) {
+// The calendar *set as markdown* — one paragraph an entry, opening on a bolded
+// date — is a different matter and stays where it lands. Since 2026-08-26 the
+// page reads its calendar out of the edition body rather than rebuilding one
+// from the upcoming snapshot; see liftCalendar in src/lib/daybook/calendar.ts.
+// This shape has never been readable, so there is nothing in it to keep.
+function stripFlattenedCalendar(body, lang, date) {
   const kept = body.split(/\n(?=## )/).filter((section) => {
-    const flattened = FLATTENED_CALENDAR.test(section);
-    const dated = [...section.matchAll(DATED_CALENDAR_ENTRY)].filter(([, head]) =>
-      /\d/.test(head),
-    );
-    if (!flattened && dated.length < 2) return true;
+    if (!FLATTENED_CALENDAR.test(section)) return true;
 
     const heading = section.match(/^## (.+)$/m)?.[1]?.trim() ?? '(untitled)';
     console.warn(
       `WARNING: ${date} ${lang}: dropped section "${heading}" from the markdown — ` +
-        (flattened
-          ? 'it arrived as the email calendar flattened to text.'
-          : `it arrived as the calendar set as markdown (${dated.length} dated entries).`) +
-        ' The page renders the calendar from the upcoming snapshot; RSS and the .md ' +
-        'companion will not.',
+        'it arrived as the email calendar flattened to text. The page falls back to ' +
+        'the upcoming snapshot; RSS and the .md companion get no calendar at all.',
     );
     return false;
   });
 
   return kept.join('\n');
 }
+
 
 // The email's sign-off, which the markdown began carrying on 2026-08-26: the
 // project line, the row of sibling-project links, the copyright. It is the

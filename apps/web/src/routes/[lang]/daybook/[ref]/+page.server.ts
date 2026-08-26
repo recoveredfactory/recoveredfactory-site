@@ -48,11 +48,19 @@ export const load = ({ params, url }) => {
       // Resolved here rather than in the component so the deck specs — which
       // are globbed out of scripts/ — stay on the server and out of the bundle.
       dossier: edition.dossier ? getDossier(edition.dossier, lang) : null,
-      // The calendar lives only in the sent email, so a page rendered from
-      // markdown has to read the pipeline's snapshot to have one at all — and
-      // the edition's own `upcomingIds` to render the entries that were sent
-      // rather than everything that was eligible.
-      upcoming: getUpcoming(lang, ref, parseUpcomingIds(edition.upcomingIds)),
+      // The calendar as the edition ran it, lifted out of its own body.
+      //
+      // Before 2026-08-26 the markdown shipped without one, and the page rebuilt
+      // a subset from the pipeline's snapshot — narrowed by `upcomingIds`, the
+      // ids recovered from the sent email — which is what the archive before
+      // that date still gets. The reconstruction is a subset by construction:
+      // the snapshot holds a deterministic slate rather than the composer's
+      // selection, so an entry the edition ran and the slate does not hold could
+      // not be shown at all. On Aug. 26 that cost three of eight, one of them a
+      // deadline on the story the newsletter had led with the day before.
+      upcoming: edition.upcoming.length
+        ? { editionDate: ref, entries: edition.upcoming }
+        : getUpcoming(lang, ref, parseUpcomingIds(edition.upcomingIds)),
       alternates,
       newer: at > 0 ? all[at - 1] : null,
       older: at >= 0 && at < all.length - 1 ? all[at + 1] : null,

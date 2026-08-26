@@ -2,7 +2,9 @@ import { marked } from 'marked';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/public';
 
+import { liftCalendar } from '$lib/daybook/calendar';
 import { extractEvents, type CalendarEvent } from '$lib/daybook/schema';
+import type { UpcomingEntry } from '$lib/daybook/upcoming';
 import type { Lang } from '$lib/i18n';
 
 // The Daybook publishes every weekday in two languages, so this archive grows by
@@ -90,10 +92,16 @@ export type Edition = EditionSummary & {
   sections: EditionSection[];
   /**
    * The edition as it was sent, sanitised at pull time. Null for editions
-   * archived before the email HTML was captured. This is the only place the
-   * Upcoming calendar exists: the markdown artifact ships that section empty.
+   * archived before the email HTML was captured.
    */
   emailHtml: string | null;
+  /**
+   * The Upcoming calendar, lifted out of the body — the section is drawn as a
+   * card between the stories, not as prose in the middle of them. Empty for
+   * every edition written before the markdown carried a calendar at all, where
+   * the page falls back to the pipeline's snapshot; see `getUpcoming`.
+   */
+  upcoming: UpcomingEntry[];
   events: CalendarEvent[];
 };
 
@@ -302,12 +310,17 @@ const rendered = (
   { withEmail = false, ledeLevel }: { withEmail?: boolean; ledeLevel?: 1 | 2 } = {},
 ) => {
   const title = entry.meta.title ?? '';
-  const { intro, sections } = split(entry.body, baseLevel, ledeLevel);
+  // The calendar comes out of the prose before anything renders: the page draws
+  // it as a card, and a month page — which stacks whole editions — is the last
+  // place that wants twenty near-identical lists of the same deadlines. It stays
+  // in `entry.body`, so the .md companion still serves the edition entire.
+  const calendar = liftCalendar(entry.body, lang, entry.meta.date);
+  const { intro, sections } = split(calendar.body, baseLevel, ledeLevel);
 
   return {
     // The whole-body render is what the month roundups draw, and those print the
     // edition's title above it — so there the duplicate heading still goes.
-    html: dropLedeHeading(render(entry.body, baseLevel), title),
+    html: dropLedeHeading(render(calendar.body, baseLevel), title),
     intro,
     sections,
     // The standing note is written in markdown like the rest of the edition and
@@ -316,6 +329,7 @@ const rendered = (
     // reaching the page as its own source text, brackets and URL and all.
     standingHtml: entry.meta.standing ? renderInline(entry.meta.standing) : '',
     emailHtml: withEmail ? (emailsByDate[lang].get(entry.meta.date) ?? null) : null,
+    upcoming: calendar.entries,
     events: extractEvents(entry.body, lang, entry.meta.date),
   };
 };
