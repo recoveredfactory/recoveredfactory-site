@@ -420,3 +420,62 @@
   border-left: 2px solid color-mix(in srgb, var(--color-fern-strong) 45%, transparent);
   padding-left: 1rem;
 }
+
+/* The as-sent view, for a sent artifact that arrives with no styles of its own.
+   Through Aug. 25 every element in the email carried inline styles, because a
+   mail client is the one place a stylesheet cannot be relied on. The Aug. 26
+   artifact is a `deterministic_archive_render` instead — a whole HTML document
+   whose typography lives in a <style> in its head, which the sanitizer drops
+   before the archive stores it, because a sheet written against `body` and bare
+   `h2` would restyle the page it is embedded in.
+
+   So these are the dropped sheet's own values, scoped to the wrapper. Inline
+   styles still win wherever the artifact sets them, which is what keeps every
+   edition through Aug. 25 looking exactly as it did. Set against Tailwind's
+   preflight rather than the browser's defaults: `not-prose` on the wrapper turns
+   the typography plugin off, and preflight has already flattened headings to
+   body text and zeroed the margins between paragraphs. */
+.rf-daybook-email {
+  color: #252525;
+  font-family: var(--font-daybook);
+}
+
+.rf-daybook-email h2 {
+  margin: 30px 0 12px;
+  font-family: var(--font-brand);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.18;
+  color: #171717;
+}
+
+.rf-daybook-email p {
+  margin: 0 0 16px;
+}
+
+.rf-daybook-email p,
+.rf-daybook-email li {
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.rf-daybook-email ul {
+  margin: 0 0 16px;
+  padding-left: 22px;
+  list-style: disc;
+}
+
+.rf-daybook-email li {
+  margin-bottom: 12px;
+}
+
+.rf-daybook-email a {
+  color: var(--color-daybook-link);
+  text-decoration: underline;
+}
+
+/* The round-up sets each item as a paragraph inside its list item, so the two
+   bottom margins would otherwise stack. */
+.rf-daybook-email li > p:last-child {
+  margin-bottom: 0;
+}
