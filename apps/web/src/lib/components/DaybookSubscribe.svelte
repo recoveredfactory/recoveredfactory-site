@@ -17,7 +17,7 @@
   type DaybookSubscribeProps = {
     lang: Lang;
     /** Rides along on the signup event so the two slots can be told apart. */
-    placement: 'archive-top' | 'archive-bottom';
+    placement: 'archive-top' | 'archive-bottom' | 'edition-mid';
   };
 
   let { lang, placement }: DaybookSubscribeProps = $props();
@@ -60,23 +60,24 @@
 <!-- A panel rather than a pair of rules. On cream, white with a hairline reads
      as a thing to act on instead of a caption, and it costs nothing vertically —
      the padding is the padding the rules already had. -->
-<section class="not-prose border border-slate-900/15 bg-white px-4 py-4">
-  <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-    <div class="sm:flex-1">
-      <p class="text-sm leading-snug text-slate-700 sm:text-base sm:leading-normal">
-        {pitch}
-        <span class="font-semibold text-slate-900">{offer}</span>
-      </p>
-      <!-- Desktop keeps it under the pitch, where there is room in the column.
-           On a phone the pitch already runs several lines, so it moves below the
-           input instead — nearer the thing it is reassuring you about, and it
-           does not push the form further down the screen. -->
-      <p class="mt-1.5 hidden text-xs text-slate-500 sm:block">{privacy}</p>
-    </div>
+<!-- Stacked rather than side by side.
+     Pitch left, form right was written for a wider column than this one ever
+     gets: inside the archive's 42rem measure it left the sentence about 330px
+     and the form about 340px, which is a wide short strip wedged between two
+     runs of body text — it read as an ad bar rather than as part of the page.
+     Stacking gives the sentence the full measure and lets the input run the
+     width of the column under it. It costs about 60px of height and buys the
+     panel a shape, which is the thing that was wrong with it. -->
+<section class="not-prose border border-slate-900/15 bg-white px-5 py-5">
+  <div class="flex flex-col gap-4">
+    <p class="text-sm leading-snug text-slate-700 sm:text-base sm:leading-normal">
+      {pitch}
+      <span class="font-semibold text-slate-900">{offer}</span>
+    </p>
     <SubscribeForm
       buttonClass="bg-fern-strong px-4 py-2.5 text-xs font-semibold uppercase tracking-[0.18em] text-white transition hover:bg-fern sm:shrink-0"
       id={`daybook-${placement}`}
-      inputClass="w-full border border-slate-900/15 bg-white px-3 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 sm:w-64 sm:flex-none"
+      inputClass="w-full border border-slate-900/15 bg-white px-3 py-2.5 text-sm text-slate-800 placeholder:text-slate-400 sm:flex-1"
       {lang}
       layoutClass="flex flex-col gap-2 sm:flex-row sm:items-stretch sm:gap-2"
       meta={{ placement }}
@@ -84,6 +85,8 @@
       successClass="mt-3 border border-slate-900/10 bg-white/70 p-4 text-center text-sm"
       tag="newsletter:immigration-daybook"
     />
+    <!-- Under the form at every width now that the panel is one column —
+         nearest the input, which is where the hesitation happens. -->
+    <p class="-mt-1 text-xs text-slate-500">{privacy}</p>
   </div>
-  <p class="mt-2 text-xs text-slate-500 sm:hidden">{privacy}</p>
 </section>

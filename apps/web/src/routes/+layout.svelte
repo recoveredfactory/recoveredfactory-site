@@ -68,13 +68,18 @@
 
   let daybookBannerDismissed = $state(false);
 
-  const daybookHref = $derived(`/${currentLocale}/immigration-daybook`);
+  // Points at the archive rather than the landing page: the pilot ran free
+  // through August and now goes on, so the strip has an edition to offer where
+  // it used to have a deadline. Every archive page carries its own subscribe
+  // form, so the ask is one screen later rather than gone — and the banner hides
+  // itself under /daybook, so it never sits above the thing it is pointing at.
+  const daybookHref = $derived(`/${currentLocale}/daybook`);
   const daybookBannerText = $derived(
     currentLocale === 'es'
-      ? 'Nuevo: Immigration Daybook, de lunes a viernes. Gratis en agosto.'
-      : 'New: Immigration Daybook, every weekday. Free in August.',
+      ? 'Nuevo: Immigration Daybook, de lunes a viernes. Léelo en línea.'
+      : 'New: Immigration Daybook, every weekday. Read it online.',
   );
-  const daybookBannerCta = $derived(currentLocale === 'es' ? 'Suscríbete →' : 'Sign up →');
+  const daybookBannerCta = $derived(currentLocale === 'es' ? 'Léelo →' : 'Read it →');
   const daybookBannerDismissLabel = $derived(
     currentLocale === 'es' ? 'Cerrar este aviso' : 'Dismiss this notice',
   );

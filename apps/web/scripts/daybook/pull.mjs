@@ -31,7 +31,12 @@ import { readFileSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { loadUpcoming, upcomingItems, toCalendarEntry as toEntryFromSnapshot } from './upcoming.mjs';
+import {
+  loadUpcoming,
+  publishedFromText,
+  upcomingItems,
+  toCalendarEntry as toEntryFromSnapshot,
+} from './upcoming.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const webRoot = join(here, '..', '..');
@@ -61,6 +66,18 @@ const DEK_MAX_CHARS = 380;
 // reliably short where a story headline is a full clause, so length separates
 // them without hardcoding a list per language.
 const RUBRIC_MAX_CHARS = 35;
+
+// The Upcoming calendar flattened to text: an indented month abbreviation, then
+// an indented day. See stripFlattenedCalendar. Declared up here with the rest of
+// the configuration for the dead-zone reason the dek settings give.
+const FLATTENED_CALENDAR = /^[ \t]+\p{Lu}{3,12}[ \t]*\n[ \t]+\d{1,2}[ \t]*$/mu;
+
+// The email's sign-off, which the markdown began carrying on 2026-08-26: the
+// project line, the sibling-project links and the copyright. Recognised by where
+// its links go — everything in it points at our own sites, PromptQL or the
+// licence. See stripEmailFooter.
+const FOOTER_HOSTS = /^(?:[a-z0-9-]+\.)*(?:recoveredfactory\.net|promptql\.io|creativecommons\.org)$/;
+
 
 // Carousel tuning, up here for the same dead-zone reason as the dek settings.
 //
@@ -134,16 +151,71 @@ const ABBREVIATIONS = new Set(
     .split(' '),
 );
 
-// Two dated entries a slide, two slides. Four deadlines is a useful number to
-// screenshot; eight is a document.
-const UPCOMING_SLIDES = 2;
-const UPCOMING_PER_SLIDE = 2;
+// One calendar slide, up to four dated entries on it, and never fewer than
+// three.
+//
+// This used to be two slides of two, on the reasoning that four deadlines is a
+// useful number to screenshot and eight is a document. Four was the right
+// number; two slides was not. The entries arrived at 420 characters apiece, so
+// each slide came out as two paragraphs of Federal Register prose under a date,
+// which is a document at two entries just as surely as at eight — and it cost a
+// third of the deck to say what one card says better.
+//
+// One board instead: every deadline the edition published, in date order, each
+// cut to the clause that carries the number. The full text is what the
+// newsletter is for.
+const UPCOMING_SLIDES = 1;
+const UPCOMING_PER_SLIDE = 4;
 
-// Watch-item summaries are written to explain a rule, not to fit a card. Set
-// against Spanish rather than English: the same entry runs 20-30% longer in
+// A board of two entries is a list; three is a board. Below that the slide is
+// dropped rather than shipped half-empty — which is the same rule the two-up
+// slides had, set at the number a single board needs.
+const UPCOMING_MIN_PER_SLIDE = 3;
+
+// Watch-item summaries are written to explain a rule, not to fit a card, and on
+// a board four of them share the room two used to have. So this is a clause
+// budget rather than a paragraph one: enough for the fact and the number under
+// it — "DHS wants to raise the cost of applying for US citizenship (Form N-400)
+// from $760 to $1,330 on paper, and $710 to $1,280 online" — and the rest of the
+// rule is in the edition, which is where someone acting on a deadline should be
+// reading it anyway.
+//
+// Set against Spanish rather than English: the same entry runs 20-30% longer in
 // Spanish, and a budget that fits the English cut "…de la Oficina de" off the
 // end of the Spanish one, which is worse than a smaller type size.
-const UPCOMING_MAX_CHARS = 420;
+const UPCOMING_MAX_CHARS = 190;
+
+// The round-up slide: the edition's last section, the one that is a list of
+// briefs under a short rubric rather than a story under a headline.
+//
+// The deck used to throw this away entirely. An edition carries three or four
+// stories and then six or seven items in a closing list, and the carousel read
+// the stories and stopped — so a reader who swiped the whole deck saw a third of
+// the day. The list is the cheapest breadth in the newsletter and it was going
+// nowhere.
+//
+// Four of them, and never fewer than three. They run in the edition's own
+// order: which item leads a round-up is an editorial call that was already made.
+//
+// Four rather than three because of how the slide is set. Every size on a
+// portrait slide is a multiple of --fit and the fitter grows the type until the
+// card is full, so a card with three short briefs on it does not come out
+// roomy — it comes out with the briefs set larger than the nut sentence on the
+// cover, which says a one-line item matters more than the day's lead. Four
+// items is the number that fills the frame at the size this prose should be.
+const BRIEFS = 4;
+const BRIEFS_MIN = 3;
+
+// One sentence each. The bullets open with the news and then qualify it for
+// another two sentences — "…the nonbinding resolutions came amid renewed
+// progressive anger after recent fatal ICE encounters" — and the qualification
+// is what the edition is for.
+const BRIEF_MAX_CHARS = 165;
+
+// One publication a brief, not three. A story slide has the room for a credit
+// line and the standing to want one; a brief is a single line, and three names
+// under it is longer than the news.
+const BRIEF_SOURCES = 1;
 
 const args = new Set(process.argv.slice(2));
 const offline = args.has('--offline');
@@ -155,15 +227,19 @@ const skipCards = args.has('--skip-cards');
 
 // Leave the calendar off the carousel for this run.
 //
-// The deadlines are standing ones, so consecutive editions carry the same four
-// and the calendar slides come out byte-identical day to day — 2026-08-11 and
-// 2026-08-12 were the same two cards in both languages. That is not wrong; it
-// is what a deadline is. It is just not worth two of six slides on a feed where
-// the cadence is closer to a few times a week than daily.
+// This was written when the calendar took two of six slides and the deadlines
+// were standing ones, so consecutive editions carried the same four entries and
+// the slides came out byte-identical — 2026-08-11 and 2026-08-12 were the same
+// two cards in both languages. That was not wrong; it is what a deadline is. It
+// was just not worth a third of the deck.
 //
-// The snapshot is still fetched and still archived, because it is the record
-// and because the obvious home for this is a standalone weekly card of its own.
-// Only the slides go away.
+// The board answers most of that: one slide instead of two, and a countdown
+// that is different every morning off the same row. The flag stays for the
+// other case it covers — a day whose slate is thin, or a deck that wants the
+// room for something else.
+//
+// The snapshot is still fetched and still archived either way, because it is
+// the record.
 const noUpcoming = args.has('--no-upcoming');
 
 const env = Object.fromEntries(
@@ -237,6 +313,47 @@ if (!/^\d{4}-\d{2}-\d{2}$/.test(editionDate ?? '')) {
   process.exit(1);
 }
 
+// Which calendar entries the composer actually published.
+//
+// The snapshot's own `selected_items` is empty on every edition seen so far and
+// `selection.mode` reads `eligible_only`, so the readers downstream fall back to
+// the whole eligible slate — which is one or two entries longer than what went
+// out. On 2026-08-17 the email carried five and the eligible set held six, the
+// sixth being an OMB paperwork renewal of exactly the kind the composer keeps
+// off the calendar.
+//
+// So the set has to come from somewhere, and there are two candidates: the
+// manifest says what was meant to ship, and the email is what shipped. The email
+// wins. It is the artifact subscribers received, it is fetched on every run
+// anyway, and every item on it is matched by the composer's own summary text —
+// see publishedFromText. The manifest's `upcoming_ids` is bookkeeping written
+// alongside the send rather than by it, and its record has not held up: on
+// 2026-08-17 only `es` carried the field, on 2026-08-18 neither did, and the
+// deck that day put an Aug. 31 H-2B attestation on the board in place of the
+// Sep. 9 H-1B fee the edition ran.
+//
+// The manifest is still read, for two reasons. It covers an edition whose email
+// never came back, and where both exist a disagreement between them is worth
+// saying out loud — it is the cheapest signal there is that the bookkeeping
+// upstream has drifted.
+//
+// Whichever answers, it is archived into the edition frontmatter, which is the
+// committed record the page can reach.
+const manifestUpcomingIds = (() => {
+  for (const lang of LANGS) {
+    try {
+      const ids = JSON.parse(manifest[lang]?.notes ?? '{}').upcoming_ids;
+      if (Array.isArray(ids) && ids.length) return ids;
+    } catch {
+      // A notes blob that is not JSON is not worth stopping the pull over.
+    }
+  }
+  return null;
+})();
+
+let upcomingIds = manifestUpcomingIds;
+let upcomingFrom = manifestUpcomingIds ? 'manifest' : null;
+
 // The publish gate. `faithfulness_blocked` is the automation's own signal that a
 // claim in the edition did not survive its source check — that must never reach
 // the archive on autopilot, so --force has to be typed by a human who has read
@@ -277,18 +394,37 @@ if (manifest.url_parity === false) {
 // one record of them.
 const snapshot = await loadUpcoming({ webRoot, url, key, date: editionDate, offline });
 if (snapshot) {
-  const { mode, eligible_count: eligible, selected_count: selected } = snapshot.selection ?? {};
+  // v2 moved the counts under `audit` and lifted `policy_sha256` to the top
+  // level; v1 kept both beside `selection`. Read either, because a log line that
+  // says "0 items" over a full calendar is worse than no log line.
+  const mode = snapshot.selection?.mode ?? 'unknown';
+  const eligible =
+    snapshot.audit?.eligible_count ??
+    snapshot.selection?.eligible_count ??
+    snapshot.eligible_items?.length ??
+    0;
+  const policy = snapshot.policy_sha256 ?? snapshot.policy?.policy_sha256 ?? '';
+  const published = upcomingIds ? `${upcomingIds.length} published` : 'no published set on the manifest';
   console.log(
-    `Upcoming: selection.mode=${mode ?? 'unknown'} ` +
-      `(${selected || eligible || 0} items, policy ${snapshot.policy?.policy_sha256?.slice(0, 12) ?? '?'}).`,
+    `Upcoming: selection.mode=${mode} ` +
+      `(${eligible} eligible, ${published}, policy ${policy ? policy.slice(0, 12) : '?'}).`,
   );
+
+  const known = new Set((snapshot.eligible_items ?? []).map((item) => item.id));
+  const missing = (upcomingIds ?? []).filter((id) => !known.has(id));
+  if (missing.length) {
+    console.warn(
+      `WARNING: ${editionDate}: the manifest publishes upcoming ids [${missing.join(', ')}] ` +
+        'that are not in the snapshot. Falling back to the full eligible slate for those.',
+    );
+  }
 }
 
 const calendarFor = (lang) =>
   noUpcoming
     ? []
-    : upcomingItems(snapshot, lang)
-        .map((item) => toEntryFromSnapshot(item, lang, snapshot))
+    : upcomingItems(snapshot, lang, upcomingIds)
+        .map((item) => toEntryFromSnapshot(item, lang, snapshot, editionDate))
         .filter(Boolean);
 
 if (noUpcoming) console.log('--no-upcoming: the calendar stays off the carousel this run.');
@@ -338,6 +474,36 @@ for (const lang of LANGS) {
   // Fetched before the deck is built because the carousel reads the calendar.
   const html = await fetchEmailHtml(lang);
   const sanitized = html ? sanitizeEmailHtml(html) : '';
+
+  // What the edition actually carried, read off the edition itself.
+  //
+  // Read here rather than up with the manifest because this is the first point
+  // the email exists, and it has to happen before the deck is built. Taken from
+  // the first language that yields a set and reused for the other: the snapshot
+  // says the published set is language-neutral, and two languages disagreeing
+  // about which deadlines the edition ran would be a worse bug than either of
+  // the ones this guards against.
+  if (upcomingFrom !== 'email' && html) {
+    const fromEmail = publishedFromText(snapshot, lang, emailText(html));
+    if (fromEmail) {
+      if (manifestUpcomingIds && manifestUpcomingIds.join(',') !== fromEmail.join(',')) {
+        console.warn(
+          `WARNING: ${editionDate}: the manifest and the ${lang} email disagree about the ` +
+            `calendar. Manifest [${manifestUpcomingIds.join(', ')}], email ` +
+            `[${fromEmail.join(', ')}]. Going with the email — it is what subscribers got.`,
+        );
+      }
+      upcomingIds = fromEmail;
+      upcomingFrom = 'email';
+      console.log(`Upcoming: ${fromEmail.length} published, read off the ${lang} email.`);
+    } else if (!upcomingIds) {
+      console.warn(
+        `WARNING: ${editionDate}: no calendar recoverable from the ${lang} email and none on ` +
+          'the manifest. Falling back to the whole eligible slate, which is wider than what ' +
+          'shipped — check the board before posting it.',
+      );
+    }
+  }
 
   const built = buildDeck(edition, editionDate, calendarFor(lang), deckShape, lang);
   decks[lang] = built.deck;
@@ -423,6 +589,21 @@ async function fetchEmailHtml(lang) {
 }
 
 /**
+ * The email as words, for matching against the snapshot.
+ *
+ * Entity references come out rather than being decoded: every one in this
+ * corpus stands for punctuation — an em dash, a curly quote, an ampersand — and
+ * the match folds punctuation away regardless. Decoding them would only risk
+ * `&mdash;` arriving in the comparison as the letters "mdash".
+ */
+function emailText(html) {
+  return html
+    .replace(/<(script|style)\b[^>]*>[\s\S]*?<\/\1\s*>/gi, ' ')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&[#a-z0-9]+;/gi, ' ');
+}
+
+/**
  * Strip the parts of the email HTML that must not run in a page.
  *
  * This is generated markup from our own pipeline rather than arbitrary input,
@@ -483,10 +664,26 @@ function prepareEdition(markdown, lang, date) {
   if (noteMatch && body.startsWith(noteMatch[0])) {
     standing = noteMatch[1].trim();
     body = body.slice(noteMatch[0].length).trim();
+  } else {
+    // Upstream stopped italicising the note on Aug. 19, and an un-split note is
+    // boilerplate indexed as prose on every edition that carries it. An edition
+    // opens on its lede's H2, so anything ahead of the first heading is the
+    // note whatever its markup. Only a single paragraph is taken: the
+    // frontmatter is one flat `key: "value"` line per key with no newline
+    // escaping, and the note renders inline with no block wrapper around it.
+    const firstHeading = body.search(/^## /m);
+    const lead = firstHeading > 0 ? body.slice(0, firstHeading).trim() : '';
+    if (lead && !/\n\s*\n/.test(lead)) {
+      standing = lead;
+      body = body.slice(firstHeading).trim();
+    }
   }
 
   body = stripUnresolvedSections(body, lang, date);
+  body = stripFlattenedCalendar(body, lang, date);
   body = repairCalendarBullets(body);
+  body = dropOrphanBullets(body, lang, date);
+  body = stripEmailFooter(body, lang, date);
 
   // The lede story's headline is the first H2. It is the searchable thing about
   // an edition — nobody looks for "Immigration Daybook August 3", they look for
@@ -605,6 +802,10 @@ function serializeEdition(
     socialImage ? `socialImage: "${socialImage}"` : null,
     dossier ? `dossier: "${escapeYaml(dossier)}"` : null,
     instagramPost ? `instagramPost: "${escapeYaml(instagramPost)}"` : null,
+    // The calendar the email actually carried, so the page renders that set
+    // rather than the whole eligible slate. Absent on editions pulled before
+    // this was read, which keep the old fall-back behaviour.
+    upcomingIds ? `upcomingIds: "${upcomingIds.join(',')}"` : null,
     perLang.kit_broadcast_id ? `kitBroadcastId: ${perLang.kit_broadcast_id}` : null,
     perLang.doc_url ? `docUrl: "${perLang.doc_url}"` : null,
     `sourceStatus: "${manifest.status}"`,
@@ -666,9 +867,10 @@ function renderEditionCard(lang, date, headline) {
  * section says.
  */
 function buildDeck({ body, headline }, date, events, shape, lang) {
+  const sections = body.split(/\n(?=## )/);
+
   // Story sections, in order, rubrics dropped.
-  const raw = body
-    .split(/\n(?=## )/)
+  const raw = sections
     .map(readStory)
     .filter((story) => story.headline.length > RUBRIC_MAX_CHARS);
 
@@ -694,24 +896,83 @@ function buildDeck({ body, headline }, date, events, shape, lang) {
   const { nut = '', detail = '', sources = [] } = stories[0] ?? {};
   const beats = stories.slice(1, 1 + CAROUSEL_BEATS);
 
-  // The calendar is the payoff, so it goes in whole slides rather than as a
-  // footnote: two dated entries a slide, up to UPCOMING_SLIDES of them.
+  // The calendar is the payoff, so it goes on a whole slide rather than as a
+  // footnote: every deadline the edition published, up to UPCOMING_PER_SLIDE of
+  // them, on one board.
+  //
+  // Cut on a clause rather than a sentence. A watch item's first sentence is
+  // typically 200 characters carrying the whole fee schedule, so a
+  // sentence-only rule either printed all of it or none of it; the clause is
+  // where the number lands.
   const trimmed = events.map((entry) => ({
     ...entry,
-    text: trimToSentence(entry.text, UPCOMING_MAX_CHARS),
+    text: trimToClause(entry.text, UPCOMING_MAX_CHARS),
   }));
 
   const upcoming = [];
   for (let i = 0; i < trimmed.length && upcoming.length < UPCOMING_SLIDES; i += UPCOMING_PER_SLIDE) {
     const entries = trimmed.slice(i, i + UPCOMING_PER_SLIDE);
-    // A half-full final slide reads as a mistake rather than as a short week.
-    if (entries.length === UPCOMING_PER_SLIDE) upcoming.push({ entries });
+    // A half-empty board reads as a mistake rather than as a short week.
+    if (entries.length >= UPCOMING_MIN_PER_SLIDE) upcoming.push({ entries });
   }
 
   return {
-    deck: { date, hed: headline, nut, detail, sources, beats, upcoming },
+    deck: {
+      date,
+      hed: headline,
+      nut,
+      detail,
+      sources,
+      beats,
+      briefs: readBriefs(sections),
+      upcoming,
+    },
     shape: decided,
   };
+}
+
+/**
+ * The round-up slide: the edition's closing list of briefs.
+ *
+ * Found from the end rather than by name. The rubric is different in every
+ * Spanish edition — "Alrededor del sistema", "En el resto del sistema", "En todo
+ * el sistema" — so a list of headings to match would be wrong within the week.
+ * What is stable is the shape: a short rubric where a story has a headline, and
+ * bullets where a story has paragraphs. `## Upcoming` is the only other section
+ * of that shape, and it runs above this one when it survives at all, so the last
+ * match is the round-up.
+ *
+ * The slide takes the rubric the edition wrote. A word for what these items are
+ * is an editorial call and it has already been made three lines up the file.
+ */
+function readBriefs(sections) {
+  const section = [...sections]
+    .reverse()
+    .find(
+      (block) =>
+        (block.match(/^## (.+)$/m)?.[1]?.trim().length ?? Infinity) <= RUBRIC_MAX_CHARS &&
+        /^-\s+\S/m.test(block),
+    );
+  if (!section) return null;
+
+  const items = section
+    .split('\n')
+    .filter((line) => /^-\s+\S/.test(line))
+    .slice(0, BRIEFS)
+    .map((line) => {
+      const { prose, sources } = splitCredits(line.replace(/^-\s+/, '').trim());
+      const [first = ''] = splitSentences(stripInlineMd(prose));
+      return {
+        text: trimToClause(first, BRIEF_MAX_CHARS),
+        sources: sources.slice(0, BRIEF_SOURCES),
+      };
+    })
+    .filter((item) => item.text);
+
+  // Short of a card it is not a round-up, it is a leftover.
+  if (items.length < BRIEFS_MIN) return null;
+
+  return { rubric: stripInlineMd(section.match(/^## (.+)$/m)?.[1] ?? ''), items };
 }
 
 /**
@@ -880,17 +1141,63 @@ function trimToClause(text, max) {
   return `${cut.slice(0, at).replace(/[\s,;:—–-]+$/, '')}…`;
 }
 
-// Calendar prose is written to explain, not to fit a card. Cut on a sentence
-// where possible — a deadline that ends mid-clause is worse than a shorter one.
-function trimToSentence(text, max) {
-  if (text.length <= max) return text;
+/**
+ * Fold the day's hand-authored exhibits into every language's deck.
+ *
+ * Which document backs a story, where it is cropped and which line is marked is
+ * an editorial call and is not derivable from the edition, so none of it is
+ * derived: it is written by hand into
+ * scripts/daybook/exhibits/<date>/exhibits.json beside the crops it names, and
+ * this only carries it through. Most editions have no such file and get the deck
+ * they always got.
+ *
+ * The whole array goes to both languages. An exhibit carries per-language copy
+ * under `en` / `es` and og.mjs picks the one it is rendering, so a document that
+ * is only worth showing in one language is a matter of writing copy for one —
+ * not of splitting the spec.
+ *
+ * A malformed file throws rather than rendering the deck without it. A deck that
+ * quietly drops the document is the failure mode this whole slide type exists to
+ * avoid.
+ */
+function attachExhibits(decks, date) {
+  const specFile = join(here, 'exhibits', date, 'exhibits.json');
+  if (!existsSync(specFile)) return;
 
-  const cut = text.slice(0, max);
-  const stop = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('? '), cut.lastIndexOf('! '));
-  if (stop > max * 0.45) return cut.slice(0, stop + 1);
+  const exhibits = JSON.parse(readFileSync(specFile, 'utf8'));
+  if (!Array.isArray(exhibits) || !exhibits.length) return;
 
-  const space = cut.lastIndexOf(' ');
-  return `${(space > 0 ? cut.slice(0, space) : cut).replace(/[\s,;:—–-]+$/, '')}…`;
+  for (const deck of Object.values(decks)) deck.exhibits = exhibits;
+  console.log(
+    `Exhibits: ${exhibits.length} on the deck, from scripts/daybook/exhibits/${date}/exhibits.json.`,
+  );
+}
+
+/**
+ * Drop a list marker that has lost its item.
+ *
+ * Seen first on 2026-08-25, in both languages: the round-up arrived with four
+ * lines holding nothing but "-", each followed by a blank line and then the item
+ * as its own paragraph. Markdown reads that as four empty list items, so the
+ * page would have printed four empty bullets above four paragraphs.
+ *
+ * Safe to do unconditionally rather than by section, because a bare hyphen on a
+ * line of its own is not something prose does — a real bullet carries its text
+ * on the same line, and a horizontal rule needs three. The only markdown a lone
+ * "-" can make is an empty list item, which is never what anybody meant.
+ *
+ * Counted and reported rather than done silently: this is the fourth distinct
+ * shape the composer's round-trip has produced, and the count is how we notice
+ * when it changes again.
+ */
+function dropOrphanBullets(body, lang, date) {
+  const orphan = /^[ \t]*-[ \t]*$\n?/gm;
+  const hits = body.match(orphan)?.length ?? 0;
+  if (!hits) return body;
+  console.warn(
+    `WARNING: ${date} ${lang}: dropped ${hits} empty list marker${hits === 1 ? '' : 's'} — a "-" on a line with no item after it.`,
+  );
+  return body.replace(orphan, '');
 }
 
 /**
@@ -903,10 +1210,20 @@ function trimToSentence(text, max) {
  */
 function renderCarousel(decks, date) {
   const langs = Object.keys(decks);
-  if (skipCards || !langs.length) return;
+  if (!langs.length) return;
 
+  attachExhibits(decks, date);
+
+  // Written before the --skip-cards gate: the deck is templating output, which
+  // is what that flag keeps, and it is the file a layout change is tested
+  // against. Skipping it too meant the only way to see a new slide was a full
+  // render of the live edition directory.
   const deckFile = join(outDir, `deck-${date}.json`);
   writeFileSync(deckFile, JSON.stringify(decks, null, 2));
+  if (skipCards) {
+    console.log(`\nWrote scripts/daybook/out/deck-${date}.json (--skip-cards: nothing rendered).`);
+    return;
+  }
 
   try {
     execFileSync(
@@ -959,6 +1276,88 @@ function stripUnresolvedSections(body, lang, date) {
   });
 
   return kept.join('\n');
+}
+
+// The calendar section when it arrives flattened.
+//
+// The third way `## Upcoming` came through wrong was filled but unusable: the
+// email's calendar block reduced to text — an indented month abbreviation, an
+// indented day, then the entry's prose and its source link, each on its own
+// indented line. Markdown reads that as a run of paragraphs, so the page would
+// print "AUG" and "24" as two lines of body copy.
+//
+// Matched on shape rather than on the rubric's name, for the reason readBriefs
+// gives: the Spanish rubric is not stable across editions. An indented line of
+// capitals over an indented bare number is nothing prose does.
+//
+// The calendar *set as markdown* — one paragraph an entry, opening on a bolded
+// date — is a different matter and stays where it lands. Since 2026-08-26 the
+// page reads its calendar out of the edition body rather than rebuilding one
+// from the upcoming snapshot; see liftCalendar in src/lib/daybook/calendar.ts.
+// This shape has never been readable, so there is nothing in it to keep.
+function stripFlattenedCalendar(body, lang, date) {
+  const kept = body.split(/\n(?=## )/).filter((section) => {
+    if (!FLATTENED_CALENDAR.test(section)) return true;
+
+    const heading = section.match(/^## (.+)$/m)?.[1]?.trim() ?? '(untitled)';
+    console.warn(
+      `WARNING: ${date} ${lang}: dropped section "${heading}" from the markdown — ` +
+        'it arrived as the email calendar flattened to text. The page falls back to ' +
+        'the upcoming snapshot; RSS and the .md companion get no calendar at all.',
+    );
+    return false;
+  });
+
+  return kept.join('\n');
+}
+
+
+// The email's sign-off, which the markdown began carrying on 2026-08-26: the
+// project line, the row of sibling-project links, the copyright. It is the
+// email's chrome, and on the page it would print inside the article, above the
+// site's own footer saying much the same thing.
+//
+// Recognised by where its links go rather than by its words, which are different
+// in each language and have been rewritten before: a trailing paragraph that
+// links only to our own sites, to PromptQL or to the licence is furniture. The
+// walk stops at the first paragraph that is anything else, so it cannot eat into
+// the round-up — those are list items, and every one of them cites somebody.
+function stripEmailFooter(body, lang, date) {
+  // Split keeping the separators, so what is left is byte-for-byte what came in.
+  const parts = body.trimEnd().split(/(\n[ \t]*\n)/);
+  let end = parts.length;
+  let dropped = 0;
+
+  while (end > 0 && isFooterBlock(parts[end - 1])) {
+    end -= 2;
+    dropped += 1;
+  }
+
+  if (!dropped) return body;
+
+  console.warn(
+    `WARNING: ${date} ${lang}: dropped ${dropped} paragraph${dropped === 1 ? '' : 's'} of ` +
+      "email sign-off from the markdown — the page and the .md companion have their own.",
+  );
+
+  return `${parts.slice(0, Math.max(end, 0)).join('').trimEnd()}\n`;
+}
+
+function isFooterBlock(block) {
+  const text = block.trim();
+  // A heading, a quote, a list item or a bolded lead is the edition talking.
+  if (!text || /^(#|>|[-*+]\s|\d+\.\s|\*\*)/.test(text)) return false;
+
+  const links = [...text.matchAll(/\]\((https?:\/\/[^)\s]+)\)/g)].map(([, href]) => href);
+  if (!links.length) return false;
+
+  return links.every((href) => {
+    try {
+      return FOOTER_HOSTS.test(new URL(href).hostname);
+    } catch {
+      return false;
+    }
+  });
 }
 
 // Calendar entries come off the automation as `**- 4 de agosto — …**  trailing

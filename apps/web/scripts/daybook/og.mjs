@@ -65,6 +65,8 @@ const OUT_SIZE = '1600x840';
 const INK = '#12161d';
 const CREAM = '#f3f1e9';
 const CRIMSON = '#e8244f';
+// The sheet an exhibit is set on. See exhibitSlide.
+const PAPER = '#fdfcf9';
 
 const FONTS =
   'https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Lora:wght@400;500;600&display=swap';
@@ -459,6 +461,22 @@ const portraitFrame = (body, { date = '', site = true }) => `
   ${site ? `<footer class="site">${HOME_URL}</footer>` : ''}
 ${FIT_SCRIPT}`;
 
+// Publications whose own mark is mixed case, and which the house all-caps would
+// otherwise misspell. LAist is LAist: the lowercase "ist" is the mark, and
+// LAIST reads as an outlet that does not exist. The uppercase is CSS, not the
+// string, so the exception has to ride in a span that turns it back off.
+//
+// Keyed on what the edition's link text says and matched case-insensitively, so
+// an upstream "LAIST" is corrected here too rather than passed through. Anything
+// not on this list takes the all-caps, which is nearly everything — this is a
+// list of marks, not a list of preferences.
+const VERBATIM_SOURCES = new Map([['laist', 'LAist']]);
+
+const sourceName = (name) => {
+  const verbatim = VERBATIM_SOURCES.get(String(name).trim().toLowerCase());
+  return verbatim ? `<span class="asis">${escapeHtml(verbatim)}</span>` : escapeHtml(name);
+};
+
 // The publications a story slide was built from, named under a hairline.
 //
 // Not favicons. They arrive at 16-32px and would have to be blown up four times
@@ -471,7 +489,7 @@ ${FIT_SCRIPT}`;
 const creditLine = (sources) =>
   sources?.length
     ? `<p class="credit">${sources
-        .map((s) => escapeHtml(s))
+        .map((s) => sourceName(s))
         .join('<span class="sep">·</span>')}</p>`
     : '';
 
@@ -579,6 +597,13 @@ const portraitCss = (date) => `
   .credit .sep {
     color: rgba(243, 241, 233, 0.34);
     padding: 0 0.55em;
+  }
+  /* The one opt-out of the house all-caps. See VERBATIM_SOURCES.
+     The tracking goes with it: 0.15em is set for capitals, and on mixed case it
+     pulls the word apart into "L A i s t" — which is not the mark either. */
+  .asis {
+    text-transform: none;
+    letter-spacing: 0.02em;
   }`;
 
 // The cover: the lede, cut the same way every other story on the deck is cut.
@@ -639,11 +664,28 @@ const beatSlide = ({ headline, nut, detail, sources, date }) =>
     PORTRAIT,
   );
 
-// The calendar slide: dated entries, biggest thing on the card being the date.
+// The calendar board: every deadline the edition published, on one card, with
+// how far off each one is.
 //
 // This is the slide the deck exists for. A headline tells someone what happened;
 // a date with a deadline attached tells them what to do about it, and it is the
 // one thing here worth screenshotting and keeping.
+//
+// It was two slides of two until 2026-08-18, and the problem with that was not
+// the layout. Deadlines are standing: the N-400 comment period closed on Aug. 24
+// whether the edition was the 7th, the 11th, the 13th or the 17th, so four
+// decks running carried the same three entries and the calendar slides came out
+// byte-identical. Two sixths of a deck, identical to last week's.
+//
+// The countdown is the answer to that, and it is not a trick — it is the fact a
+// reader wants. The date says when; "in six days" says whether there is still
+// time, which is the question someone reads a deadline to ask. It is true on the
+// morning it is posted and different the next morning, off the same row.
+//
+// So: one board, four entries, and the countdowns running down the right edge in
+// the deck's one accent colour. The crimson on this card belongs to time — the
+// date on the left, what is left of it on the right — and the publisher goes
+// quiet between them.
 const UPCOMING_LABEL = { en: 'What’s coming', es: 'Lo que viene' };
 
 // One size for every entry on a slide, and the fitter takes the whole slide
@@ -651,13 +693,17 @@ const UPCOMING_LABEL = { en: 'What’s coming', es: 'Lo que viene' };
 // and it set two paragraphs of the same kind at two different sizes, which
 // reads as one of them mattering more. In a calendar none of them does — the
 // dates rank the entries, not the type.
-const ENTRY_TEXT_SIZE = 36;
+//
+// Down from 36 with the move to four entries a card. The board is read by
+// scanning dates and stopping at one, not by reading top to bottom, and the
+// size that serves that is the size that fits four.
+const ENTRY_TEXT_SIZE = 30;
 
 const upcomingSlide = ({ entries, lang, date }) =>
   shell(
     portraitCss(date) +
       `
-  .stage { gap: ${fitpx(46)}; }
+  .stage { gap: ${fitpx(32)}; }
   /* The rubric came off the wordmark's line, where it sat at caption size and
      read as a footnote to the masthead rather than as the name of what follows.
      Down here at the head of the stage, in the deck's one accent colour, it is
@@ -681,26 +727,26 @@ const upcomingSlide = ({ entries, lang, date }) =>
      A separator that separates nothing is just another line. */
   .entry + .entry {
     border-top: 2px solid rgba(243, 241, 233, 0.24);
-    padding-top: ${fitpx(46)};
+    padding-top: ${fitpx(32)};
   }
   /* Fixed width so the prose of every entry starts on the same left edge —
      a ragged text column is the fastest way to make a list look unconsidered.
      It scales with the type, or a grown numeral outruns its column. */
   .chip {
-    flex: 0 0 ${fitpx(150)};
+    flex: 0 0 ${fitpx(124)};
     border-top: 5px solid ${CRIMSON};
-    padding-top: ${fitpx(16)};
+    padding-top: ${fitpx(14)};
   }
   .chip .month {
     font-family: "Jost", sans-serif;
-    font-size: ${fitpx(30)};
+    font-size: ${fitpx(26)};
     font-weight: 700;
     letter-spacing: 0.14em;
     color: ${CRIMSON};
   }
   .chip .day {
     font-family: "Lora", serif;
-    font-size: ${fitpx(88)};
+    font-size: ${fitpx(68)};
     font-weight: 600;
     line-height: 0.98;
     letter-spacing: -0.03em;
@@ -712,16 +758,16 @@ const upcomingSlide = ({ entries, lang, date }) =>
      than as a numeral with a label stuck above it. */
   .chip .dow {
     font-family: "Jost", sans-serif;
-    font-size: ${fitpx(23)};
+    font-size: ${fitpx(21)};
     font-weight: 600;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.16em;
     color: rgba(243, 241, 233, 0.5);
     margin-top: ${fitpx(6)};
   }
   .entry .body {
     flex: 1;
     min-width: 0;
-    padding-top: ${fitpx(14)};
+    padding-top: ${fitpx(12)};
   }
   .entry .text {
     font-family: "Jost", sans-serif;
@@ -731,17 +777,36 @@ const upcomingSlide = ({ entries, lang, date }) =>
     color: rgba(243, 241, 233, 0.88);
     text-wrap: pretty;
   }
-  /* Who says so — the authority behind the deadline, not a gloss on it. Quiet,
-     because the crimson on this slide belongs to the dates: it is the one thing
-     here worth acting on, and a source line set as loudly competes with it. */
+  /* The foot of an entry: who says so on the left, how long is left on the
+     right. Both are set as furniture, and only one of them is crimson.
+
+     The publisher is the authority behind the deadline, not a gloss on it, so it
+     stays quiet — a source line set as loudly as the date competes with the one
+     thing on this card worth acting on. The countdown gets the accent because it
+     is the other half of the date, and because ranged down the right edge of
+     four entries it is what makes this a board rather than a list. */
   .entry .meta {
-    margin-top: ${fitpx(18)};
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: ${fitpx(20)};
+    margin-top: ${fitpx(16)};
     font-family: "Jost", sans-serif;
-    font-size: ${fitpx(23)};
+    font-size: ${fitpx(22)};
     font-weight: 600;
     letter-spacing: 0.15em;
     text-transform: uppercase;
     color: rgba(243, 241, 233, 0.5);
+  }
+  .entry .meta .left {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .entry .meta .countdown {
+    flex: none;
+    color: ${CRIMSON};
   }`,
     portraitFrame(
       `<p class="rubric">${escapeHtml(UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en)}</p>` +
@@ -751,7 +816,8 @@ const upcomingSlide = ({ entries, lang, date }) =>
     PORTRAIT,
   );
 
-// A snapshot with no publisher leaves the entry as it was before any of this.
+// A snapshot with no publisher leaves the entry as it was before any of this,
+// and an entry the countdown cannot place keeps its meta row without one.
 // Nothing here is invented to fill the row.
 const upcomingEntry = (entry) => `
     <div class="entry">
@@ -762,9 +828,184 @@ const upcomingEntry = (entry) => `
       </div>
       <div class="body">
         <p class="text">${escapeHtml(entry.text)}</p>
-        ${entry.publisher ? `<p class="meta">${escapeHtml(entry.publisher)}</p>` : ''}
+        ${
+          entry.publisher || entry.countdown
+            ? `<div class="meta">
+          <span class="left">${escapeHtml(entry.publisher ?? '')}</span>
+          ${entry.countdown ? `<span class="countdown">${escapeHtml(entry.countdown)}</span>` : ''}
+        </div>`
+            : ''
+        }
       </div>
     </div>`;
+
+// An exhibit slide: the daily deck holding up a document.
+//
+// dossier.mjs already renders slides about documents, but a dossier is a whole
+// separate deck, hand-built for a story big enough to carry seven slides of its
+// own. Most days there is one document worth showing and no case for a second
+// deck nobody will find. This is that middle: the daily carousel, which people
+// already swipe, with the primary source set into it beside the story it backs.
+//
+// The form is dossier.mjs's and is deliberately identical — paper panel, crimson
+// marks over the operative words, a caption naming the document. The two files
+// carry it twice for the reason dossier.mjs's header gives: og.mjs is a CLI, not
+// a module, and entangling the daily deck with a special is worse than the
+// duplication. If they drift, this one is right.
+//
+// Which document, cropped where, marked at which line: none of that is derivable
+// from the edition, so none of it is derived. It is hand-authored per edition in
+// scripts/daybook/exhibits/<date>/exhibits.json and read at pull time.
+//
+// The crop is inlined as a data URI rather than referenced by path. The slide
+// HTML is written to scripts/daybook/out/ and the crops live two directories up,
+// so a relative src would resolve to nothing — and a missing document that
+// renders as an empty panel is exactly the silent failure the credit line's
+// comment refuses. Inlining makes an unreadable file throw at build time.
+const exhibitPanel = (panel, specDir) =>
+  `<div class="panel">${panel
+    .map(({ img, width, marks = [] }) => {
+      const data = readFileSync(join(specDir, img)).toString('base64');
+      const overlays = marks
+        .map(
+          ({ l, t, w, h, style }) =>
+            `<i class="mark ${style === 'rule' ? 'rule-mark' : style === 'hl' ? 'hl-mark' : 'box-mark'}" style="left:${l * 100}%;top:${t * 100}%;width:${w * 100}%;height:${h * 100}%;"></i>`,
+        )
+        .join('');
+      return `<figure class="strip"${width ? ` style="width:${width}"` : ''}>
+        <div class="shot"><img src="data:image/png;base64,${data}" />${overlays}</div>
+      </figure>`;
+    })
+    .join('')}</div>`;
+
+const exhibitSlide = ({ hed, nut, caption, panel, specDir, date }) =>
+  shell(
+    portraitCss(date) +
+      `
+  .hed { font-size: ${fitpx(Math.round(coverHedSize(hed) * 0.78))}; }
+  ${nut ? `.nut { font-size: ${fitpx(Math.round(nutSize(nut) * 0.94))}; }` : ''}
+  /* The sheet. Flat, like everything else on the deck — the value jump off the
+     ink is all the lift a document needs. The panel does not scale with --fit:
+     type negotiates for the space around a document, and the document does not
+     shrink to flatter the type. */
+  .panel {
+    background: ${PAPER};
+    padding: 24px;
+    margin-top: ${fitpx(30)};
+  }
+  .strip { width: 100%; margin: 0 auto; }
+  /* Marks anchor to the image, not the figure: a second strip carries the
+     divider's padding-top, and a percentage top measured against the padding
+     box lands every mark high by that padding. */
+  .shot { position: relative; }
+  .strip + .strip {
+    margin-top: 22px;
+    padding-top: 22px;
+    border-top: 1px solid #d9d5c9;
+  }
+  .strip img { display: block; width: 100%; height: auto; }
+  .mark { position: absolute; display: block; }
+  .box-mark { border: 5px solid ${CRIMSON}; border-radius: 6px; opacity: 0.85; }
+  .rule-mark { background: ${CRIMSON}; border-radius: 3px; opacity: 0.8; }
+  /* Marker over the text rather than a rule under it: at phone scale a thin rule
+     reads as underlined furniture, a swipe of highlighter reads as a human
+     having marked the operative words. Multiply keeps the type legible through
+     the wash. */
+  .hl-mark {
+    background: ${CRIMSON};
+    mix-blend-mode: multiply;
+    opacity: 0.33;
+    border-radius: 5px;
+  }
+  /* Who this document is — the checkable line, and the reason the slide is not
+     just a screenshot. */
+  .caption {
+    font-family: "Jost", sans-serif;
+    font-size: ${fitpx(22)};
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: rgba(243, 241, 233, 0.55);
+    margin-top: ${fitpx(18)};
+    text-wrap: pretty;
+  }`,
+    portraitFrame(
+      `<h1 class="hed">${escapeHtml(hed)}</h1>` +
+        (nut ? `<p class="nut">${escapeHtml(nut)}</p>` : '') +
+        exhibitPanel(panel, specDir) +
+        (caption ? `<p class="caption">${escapeHtml(caption)}</p>` : ''),
+      { date },
+    ),
+    PORTRAIT,
+  );
+
+// The round-up slide: the edition's closing briefs, three of them.
+//
+// An edition runs three or four stories and then six or seven one-line items,
+// and until now the deck read the stories and stopped — a reader who swiped the
+// whole thing saw a third of the day. This is the cheapest breadth in the
+// newsletter and it was going nowhere.
+//
+// The credit runs above the brief rather than under it, which is the one place
+// on the deck it does. On a story slide the credit is a footer under a hairline:
+// the claim is the thing and the publications are what it rests on. Here there
+// is no claim, just news in a line, and a slug over each item does two jobs at
+// once — it gives the eye somewhere to enter three stacked paragraphs, and it
+// says who reported this before the reader has read it rather than after.
+//
+// Crimson for the same reason it is crimson on the calendar: it marks whatever
+// on the card is the checkable thing. There it is the date. Here it is the byline.
+const briefsSlide = ({ rubric, items, date }) =>
+  shell(
+    portraitCss(date) +
+      `
+  .stage { gap: ${fitpx(34)}; }
+  .rubric {
+    font-family: "Jost", sans-serif;
+    font-size: ${fitpx(38)};
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: ${CRIMSON};
+    margin-bottom: ${fitpx(-8)};
+  }
+  /* Same rule system as the calendar board: hairlines between items, never
+     above the first one. */
+  .brief + .brief {
+    border-top: 2px solid rgba(243, 241, 233, 0.24);
+    padding-top: ${fitpx(34)};
+  }
+  .brief .slug {
+    font-family: "Jost", sans-serif;
+    font-size: ${fitpx(23)};
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: ${CRIMSON};
+    margin-bottom: ${fitpx(12)};
+  }
+  .brief .text {
+    font-family: "Jost", sans-serif;
+    font-size: ${fitpx(32)};
+    font-weight: 400;
+    line-height: 1.4;
+    color: rgba(243, 241, 233, 0.88);
+    text-wrap: pretty;
+  }`,
+    portraitFrame(
+      `<p class="rubric">${escapeHtml(rubric)}</p>` +
+        items
+          .map(
+            (item) => `
+    <div class="brief">
+      ${item.sources?.length ? `<p class="slug">${sourceName(item.sources[0])}</p>` : ''}
+      <p class="text">${escapeHtml(item.text)}</p>
+    </div>`,
+          )
+          .join(''),
+      { date },
+    ),
+    PORTRAIT,
+  );
 
 // The one slide that centres rather than hanging off the masthead.
 //
@@ -819,6 +1060,7 @@ const carouselSlides = (lang) => {
   if (!deck) return null;
 
   const beats = deck.beats ?? [];
+  const briefs = deck.briefs ?? null;
   const upcoming = deck.upcoming ?? [];
   const dir = `social/${deck.date}/${lang}`;
 
@@ -827,27 +1069,69 @@ const carouselSlides = (lang) => {
   // weekly is worse than no slide.
   const date = formatCardDate(deck.date, lang);
 
-  // Cover, the day's other stories, the calendar, the offer. The news earns the
-  // swipe and the dates earn the follow, so the calendar sits after the stories
-  // but well before the end — a deck that puts the payoff last is a deck most
-  // people never reach the payoff of.
+  // Cover, the day's other stories, the round-up, the calendar, the offer. The
+  // news earns the swipe and the dates earn the follow, so the calendar sits
+  // after the stories but well before the end — a deck that puts the payoff last
+  // is a deck most people never reach the payoff of.
+  //
+  // The round-up goes between them because it is still news, and because it
+  // widens the deck at exactly the point where a reader who came for one story
+  // has finished it: three more places the same system turned up this morning,
+  // and then the dates.
+  // Exhibits sit immediately after the story they back, not in a block of their
+  // own: a document is evidence for a claim, and a reader who has just been told
+  // the claim is the only reader it means anything to. `afterBeat` names the
+  // beat by a fragment of its headline rather than by index, because the beat
+  // order is derived from the edition and can change under a re-pull — an index
+  // would silently file the Adelanto order behind the Haiti flight.
+  //
+  // An exhibit whose beat is not on the deck is dropped with a warning rather
+  // than appended somewhere plausible. The alternative is a document held up
+  // beside a story the deck never told.
+  const exhibits = deck.exhibits ?? [];
+  // The crops live beside the spec that names them, keyed by edition date, so
+  // og.mjs resolves them from the date it was handed rather than from a path
+  // baked into the deck JSON.
+  const specDir = join(here, 'exhibits', deck.date);
+  const beatKey = (headline) => String(headline ?? '').toLowerCase();
+  const placed = new Set();
+  const exhibitsFor = (headline) =>
+    exhibits.filter((exhibit) => {
+      const hit = beatKey(headline).includes(String(exhibit.afterBeat ?? '').toLowerCase());
+      if (hit) placed.add(exhibit);
+      return hit;
+    });
+
+  const stories = beats.flatMap((beat) => [
+    { name: 'story', html: beatSlide({ ...beat, date }) },
+    ...exhibitsFor(beat.headline).map((exhibit) => ({
+      name: 'exhibit',
+      html: exhibitSlide({ ...exhibit, ...(exhibit[lang] ?? {}), specDir, date }),
+    })),
+  ]);
+
+  for (const exhibit of exhibits) {
+    if (!placed.has(exhibit)) {
+      console.warn(
+        `WARNING: ${deck.date} ${lang}: exhibit "${exhibit.name ?? exhibit.afterBeat}" matches no beat on the deck — dropped.`,
+      );
+    }
+  }
+
   const slides = [
-    coverSlide({ hed: deck.hed, nut: deck.nut, detail: deck.detail, sources: deck.sources, date }),
-    ...beats.map((beat) => beatSlide({ ...beat, date })),
-    ...upcoming.map((slide) => upcomingSlide({ entries: slide.entries, lang, date })),
-    closingSlide({ ...CLOSING[lang], date }),
+    { name: 'cover', html: coverSlide({ hed: deck.hed, nut: deck.nut, detail: deck.detail, sources: deck.sources, date }) },
+    ...stories,
+    ...(briefs ? [{ name: 'roundup', html: briefsSlide({ ...briefs, date }) }] : []),
+    ...upcoming.map((slide) => ({
+      name: 'upcoming',
+      html: upcomingSlide({ entries: slide.entries, lang, date }),
+    })),
+    { name: 'subscribe', html: closingSlide({ ...CLOSING[lang], date }) },
   ];
 
-  const names = [
-    'cover',
-    ...beats.map(() => 'story'),
-    ...upcoming.map(() => 'upcoming'),
-    'subscribe',
-  ];
-
-  return slides.map((html, i) => ({
-    file: `${dir}/${String(i + 1).padStart(2, '0')}-${names[i]}.png`,
-    html,
+  return slides.map((slide, i) => ({
+    file: `${dir}/${String(i + 1).padStart(2, '0')}-${slide.name}.png`,
+    html: slide.html,
   }));
 };
 

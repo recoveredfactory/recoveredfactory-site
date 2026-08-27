@@ -1,0 +1,44 @@
+{
+  "slug": "2026-08-19-promo",
+  "date": {
+    "en": "Aug. 19, 2026",
+    "es": "19 de agosto de 2026"
+  },
+  "slides": [
+    {
+      "type": "exhibit",
+      "name": "promo",
+      "panel": [
+        {
+          "img": "benefits.png",
+          "marks": [
+            {
+              "l": 0.762,
+              "t": 0.06,
+              "w": 0.203,
+              "h": 0.132,
+              "style": "hl"
+            },
+            {
+              "l": 0.01,
+              "t": 0.247,
+              "w": 0.268,
+              "h": 0.132,
+              "style": "hl"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "From Sept. 18, food stamps count",
+        "nut": "USCIS will weigh housing assistance, food stamps and college financial aid when deciding a permanent residence application. Anything received before that date is judged under the older, narrower rule: cash assistance and long-term institutionalization only.",
+        "caption": "USCIS, “Issues Guidance on Making Public Charge Inadmissibility Determination,” released Aug. 18, 2026"
+      },
+      "es": {
+        "hed": "Desde el 18 de septiembre, los cupones de alimentos cuentan",
+        "nut": "USCIS tomará en cuenta la vivienda subsidiada, los cupones de alimentos y la ayuda universitaria al decidir una solicitud de residencia permanente. Lo recibido antes de esa fecha se evalúa con la regla anterior, más estrecha: solo asistencia en efectivo e institucionalización a largo plazo.",
+        "caption": "USCIS, “Issues Guidance on Making Public Charge Inadmissibility Determination”, publicado el 18 de agosto de 2026"
+      }
+    }
+  ]
+}

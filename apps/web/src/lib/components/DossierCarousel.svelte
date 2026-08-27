@@ -104,8 +104,19 @@
   // the image plus its caption bar, so `top-1/2` would sit the paddles below
   // the middle of the picture. The slides are 4:5, so half an image is 62.5% of
   // the card's width, read off the card with a container query.
+  //
+  // Sized to sit inside the artwork's own margin rather than on top of it. The
+  // slides render with 84px of side padding on a 1080px canvas, so every card
+  // carries a gutter of 7.8% of its width before any type starts — 42px on a
+  // 540px card, which a 32px paddle 6px off the edge clears with room.
+  //
+  // Worth knowing that this scales the wrong way: the gutter is a percentage of
+  // the card and the paddle is a fixed size, so a *narrower* card has a narrower
+  // gutter and gets overlapped more, not less. On a phone the gutter is around
+  // 27px and no tappable target fits inside it — there the paddle sits over the
+  // slide's dark ground, which is the part of the artwork with nothing on it.
   const paddleClass =
-    'absolute top-[62.5cqw] flex size-9 -translate-y-1/2 items-center justify-center rounded-full ' +
+    'absolute top-[62.5cqw] flex size-8 -translate-y-1/2 items-center justify-center rounded-full ' +
     'bg-white/70 text-slate-700 shadow-sm ring-1 ring-slate-900/5 backdrop-blur-sm transition ' +
     'hover:bg-white hover:text-slate-900 disabled:pointer-events-none disabled:opacity-0';
 </script>
@@ -192,12 +203,12 @@
         {#if enhanced && slides.length > 1}
           <button
             aria-label={es ? 'Anterior' : 'Previous'}
-            class={`${paddleClass} left-2`}
+            class={`${paddleClass} left-1.5`}
             disabled={index === 0}
             onclick={() => goTo(index - 1, 'paddle')}
             type="button"
           >
-            <svg aria-hidden="true" class="size-4" fill="none" viewBox="0 0 16 16">
+            <svg aria-hidden="true" class="size-3.5" fill="none" viewBox="0 0 16 16">
               <path
                 d="M10 3 5 8l5 5"
                 stroke="currentColor"
@@ -209,12 +220,12 @@
           </button>
           <button
             aria-label={es ? 'Siguiente' : 'Next'}
-            class={`${paddleClass} right-2`}
+            class={`${paddleClass} right-1.5`}
             disabled={index === slides.length - 1}
             onclick={() => goTo(index + 1, 'paddle')}
             type="button"
           >
-            <svg aria-hidden="true" class="size-4" fill="none" viewBox="0 0 16 16">
+            <svg aria-hidden="true" class="size-3.5" fill="none" viewBox="0 0 16 16">
               <path
                 d="m6 3 5 5-5 5"
                 stroke="currentColor"

@@ -12,6 +12,13 @@
   --font-brand: "Lora", serif;
   --font-display: "Lora", serif;
   --font-body: "Inter", sans-serif;
+  /* The Daybook sets itself in the email's faces, not the site's: Lora on the
+     heads, Jost on the body. An edition read on the page and the same edition
+     read in the inbox should look like one publication. */
+  --font-daybook: "Jost", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --color-daybook-ink: #252525;
+  --color-daybook-hed: #171717;
+  --color-daybook-link: #1f5d50;
 }
 
 @layer base {
@@ -224,4 +231,251 @@
 .rf-code-filename + .prose-code-wrapper pre {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
+}
+
+/* ── Immigration Daybook: edition typography ─────────── */
+/* The edition's own headline. Bigger and tighter than a section head, and set
+   to balance: these run long ("Advance parole now triggers the 3- and 10-year
+   unlawful-presence bar for many pending-status immigrants") and a hed with one
+   word alone on the last line reads as a mistake. */
+.rf-daybook-hed {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.75rem, 1.3rem + 2vw, 2.375rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+  color: var(--color-daybook-hed);
+}
+
+.rf-daybook-hed--nested {
+  font-size: clamp(1.375rem, 1.15rem + 0.95vw, 1.625rem);
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+}
+
+/* An edition arrives as plain markdown rendered by marked (see
+   src/lib/daybook/loader.ts), so nothing about it is styled unless it is styled
+   here. These rules are unlayered on purpose: Tailwind's preflight lives in
+   @layer base and zeroes the margin on every p, h2 and ul it meets, and an
+   unlayered rule beats a layered one whatever the specificity.
+
+   The measure is the page's own column (max-w-2xl), which puts Jost at 18px a
+   little over 70 characters — long for an essay, right for short news grafs
+   that each open with a bolded claim. */
+.rf-daybook {
+  font-family: var(--font-daybook);
+  font-size: 1.125rem;
+  line-height: 1.6;
+  color: var(--color-daybook-ink);
+}
+
+.rf-daybook p {
+  margin: 0 0 1em;
+  text-wrap: pretty;
+}
+
+.rf-daybook > :last-child {
+  margin-bottom: 0;
+}
+
+/* The section head. Lora at the email's size, with the space above it doing the
+   work that separates one story from the next — this is the only furniture
+   between them, so it is worth more room than a heading usually gets. */
+.rf-daybook__section {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.375rem, 1.15rem + 0.95vw, 1.625rem);
+  line-height: 1.16;
+  letter-spacing: -0.01em;
+  /* Not `balance`. These headlines run to two and three lines, and balancing
+     evens the line lengths by pulling them all in — which on a 42rem column
+     reads as a heading set to some narrower measure than the story under it.
+     `pretty` keeps the last line off a single word without shortening the
+     others, so a headline fills the column the copy fills. */
+  text-wrap: pretty;
+  color: var(--color-daybook-hed);
+  margin: 0 0 0.85rem;
+}
+
+.rf-daybook__section:not(:first-child) {
+  margin-top: 2.25rem;
+}
+
+/* Every graf opens on a bolded claim and the rest of it argues that claim. Set
+   a shade darker than the body so a reader can run the page on the claims alone
+   and stop at the one they want — which is how a daily is actually read. */
+.rf-daybook strong {
+  font-weight: 600;
+  color: var(--color-daybook-hed);
+}
+
+/* "Around the system" is a list of whole stories, each with its own sources, so
+   the items are spaced as paragraphs rather than as list rows. The marker is a
+   square rather than a disc: it matches the date chips on the calendar below,
+   and a round bullet at this size reads as a smudge. */
+.rf-daybook ul,
+.rf-daybook ol {
+  margin: 0 0 1em;
+  padding-left: 1.15em;
+  list-style: none;
+}
+
+.rf-daybook li {
+  position: relative;
+  margin: 0 0 0.85em;
+}
+
+.rf-daybook li:last-child {
+  margin-bottom: 0;
+}
+
+.rf-daybook ul > li::before {
+  content: "";
+  position: absolute;
+  left: -1.15em;
+  top: 0.6em;
+  width: 0.375em;
+  height: 0.375em;
+  background: var(--color-fern-strong);
+}
+
+.rf-daybook ol {
+  counter-reset: rf-daybook-item;
+}
+
+.rf-daybook ol > li {
+  counter-increment: rf-daybook-item;
+}
+
+.rf-daybook ol > li::before {
+  content: counter(rf-daybook-item) ".";
+  position: absolute;
+  left: -1.35em;
+  color: var(--color-fern-strong);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Citations are the point of the archive, so they stay visibly followable —
+   underlined, in the email's green, at an offset that clears the descenders in
+   a name like "La Opinión". */
+.rf-daybook a {
+  color: var(--color-daybook-link);
+  text-decoration: underline;
+  text-decoration-thickness: from-font;
+  text-underline-offset: 0.16em;
+  text-decoration-color: color-mix(in srgb, var(--color-daybook-link) 40%, transparent);
+  transition: text-decoration-color 0.15s;
+}
+
+.rf-daybook a:hover {
+  text-decoration-color: currentColor;
+}
+
+/* A long Federal Register URL used as its own link text has nowhere to break. */
+.rf-daybook a {
+  overflow-wrap: anywhere;
+}
+
+.rf-daybook em {
+  font-style: italic;
+}
+
+/* Anything below the section level — rare, but an edition that grows a subhead
+   should not print it at body weight. */
+.rf-daybook h3,
+.rf-daybook h4 {
+  font-family: var(--font-daybook);
+  font-weight: 600;
+  font-size: 0.8125rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: rgb(71 85 105);
+  margin: 1.75rem 0 0.6rem;
+}
+
+/* A month page stacks whole editions under one h1, so its type steps down to
+   keep the page's own headline on top of the hierarchy. */
+.rf-daybook--nested {
+  font-size: 1rem;
+}
+
+.rf-daybook--nested .rf-daybook__section {
+  font-size: clamp(1.125rem, 1rem + 0.5vw, 1.25rem);
+}
+
+.rf-daybook--nested .rf-daybook__section:not(:first-child) {
+  margin-top: 1.75rem;
+}
+
+/* The standing note that opens every edition — the same italic paragraph every
+   day, so it is set as a note rather than as prose and stays out of the reading
+   rhythm. It carries links (287(g) Watch), which inherit from .rf-daybook. */
+.rf-daybook-standing {
+  font-family: var(--font-daybook);
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  font-style: italic;
+  color: rgb(71 85 105);
+  border-left: 2px solid color-mix(in srgb, var(--color-fern-strong) 45%, transparent);
+  padding-left: 1rem;
+}
+
+/* The as-sent view, for a sent artifact that arrives with no styles of its own.
+   Through Aug. 25 every element in the email carried inline styles, because a
+   mail client is the one place a stylesheet cannot be relied on. The Aug. 26
+   artifact is a `deterministic_archive_render` instead — a whole HTML document
+   whose typography lives in a <style> in its head, which the sanitizer drops
+   before the archive stores it, because a sheet written against `body` and bare
+   `h2` would restyle the page it is embedded in.
+
+   So these are the dropped sheet's own values, scoped to the wrapper. Inline
+   styles still win wherever the artifact sets them, which is what keeps every
+   edition through Aug. 25 looking exactly as it did. Set against Tailwind's
+   preflight rather than the browser's defaults: `not-prose` on the wrapper turns
+   the typography plugin off, and preflight has already flattened headings to
+   body text and zeroed the margins between paragraphs. */
+.rf-daybook-email {
+  color: #252525;
+  font-family: var(--font-daybook);
+}
+
+.rf-daybook-email h2 {
+  margin: 30px 0 12px;
+  font-family: var(--font-brand);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.18;
+  color: #171717;
+}
+
+.rf-daybook-email p {
+  margin: 0 0 16px;
+}
+
+.rf-daybook-email p,
+.rf-daybook-email li {
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.rf-daybook-email ul {
+  margin: 0 0 16px;
+  padding-left: 22px;
+  list-style: disc;
+}
+
+.rf-daybook-email li {
+  margin-bottom: 12px;
+}
+
+.rf-daybook-email a {
+  color: var(--color-daybook-link);
+  text-decoration: underline;
+}
+
+/* The round-up sets each item as a paragraph inside its list item, so the two
+   bottom margins would otherwise stack. */
+.rf-daybook-email li > p:last-child {
+  margin-bottom: 0;
 }

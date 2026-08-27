@@ -1,4 +1,5 @@
 import { SITE_URL } from '$lib/config';
+import { EVENT_DATE, parseEntryDate, stripInline } from '$lib/daybook/calendar';
 import type { Lang } from '$lib/i18n';
 
 export type CalendarEvent = {
@@ -36,45 +37,6 @@ const abs = (path: string) => new URL(path, SITE_URL).href;
 // Flip this to true if the calendar stays free and reach matters more than
 // capture. Everything behind it is built and tested; only the emission is off.
 const PUBLISH_EVENT_SCHEMA = false;
-
-// AP-style English months as the Daybook writes them, and Spanish month names.
-// Both maps are keyed lowercase and stripped of the trailing period so
-// "Sept." and "sept" land on the same index.
-const MONTHS: Record<Lang, Record<string, number>> = {
-  en: {
-    jan: 0,
-    feb: 1,
-    march: 2,
-    april: 3,
-    may: 4,
-    june: 5,
-    july: 6,
-    aug: 7,
-    sept: 8,
-    oct: 9,
-    nov: 10,
-    dec: 11,
-  },
-  es: {
-    enero: 0,
-    febrero: 1,
-    marzo: 2,
-    abril: 3,
-    mayo: 4,
-    junio: 5,
-    julio: 6,
-    agosto: 7,
-    septiembre: 8,
-    octubre: 9,
-    noviembre: 10,
-    diciembre: 11,
-  },
-};
-
-const EVENT_DATE: Record<Lang, RegExp> = {
-  en: /^(jan\.|feb\.|march|april|may|june|july|aug\.|sept\.|oct\.|nov\.|dec\.)\s+(\d{1,2})\b/i,
-  es: /^(\d{1,2})\s+de\s+([a-záéíóú]+)/i,
-};
 
 /**
  * Pull dated entries out of an edition's calendar section.
@@ -119,37 +81,6 @@ export function extractEvents(body: string, lang: Lang, editionDate: string): Ca
 
   return events;
 }
-
-function parseEntryDate(text: string, lang: Lang, editionDate: string): string | null {
-  const match = text.trim().match(EVENT_DATE[lang]);
-  if (!match) return null;
-
-  const [rawMonth, rawDay] = lang === 'en' ? [match[1], match[2]] : [match[2], match[1]];
-  const month = MONTHS[lang][rawMonth.toLowerCase().replace(/\.$/, '')];
-  const day = Number(rawDay);
-  if (month === undefined || !Number.isInteger(day) || day < 1 || day > 31) return null;
-
-  // Entries carry a day and a month but never a year. The calendar looks
-  // forward, so an entry whose month falls before the edition's month belongs to
-  // the next year — a December edition pointing at "Jan. 12" means the January
-  // after it, not the one ten months gone.
-  const [editionYear, editionMonth] = editionDate.split('-').map(Number);
-  const year = month < editionMonth - 1 ? editionYear + 1 : editionYear;
-
-  const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-  // Reject a date the calendar cannot actually hold, e.g. "Feb. 31".
-  const check = new Date(`${iso}T00:00:00Z`);
-  if (Number.isNaN(check.getTime()) || check.getUTCDate() !== day) return null;
-
-  return iso;
-}
-
-const stripInline = (value: string) =>
-  value
-    .replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')
-    .replace(/\*\*|\*|`/g, '')
-    .replace(/\s+/g, ' ')
-    .trim();
 
 type EditionForSchema = {
   date: string;

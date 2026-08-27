@@ -4,7 +4,7 @@ title: "Immigration Daybook"
 date: "2026-07-31"
 type: "page"
 hideTitle: true
-description: "Un resumen diario del sistema migratorio y un calendario de lo que viene. Fechas de entrada en vigor, plazos de comentarios, audiencias. El piloto gratuito va todo agosto."
+description: "Un resumen diario del sistema migratorio y un calendario de lo que viene. Fechas de entrada en vigor, plazos de comentarios, audiencias. Todas las ediciones en línea."
 byline: "Recovered Factory"
 previewImage: "/images/immigration-daybook-og-es.png"
 hidePreview: true
@@ -18,7 +18,7 @@ lang: "es"
     <ul class="rf-facts">
       <li>De lunes a viernes</li>
       <li>Español e inglés</li>
-      <li>Gratis en agosto</li>
+      <li><a href="/es/daybook">Todas las ediciones en línea →</a></li>
     </ul>
     <div class="rf-hero__cta">
       <SubscribeForm
@@ -42,7 +42,7 @@ lang: "es"
 
 <div class="rf-body not-prose">
 
-<p class="rf-lede">El 24 de agosto se cierra el plazo para comentar <a href="https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments">una norma del DHS</a> que subiría 75% la tarifa de naturalización y eliminaría por completo las exenciones de pago. Si estás haciendo el trámite, es un salto fuerte que vas a tener que presupuestar. Si eres abogado, es una semana de llamadas que preferirías agendar tú antes de recibirlas. Si eres periodista, es una nota que quieres publicar el 23 y no el 25.</p>
+<p class="rf-lede">El 18 de septiembre, <a href="https://www.federalregister.gov/documents/2026/07/20/2026-14539/public-charge-ground-of-inadmissibility">una norma del DHS</a> amplía la prueba de carga pública para quienes soliciten una residencia permanente o la admisión a Estados Unidos: si un funcionario considera que es probable que terminen dependiendo de la asistencia del gobierno. Si estás haciendo el trámite, es un criterio para el que vas a tener que prepararte. Si eres abogado, es una semana de llamadas que preferirías agendar tú antes de recibirlas. Si eres periodista, es una nota que quieres publicar el 17 y no el 19.</p>
 
 <p class="rf-graf">Puede que ya lo supieras, porque le sigues la pista a estas cosas. Mucha gente no lo sabe, y no tendría por qué tener que averiguarlo sola.</p>
 
@@ -122,7 +122,7 @@ lang: "es"
 
 <section class="rf-section rf-section--cta">
   <p class="rf-subscribe__lead">Empieza hoy.</p>
-  <p class="rf-graf rf-pilot">Agosto es un piloto gratuito mientras averiguamos qué debe ser esto y cómo sostenerlo. Preferimos tenerte dentro desde la versión temprana a pulirla en el vacío.</p>
+  <p class="rf-graf rf-pilot">Agosto fue un piloto gratuito; seguimos averiguando qué debe ser esto y cómo sostenerlo. Preferimos tenerte dentro desde la versión temprana a pulirla en el vacío.</p>
   <SubscribeForm
     buttonClass="bg-fern-strong px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
     id="daybook-subscribe-foot"
@@ -273,6 +273,20 @@ lang: "es"
     color: rgba(243, 241, 233, 0.72);
   }
   .rf-facts li { margin: 0; }
+
+  /* The last fact is a destination rather than a term: every edition is on the
+     site, so it links there. Set brighter than the two beside it — a fact you
+     can act on should not be the same weight as one you can only read. */
+  .rf-facts a {
+    color: rgba(243, 241, 233, 0.95);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(243, 241, 233, 0.45);
+    padding-bottom: 0.15rem;
+    transition: border-color 0.15s;
+  }
+  .rf-facts a:hover {
+    border-bottom-color: rgba(243, 241, 233, 0.95);
+  }
 
   /* La petición vive dentro de la plancha: quien ya está
      convencido no tiene que bajar para actuar. */

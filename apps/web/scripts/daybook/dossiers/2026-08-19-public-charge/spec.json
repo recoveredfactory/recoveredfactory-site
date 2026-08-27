@@ -1,0 +1,227 @@
+{
+  "slug": "2026-08-19-public-charge",
+  "date": {
+    "en": "Aug. 19, 2026",
+    "es": "19 de agosto de 2026"
+  },
+  "slides": [
+    {
+      "type": "cover",
+      "name": "cover",
+      "panel": [
+        {
+          "img": "alert-head.png"
+        }
+      ],
+      "en": {
+        "hed": "USCIS rewrote the public charge test",
+        "nut": "New guidance published Aug. 18 sets out how the agency will decide whether someone applying for permanent residence is likely to become a public charge. It takes effect Sept. 18, and it replaces the standard that has governed these decisions since 1999.",
+        "caption": "USCIS, “Issues Guidance on Making Public Charge Inadmissibility Determination,” released Aug. 18, 2026"
+      },
+      "es": {
+        "hed": "USCIS reescribió la prueba de carga pública",
+        "nut": "Una nueva guía publicada el 18 de agosto establece cómo decidirá la agencia si quien solicita la residencia permanente podría convertirse en carga pública. Entra en vigor el 18 de septiembre y reemplaza el criterio que rige estas decisiones desde 1999.",
+        "caption": "USCIS, “Issues Guidance on Making Public Charge Inadmissibility Determination”, publicado el 18 de agosto de 2026"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "exhibit-a",
+      "panel": [
+        {
+          "img": "rescission.png",
+          "marks": [
+            {
+              "l": 0.45,
+              "t": 0.072,
+              "w": 0.501,
+              "h": 0.163,
+              "style": "hl"
+            },
+            {
+              "l": 0.01,
+              "t": 0.531,
+              "w": 0.123,
+              "h": 0.163,
+              "style": "hl"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "The 2022 rule is rescinded",
+        "nut": "DHS issued a final rule rescinding the Biden-era public charge regulations. It was published in the Federal Register on July 20 and takes effect Sept. 18, 2026.",
+        "caption": "Same alert, second paragraph"
+      },
+      "es": {
+        "hed": "El reglamento de 2022 queda derogado",
+        "nut": "El DHS emitió un reglamento final que deroga las normas de carga pública de la era Biden. Se publicó en el Registro Federal el 20 de julio y entra en vigor el 18 de septiembre de 2026.",
+        "caption": "La misma alerta, segundo párrafo"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "exhibit-b",
+      "panel": [
+        {
+          "img": "supersedes.png",
+          "marks": [
+            {
+              "l": 0.734,
+              "t": 0.049,
+              "w": 0.227,
+              "h": 0.111,
+              "style": "hl"
+            },
+            {
+              "l": 0.801,
+              "t": 0.679,
+              "w": 0.111,
+              "h": 0.111,
+              "style": "hl"
+            },
+            {
+              "l": 0.01,
+              "t": 0.836,
+              "w": 0.383,
+              "h": 0.111,
+              "style": "hl"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "The filing date is what counts",
+        "nut": "The guidance supersedes the 1999 Interim Field Guidance, which had governed public charge decisions for 27 years. It applies to every Form I-485 postmarked or filed electronically on or after Sept. 18.",
+        "caption": "Same alert, closing paragraph"
+      },
+      "es": {
+        "hed": "Lo que cuenta es la fecha de presentación",
+        "nut": "La guía reemplaza la Interim Field Guidance de 1999, que rigió las decisiones de carga pública durante 27 años. Se aplica a todo Formulario I-485 con matasellos o presentado electrónicamente a partir del 18 de septiembre.",
+        "caption": "La misma alerta, párrafo final"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "exhibit-c",
+      "panel": [
+        {
+          "img": "factors.png",
+          "marks": [
+            {
+              "l": 0.597,
+              "t": 0.364,
+              "w": 0.37,
+              "h": 0.111,
+              "style": "hl"
+            },
+            {
+              "l": 0.01,
+              "t": 0.521,
+              "w": 0.385,
+              "h": 0.111,
+              "style": "hl"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "Five factors, weighed together",
+        "nut": "Congress set them: age, health, family status, assets and financial status, and education and skills. USCIS says no single factor decides a case — officers weigh the totality of the circumstances.",
+        "caption": "Same alert, “Making Public Charge Inadmissibility Determinations”"
+      },
+      "es": {
+        "hed": "Cinco factores, evaluados en conjunto",
+        "nut": "Los fijó el Congreso: edad, salud, situación familiar, recursos y situación económica, y educación y habilidades. USCIS dice que ninguno decide por sí solo — los funcionarios evalúan la totalidad de las circunstancias.",
+        "caption": "La misma alerta, “Making Public Charge Inadmissibility Determinations”"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "exhibit-d",
+      "panel": [
+        {
+          "img": "benefits.png",
+          "marks": [
+            {
+              "l": 0.762,
+              "t": 0.06,
+              "w": 0.203,
+              "h": 0.132,
+              "style": "hl"
+            },
+            {
+              "l": 0.01,
+              "t": 0.247,
+              "w": 0.268,
+              "h": 0.132,
+              "style": "hl"
+            },
+            {
+              "l": 0.183,
+              "t": 0.807,
+              "w": 0.165,
+              "h": 0.132,
+              "style": "hl"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "The list of benefits that count just got longer",
+        "nut": "Benefits received before Sept. 18 are judged the old way: cash assistance for income maintenance and long-term institutionalization only. Anything received on or after counts against “any and all benefits” — a list that now names housing assistance, food stamps and college financial aid.",
+        "caption": "Same alert, same section"
+      },
+      "es": {
+        "hed": "La lista de beneficios que cuentan se amplía",
+        "nut": "Lo recibido antes del 18 de septiembre se evalúa con el criterio anterior: solo asistencia en efectivo e institucionalización a largo plazo. Lo recibido desde esa fecha se mide contra “todos y cada uno” de los beneficios — la lista ahora nombra vivienda, cupones de alimentos y ayuda universitaria.",
+        "caption": "La misma alerta, la misma sección"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "exhibit-e",
+      "panel": [
+        {
+          "img": "exempt-head.png"
+        },
+        {
+          "img": "exempt-list.png",
+          "marks": [
+            {
+              "l": 0.106,
+              "t": 0.798,
+              "w": 0.73,
+              "h": 0.128,
+              "style": "hl"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "Congress exempted whole categories",
+        "nut": "The test does not reach everyone. Congress put entire categories outside the public charge ground — including special immigrant juveniles and anyone applying for Temporary Protected Status.",
+        "caption": "Same alert, “Categories that are not subject to public charge” (partial list)"
+      },
+      "es": {
+        "hed": "El Congreso dejó categorías enteras fuera",
+        "nut": "La prueba no alcanza a todos. El Congreso dejó categorías enteras fuera del criterio de carga pública — incluidos los jóvenes inmigrantes especiales y quienes solicitan el Estatus de Protección Temporal.",
+        "caption": "La misma alerta, “Categories that are not subject to public charge” (lista parcial)"
+      }
+    },
+    {
+      "type": "closer",
+      "name": "subscribe",
+      "en": {
+        "hed": "We turn spectacle into evidence.",
+        "nut": "Curated news, primary source context, useable data, and a calendar of what’s coming in the immigration system. Free every weekday in August.",
+        "facts": "Monday–Friday · English & Spanish"
+      },
+      "es": {
+        "hed": "Convertimos el espectáculo en evidencia.",
+        "nut": "Noticias curadas, contexto de fuentes primarias, datos utilizables y un calendario de lo que viene en el sistema migratorio. Gratis cada día hábil en agosto.",
+        "facts": "De lunes a viernes · Español e inglés"
+      }
+    }
+  ]
+}

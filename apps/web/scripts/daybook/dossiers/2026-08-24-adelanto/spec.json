@@ -1,0 +1,167 @@
+{
+  "slug": "2026-08-24-adelanto",
+  "theme": "paper",
+  "date": {
+    "en": "Aug. 24, 2026",
+    "es": "24 de agosto de 2026"
+  },
+  "slides": [
+    {
+      "type": "cover",
+      "name": "cover",
+      "panel": [
+        {
+          "img": "locator.png"
+        }
+      ],
+      "en": {
+        "hed": "Adelanto",
+        "nut": "An ICE detention center in the high desert of San Bernardino County, run under contract by the GEO Group.",
+        "caption": "In July a federal judge ordered immediate improvements there. In August the Ninth Circuit refused to pause that order."
+      },
+      "es": {
+        "hed": "Adelanto",
+        "nut": "Un centro de detención de ICE en el desierto alto del condado de San Bernardino, operado por contrato por GEO Group.",
+        "caption": "En julio, un juez federal ordenó mejoras inmediatas. En agosto, el Noveno Circuito se negó a suspender esa orden."
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "order-a",
+      "panel": [
+        {
+          "img": "order-a.png",
+          "marks": [
+            {
+              "l": 0.014,
+              "t": 0.008,
+              "w": 0.012,
+              "h": 0.984,
+              "style": "rule"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "What the court ordered",
+        "nut": "Judge Sunshine S. Sykes granted the injunction in part on July 16. Eight requirements. The first three:",
+        "caption": "L.T. v. ICE, No. 5:26-cv-00322-SSS-SP (C.D. Cal.), order granting preliminary injunction in part, filed July 16, 2026, at 2"
+      },
+      "es": {
+        "hed": "Lo que ordenó el tribunal",
+        "nut": "La jueza Sunshine S. Sykes concedió parcialmente la medida cautelar el 16 de julio. Ocho requisitos. Los tres primeros:",
+        "caption": "L.T. v. ICE, núm. 5:26-cv-00322-SSS-SP (C.D. Cal.), orden que concede parcialmente la medida cautelar preliminar, presentada el 16 de julio de 2026, pág. 2"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "order-b",
+      "panel": [
+        {
+          "img": "order-b.png",
+          "marks": [
+            {
+              "l": 0.014,
+              "t": 0.008,
+              "w": 0.012,
+              "h": 0.984,
+              "style": "rule"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "…and the other five",
+        "nut": "Privacy. Clothing. Bedding. Four hours a day in the yard, not the mini-yard. Visits that are not cut short, and a hug at the end of one.",
+        "caption": "Same order, at 2"
+      },
+      "es": {
+        "hed": "…y los otros cinco",
+        "nut": "Privacidad. Ropa. Ropa de cama. Cuatro horas al día en el patio, no en el “mini-patio”. Visitas que no se interrumpen, y un abrazo al final.",
+        "caption": "La misma orden, pág. 2"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "scorecard",
+      "panel": [
+        {
+          "img": "scorecard.png",
+          "marks": [
+            {
+              "l": 0.0028,
+              "t": 0.4702,
+              "w": 0.9944,
+              "h": 0.0877,
+              "style": "hl"
+            },
+            {
+              "l": 0.0028,
+              "t": 0.8684,
+              "w": 0.9944,
+              "h": 0.0895,
+              "style": "hl"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "This is what ICE inspectors call “good”",
+        "nut": "Ten months before the injunction, ICE's own Office of Detention Oversight inspected Adelanto. Deficiencies went from one to six. Standards reviewed held at 29 both years. The facility rating fell one notch, from Superior to Good.",
+        "caption": "ICE Office of Professional Responsibility, Office of Detention Oversight, Inspection 2025-001-082, Sept. 16–18, 2025, at 8"
+      },
+      "es": {
+        "hed": "Esto es lo que los inspectores de ICE llaman “good”",
+        "nut": "Diez meses antes de la medida cautelar, la propia Oficina de Supervisión de Detención de ICE inspeccionó Adelanto. Las deficiencias pasaron de una a seis. Los estándares revisados se mantuvieron en 29 ambos años. La calificación bajó un escalón, de Superior a Good.",
+        "caption": "ICE, Oficina de Responsabilidad Profesional, Oficina de Supervisión de Detención, inspección 2025-001-082, 16–18 de septiembre de 2025, pág. 8"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "why",
+      "panel": [
+        {
+          "img": "why.png",
+          "marks": [
+            {
+              "l": 0.6671,
+              "t": 0.6161,
+              "w": 0.3164,
+              "h": 0.0661,
+              "style": "hl"
+            },
+            {
+              "l": 0.0041,
+              "t": 0.6855,
+              "w": 0.1575,
+              "h": 0.0661,
+              "style": "hl"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "ICE's own explanation",
+        "nut": "The same inspection says why. A federal judge lifted a COVID-era intake ban in January 2025, Adelanto reopened that June, and the population quadrupled in a night.",
+        "caption": "Same report, conclusion, at 7"
+      },
+      "es": {
+        "hed": "La explicación de ICE",
+        "nut": "La misma inspección dice por qué. Un juez federal levantó una restricción de ingreso de la era COVID en enero de 2025, Adelanto reabrió en junio y la población se cuadruplicó en una noche.",
+        "caption": "El mismo informe, conclusión, pág. 7"
+      }
+    },
+    {
+      "type": "closer",
+      "name": "closer",
+      "en": {
+        "hed": "Immigration Daybook",
+        "nut": "Curated news, primary source context, useable data, and a calendar of what is coming. Free every weekday in August."
+      },
+      "es": {
+        "hed": "Immigration Daybook",
+        "nut": "Noticias seleccionadas, contexto de fuentes primarias, datos utilizables y un calendario de lo que viene. Gratis cada día hábil en agosto."
+      }
+    }
+  ]
+}

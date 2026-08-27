@@ -1,0 +1,220 @@
+{
+  "slug": "2026-08-17-parole-walton",
+  "date": {
+    "en": "Aug. 17, 2026",
+    "es": "17 de agosto de 2026"
+  },
+  "slides": [
+    {
+      "type": "cover",
+      "name": "cover",
+      "panel": [
+        {
+          "img": "bia-caption.png"
+        }
+      ],
+      "en": {
+        "hed": "Travel on advance parole is now a “departure”",
+        "nut": "On Aug. 13 the Board of Immigration Appeals overruled fourteen years of settled law. For people with pending cases, leaving the country on a travel document can now start a three- or ten-year bar on coming back.",
+        "caption": "Matter of Delcarmen-Lara, 29 I&N Dec. 830 (BIA 2026), decided Aug. 13, 2026"
+      },
+      "es": {
+        "hed": "Viajar con advance parole ahora es una “salida”",
+        "nut": "El 13 de agosto la Junta de Apelaciones de Inmigración anuló catorce años de derecho consolidado. Para quienes tienen casos pendientes, salir del país con un documento de viaje puede activar un castigo de tres o diez años para regresar.",
+        "caption": "Matter of Delcarmen-Lara, 29 I&N Dec. 830 (BIA 2026), decidido el 13 de agosto de 2026"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "exhibit-a",
+      "panel": [
+        {
+          "img": "bia-holding.png",
+          "marks": [
+            {
+              "l": 0.392,
+              "t": 0.55,
+              "w": 0.384,
+              "h": 0.15,
+              "style": "hl"
+            },
+            {
+              "l": 0.148,
+              "t": 0.738,
+              "w": 0.121,
+              "h": 0.169,
+              "style": "hl"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "Fourteen years, overruled",
+        "nut": "Arrabally and Yerrabelly held in 2012 that leaving on advance parole was not a “departure.” The Board now says it is — one word that decides whether a green-card case survives a trip abroad.",
+        "caption": "Matter of Delcarmen-Lara, 29 I&N Dec. 830 (BIA 2026), headnote"
+      },
+      "es": {
+        "hed": "Catorce años, anulados",
+        "nut": "Arrabally y Yerrabelly sostuvo en 2012 que salir con advance parole no era una “salida”. La Junta ahora dice que sí lo es — una palabra que decide si un caso de green card sobrevive a un viaje al extranjero.",
+        "caption": "Matter of Delcarmen-Lara, 29 I&N Dec. 830 (BIA 2026), sumario"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "exhibit-b",
+      "panel": [
+        {
+          "img": "uscis-alert.png",
+          "marks": [
+            {
+              "l": 0.609,
+              "t": 0.549,
+              "w": 0.162,
+              "h": 0.037,
+              "style": "hl"
+            },
+            {
+              "l": 0.083,
+              "t": 0.812,
+              "w": 0.325,
+              "h": 0.037,
+              "style": "hl"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "The government says so itself",
+        "nut": "USCIS posted the change on its own unlawful-presence page. More than 180 days of unlawful presence starts a three-year bar; a year or more starts a ten-year one. Travel completed before Aug. 13 is not affected.",
+        "caption": "uscis.gov, Unlawful Presence and Inadmissibility, last updated Aug. 14, 2026"
+      },
+      "es": {
+        "hed": "El propio gobierno lo dice",
+        "nut": "USCIS publicó el cambio en su propia página sobre presencia ilegal. Más de 180 días de presencia ilegal activan un castigo de tres años; un año o más activa uno de diez. Los viajes completados antes del 13 de agosto no se ven afectados.",
+        "caption": "uscis.gov, Unlawful Presence and Inadmissibility, actualizado el 14 de agosto de 2026"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "exhibit-c",
+      "panel": [
+        {
+          "img": "wcso-head.png"
+        },
+        {
+          "img": "wcso-stats.png",
+          "marks": [
+            {
+              "l": 0.017,
+              "t": 0.479,
+              "w": 0.157,
+              "h": 0.061,
+              "style": "hl"
+            },
+            {
+              "l": 0.35,
+              "t": 0.852,
+              "w": 0.157,
+              "h": 0.061,
+              "style": "hl"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "NPR rode along with a 287(g) deputy",
+        "nut": "287(g) deputizes local police to enforce federal immigration law. NPR spent a shift with Sgt. Oscar D’Lassalas in Walton County, Florida, where the sheriff holds both kinds of agreement — one inside the jail since 2019, and a task force agreement from February 2025 that puts deputies on the road. We went at the county’s paperwork.",
+        "caption": "287(g) Watch, Walton County Sheriff's Office, agency record as of Aug. 15, 2026"
+      },
+      "es": {
+        "hed": "NPR acompañó a un agente 287(g)",
+        "nut": "287(g) autoriza a la policía local a aplicar la ley migratoria federal. NPR acompañó un turno del sargento Oscar D’Lassalas en el condado de Walton, Florida, donde la oficina del sheriff tiene los dos tipos de acuerdo: uno dentro de la cárcel desde 2019 y uno de fuerza de tarea desde febrero de 2025 que pone a los agentes en la calle. Nosotros fuimos a los papeles del condado.",
+        "caption": "287(g) Watch, Walton County Sheriff's Office, registro de la agencia al 15 de agosto de 2026"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "exhibit-d",
+      "panel": [
+        {
+          "img": "walton-budget.png",
+          "marks": [
+            {
+              "l": 0.789,
+              "t": 0.741,
+              "w": 0.204,
+              "h": 0.096,
+              "style": "hl"
+            },
+            {
+              "l": 0.789,
+              "t": 0.904,
+              "w": 0.204,
+              "h": 0.064,
+              "style": "box"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "$648,805 became $9.16 million",
+        "nut": "Walton County, Florida asked the state for detention beds, transport and bonuses. A June amendment added $8.5 million on one line — equipment, hardware, software — which is 93 percent of the revised request.",
+        "caption": "Florida State Board of Immigration Enforcement, amendment IG009/AMD003, June 9, 2026"
+      },
+      "es": {
+        "hed": "$648,805 se convirtieron en $9.16 millones",
+        "nut": "El condado de Walton, Florida, le pidió al estado camas de detención, transporte y bonos. Una enmienda de junio sumó $8.5 millones en una sola línea — equipamiento, hardware, software — el 93 por ciento de la solicitud revisada.",
+        "caption": "Junta Estatal de Control Migratorio de Florida, enmienda IG009/AMD003, 9 de junio de 2026"
+      }
+    },
+    {
+      "type": "exhibit",
+      "name": "exhibit-e",
+      "panel": [
+        {
+          "img": "walton-interp.png",
+          "marks": [
+            {
+              "l": 0.903,
+              "t": 0.258,
+              "w": 0.087,
+              "h": 0.077,
+              "style": "hl"
+            },
+            {
+              "l": 0.228,
+              "t": 0.895,
+              "w": 0.175,
+              "h": 0.075,
+              "style": "hl"
+            }
+          ]
+        }
+      ],
+      "en": {
+        "hed": "And $10,200 for interpreters",
+        "nut": "Buried in the same packet: 17 seats of on-demand telephone interpretation, 240 languages. Set against $2.66 million for Rapid DNA and $4.84 million for radios, that is about a tenth of one percent of the ask.",
+        "caption": "Same packet, category IGP-H: Other Costs Related to Immigration Enforcement"
+      },
+      "es": {
+        "hed": "Y $10,200 para intérpretes",
+        "nut": "Enterrado en el mismo paquete: 17 licencias de interpretación telefónica bajo demanda, 240 idiomas. Frente a $2.66 millones para ADN rápido y $4.84 millones para radios, es cerca de una décima parte del uno por ciento de la solicitud.",
+        "caption": "El mismo paquete, categoría IGP-H: otros costos relacionados con el control migratorio"
+      }
+    },
+    {
+      "type": "closer",
+      "name": "subscribe",
+      "en": {
+        "hed": "We turn spectacle into evidence.",
+        "nut": "Curated news, primary source context, useable data, and a calendar of what’s coming in the immigration system. Free every weekday in August.",
+        "facts": "Monday–Friday · English & Spanish"
+      },
+      "es": {
+        "hed": "Convertimos el espectáculo en evidencia.",
+        "nut": "Noticias curadas, contexto de fuentes primarias, datos utilizables y un calendario de lo que viene en el sistema migratorio. Gratis cada día hábil en agosto.",
+        "facts": "De lunes a viernes · Español e inglés"
+      }
+    }
+  ]
+}

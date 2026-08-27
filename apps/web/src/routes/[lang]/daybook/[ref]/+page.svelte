@@ -3,6 +3,7 @@
   import DaybookSubscribe from '$lib/components/DaybookSubscribe.svelte';
   import DossierCarousel from '$lib/components/DossierCarousel.svelte';
   import ShareRow from '$lib/components/ShareRow.svelte';
+  import UpcomingCalendar from '$lib/components/UpcomingCalendar.svelte';
   import { SITE_URL } from '$lib/config';
   import { formatEditionDate, formatMonth } from '$lib/daybook/format';
   import { archiveSchema, editionSchema } from '$lib/daybook/schema';
@@ -70,6 +71,15 @@
   // rather than the page title — "Immigration Daybook, Aug. 13, 2026: …" reads
   // like a filename once it is sitting in a group thread.
   const shareTitle = $derived(isEdition ? data.edition!.title : pageTitle);
+
+  // The calendar sits second to last, where the sent email puts it — after the
+  // day's stories, before the closing round-up. An edition with a single
+  // section has no "before the last" to speak of, so it goes after that one.
+  const upcomingAfter = $derived(
+    (data.edition?.sections.length ?? 0) >= 2
+      ? data.edition!.sections.length - 2
+      : (data.edition?.sections.length ?? 0) - 1,
+  );
 
   const schema = $derived(
     isEdition
@@ -151,7 +161,30 @@
       {/if}
     </nav>
 
-    <DaybookSubscribe lang={data.lang} placement="archive-top" />
+    <!-- A month roundup has nowhere to put an ask except around the outside, so
+         it keeps both. An edition now carries one after the lede, where the
+         page has made its case — and three asks on one page is how you lose all
+         three. The as-sent view has no sections to break, so it keeps the pair. -->
+    {#if !isEdition || data.asSent}
+      <DaybookSubscribe lang={data.lang} placement="archive-top" />
+    {/if}
+
+    <!-- The forward ask rides the very top, above the deck.
+         A reader who means to pass an edition on decides that while reading it,
+         not after arriving at the bottom — and for the WhatsApp audience this is
+         written for, the forward is the distribution rather than a courtesy, so
+         it should not be something you have to scroll to find. The same panel
+         runs again under the calendar; between them the edition's own headline
+         carries the two buttons on their own. -->
+    {#if isEdition && data.edition}
+      <ShareRow
+        lang={data.lang}
+        placement="edition-top"
+        title={shareTitle}
+        url={canonical}
+        variant="panel"
+      />
+    {/if}
 
     <!-- Between the ask and the edition, and only on the editions that name a
          deck. An ad lands the reader here to read the day's edition; the deck
@@ -159,26 +192,11 @@
          it on the way in rather than at the bottom, where a reader who is done
          has already left. -->
     {#if isEdition && data.dossier}
-      <div class="flex flex-col gap-4">
-        <DossierCarousel
-          instagramPost={data.edition?.instagramPost}
-          lang={data.lang}
-          slides={data.dossier.slides}
-        />
-        <!-- Attached to the deck rather than floated at the very top of the
-             page. Nobody forwards a thing they have not read — but the deck is
-             self-contained and reads in twenty seconds, so by the bottom of it
-             a reader has something to pass on. On editions with no deck the
-             same row runs after the edition instead. -->
-        <div class="flex justify-center">
-          <ShareRow
-            lang={data.lang}
-            placement="dossier"
-            title={shareTitle}
-            url={canonical}
-          />
-        </div>
-      </div>
+      <DossierCarousel
+        instagramPost={data.edition?.instagramPost}
+        lang={data.lang}
+        slides={data.dossier.slides}
+      />
     {/if}
 
     {#if isEdition && data.edition}
@@ -193,13 +211,28 @@
                reading by outline; it is just not drawn twice. -->
           <h1 class="sr-only">{edition.title}</h1>
         {:else}
-          <header class="space-y-2">
-            <p class="text-sm text-slate-500">{dateLabel}</p>
-            <h1
-              class="font-display text-3xl font-semibold tracking-tight text-slate-900 sm:text-4xl"
-            >
-              {edition.title}
-            </h1>
+          <!-- The masthead line, and the whole of what runs above the stories.
+               The date is what an edition is called, so it reads as a kicker —
+               and there is no edition headline under it, because a page does not
+               need one. The lede's own headline is the h1 and the first thing
+               set at size; see `ledeLevel` in the loader.
+
+               The two buttons ride that line. The panel above the deck already
+               made the ask, so this is not a second ask — it is the affordance
+               staying within reach at the point the edition actually starts,
+               which is a screen or more below where the reader came in. No
+               prompt, no note: both belong to the panels. -->
+          <header class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-fern-strong">
+              {dateLabel}
+            </p>
+            <ShareRow
+              lang={data.lang}
+              placement="edition-hed"
+              title={shareTitle}
+              url={canonical}
+              variant="compact"
+            />
           </header>
         {/if}
 
@@ -216,24 +249,94 @@
             {@html edition.emailHtml}
           </div>
         {:else}
-          {#if edition.standing}
-            <p class="border-l-2 border-slate-300 pl-4 text-sm italic text-slate-600">
-              {edition.standing}
-            </p>
+          {#if edition.standingHtml}
+            <p class="rf-daybook rf-daybook-standing">{@html edition.standingHtml}</p>
           {/if}
 
-          <div class="rf-daybook prose prose-slate max-w-none">
-            {@html edition.html}
-          </div>
+          {#if edition.intro}
+            <div class="rf-daybook">
+              {@html edition.intro}
+            </div>
+          {/if}
+
+          <!-- The edition arrives in pieces so two things can sit between them:
+               the calendar, which lives in the pipeline's snapshot rather than
+               in the markdown, and one subscribe ask placed after the lede has
+               made its case instead of stacked in front of it. -->
+          {#each edition.sections as section, i}
+            <div class="rf-daybook">
+              {@html section.html}
+            </div>
+
+            {#if i === 0 && edition.sections.length > 1}
+              <DaybookSubscribe lang={data.lang} placement="edition-mid" />
+            {/if}
+
+            <!-- Second to last, where the email puts it: after the day's
+                 stories, before the closing round-up. The forward ask follows
+                 it, because a calendar of deadlines is the most forwardable
+                 thing an edition carries — dates are what people send each
+                 other, and a reader who has just read four of them is the
+                 reader most likely to know who needs them. -->
+            {#if data.upcoming && i === upcomingAfter}
+              <UpcomingCalendar entries={data.upcoming.entries} lang={data.lang} />
+              <ShareRow
+                lang={data.lang}
+                placement="edition-upcoming"
+                title={shareTitle}
+                url={canonical}
+                variant="panel"
+              />
+            {/if}
+          {/each}
+
+          {#if data.upcoming && !edition.sections.length}
+            <UpcomingCalendar entries={data.upcoming.entries} lang={data.lang} />
+            <ShareRow
+              lang={data.lang}
+              placement="edition-upcoming"
+              title={shareTitle}
+              url={canonical}
+              variant="panel"
+            />
+          {/if}
         {/if}
 
-        {#if !data.dossier}
-          <!-- No deck to hang it on, so the ask to pass it on waits until the
-               edition has been read. -->
-          <div class="border-t border-slate-200 pt-6">
-            <ShareRow lang={data.lang} placement="edition-end" title={shareTitle} url={canonical} />
-          </div>
-        {/if}
+        <div class="flex flex-col gap-4 border-t border-slate-200 pt-6">
+          {#if !data.upcoming || asSent}
+            <!-- Two panels an edition: one above it, one under the calendar. An
+                 edition with no calendar — and the as-sent view, which draws
+                 none of its own — has nowhere to put the second, so it runs
+                 here instead, after the reading. -->
+            <ShareRow
+              lang={data.lang}
+              placement="edition-end"
+              title={shareTitle}
+              url={canonical}
+              variant="panel"
+            />
+          {/if}
+
+          <!-- The archive's record of what subscribers actually received. The
+               page is not that any more, so it says where that version is
+               rather than quietly replacing it. -->
+          <p class="text-xs text-slate-500">
+            <a
+              class="underline underline-offset-2 hover:text-slate-700"
+              href={asSent
+                ? `/${data.lang}/daybook/${data.ref}`
+                : `/${data.lang}/daybook/${data.ref}?sent`}
+            >
+              {asSent
+                ? es
+                  ? 'Volver a la versión web'
+                  : 'Back to the web version'
+                : es
+                  ? 'Ver esta edición como se envió'
+                  : 'View this edition as it was sent'}
+            </a>
+          </p>
+        </div>
 
         <footer class="flex justify-between gap-4 border-t border-slate-200 pt-6 text-sm">
           {#if data.older}
@@ -274,10 +377,10 @@
               {formatEditionDate(edition.date, data.lang, { weekday: true })}
             </a>
           </p>
-          <h2 class="font-display text-2xl font-semibold text-slate-900">
+          <h2 class="rf-daybook-hed rf-daybook-hed--nested">
             {edition.title}
           </h2>
-          <div class="rf-daybook rf-daybook--nested prose prose-slate max-w-none">
+          <div class="rf-daybook rf-daybook--nested">
             {@html edition.html}
           </div>
         </article>
