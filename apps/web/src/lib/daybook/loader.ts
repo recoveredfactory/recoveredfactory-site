@@ -2,7 +2,7 @@ import { marked } from 'marked';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/public';
 
-import { liftCalendar } from '$lib/daybook/calendar';
+import { liftCalendar, readEmailCalendar } from '$lib/daybook/calendar';
 import { extractEvents, type CalendarEvent } from '$lib/daybook/schema';
 import type { UpcomingEntry } from '$lib/daybook/upcoming';
 import type { Lang } from '$lib/i18n';
@@ -96,10 +96,11 @@ export type Edition = EditionSummary & {
    */
   emailHtml: string | null;
   /**
-   * The Upcoming calendar, lifted out of the body — the section is drawn as a
-   * card between the stories, not as prose in the middle of them. Empty for
-   * every edition written before the markdown carried a calendar at all, where
-   * the page falls back to the pipeline's snapshot; see `getUpcoming`.
+   * The Upcoming calendar as the edition ran it — out of the body when the
+   * markdown carries one, otherwise out of the sent email. Either way it is
+   * drawn as a card between the stories, not as prose in the middle of them.
+   * Empty only when the edition itself carried no calendar, where the page falls
+   * back to the pipeline's snapshot; see `getUpcoming`.
    */
   upcoming: UpcomingEntry[];
   events: CalendarEvent[];
@@ -317,6 +318,15 @@ const rendered = (
   const calendar = liftCalendar(entry.body, lang, entry.meta.date);
   const { intro, sections } = split(calendar.body, baseLevel, ledeLevel);
 
+  // The body is the better source when it has one — it is the edition's own
+  // text — but it has carried a calendar exactly once. The sent artifact has
+  // carried one nearly every day since the launch edition, so it is read here
+  // whatever the page is going to do with the email itself.
+  const email = emailsByDate[lang].get(entry.meta.date) ?? '';
+  const upcoming = calendar.entries.length
+    ? calendar.entries
+    : readEmailCalendar(email, lang, entry.meta.date);
+
   return {
     // The whole-body render is what the month roundups draw, and those print the
     // edition's title above it — so there the duplicate heading still goes.
@@ -329,7 +339,7 @@ const rendered = (
     // reaching the page as its own source text, brackets and URL and all.
     standingHtml: entry.meta.standing ? renderInline(entry.meta.standing) : '',
     emailHtml: withEmail ? (emailsByDate[lang].get(entry.meta.date) ?? null) : null,
-    upcoming: calendar.entries,
+    upcoming,
     events: extractEvents(entry.body, lang, entry.meta.date),
   };
 };

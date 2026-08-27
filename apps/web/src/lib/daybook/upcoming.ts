@@ -1,13 +1,16 @@
 import type { Lang } from '$lib/i18n';
 
 /**
- * The Upcoming calendar, read from the pipeline's own snapshot.
+ * The Upcoming calendar, reconstructed from the pipeline's own snapshot.
  *
- * This section exists in exactly one place: the sent email. The markdown
- * artifact ships without it — an edition's body goes story, story, story,
- * "Around the system", and `extractEvents` finds nothing to pull out because
- * there are no `- **date**` entries to find. So a page rendered from markdown
- * has no calendar unless it reads the snapshot, which is what this does.
+ * The last resort, since 2026-08-27. The page reads the calendar the edition
+ * itself carried — out of the markdown, or out of the sent email — and only
+ * comes here when neither has one, which is the Aug. 14 editions and the days
+ * the Spanish email shipped `Próximamente` empty. See ./calendar.
+ *
+ * What this returns is a reconstruction, not the selection: the snapshot holds a
+ * deterministic slate, so an entry the edition ran that the slate does not hold
+ * cannot be recovered from it at all. On 2026-08-21 that was two of eight.
  *
  * The snapshots are written by scripts/daybook/upcoming.mjs and committed. Each
  * one carries both languages — summaries, ordering, citations — so nothing here

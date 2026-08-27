@@ -12,9 +12,11 @@ import type { Lang } from '$lib/i18n';
  * inside the edition markdown, properly set: one paragraph an entry, opening
  * with a bolded date and the rule's name, then the prose and its citation.
  *
- * That is the selection itself, so the page reads it from there. The snapshot
- * stays the fallback for every edition written before this shape existed, and
- * for any day the parse cannot make sense of.
+ * That is the selection itself, so the page reads it from there — and when the
+ * markdown arrives without one, which it did again on Aug. 27, out of the sent
+ * email, where the calendar has been every day since the first edition. The
+ * snapshot stays the last resort: it reconstructs a subset, so it is what the
+ * page shows only when the edition itself carries nothing to read.
  *
  * Where a story's headline is the edition talking to a reader, these entries are
  * closer to data, and the parse holds itself to that: an entry it cannot date is
@@ -68,18 +70,27 @@ export function parseEntryDate(text: string, lang: Lang, editionDate: string): s
 
   const [rawMonth, rawDay] = lang === 'en' ? [match[1], match[2]] : [match[2], match[1]];
   const month = MONTHS[lang][rawMonth.toLowerCase().replace(/\.$/, '')];
-  const day = Number(rawDay);
-  if (month === undefined || !Number.isInteger(day) || day < 1 || day > 31) return null;
+  if (month === undefined) return null;
 
-  // Entries carry a day and a month but never a year. The calendar looks
-  // forward, so an entry whose month falls before the edition's month belongs to
-  // the next year — a December edition pointing at "Jan. 12" means the January
-  // after it, not the one ten months gone.
+  return toIso(month, Number(rawDay), editionDate);
+}
+
+/**
+ * A month and a day, as the year the calendar means by them.
+ *
+ * Entries carry a day and a month but never a year. The calendar looks forward,
+ * so an entry whose month falls before the edition's month belongs to the next
+ * year — a December edition pointing at "Jan. 12" means the January after it,
+ * not the one ten months gone. A date the calendar cannot hold, "Feb. 31", is
+ * rejected rather than rolled over into March.
+ */
+function toIso(month: number, day: number, editionDate: string): string | null {
+  if (!Number.isInteger(day) || day < 1 || day > 31) return null;
+
   const [editionYear, editionMonth] = editionDate.split('-').map(Number);
   const year = month < editionMonth - 1 ? editionYear + 1 : editionYear;
 
   const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-  // Reject a date the calendar cannot actually hold, e.g. "Feb. 31".
   const check = new Date(`${iso}T00:00:00Z`);
   if (Number.isNaN(check.getTime()) || check.getUTCDate() !== day) return null;
 
@@ -167,3 +178,96 @@ function readEntries(block: string, lang: Lang, editionDate: string): UpcomingEn
 
   return entries;
 }
+
+// ---------------------------------------------------------------------------
+
+// The calendar as the email set it.
+//
+// The markdown carries it only sometimes — Aug. 26 is the one edition that got
+// it right, and Aug. 27 was back to a bare heading. The sent artifact carries it
+// nearly every day and has since the launch edition, in one shape: a two-cell
+// table row, a 54-pixel date chip beside the entry's prose and its citation.
+// Mail clients understand tables and little else, which is why that shape has
+// outlived three different serialisations of the markdown beside it.
+//
+// So this reads what subscribers were actually sent, and it reads it for the
+// whole archive rather than for the days since the parse existed. Where the
+// snapshot could only ever rebuild a subset — six eligible items against the
+// eight dates the Aug. 21 email ran — this is the eight.
+const EMAIL_ROW = /<td[^>]*width="54"[^>]*>([\s\S]*?)<\/td>\s*<td[^>]*>([\s\S]*?)<\/td>/gi;
+
+// The chip: an abbreviated month over a bare day, each in its own div. Three
+// letters is enough to name a month in both languages, and taking only three
+// means "SEPT" and "SEP" land on the same one.
+const CHIP = /<div[^>]*>\s*([A-Za-zÁÉÍÓÚÑ]{3,5})\.?\s*<\/div>\s*<div[^>]*>\s*(\d{1,2})\s*<\/div>/i;
+
+const CELL_DIV = /<div[^>]*>([\s\S]*?)<\/div>/gi;
+
+const ANCHOR = /<a\b[^>]*\shref="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi;
+
+const CHIP_MONTHS: Record<Lang, Record<string, number>> = {
+  en: { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 },
+  es: { ene: 0, feb: 1, mar: 2, abr: 3, may: 4, jun: 5, jul: 6, ago: 7, sep: 8, oct: 9, nov: 10, dic: 11 },
+};
+
+/**
+ * The calendar out of an edition's sent HTML. Empty when the email carried none,
+ * which happens — the Spanish edition shipped `Próximamente` as a heading with
+ * nothing under it on Aug. 21, Aug. 26 and Aug. 27.
+ */
+export function readEmailCalendar(html: string, lang: Lang, editionDate: string): UpcomingEntry[] {
+  const entries: UpcomingEntry[] = [];
+
+  for (const [, chipCell, bodyCell] of html.matchAll(EMAIL_ROW)) {
+    const chip = chipCell.match(CHIP);
+    if (!chip) continue;
+
+    const month = CHIP_MONTHS[lang][chip[1].toLowerCase().slice(0, 3)];
+    if (month === undefined) continue;
+
+    const date = toIso(month, Number(chip[2]), editionDate);
+    if (!date) continue;
+
+    const sources = new Map<string, { label: string; url: string }>();
+    for (const [, url, label] of bodyCell.matchAll(ANCHOR)) {
+      if (!/^https?:/i.test(url) || sources.has(url)) continue;
+      sources.set(url, { label: fromHtml(label), url });
+    }
+
+    // The entry's prose is the cell's first div that is not the citation row.
+    const prose = [...bodyCell.matchAll(CELL_DIV)]
+      .map(([, inner]) => inner)
+      .find((inner) => !/<a\b/i.test(inner));
+
+    const summary = fromHtml(prose ?? '');
+    if (!summary) continue;
+
+    entries.push({
+      date,
+      summary,
+      sources: [...sources.values()],
+      repeatsDate: entries.at(-1)?.date === date,
+    });
+  }
+
+  return entries;
+}
+
+const ENTITIES: Record<string, string> = {
+  amp: '&',
+  lt: '<',
+  gt: '>',
+  quot: '"',
+  apos: "'",
+  nbsp: ' ',
+};
+
+// Enough of an HTML decoder for prose the pipeline wrote and the mailer escaped.
+const fromHtml = (value: string) =>
+  value
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(parseInt(code, 16)))
+    .replace(/&([a-z]+);/gi, (whole, name) => ENTITIES[name.toLowerCase()] ?? whole)
+    .replace(/\s+/g, ' ')
+    .trim();
