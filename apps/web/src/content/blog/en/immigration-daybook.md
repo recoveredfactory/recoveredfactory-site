@@ -4,7 +4,7 @@ title: "Immigration Daybook"
 date: "2026-07-31"
 type: "page"
 hideTitle: true
-description: "A weekday rundown of the immigration system — and a calendar of what's coming. Effective dates, comment deadlines, court dates. Free pilot all August."
+description: "A weekday rundown of the immigration system — and a calendar of what's coming. Effective dates, comment deadlines, court dates. Every edition online."
 byline: "Recovered Factory"
 previewImage: "/images/immigration-daybook-og-en.png"
 hidePreview: true
@@ -18,7 +18,7 @@ lang: "en"
     <ul class="rf-facts">
       <li>Monday–Friday</li>
       <li>English &amp; Spanish</li>
-      <li>Free in August</li>
+      <li><a href="/en/daybook">Every edition online →</a></li>
     </ul>
     <div class="rf-hero__cta">
       <SubscribeForm
@@ -42,7 +42,7 @@ lang: "en"
 
 <div class="rf-body not-prose">
 
-<p class="rf-lede">On Aug. 24, the comment window closes on <a href="https://www.federalregister.gov/documents/2026/06/23/2026-12542/naturalization-application-fee-adjustments">a DHS rule</a> that raises the naturalization filing fee by 75% and eliminates fee waivers outright. If you're filing, that's a big jump you have to budget for. If you're a lawyer, that's a week of phone calls you'd rather schedule than receive. If you're a reporter, that's a story you want to file on the 23rd, not the 25th.</p>
+<p class="rf-lede">On Sept. 18, <a href="https://www.federalregister.gov/documents/2026/07/20/2026-14539/public-charge-ground-of-inadmissibility">a DHS rule</a> widens the public charge test for anyone applying for a green card or for admission to the U.S. — whether an officer thinks you are likely to end up depending on government support. If you're applying, that's a standard you have to prepare for. If you're a lawyer, that's a week of phone calls you'd rather schedule than receive. If you're a reporter, that's a story you want to file on the 17th, not the 19th.</p>
 
 <p class="rf-graf">Maybe you already knew, because you track this stuff yourself. A lot of people don't, and shouldn't have to.</p>
 
@@ -122,7 +122,7 @@ lang: "en"
 
 <section class="rf-section rf-section--cta">
   <p class="rf-subscribe__lead">Start today.</p>
-  <p class="rf-graf rf-pilot">August is a free pilot while we figure out what this should be and how to sustain it. We'd rather have you in the room for the early version than polish it in a vacuum.</p>
+  <p class="rf-graf rf-pilot">August was a free pilot; we're still figuring out what this should be and how to sustain it. We'd rather have you in the room for the early version than polish it in a vacuum.</p>
   <SubscribeForm
     buttonClass="bg-fern-strong px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:shrink-0"
     id="daybook-subscribe-foot"
@@ -270,6 +270,20 @@ lang: "en"
     color: rgba(243, 241, 233, 0.72);
   }
   .rf-facts li { margin: 0; }
+
+  /* The last fact is a destination rather than a term: every edition is on the
+     site, so it links there. Set brighter than the two beside it — a fact you
+     can act on should not be the same weight as one you can only read. */
+  .rf-facts a {
+    color: rgba(243, 241, 233, 0.95);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(243, 241, 233, 0.45);
+    padding-bottom: 0.15rem;
+    transition: border-color 0.15s;
+  }
+  .rf-facts a:hover {
+    border-bottom-color: rgba(243, 241, 233, 0.95);
+  }
 
   /* The ask lives in the plate — a reader who is already sold
      never has to scroll to act. */
