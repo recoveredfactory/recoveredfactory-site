@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "pnpm -C apps/web dev",
     "dev:sst": "sst dev",
-    "build": "paraglide-js compile --project ./project.inlang --outdir ./src/paraglide && pnpm -r build",
+    "build": "pnpm -r build",
     "build:web": "pnpm -C apps/web build",
     "lint": "pnpm -C apps/web lint",
     "format": "pnpm -C apps/web format",
