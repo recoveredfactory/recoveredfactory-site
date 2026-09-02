@@ -35,7 +35,12 @@
       ? 'Noticias curadas, contexto de fuentes primarias, datos utilizables y un calendario de lo que viene en el sistema migratorio.'
       : 'Curated news, primary source context, useable data, and a calendar of what’s coming in the immigration system.',
   );
-  const offer = $derived(es ? 'Gratis cada día hábil en agosto.' : 'Free every weekday in August.');
+  // The free-pilot window closed with August and the Daybook goes on, so the
+  // qualifier is gone rather than restated: this line runs two or three times on
+  // every archive page, and a promise that expired last week is worse there than
+  // anywhere else on the site.
+  // TODO(david): what the terms are now, if they are anything.
+  const offer = $derived(es ? 'Gratis cada día hábil.' : 'Free every weekday.');
 
   /**
    * What we do and don't do with the address.
