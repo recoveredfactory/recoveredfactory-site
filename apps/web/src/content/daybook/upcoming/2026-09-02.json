@@ -1,0 +1,715 @@
+{
+  "audit": {
+    "collapsed_count": 68,
+    "eligible_count": 7,
+    "non_us_excluded_count": 25,
+    "other_past_excluded_count": 36,
+    "paperwork_excluded_count": 23,
+    "past_effective_review_count": 15,
+    "raw_selected_count": 216,
+    "selected_count": 0
+  },
+  "edition_date": "2026-09-02",
+  "eligible_items": [
+    {
+      "bucket": "next_four_weeks",
+      "correction_state": "edited",
+      "date_authority": "federal-register",
+      "document_status": "",
+      "eligible_order": 1,
+      "framing_source": "federal-register",
+      "id": 933,
+      "key_date": "2026-09-09",
+      "key_date_raw": "This rule is effective on September 9, 2026.",
+      "language_readiness": {
+        "en": {
+          "available": true,
+          "edited": true,
+          "sha256": "712bea653e68e979f34bea806016b2fa7cd7267e278578570007a11152c4c0f5"
+        },
+        "es": {
+          "available": true,
+          "edited": true,
+          "sha256": "c1ce8c46e8eae7f3b94bf0593a5872266d2cfcff30027cd7f13a2ee8baeb98bf"
+        }
+      },
+      "logical_item_id": "2026-16231",
+      "member_ids": [
+        193,
+        933,
+        218,
+        219,
+        209,
+        84,
+        206,
+        207,
+        200,
+        201,
+        202,
+        203,
+        161
+      ],
+      "plain_summary": "Starting September 9, the heaviest users of H-1B and L-1 visas owe a federal fee on every extension petition, not just when they hire someone new or take on another company's worker. The fee — $4,000 per H-1B petition, $4,500 per L-1 — applies to companies with 50 or more U.S. employees when more than half of them are on H-1B or L-1 visas. DHS says its old reading of a 2015 law wrongly let same-employer extensions skip the fee; this rule closes that gap through September 2027.",
+      "plain_summary_edited": true,
+      "plain_summary_es": "A partir del 9 de septiembre, los usuarios más grandes de visas H-1B y L-1 deben una cuota federal en toda petición de prórroga, no solo cuando contratan a alguien nuevo o toman un trabajador de otra compañía. La cuota — $4,000 por petición H-1B, $4,500 por L-1 — se aplica a compañías con 50 o más empleados estadounidenses cuando más de la mitad de ellos están en visas H-1B o L-1. El DHS dice que su interpretación anterior de una ley de 2015 permitió erróneamente que prórrogas del mismo empleador evitaran la cuota; esta regla cierra esa brecha hasta septiembre de 2027.",
+      "plain_summary_es_edited": true,
+      "plain_summary_es_stale_since": "",
+      "primary_citation": {
+        "label": "Federal Register",
+        "match_reason": "federal-register-document",
+        "role": "primary_document",
+        "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16231/9-11-response-and-biometric-entry-exit-fee-for-h-1b-and-l-1-visas"
+      },
+      "primary_citation_url": "https://www.federalregister.gov/documents/2026/08/10/2026-16231/9-11-response-and-biometric-entry-exit-fee-for-h-1b-and-l-1-visas",
+      "publisher": "Federal Register",
+      "row_revision": "2026-08-17T02:20:29.736599",
+      "row_sha256": "51937e8275cd0c2462bac4834ae5d332706ce7090371f03f40b3d9ed2927db0c",
+      "secondary_citations": [],
+      "source": "federal-register",
+      "source_label": "Federal Register",
+      "source_roles": [
+        {
+          "label": "Federal Register",
+          "match_reason": "federal-register-document",
+          "role": "primary_document",
+          "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16231/9-11-response-and-biometric-entry-exit-fee-for-h-1b-and-l-1-visas"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/wr-immigration-news-digest-20260709/"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/dhs-announces-proposed-rule-to-fully-implement-the-eb-5-reform-and-integrity-act-of-2022/"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/wr-immigration-news-digest-20260702/"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/ten-things-to-learn-from-the-new-eb-5-immigrant-visa-proposal/"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/25-key-points-to-know-about-the-eb-5-nprm-proposal-and-how-it-will-impact-eb-5-investors/"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/august-2026-visa-bulletin-what-employers-professionals-and-eb-5-investors-need-to-know/"
+        }
+      ],
+      "source_url": "https://www.federalregister.gov/documents/2026/08/10/2026-16231/9-11-response-and-biometric-entry-exit-fee-for-h-1b-and-l-1-visas",
+      "spanish_selection_preference": "eligible",
+      "status": "effective_upcoming",
+      "theme": "Rule — Homeland Security Department",
+      "tier": "approaching",
+      "title": "9-11 Response and Biometric Entry-Exit Fee for H-1B and L-1 Visas"
+    },
+    {
+      "bucket": "next_four_weeks",
+      "correction_state": "edited",
+      "date_authority": "editorial",
+      "document_status": "",
+      "eligible_order": 2,
+      "framing_source": "editorial",
+      "id": 1109,
+      "key_date": "2026-09-09",
+      "key_date_raw": "Designation ends September 9, 2026; DHS determination due July 11, 2026 and not published",
+      "language_readiness": {
+        "en": {
+          "available": true,
+          "edited": true,
+          "sha256": "e0cf470e66747ce334f046babe229e36a79378638b459b329b237fc1f018311f"
+        },
+        "es": {
+          "available": true,
+          "edited": true,
+          "sha256": "da003e7ac0fdc698107a60db2dbecdb0616ea7b831017bead5840405a029f6ee"
+        }
+      },
+      "logical_item_id": "942bfeeefe4107925202e7a9df23ff38",
+      "member_ids": [
+        1109,
+        1302,
+        1272,
+        1263,
+        1237,
+        232,
+        233,
+        234,
+        227,
+        188,
+        185,
+        151
+      ],
+      "plain_summary": "Protection from deportation for Salvadorans in the US (TPS) is scheduled to end September 9, 2026. DHS's decision on whether to extend it was due July 11 and has not been published; by law, if no termination notice publishes, the designation continues automatically for six months.",
+      "plain_summary_edited": true,
+      "plain_summary_es": "El TPS de El Salvador — la protección contra la deportación — vence el 9 de septiembre de 2026. El DHS tenía plazo hasta el 11 de julio para decidir si lo extendía y no ha publicado nada; por ley, si no se publica un aviso de terminación, la designación continúa automáticamente por seis meses.",
+      "plain_summary_es_edited": true,
+      "plain_summary_es_stale_since": "",
+      "primary_citation": {
+        "label": "25-1083 Mullin v. Doe (06/25/2026)",
+        "match_reason": "caption",
+        "role": "primary_document",
+        "url": "https://supremecourt.gov/opinions/25pdf/25-1083_f204.pdf"
+      },
+      "primary_citation_url": "https://supremecourt.gov/opinions/25pdf/25-1083_f204.pdf",
+      "publisher": "",
+      "row_revision": "2026-08-16T19:39:02.277956",
+      "row_sha256": "0cf047c55a45f582e8d38272b7f969b9a2e8cd56fe73021563072ce4caf2ab71",
+      "secondary_citations": [],
+      "source": "editorial",
+      "source_label": "25-1083 Mullin v. Doe (06/25/2026)",
+      "source_roles": [
+        {
+          "label": "25-1083 Mullin v. Doe (06/25/2026)",
+          "match_reason": "caption",
+          "role": "primary_document",
+          "url": "https://supremecourt.gov/opinions/25pdf/25-1083_f204.pdf"
+        },
+        {
+          "label": "The Insightful Immigration Blog (Cyrus D. Mehta & Partners)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://cyrusmehta.com/blog/2026/07/27/immigration-update-july-27-2026/"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/court-takes-action-on-haiti-tps-termination-plus-other-tps-updates/"
+        },
+        {
+          "label": "The Insightful Immigration Blog (Cyrus D. Mehta & Partners)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://cyrusmehta.com/blog/2026/08/10/immigration-update-august-10-2026/"
+        },
+        {
+          "label": "The Insightful Immigration Blog (Cyrus D. Mehta & Partners)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://cyrusmehta.com/blog/2026/08/17/immigration-update-august-17-2026/"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/supreme-court-clears-the-way-for-tps-terminations-employers-must-prepare-now/"
+        },
+        {
+          "label": "The Insightful Immigration Blog (Cyrus D. Mehta & Partners)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://blog.cyrusmehta.com/2026/06/mullin-v-doe-blessing-a-race-neutral-cover-for-racial-animus.html"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/update-on-termination-of-temporary-protected-status-for-haiti-syria-burma-myanmar-ethiopia-somalia-south-sudan-and-yemen/"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/important-reminder-for-employers-certain-tps-employees-may-require-reverification-by-july-22-2026-despite-a-previously-calculated-540-day-automatic-ead-extension/"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/federal-court-temporarily-blocks-portions-of-usciss-implementation-of-h-r-1-affecting-tps-beneficiaries-and-asylum-applicants/"
+        }
+      ],
+      "source_url": "https://www.federalregister.gov/documents/2025/01/17/2025-00626/extension-of-the-designation-of-el-salvador-for-temporary-protected-status",
+      "spanish_selection_preference": "eligible",
+      "status": "pending",
+      "theme": "TPS — El Salvador",
+      "tier": "approaching",
+      "title": "El Salvador TPS designation ends September 9, 2026"
+    },
+    {
+      "bucket": "next_four_weeks",
+      "correction_state": "row_owned",
+      "date_authority": "federal-register",
+      "document_status": "",
+      "eligible_order": 3,
+      "framing_source": "federal-register",
+      "id": 1009,
+      "key_date": "2026-09-10",
+      "key_date_raw": "Effective date: This interim final rule is effective September 10, 2026.",
+      "language_readiness": {
+        "en": {
+          "available": true,
+          "edited": false,
+          "sha256": "97c7851a57188634c651ee73b48f3fbf9934829b69bb40ab1f6c42f38aa45eb8"
+        },
+        "es": {
+          "available": true,
+          "edited": false,
+          "sha256": "b2e61ca1519648a59e45de096d65e6034c291e16923f1a24186c07dc625f30fe"
+        }
+      },
+      "logical_item_id": "2026-16290",
+      "member_ids": [
+        1009
+      ],
+      "plain_summary": "Companies that match US clients with people abroad for marriage (international marriage brokers) face a set process for being fined. The Justice Department is spelling out how it will decide cases where a broker fails to give the people it recruits the information required by the International Marriage Broker Regulation Act (IMBRA), or discloses information it may not. Comments are open.",
+      "plain_summary_edited": false,
+      "plain_summary_es": "Las agencias internacionales que conectan a personas para fines matrimoniales (international marriage brokers) quedarán sujetas a un procedimiento del Departamento de Justicia para imponerles multas cuando no entreguen la información que la ley exige a las personas que reclutan, o cuando divulguen datos que tienen prohibido compartir. La regla es provisional pero entra en vigor el 10 de septiembre de 2026, y el gobierno está recibiendo comentarios del público.",
+      "plain_summary_es_edited": false,
+      "plain_summary_es_stale_since": "",
+      "primary_citation": {
+        "label": "Federal Register",
+        "match_reason": "federal-register-document",
+        "role": "primary_document",
+        "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16290/adjudication-of-civil-penalties-against-international-marriage-brokers"
+      },
+      "primary_citation_url": "https://www.federalregister.gov/documents/2026/08/11/2026-16290/adjudication-of-civil-penalties-against-international-marriage-brokers",
+      "publisher": "Federal Register",
+      "row_revision": "2026-08-18T02:25:24.525887",
+      "row_sha256": "190a37ece0ff76981aff97109c081cdebec10df755d2933d95adda3c52bfe7dd",
+      "secondary_citations": [],
+      "source": "federal-register",
+      "source_label": "Federal Register",
+      "source_roles": [
+        {
+          "label": "Federal Register",
+          "match_reason": "federal-register-document",
+          "role": "primary_document",
+          "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16290/adjudication-of-civil-penalties-against-international-marriage-brokers"
+        }
+      ],
+      "source_url": "https://www.federalregister.gov/documents/2026/08/11/2026-16290/adjudication-of-civil-penalties-against-international-marriage-brokers",
+      "spanish_selection_preference": "eligible",
+      "status": "effective_upcoming",
+      "theme": "Rule — Justice Department",
+      "tier": "horizon",
+      "title": "Adjudication of Civil Penalties Against International Marriage Brokers"
+    },
+    {
+      "bucket": "next_four_weeks",
+      "correction_state": "row_owned",
+      "date_authority": "federal-register",
+      "document_status": "",
+      "eligible_order": 4,
+      "framing_source": "federal-register",
+      "id": 343,
+      "key_date": "2026-09-25",
+      "key_date_raw": "Comments due September 25, 2026.",
+      "language_readiness": {
+        "en": {
+          "available": true,
+          "edited": false,
+          "sha256": "0368adedb1e44e18a56e474af631e3cd1a946d6d4554c62f2f95c9b7fffc93b4"
+        },
+        "es": {
+          "available": true,
+          "edited": false,
+          "sha256": "bfe3198a53795c24ed118954efe214eeaacba469c77f60081fee2c1e833c62e1"
+        }
+      },
+      "logical_item_id": "2026-15087",
+      "member_ids": [
+        343
+      ],
+      "plain_summary": "The Office of Refugee Resettlement, which houses unaccompanied immigrant children, wants to keep using its mental health assessment form and to merge its two illness-reporting forms (active TB and non-TB) into a single Onsite Health Intervention Form. Comments are open until the deadline.",
+      "plain_summary_edited": false,
+      "plain_summary_es": "La oficina federal que cuida a los niños y adolescentes que llegaron solos al país y están bajo custodia del gobierno (ORR) quiere renovar por tres años los formularios de evaluación de salud mental y de atención médica en los albergues, y unir en uno solo los dos formularios que hoy se usan para investigar casos de tuberculosis y otras enfermedades. Cualquier persona puede enviar comentarios antes de la fecha límite.",
+      "plain_summary_es_edited": false,
+      "plain_summary_es_stale_since": "",
+      "primary_citation": {
+        "label": "Federal Register",
+        "match_reason": "federal-register-document",
+        "role": "primary_document",
+        "url": "https://www.federalregister.gov/documents/2026/07/27/2026-15087/proposed-information-collection-activity-mental-health-assessment-form-and-onsite-health"
+      },
+      "primary_citation_url": "https://www.federalregister.gov/documents/2026/07/27/2026-15087/proposed-information-collection-activity-mental-health-assessment-form-and-onsite-health",
+      "publisher": "Federal Register",
+      "row_revision": "2026-08-03T13:09:00.437542",
+      "row_sha256": "e49e7d4402ad5b0539afd1e48fa8964bbdaf904de013dd9094996f09ac7e842d",
+      "secondary_citations": [],
+      "source": "federal-register",
+      "source_label": "Federal Register",
+      "source_roles": [
+        {
+          "label": "Federal Register",
+          "match_reason": "federal-register-document",
+          "role": "primary_document",
+          "url": "https://www.federalregister.gov/documents/2026/07/27/2026-15087/proposed-information-collection-activity-mental-health-assessment-form-and-onsite-health"
+        }
+      ],
+      "source_url": "https://www.federalregister.gov/documents/2026/07/27/2026-15087/proposed-information-collection-activity-mental-health-assessment-form-and-onsite-health",
+      "spanish_selection_preference": "eligible",
+      "status": "comment_period_open",
+      "theme": "Paperwork notice — Children and Families Administration",
+      "tier": "horizon",
+      "title": "Proposed Information Collection Activity; Mental Health Assessment Form and Onsite Health Intervention Form"
+    },
+    {
+      "bucket": "next_four_weeks",
+      "correction_state": "row_owned",
+      "date_authority": "federal-register",
+      "document_status": "",
+      "eligible_order": 5,
+      "framing_source": "federal-register",
+      "id": 350,
+      "key_date": "2026-09-28",
+      "key_date_raw": "Electronic comments must be submitted on or before September 28, 2026. The electronic Federal Docket Management System at https:// www.regulations.gov will accept electronic comments until 11:59 p.m. Eastern Time on that date.",
+      "language_readiness": {
+        "en": {
+          "available": true,
+          "edited": false,
+          "sha256": "b189c69623114e99f891664a2eeff36e1845cf2e86a7934901bcde2dab0d8709"
+        },
+        "es": {
+          "available": true,
+          "edited": false,
+          "sha256": "a6aa12956ad3cc25a2df510fcf919b569c0a3cb435fcff9138d87e7737916cfb"
+        }
+      },
+      "logical_item_id": "2026-15458",
+      "member_ids": [
+        350
+      ],
+      "plain_summary": "Immigration judges would be able to fine people who defy their authority in court (contempt), under a proposed rule setting out who can be penalised, how much, and how to appeal — aimed mainly at lawyers and others appearing in deportation cases. Comments can be filed until 11:59 p.m. Eastern on September 28, 2026.",
+      "plain_summary_edited": false,
+      "plain_summary_es": "El Departamento de Justicia propone dar a los jueces de inmigración la facultad de imponer multas (civil money penalty) por desacato a su autoridad en la corte de inmigración, lo que alcanzaría a abogados y otras personas que comparecen ante ellos; la propuesta definiría el alcance de esa facultad, cómo se determina y se paga la multa, y cómo apelarla. El público puede enviar comentarios hasta las 11:59 p.m. del este del 28 de septiembre de 2026.",
+      "plain_summary_es_edited": false,
+      "plain_summary_es_stale_since": "",
+      "primary_citation": {
+        "label": "Federal Register",
+        "match_reason": "federal-register-document",
+        "role": "primary_document",
+        "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15458/civil-money-penalty-for-actions-in-contempt-of-an-immigration-judges-proper-exercise-of-authority"
+      },
+      "primary_citation_url": "https://www.federalregister.gov/documents/2026/07/30/2026-15458/civil-money-penalty-for-actions-in-contempt-of-an-immigration-judges-proper-exercise-of-authority",
+      "publisher": "Federal Register",
+      "row_revision": "2026-08-06T08:31:22.062736",
+      "row_sha256": "dd5df753339f2d22a99b3567160f8616c237c2c522c14c7a0d0f59d2ee6c4f94",
+      "secondary_citations": [],
+      "source": "federal-register",
+      "source_label": "Federal Register",
+      "source_roles": [
+        {
+          "label": "Federal Register",
+          "match_reason": "federal-register-document",
+          "role": "primary_document",
+          "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15458/civil-money-penalty-for-actions-in-contempt-of-an-immigration-judges-proper-exercise-of-authority"
+        }
+      ],
+      "source_url": "https://www.federalregister.gov/documents/2026/07/30/2026-15458/civil-money-penalty-for-actions-in-contempt-of-an-immigration-judges-proper-exercise-of-authority",
+      "spanish_selection_preference": "eligible",
+      "status": "comment_period_open",
+      "theme": "Proposed Rule — Executive Office for Immigration Review",
+      "tier": "horizon",
+      "title": "Civil Money Penalty for Actions in Contempt of an Immigration Judge's Proper Exercise of Authority"
+    },
+    {
+      "bucket": "next_four_weeks",
+      "correction_state": "row_owned",
+      "date_authority": "wolfsdorf-wr-rss",
+      "document_status": "",
+      "eligible_order": 6,
+      "framing_source": "wolfsdorf-wr-rss",
+      "id": 148,
+      "key_date": "2026-09-30",
+      "key_date_raw": "2026-09-30",
+      "language_readiness": {
+        "en": {
+          "available": true,
+          "edited": false,
+          "sha256": "c9c48708a0425dab2377786837156fe15959acd9cc634ba2a4fa802d9b570002"
+        },
+        "es": {
+          "available": true,
+          "edited": false,
+          "sha256": "4e545795efdf52dca2d4dbdb06d596650d03db0d0e41f6b6881093cd9a19a038"
+        }
+      },
+      "logical_item_id": "4e3ae96579791b91894d45bd6d9178d2",
+      "member_ids": [
+        1318,
+        1319,
+        1321,
+        1264,
+        243,
+        158,
+        148
+      ],
+      "plain_summary": "The State Department has warned that heavy demand may push employment-based green card cutoff dates backwards (retrogression), or make a category unavailable altogether, before the fiscal year ends on September 30, 2026 — EB-1 India and EB-2 most at risk. Watch the monthly Visa Bulletin, which sets who can file and be approved.",
+      "plain_summary_edited": false,
+      "plain_summary_es": "El Departamento de Estado advirtió que la alta demanda podría provocar más retroceso en las fechas de corte, o incluso dejar categorías sin visas disponibles, antes de que termine el año fiscal el 30 de septiembre de 2026 — sobre todo en EB-1 India y EB-2. Quienes esperan una green card por empleo pueden seguir el Boletín de Visas de septiembre y cualquier aviso a mitad de mes para ver cómo se mueven esas fechas.",
+      "plain_summary_es_edited": false,
+      "plain_summary_es_stale_since": "",
+      "primary_citation": {
+        "label": "WR Immigration (Wolfsdorf Rosenthal)",
+        "match_reason": "phrase",
+        "role": "primary_document",
+        "url": "https://travel.state.gov/content/dam/visas/Bulletins/visabulletin_July2026.pdf"
+      },
+      "primary_citation_url": "https://travel.state.gov/content/dam/visas/Bulletins/visabulletin_July2026.pdf",
+      "publisher": "WR Immigration (Wolfsdorf Rosenthal)",
+      "row_revision": "2026-07-26T21:52:40.464978",
+      "row_sha256": "e947ec3f44667a7c82cab6995b36f0cfd3e53dc36bb69fa9369111f20a6df59e",
+      "secondary_citations": [],
+      "source": "wolfsdorf-wr-rss",
+      "source_label": "WR Immigration (Wolfsdorf Rosenthal)",
+      "source_roles": [
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "match_reason": "phrase",
+          "role": "primary_document",
+          "url": "https://travel.state.gov/content/dam/visas/Bulletins/visabulletin_July2026.pdf"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/september-2026-visa-bulletin-family-based-final-action-dates-advance-sharply/"
+        },
+        {
+          "label": "The Insightful Immigration Blog (Cyrus D. Mehta & Partners)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://cyrusmehta.com/blog/2026/08/10/immigration-update-august-10-2026/"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/wr-immigration-news-digest-20260618/"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/august-2026-visa-bulletin-what-employers-professionals-and-eb-5-investors-need-to-know/"
+        }
+      ],
+      "source_url": "https://wolfsdorf.com/wr-immigration-news-digest20260723/",
+      "spanish_selection_preference": "eligible",
+      "status": "monitoring",
+      "theme": "Visa Bulletin — Employment-Based",
+      "tier": "horizon",
+      "title": "Possible further EB retrogression or unavailability before the end of FY2026"
+    },
+    {
+      "bucket": "next_four_weeks",
+      "correction_state": "row_owned",
+      "date_authority": "wolfsdorf-wr-rss",
+      "document_status": "",
+      "eligible_order": 7,
+      "framing_source": "wolfsdorf-wr-rss",
+      "id": 162,
+      "key_date": "2026-09-30",
+      "key_date_raw": "2026-09-30",
+      "language_readiness": {
+        "en": {
+          "available": true,
+          "edited": false,
+          "sha256": "6cdcdeba2c2c5fbd68099a5b3133e7bc1893d1c88751bace8e332d1799a8ee07"
+        },
+        "es": {
+          "available": true,
+          "edited": false,
+          "sha256": "3e2854600540aea02d51ee543eba5af7300ddfdfe0b7ffbf6c35d3a6e2f7dc36"
+        }
+      },
+      "logical_item_id": "abb99bda879f6cc16fac81fa3c92bf93",
+      "member_ids": [
+        199,
+        162,
+        42,
+        159
+      ],
+      "plain_summary": "The State Department has warned that employment-based green card categories could move backwards (retrogression) or be marked \"U\" for unavailable before the fiscal year ends on 30 September, if demand stays high. A \"U\" means no one in that category can file the final green card application (adjustment of status) that month.",
+      "plain_summary_edited": false,
+      "plain_summary_es": "El Departamento de Estado advirtió que, si la demanda sigue igual, las categorías de green card por empleo podrían retroceder más o quedar temporalmente cerradas antes de que termine el año fiscal, el 30 de septiembre de 2026. Un cambio así aparece en el Visa Bulletin como una \"U\" en la categoría y frena la presentación del ajuste de estatus (Formulario I-485) mientras dure, algo que conviene a los empleadores seguir de cerca.",
+      "plain_summary_es_edited": false,
+      "plain_summary_es_stale_since": "",
+      "primary_citation": {
+        "label": "WR Immigration (Wolfsdorf Rosenthal)",
+        "match_reason": "phrase",
+        "role": "primary_document",
+        "url": "https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2026/visa-bulletin-for-august-2026.html"
+      },
+      "primary_citation_url": "https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2026/visa-bulletin-for-august-2026.html",
+      "publisher": "WR Immigration (Wolfsdorf Rosenthal)",
+      "row_revision": "2026-07-26T21:53:30.544267",
+      "row_sha256": "918c3f50d7c7e3cb9ef2622068236ac67e6f04b8b02c732ba5afb09f63e78f7a",
+      "secondary_citations": [],
+      "source": "wolfsdorf-wr-rss",
+      "source_label": "WR Immigration (Wolfsdorf Rosenthal)",
+      "source_roles": [
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "match_reason": "phrase",
+          "role": "primary_document",
+          "url": "https://travel.state.gov/content/travel/en/legal/visa-law0/visa-bulletin/2026/visa-bulletin-for-august-2026.html"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/25-key-points-to-know-about-the-eb-5-nprm-proposal-and-how-it-will-impact-eb-5-investors/"
+        },
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "label_es": "",
+          "match_reason": "same-matter source; no summary fields blended",
+          "role": "expert_commentary",
+          "url": "https://wolfsdorf.com/august-2026-visa-bulletin-what-employers-professionals-and-eb-5-investors-need-to-know/"
+        }
+      ],
+      "source_url": "https://wolfsdorf.com/august-2026-visa-bulletin-what-employers-professionals-and-eb-5-investors-need-to-know/",
+      "spanish_selection_preference": "eligible",
+      "status": "monitoring",
+      "theme": "Visa Bulletin — Employment-Based",
+      "tier": "horizon",
+      "title": "Further retrogression or unavailability in employment-based categories before FY 2026 close"
+    }
+  ],
+  "horizon": {
+    "days": 28,
+    "end_inclusive": "2026-09-30",
+    "start_inclusive": "2026-09-02"
+  },
+  "language_policy": {
+    "english_field": "plain_summary",
+    "english_missing_selected_ids": [],
+    "shared_structure": [
+      "logical_item_id",
+      "selected_order",
+      "key_date",
+      "source_roles"
+    ],
+    "spanish_field": "plain_summary_es",
+    "spanish_may_not_render_when_missing": true,
+    "spanish_missing_selected_ids": []
+  },
+  "manifest_sha256": "a27e370f61da65024057b67346064b79df306dd9a8ac10f3fc8c4d946309e923",
+  "policy": {
+    "active_tiers": [
+      "approaching",
+      "due",
+      "future",
+      "horizon",
+      "open_ended"
+    ],
+    "geo_focus_keep": [
+      "bilateral",
+      "us"
+    ],
+    "hard_out_ids": [
+      327,
+      336,
+      341,
+      346
+    ],
+    "horizon_days": 28,
+    "max_items": 12,
+    "max_open_ended": 0,
+    "max_per_normalized_theme": 2,
+    "summary_policy": {
+      "composer_rewriting": false,
+      "en": "plain_summary verbatim",
+      "es": "plain_summary_es verbatim",
+      "fallbacks": [],
+      "render_time_translation": false
+    }
+  },
+  "policy_sha256": "5a7a5843900e0a5fa396a2d9819fdf880a2bf731730e3a5892813a755d4b8fb4",
+  "schema_version": "immigration-daybook-upcoming-manifest.v2",
+  "selected_items": [],
+  "selection": {
+    "language_neutral": true,
+    "mode": "eligible_only",
+    "selected_count": 0,
+    "selected_ids_in_order": [],
+    "unknown_selected_ids": [],
+    "zero_selection_confirmed": false
+  },
+  "source_contract": {
+    "source_freshness": [
+      {
+        "active_items": 72,
+        "dated_items": 29,
+        "days_since_seen": 1,
+        "last_seen_at": "2026-09-01T03:05:49.993623",
+        "latest_generated_as_of": "2026-08-24",
+        "source": "cyrusmehta-blog-rss"
+      },
+      {
+        "active_items": 1,
+        "dated_items": 1,
+        "days_since_seen": 17,
+        "last_seen_at": "2026-08-16T19:39:02.277956",
+        "latest_generated_as_of": "2026-08-16",
+        "source": "editorial"
+      },
+      {
+        "active_items": 126,
+        "dated_items": 93,
+        "days_since_seen": 0,
+        "last_seen_at": "2026-09-02T02:48:53.714434",
+        "latest_generated_as_of": "2026-09-01",
+        "source": "federal-register"
+      },
+      {
+        "active_items": 3,
+        "dated_items": 1,
+        "days_since_seen": 0,
+        "last_seen_at": "2026-09-02T02:49:20.670271",
+        "latest_generated_as_of": "2026-06-11",
+        "source": "nationofimmigrators-rss"
+      },
+      {
+        "active_items": 155,
+        "dated_items": 83,
+        "days_since_seen": 1,
+        "last_seen_at": "2026-09-01T03:06:12.256545",
+        "latest_generated_as_of": "2026-08-27",
+        "source": "wolfsdorf-wr-rss"
+      }
+    ],
+    "upstream_logical_item_and_source_role_views_required": true,
+    "watch_item_citations": "app.v_watch_item_citations",
+    "watch_items": "app.v_watch_items",
+    "watch_sources": "app.v_watch_sources"
+  }
+}
