@@ -11,7 +11,10 @@
     "lint": "pnpm -C apps/web lint",
     "format": "pnpm -C apps/web format",
     "deploy": "sst deploy",
-    "backup:assets": "./scripts/backup-assets.sh"
+    "backup:assets": "./scripts/backup-assets.sh",
+    "daybook": "node apps/web/scripts/daybook/pull.mjs",
+    "daybook:again": "node apps/web/scripts/daybook/pull.mjs --offline",
+    "daybook:ship": "PUBLIC_DAYBOOK_BANNER=1 sst deploy --stage prod && ./scripts/backup-assets.sh"
   },
   "devDependencies": {
     "sst": "^3.0.0",
