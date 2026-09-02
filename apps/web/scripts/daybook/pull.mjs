@@ -26,7 +26,7 @@
 // essays and would not be fine for a weekday newsletter that adds ~500 files a
 // year, in two languages.
 
-import { execFileSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import { readFileSync, mkdirSync, writeFileSync, existsSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -459,11 +459,27 @@ for (const lang of LANGS) {
   mkdirSync(dir, { recursive: true });
 
   const path = join(dir, `${editionDate}.md`);
+
+  // The edition as it went out, saved beside the markdown.
+  //
+  // The email HTML is the archive's record of what subscribers actually
+  // received, and it is the only place the Upcoming calendar exists — the
+  // markdown artifact ships that section empty. It comes back by reference
+  // rather than inline, so it has to be fetched from the artifacts endpoint.
+  //
+  // Fetched before the edition is prepared rather than after, because the email
+  // is also the only place a section headline the markdown dropped can be read
+  // back from, and prepareEdition needs it to do that. It has to happen before
+  // the deck is built either way, since the carousel reads the calendar.
+  const html = await fetchEmailHtml(lang);
+  const sanitized = html ? sanitizeEmailHtml(html) : '';
+
   // Read before writing: this is where a hand-set hed or dek is recovered from
   // the file that is about to be overwritten.
+  const existing = readFrontmatter(path);
   const edition = applyOverrides(
-    prepareEdition(md.data, lang, editionDate),
-    readFrontmatter(path),
+    prepareEdition(md.data, lang, editionDate, emailHeadings(html), existing),
+    existing,
     lang,
     editionDate,
   );
@@ -472,16 +488,6 @@ for (const lang of LANGS) {
   // still showing the automation's headline under a hed you rewrote is the
   // version everyone else sees when the edition is shared.
   const socialImage = renderEditionCard(lang, editionDate, edition.headline);
-
-  // The edition as it went out, saved beside the markdown.
-  //
-  // The email HTML is the archive's record of what subscribers actually
-  // received, and it is the only place the Upcoming calendar exists — the
-  // markdown artifact ships that section empty. It comes back by reference
-  // rather than inline, so it has to be fetched from the artifacts endpoint.
-  // Fetched before the deck is built because the carousel reads the calendar.
-  const html = await fetchEmailHtml(lang);
-  const sanitized = html ? sanitizeEmailHtml(html) : '';
 
   // What the edition actually carried, read off the edition itself.
   //
@@ -664,7 +670,7 @@ function sanitizeEmailHtml(html) {
 // standing note, derive a title and description from what the edition actually
 // says (never invented here — the archive should not put words in the
 // newsletter's mouth), and record the provenance the manifest carries.
-function prepareEdition(markdown, lang, date) {
+function prepareEdition(markdown, lang, date, headings = [], existing = {}) {
   let body = markdown.trim();
 
   let standing = '';
@@ -692,6 +698,7 @@ function prepareEdition(markdown, lang, date) {
   body = repairCalendarBullets(body);
   body = dropOrphanBullets(body, lang, date);
   body = stripEmailFooter(body, lang, date);
+  body = recoverLedeHeading(body, headings, existing, lang, date);
 
   // The lede story's headline is the first H2. It is the searchable thing about
   // an edition — nobody looks for "Immigration Daybook August 3", they look for
@@ -699,6 +706,89 @@ function prepareEdition(markdown, lang, date) {
   const headline = body.match(/^## (.+)$/m)?.[1]?.trim() ?? '';
 
   return { body, standing, headline, description: deriveDek(body) };
+}
+
+/**
+ * The section headlines the email ran, in order.
+ *
+ * One shape since the launch edition: an `<h2>` per section, with the standing
+ * rubrics ("Upcoming", "Around the system") among them and nothing else in the
+ * document using the tag. No filtering, then — the caller wants the first one
+ * and does not care what follows it.
+ */
+function emailHeadings(html) {
+  if (!html) return [];
+
+  return [...html.matchAll(/<h2\b[^>]*>([\s\S]*?)<\/h2>/gi)]
+    .map((match) =>
+      match[1]
+        .replace(/<[^>]+>/g, '')
+        .replace(
+          /&(amp|lt|gt|quot|apos|#39|nbsp);/g,
+          (_, name) =>
+            ({ amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", '#39': "'", nbsp: ' ' })[name],
+        )
+        .replace(/\s+/g, ' ')
+        .trim(),
+    )
+    .filter(Boolean);
+}
+
+/**
+ * Put the lede's headline back when the markdown artifact drops it.
+ *
+ * An edition opens on its lede's H2. Twice now — 2026-09-01 and 2026-09-02 —
+ * both languages' markdown has opened straight into the lede's bolded nut with
+ * no heading above it, and that is silent damage: the first H2 in the file is
+ * then the *second* story, and it becomes the hed, the dek's first beat, the
+ * social card and the carousel cover. The edition leads on the wrong news
+ * everywhere except in the inbox, and nothing in the run says so.
+ *
+ * The email is the repair. Its `<h2>`s have been the same shape since the launch
+ * edition and the English one has never lost the lede's, so when the body opens
+ * with prose the email's first heading is the one the markdown dropped.
+ *
+ * Spanish is the case the email cannot fix: on both days the Spanish email was a
+ * heading short too, because the edition is built in parallel from the English
+ * draft and there is no Spanish source for a line nobody wrote. Writing one is
+ * editorial work, not a string operation, so the fallback is a hand-set `title:`
+ * with `titleOverride: true`, and that one line then does all of it — the
+ * heading goes back into the body, and the dek, the card and the carousel cover
+ * all derive off it. Failing that, this warns rather than guessing.
+ *
+ * The email is tried before the pinned hed, not after. A hed and a section
+ * headline are different things on purpose — a hed can be rewritten to say what
+ * the story is about while the body keeps the headline subscribers read — so the
+ * pin only stands in where the archive has no headline of its own to restore.
+ *
+ * The standing note is already off the body by this point, and it is only taken
+ * when it is a single paragraph, so anything still ahead of the first heading
+ * here is a story.
+ */
+function recoverLedeHeading(body, headings, existing, lang, date) {
+  if (body.search(/^## /m) <= 0) return body;
+
+  const first = body.match(/^## (.+)$/m)?.[1]?.trim() ?? '';
+  const fromEmail = headings[0] && headings[0] !== first ? headings[0] : '';
+  const pinned = existing.titleOverride === 'true' ? (existing.title ?? '').trim() : '';
+  const lede = fromEmail || pinned;
+
+  if (!lede) {
+    console.warn(
+      `WARNING: ${date} ${lang}: the lede has no headline and the email has none to lift. ` +
+        `The hed, dek, card and carousel will all lead on "${first}", which is the second ` +
+        "story. Put the lede's headline in title: with titleOverride: true and re-run " +
+        '--offline; everything else follows from it.',
+    );
+    return body;
+  }
+
+  console.warn(
+    `WARNING: ${date} ${lang}: the markdown dropped the lede's headline. Restored ` +
+      `"${lede}" from the ${fromEmail ? 'email' : 'hand-set title'}; everything derived ` +
+      `would have led on "${first}".`,
+  );
+  return `## ${lede}\n\n${body}`;
 }
 
 /**
@@ -833,6 +923,30 @@ function serializeEdition(
 }
 
 /**
+ * Run og.mjs, and let it be heard.
+ *
+ * The renders used to run with stdout and stderr both closed off, which threw
+ * away the only thing og.mjs has to say: an exhibit that matches no beat on the
+ * deck is dropped with a warning, and that warning reached nobody. Its stdout is
+ * a "Wrote …" line per image — fourteen on a normal day, and noise — so only
+ * stderr is relayed, which is where its warnings go.
+ *
+ * spawnSync rather than execFileSync because execFileSync only hands back stderr
+ * on a failure, and the case worth fixing is the run that succeeds while quietly
+ * leaving something off the deck.
+ */
+function runOg(args) {
+  const run = spawnSync('node', [join(here, 'og.mjs'), ...args], { encoding: 'utf8' });
+
+  for (const line of (run.stderr ?? '').split('\n')) {
+    if (line.trim()) console.warn(line);
+  }
+
+  if (run.error) throw run.error;
+  if (run.status !== 0) throw new Error(`og.mjs exited ${run.status}`);
+}
+
+/**
  * Render this edition's social card and return its public path, or '' if it
  * could not be made.
  *
@@ -846,21 +960,7 @@ function renderEditionCard(lang, date, headline) {
   if (skipCards || !headline) return '';
 
   try {
-    execFileSync(
-      'node',
-      [
-        join(here, 'og.mjs'),
-        '--card',
-        'edition',
-        '--lang',
-        lang,
-        '--edition',
-        date,
-        '--headline',
-        headline,
-      ],
-      { stdio: ['ignore', 'ignore', 'pipe'] },
-    );
+    runOg(['--card', 'edition', '--lang', lang, '--edition', date, '--headline', headline]);
     return `/images/immigration-daybook-og-${date}-${lang}.png`;
   } catch (err) {
     console.warn(
@@ -1241,11 +1341,7 @@ function renderCarousel(decks, date) {
   }
 
   try {
-    execFileSync(
-      'node',
-      [join(here, 'og.mjs'), '--card', 'carousel', '--lang', langs.join(','), '--deck', deckFile],
-      { stdio: ['ignore', 'ignore', 'pipe'] },
-    );
+    runOg(['--card', 'carousel', '--lang', langs.join(','), '--deck', deckFile]);
   } catch (err) {
     console.warn(
       `WARNING: ${date}: could not render the carousels (${err.message.split('\n')[0]}).`,
