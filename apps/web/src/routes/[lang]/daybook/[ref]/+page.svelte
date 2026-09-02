@@ -222,10 +222,24 @@
                staying within reach at the point the edition actually starts,
                which is a screen or more below where the reader came in. No
                prompt, no note: both belong to the panels. -->
-          <header class="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
-            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-fern-strong">
-              {dateLabel}
-            </p>
+          <header class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2">
+            <div class="flex flex-col gap-1">
+              <p class="text-xs font-semibold uppercase tracking-[0.18em] text-fern-strong">
+                {dateLabel}
+              </p>
+              <!-- The Spanish editions are edited translations, and the person
+                   who edits them is named where the edition names itself. It is
+                   set quieter than the date, which is what an edition is called;
+                   it is not set smaller, because a credit you have to look for
+                   is not a credit. Absent on the English editions, which are not
+                   translations of anything. -->
+              {#if edition.translationEditor}
+                <p class="text-xs text-slate-500">
+                  {es ? 'Traducción editada por' : 'Translation edited by'}
+                  {edition.translationEditor}
+                </p>
+              {/if}
+            </div>
             <ShareRow
               lang={data.lang}
               placement="edition-hed"

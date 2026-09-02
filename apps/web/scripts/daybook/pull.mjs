@@ -61,6 +61,14 @@ const DEK_BEATS = 3;
 // penalizing it, so the cost of the extra room is nil.
 const DEK_MAX_CHARS = 380;
 
+// Who edits the Spanish editions. Every Spanish edition is an edited
+// translation and carries the credit; the English ones are not translations of
+// anything and carry none. Written as frontmatter rather than as a constant in
+// the component that draws it, so an edition someone else edits is a one-line
+// change to that edition instead of a special case in the render — and so the
+// archive keeps the credit that was true on the day.
+const TRANSLATION_EDITOR = 'Diana Vanessa Riascos-Gamez';
+
 // Standing rubrics ("Upcoming", "Around the system", "Who saw what?",
 // "Próximamente", "¿Quién vio qué?") are section furniture, not beats. They are
 // reliably short where a story headline is a full clause, so length separates
@@ -765,6 +773,11 @@ function applyOverrides(prepared, existing, lang, date) {
     // is pointing at, so the pull's only job is to not lose them.
     dossier: existing.dossier ?? '',
     instagramPost: existing.instagramPost ?? '',
+    // Defaulted rather than only carried forward: a new edition's file does not
+    // exist yet when this runs, so there is nothing to carry, and a credit that
+    // only survives a re-pull is not a credit. An edition that names someone
+    // else keeps them.
+    translationEditor: lang === 'es' ? (existing.translationEditor ?? TRANSLATION_EDITOR) : '',
   };
 }
 
@@ -776,6 +789,7 @@ function serializeEdition(
     description,
     titleOverride,
     descriptionOverride,
+    translationEditor,
     dossier,
     instagramPost,
   },
@@ -794,6 +808,7 @@ function serializeEdition(
     titleOverride ? 'titleOverride: true' : null,
     `description: "${escapeYaml(description)}"`,
     descriptionOverride ? 'descriptionOverride: true' : null,
+    translationEditor ? `translationEditor: "${escapeYaml(translationEditor)}"` : null,
     standing ? `standing: "${escapeYaml(standing)}"` : null,
     // Written only when the card actually rendered, so the page can fall back
     // to the wordmark plate rather than pointing at an image that is not there.

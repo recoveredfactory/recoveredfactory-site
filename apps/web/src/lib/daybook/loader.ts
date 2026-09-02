@@ -56,6 +56,14 @@ export type EditionMeta = {
   kitBroadcastId?: number;
   docUrl?: string;
   sourceStatus?: string;
+  /**
+   * Who edited this edition's translation. Written on every Spanish edition by
+   * the pull and carried forward from the file, the way `dossier` is — a credit
+   * is a fact about the edition, so it lives in the edition rather than as a
+   * constant in the component that draws it. English editions are not
+   * translations and do not carry one.
+   */
+  translationEditor?: string;
 };
 
 export type EditionSummary = EditionMeta & {
