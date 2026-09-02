@@ -172,11 +172,34 @@ function readEntries(block: string, lang: Lang, editionDate: string): UpcomingEn
       date,
       summary,
       sources: [...sources.values()],
-      repeatsDate: entries.at(-1)?.date === date,
+      repeatsDate: false,
     });
   }
 
-  return entries;
+  return inDateOrder(entries);
+}
+
+/**
+ * The entries a parse found, put in date order.
+ *
+ * Both parses read the calendar in the order the composer emitted it, and the
+ * Spanish composer does not reliably emit it in date order: the Aug. 20 edition
+ * ran Aug. 25 above Aug. 24, and Sept. 1 ran Sept. 9 below Sept. 28. English has
+ * never come through out of order, so this shows up as the two languages
+ * disagreeing about a set they otherwise share. A calendar is a column of
+ * deadlines and it is read down; the nearest one belongs at the top whatever
+ * order it arrived in.
+ *
+ * `repeatsDate` is set here rather than at the push sites because it is a fact
+ * about an entry's neighbour, and until the sort has run an entry does not have
+ * its final one.
+ */
+function inDateOrder(entries: UpcomingEntry[]): UpcomingEntry[] {
+  const ordered = [...entries].sort((a, b) => a.date.localeCompare(b.date));
+  return ordered.map((entry, at) => ({
+    ...entry,
+    repeatsDate: ordered[at - 1]?.date === entry.date,
+  }));
 }
 
 // ---------------------------------------------------------------------------
@@ -246,11 +269,11 @@ export function readEmailCalendar(html: string, lang: Lang, editionDate: string)
       date,
       summary,
       sources: [...sources.values()],
-      repeatsDate: entries.at(-1)?.date === date,
+      repeatsDate: false,
     });
   }
 
-  return entries;
+  return inDateOrder(entries);
 }
 
 const ENTITIES: Record<string, string> = {
