@@ -89,9 +89,16 @@ Stage exactly the five tracked files. The house message shape:
 Immigration Daybook: the <Mon. D> edition, and <the day's anomaly>
 
 <3-6 paragraphs of prose: the stories and the round-up; what the standing note
-says; Kit broadcast and send status; the calendar reconciliation with specific
-dates and ids; any new upstream markdown shape.>
+says; the calendar reconciliation with specific dates and ids; any new upstream
+markdown shape.>
 ```
+
+**Whether the email actually went out is not this repo's concern.** `kit_status`,
+`kit_sent`, `delivery` and the broadcast id belong to the composer and to Kit,
+and something upstream owns them. The pull copies the broadcast id into
+frontmatter as archival metadata and that is the end of it — do not report on
+send state, and do not treat it as a problem to be solved from here. The archive
+archives what it was given.
 
 The subject's second clause is the day's *interesting* fact, not a summary —
 "and three dates the page cannot show", "and a calendar that arrived flattened",
