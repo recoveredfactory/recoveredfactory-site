@@ -57,23 +57,12 @@
   const DAYBOOK_BANNER_KEY = 'rf:daybook-banner-dismissed';
   const DAYBOOK_PAGES =
     /^\/(en|es)\/(immigration-daybook|announcing-immigration-daybook|presentamos-immigration-daybook)\/?$/;
-  // The archive and every edition under it: /en/daybook, /es/daybook/2026-08-05,
-  // month roundups, all of it. These pages carry their own subscribe form, so
-  // the house sign-up button and the promo strip are both noise here — a reader
-  // already reading the newsletter does not need to be told it exists, and the
-  // nav button points at the house list rather than the Daybook one, which is
-  // the wrong ask on this page.
-  const DAYBOOK_ARCHIVE = /^\/(en|es)\/daybook(\/|$)/;
-  const onDaybookArchive = $derived(DAYBOOK_ARCHIVE.test($page.url.pathname));
-
   let daybookBannerDismissed = $state(false);
 
-  // Points at the archive rather than the landing page: the pilot ran free
+  // Points at the Daybook's own site, which is the archive: the pilot ran free
   // through August and now goes on, so the strip has an edition to offer where
-  // it used to have a deadline. Every archive page carries its own subscribe
-  // form, so the ask is one screen later rather than gone — and the banner hides
-  // itself under /daybook, so it never sits above the thing it is pointing at.
-  const daybookHref = $derived(`/${currentLocale}/daybook`);
+  // it used to have a deadline.
+  const daybookHref = $derived(`https://immigrationdaybook.com/${currentLocale}`);
   const daybookBannerText = $derived(
     currentLocale === 'es'
       ? 'Nuevo: Immigration Daybook, de lunes a viernes. Léelo en línea.'
@@ -90,8 +79,7 @@
   const showDaybookBanner = $derived(
     daybookBannerEnabled &&
       !daybookBannerDismissed &&
-      !DAYBOOK_PAGES.test($page.url.pathname) &&
-      !onDaybookArchive,
+      !DAYBOOK_PAGES.test($page.url.pathname),
   );
 
   const dismissDaybookBanner = () => {
@@ -332,15 +320,13 @@
         <span class="sr-only">{m.site_name()}</span>
       </a>
       <div class="ml-auto flex items-center gap-3">
-        {#if !onDaybookArchive}
-          <a
-            class="hidden bg-fern-strong px-2.5 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern md:inline-flex"
-            href={signupHref}
-            onclick={handleSignupAnchorClick}
-          >
-            {navSubscribeLabel}
-          </a>
-        {/if}
+        <a
+          class="hidden bg-fern-strong px-2.5 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern md:inline-flex"
+          href={signupHref}
+          onclick={handleSignupAnchorClick}
+        >
+          {navSubscribeLabel}
+        </a>
         <a
           class="hidden bg-donate px-2.5 py-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-donate/90 md:inline-flex"
           href={supportHref}
@@ -387,18 +373,16 @@
       >
         <div class="mx-auto flex min-h-full max-w-6xl flex-col gap-12 px-6 py-10 sm:px-10 lg:px-16">
           <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-3">
-            {#if !onDaybookArchive}
-              <a
-                class="inline-flex items-center justify-center bg-fern-strong px-4 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:text-sm"
-                href={signupHref}
-                onclick={(event) => {
-                  handleSignupAnchorClick(event);
-                  closeMenu('nav');
-                }}
-              >
-                {navSubscribeLabel}
-              </a>
-            {/if}
+            <a
+              class="inline-flex items-center justify-center bg-fern-strong px-4 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-fern sm:text-sm"
+              href={signupHref}
+              onclick={(event) => {
+                handleSignupAnchorClick(event);
+                closeMenu('nav');
+              }}
+            >
+              {navSubscribeLabel}
+            </a>
             <a
               class="inline-flex items-center justify-center bg-donate px-4 py-3 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-white transition hover:bg-donate/90 sm:text-sm"
               href={supportHref}

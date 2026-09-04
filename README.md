@@ -4,7 +4,8 @@ Monorepo scaffold for a custom SvelteKit site deployed with SST, with Paraglide 
 
 ## Structure
 
-- `apps/web` — SvelteKit site
+- `apps/web` — SvelteKit site for recoveredfactory.net
+- `apps/daybook` — SvelteKit site for immigrationdaybook.com: the Immigration Daybook's home, its editions (`src/content/daybook`), and the pull scripts that write them (`scripts/daybook`). Separate from `apps/web` on purpose; the two share an AWS account and nothing else.
 - `apps/web/messages` — Paraglide message sources (en/es)
 - `apps/web/project.inlang` — Paraglide project config
 - `packages/config` — shared eslint/prettier/tsconfig defaults

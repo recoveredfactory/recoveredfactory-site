@@ -1,6 +1,7 @@
-import { findTranslationSlug, listPosts } from '$lib/blog/loader';
 import { SITE_URL } from '$lib/config';
+import { listEditions, listMonths } from '$lib/daybook/loader';
 import { LANGS, type Lang } from '$lib/i18n';
+import { editionPath, homePath } from '$lib/urls';
 
 const withBase = (path: string) => new URL(path, SITE_URL).href;
 
@@ -17,34 +18,38 @@ const escapeXml = (value: string) =>
 export const GET = () => {
   const urls: SitemapEntry[] = [];
 
-  // The RSS feeds used to be listed here. A feed is not a page — it is a
-  // discovery mechanism, advertised with <link rel="alternate"> in the head —
-  // so it no longer sits in the sitemap.
-  const staticPaths = ['', '/posts', '/support'];
   for (const lang of LANGS) {
-    for (const path of staticPaths) {
-      urls.push({
-        url: withBase(`/${lang}${path}`),
-        alternates: LANGS.map((other) => ({ lang: other, url: withBase(`/${other}${path}`) })),
-      });
-    }
+    urls.push({
+      url: withBase(homePath(lang)),
+      alternates: LANGS.map((other) => ({ lang: other, url: withBase(homePath(other)) })),
+    });
   }
 
-  // Posts are matched by canonicalId rather than by slug — translated slugs
-  // differ by design — so each alternate is resolved, not constructed.
+  // Editions share the edition date across languages, so an alternate exists
+  // exactly when the other language published that day. Month roundups carry
+  // the date of the most recent edition they hold. Pilot editions are absent
+  // for free: listEditions filters them out in production.
+  const editionsByLang = Object.fromEntries(
+    LANGS.map((lang) => [lang, listEditions(lang)]),
+  ) as Record<Lang, ReturnType<typeof listEditions>>;
+
   for (const lang of LANGS) {
-    for (const post of listPosts(lang)) {
-      const alternates = [{ lang, url: withBase(`/${lang}/${post.slug}`) }];
-      for (const other of LANGS) {
-        if (other === lang) continue;
-        const slug = findTranslationSlug(lang, post.slug, other);
-        if (slug) alternates.push({ lang: other, url: withBase(`/${other}/${slug}`) });
-      }
+    for (const edition of editionsByLang[lang]) {
+      const alternates = LANGS.filter((other) =>
+        editionsByLang[other].some((entry) => entry.date === edition.date),
+      ).map((other) => ({ lang: other, url: withBase(editionPath(other, edition.date)) }));
 
       urls.push({
-        url: withBase(`/${lang}/${post.slug}`),
-        lastmod: post.meta.date,
+        url: withBase(editionPath(lang, edition.date)),
+        lastmod: edition.date,
         alternates: alternates.length > 1 ? alternates : undefined,
+      });
+    }
+
+    for (const month of listMonths(lang)) {
+      urls.push({
+        url: withBase(editionPath(lang, month.month)),
+        lastmod: month.editions[0]?.date,
       });
     }
   }

@@ -16,7 +16,7 @@ rewrite the news copy.
 pnpm daybook
 ```
 
-Runs `apps/web/scripts/daybook/pull.mjs`. Two facts that shape everything else:
+Runs `apps/daybook/scripts/daybook/pull.mjs`. Two facts that shape everything else:
 
 - **There is no date selector.** The endpoint always returns the latest row on
   the shelf. If the date that comes back is not the one you were asked for, stop
@@ -28,12 +28,12 @@ Runs `apps/web/scripts/daybook/pull.mjs`. Two facts that shape everything else:
 Tracked output, five files — this is the commit:
 
 ```
-apps/web/src/content/daybook/{en,es}/<date>.md
-apps/web/src/content/daybook/{en,es}/<date>.html
-apps/web/src/content/daybook/upcoming/<date>.json
+apps/daybook/src/content/daybook/{en,es}/<date>.md
+apps/daybook/src/content/daybook/{en,es}/<date>.html
+apps/daybook/src/content/daybook/upcoming/<date>.json
 ```
 
-The OG cards and the carousel slides under `apps/web/static/images/` are
+The OG cards and the carousel slides under `apps/daybook/static/images/` are
 gitignored by design. They exist only on this machine until the deploy.
 
 ## 2. Triage every `WARNING:` line
@@ -76,8 +76,8 @@ Safe and repeatable. It re-reads the cached response and email HTML, and it does
 Both decks should have the same slide count and lead on the same story. Compare:
 
 ```sh
-ls apps/web/static/images/social/<date>/en apps/web/static/images/social/<date>/es
-head -6 apps/web/src/content/daybook/{en,es}/<date>.md
+ls apps/daybook/static/images/social/<date>/en apps/daybook/static/images/social/<date>/es
+head -6 apps/daybook/src/content/daybook/{en,es}/<date>.md
 ```
 
 Do not screenshot the dev server to self-verify. David watches the live server.
@@ -117,11 +117,13 @@ pnpm daybook:ship
 
 `PUBLIC_DAYBOOK_BANNER=1 sst deploy --stage prod && ./scripts/backup-assets.sh`.
 
-The banner env var must ride along on **every** prod deploy or the promo strip
-silently disappears. Editions 404 on the live site until this runs, and so do
-the carousel URLs the pull prints, because the images are gitignored and ship as
-a build input. The backup pushes those images to S3, where the working copy is
-otherwise the only copy.
+One deploy ships both sites: immigrationdaybook.com (`apps/daybook`, where the
+editions live) and recoveredfactory.net (`apps/web`, which links to it). The
+banner env var must ride along on **every** prod deploy or the promo strip on
+recoveredfactory.net silently disappears. Editions 404 on the live site until
+this runs, and so do the carousel URLs the pull prints, because the images are
+gitignored and ship as a build input. The backup pushes those images to S3,
+where the working copy is otherwise the only copy.
 
 Deploying is outward-facing. Confirm with David before running it.
 
@@ -132,11 +134,11 @@ long-press each slide. Nothing to automate on this end.
 
 ## Reference
 
-- `apps/web/scripts/daybook/pull.mjs` — the pull, heavily commented; the header
+- `apps/daybook/scripts/daybook/pull.mjs` — the pull, heavily commented; the header
   explains why editions are plain markdown and not mdsvex.
-- `apps/web/scripts/daybook/upcoming.mjs` — the calendar snapshot and
+- `apps/daybook/scripts/daybook/upcoming.mjs` — the calendar snapshot and
   `publishedFromText`, which recovers what actually shipped off the email.
-- `apps/web/scripts/daybook/og.mjs` — cards and carousel. Needs
+- `apps/daybook/scripts/daybook/og.mjs` — cards and carousel. Needs
   `google-chrome` and `convert`.
-- `apps/web/src/lib/daybook/calendar.ts` — how the page reads the calendar:
+- `apps/daybook/src/lib/daybook/calendar.ts` — how the page reads the calendar:
   edition markdown first, then the sent email, then the snapshot.

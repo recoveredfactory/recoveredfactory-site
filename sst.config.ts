@@ -5,17 +5,17 @@ const PROD_DOMAIN = ROOT_DOMAIN;
 const WWW_DOMAIN = `www.${ROOT_DOMAIN}`;
 const STAGE_DOMAIN = "cms--stage.recoveredfactory.net";
 
-// Parked newsletter domains. They resolve to the same distribution as the main
-// site; `parkedDomainHandle` in apps/web/src/hooks.server.ts sends every request
-// on to the Immigration Daybook page. Each of these needs its own Route 53
-// hosted zone, which is why the site uses zone auto-lookup below rather than a
-// single pinned zone id.
-const PARKED_DOMAINS = [
-  "immigrationdaybook.com",
-  "www.immigrationdaybook.com",
+// Immigration Daybook is its own site (apps/daybook) on its own domain. The
+// .net and the www. forms redirect to it. immigrationdaybook.com and .net each
+// have their own Route 53 hosted zone, which is why both sites use zone
+// auto-lookup rather than a single pinned zone id.
+const DAYBOOK_DOMAIN = "immigrationdaybook.com";
+const DAYBOOK_REDIRECTS = [
+  `www.${DAYBOOK_DOMAIN}`,
   "immigrationdaybook.net",
   "www.immigrationdaybook.net",
 ];
+const DAYBOOK_STAGE_DOMAIN = "daybook--stage.recoveredfactory.net";
 
 export default $config({
   app() {
@@ -116,9 +116,6 @@ export default $config({
             domain: {
               name: siteDomain,
               redirects: siteDomain === ROOT_DOMAIN ? [WWW_DOMAIN] : [],
-              aliases: siteDomain === ROOT_DOMAIN ? PARKED_DOMAINS : [],
-              // Auto-lookup: the parked domains live in their own hosted zones,
-              // so records can't all be pinned to the recoveredfactory.net zone.
               dns: sst.aws.dns(),
             },
           }
@@ -159,9 +156,39 @@ export default $config({
       },
     });
 
+    // Immigration Daybook. A second SvelteKit site beside the first, deployed
+    // by the same command, sharing nothing but the account and the Kit
+    // secrets: the two are separate publications and are kept orthogonal on
+    // purpose. The editions and the pull scripts live under apps/daybook.
+    const daybookDomain =
+      stage === "prod" ? DAYBOOK_DOMAIN : stage === "staging" ? DAYBOOK_STAGE_DOMAIN : undefined;
+
+    const daybook = new sst.aws.SvelteKit("Daybook", {
+      path: "apps/daybook",
+      ...(daybookDomain
+        ? {
+            domain: {
+              name: daybookDomain,
+              redirects: daybookDomain === DAYBOOK_DOMAIN ? DAYBOOK_REDIRECTS : [],
+              dns: sst.aws.dns(),
+            },
+          }
+        : {}),
+      environment: {
+        PUBLIC_STAGE: stage,
+        PUBLIC_SITE_URL: daybookDomain
+          ? `https://${daybookDomain}`
+          : process.env.PUBLIC_DAYBOOK_SITE_URL ?? "",
+        KIT_API_KEY: kitApiKey.value,
+        KIT_API_SECRET: kitApiSecret.value,
+      },
+    });
+
     return {
       url: site.url,
       domain: siteDomain,
+      daybookUrl: daybook.url,
+      daybookDomain,
     };
   },
 });

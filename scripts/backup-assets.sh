@@ -51,6 +51,7 @@ sync_dir() {
 
 sync_dir apps/web/static/images images
 sync_dir apps/web/static/videos videos
+sync_dir apps/daybook/static/images daybook/images
 
 # The rendered frames are a scratch directory — ffmpeg makes them again from the
 # source video in seconds, and there are hundreds of them. The source cut is what

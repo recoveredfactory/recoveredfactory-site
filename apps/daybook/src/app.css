@@ -1,0 +1,396 @@
+@import url("https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap");
+@import "tailwindcss";
+
+/* ── The Daybook's own system ──────────────────────────────────────────
+   Two faces, the ones the email is set in: Lora for anything that speaks
+   at size, Jost for everything else. One ink, one cream, one crimson used
+   like a stamp, and a smoke grey that exists for exactly one sentence.
+
+   Nothing on this site is set below 1rem. No letterspaced caps, no
+   kickers, no eyebrows: a section says what it is in a sentence or a
+   headline, not in a label above it. */
+@theme {
+  --color-ink: #12161d;
+  --color-ink-soft: #3b414b;
+  --color-cream: #f3f1e9;
+  --color-paper: #ffffff;
+  --color-fire: #e8244f;
+  --color-fire-deep: #d81f48;
+  --color-smoke: #7d838d;
+  --color-cite: #1f5d50;
+  --font-display: "Lora", Georgia, "Times New Roman", serif;
+  --font-body: "Jost", "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-padding-top: 5rem;
+  }
+
+  body {
+    @apply bg-cream font-body text-ink antialiased;
+    font-size: 1.125rem;
+    line-height: 1.55;
+    /* Full-bleed blocks break out with 100vw, which counts the scrollbar
+       gutter; `clip` keeps that from becoming a horizontal scroll. */
+    overflow-x: clip;
+  }
+
+  @media (min-width: 640px) {
+    body {
+      font-size: 1.25rem;
+    }
+  }
+
+  ::selection {
+    background: var(--color-fire);
+    color: var(--color-cream);
+  }
+}
+
+/* ── Type roles ──────────────────────────────────────────────────────── */
+
+/* The wordmark, at poster scale. The line break is authored in the markup so
+   the two words stack on purpose rather than wherever the viewport puts them. */
+.db-wordmark {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(3.5rem, 13vw, 8.5rem);
+  line-height: 0.92;
+  letter-spacing: -0.035em;
+}
+
+/* A page's own headline, or a plate's. */
+.db-display {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(2rem, 1.4rem + 2.6vw, 3.25rem);
+  line-height: 1.06;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+
+/* A section's headline. */
+.db-hed {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.375rem);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+}
+
+/* A standfirst: Jost, a step up from body, no weight. */
+.db-deck {
+  font-size: clamp(1.375rem, 1.1rem + 1.2vw, 1.875rem);
+  line-height: 1.32;
+  text-wrap: pretty;
+}
+
+/* Running text on the landing page. Sized off the body, so it steps up with it. */
+.db-graf {
+  margin: 0;
+  color: var(--color-ink-soft);
+  text-wrap: pretty;
+}
+
+.db-graf + .db-graf {
+  margin-top: 1em;
+}
+
+.db-graf a,
+.db-links a {
+  color: var(--color-cite);
+  text-decoration: underline;
+  text-decoration-thickness: from-font;
+  text-underline-offset: 0.16em;
+}
+
+.db-graf a:hover,
+.db-links a:hover {
+  color: var(--color-fire-deep);
+}
+
+/* The one sentence set in colour. Fire is the stamp; smoke is the grey that
+   exists for this word and nothing else on the site. */
+.db-fire {
+  font-style: normal;
+  color: var(--color-fire);
+}
+
+.db-smoke {
+  font-style: normal;
+  color: var(--color-smoke);
+}
+
+/* A button. One size, one weight, no uppercase, no tracking. */
+.db-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  padding: 0.85em 1.5em;
+  font-family: var(--font-body);
+  font-size: 1em;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--color-cream);
+  background: var(--color-fire);
+  border: 2px solid var(--color-fire);
+  transition:
+    background-color 0.15s,
+    border-color 0.15s;
+}
+
+.db-button:hover {
+  background: var(--color-fire-deep);
+  border-color: var(--color-fire-deep);
+}
+
+.db-button:disabled {
+  opacity: 0.6;
+}
+
+.db-button--ink {
+  color: var(--color-cream);
+  background: var(--color-ink);
+  border-color: var(--color-ink);
+}
+
+.db-button--ink:hover {
+  background: var(--color-ink-soft);
+  border-color: var(--color-ink-soft);
+}
+
+.db-button--ghost {
+  color: var(--color-ink);
+  background: transparent;
+  border-color: color-mix(in srgb, var(--color-ink) 30%, transparent);
+}
+
+.db-button--ghost:hover {
+  background: transparent;
+  border-color: var(--color-ink);
+}
+
+/* The one input. */
+.db-input {
+  width: 100%;
+  padding: 0.85em 1em;
+  font-family: var(--font-body);
+  font-size: 1em;
+  line-height: 1.2;
+  color: var(--color-ink);
+  background: var(--color-paper);
+  border: 2px solid var(--color-ink);
+  outline: none;
+}
+
+.db-input::placeholder {
+  color: var(--color-smoke);
+}
+
+.db-input:focus {
+  border-color: var(--color-fire);
+}
+
+/* A hairline between things. */
+.db-rule {
+  border: 0;
+  border-top: 1px solid color-mix(in srgb, var(--color-ink) 22%, transparent);
+}
+
+/* ── Edition prose ───────────────────────────────────────────────────────
+   An edition arrives as markdown rendered by marked (src/lib/daybook/loader.ts),
+   so nothing about it is styled unless it is styled here. Unlayered on purpose:
+   Tailwind's preflight zeroes the margin on every p and h2 it meets, and an
+   unlayered rule beats a layered one whatever the specificity. */
+.db-prose {
+  font-size: 1em;
+  line-height: 1.55;
+  color: var(--color-ink);
+}
+
+.db-prose p {
+  margin: 0 0 1em;
+  text-wrap: pretty;
+}
+
+.db-prose > :last-child {
+  margin-bottom: 0;
+}
+
+/* The section head — the only furniture between one story and the next, so it
+   gets more room above than a heading usually does. `pretty`, not `balance`:
+   these run to two and three lines and balancing pulls them all in. */
+.db-prose .db-section {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1.75rem, 1.3rem + 1.6vw, 2.375rem);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  text-wrap: pretty;
+  color: var(--color-ink);
+  margin: 0 0 0.6em;
+}
+
+.db-prose .db-section:not(:first-child) {
+  margin-top: 1.9em;
+}
+
+/* The lede's headline is the page's headline. */
+.db-prose h1.db-section {
+  font-size: clamp(2.25rem, 1.5rem + 3vw, 3.5rem);
+  line-height: 1.04;
+  letter-spacing: -0.025em;
+}
+
+/* Every graf opens on a bolded claim and the rest of it argues that claim. */
+.db-prose strong {
+  font-weight: 600;
+}
+
+.db-prose ul,
+.db-prose ol {
+  margin: 0 0 1em;
+  padding-left: 1.15em;
+  list-style: none;
+}
+
+.db-prose li {
+  position: relative;
+  margin: 0 0 0.85em;
+}
+
+.db-prose li:last-child {
+  margin-bottom: 0;
+}
+
+/* A square marker, in the stamp colour. */
+.db-prose ul > li::before {
+  content: "";
+  position: absolute;
+  left: -1.15em;
+  top: 0.58em;
+  width: 0.4em;
+  height: 0.4em;
+  background: var(--color-fire);
+}
+
+.db-prose ol {
+  counter-reset: db-item;
+}
+
+.db-prose ol > li {
+  counter-increment: db-item;
+}
+
+.db-prose ol > li::before {
+  content: counter(db-item) ".";
+  position: absolute;
+  left: -1.35em;
+  color: var(--color-fire);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Citations are the point of the archive, so they stay visibly followable. */
+.db-prose a {
+  color: var(--color-cite);
+  text-decoration: underline;
+  text-decoration-thickness: from-font;
+  text-underline-offset: 0.16em;
+  text-decoration-color: color-mix(in srgb, var(--color-cite) 45%, transparent);
+  overflow-wrap: anywhere;
+  transition: text-decoration-color 0.15s;
+}
+
+.db-prose a:hover {
+  text-decoration-color: currentColor;
+}
+
+.db-prose em {
+  font-style: italic;
+}
+
+/* Anything below the section level — rare. Body face, bold, body size. */
+.db-prose h3,
+.db-prose h4 {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 1em;
+  color: var(--color-ink-soft);
+  margin: 1.5em 0 0.5em;
+}
+
+/* A month page stacks whole editions under one headline, so its sections step
+   down to keep the page's own headline on top. */
+.db-prose--nested .db-section {
+  font-size: clamp(1.375rem, 1.15rem + 0.9vw, 1.75rem);
+}
+
+.db-prose--nested .db-section:not(:first-child) {
+  margin-top: 1.6em;
+}
+
+/* The standing note that opens an edition — the same paragraph every day, set
+   as a note rather than as prose so it stays out of the reading rhythm. */
+.db-standing {
+  font-size: 1em;
+  line-height: 1.5;
+  font-style: italic;
+  color: var(--color-ink-soft);
+  border-left: 3px solid var(--color-fire);
+  padding-left: 1em;
+}
+
+.db-standing a {
+  color: var(--color-cite);
+  text-decoration: underline;
+  text-underline-offset: 0.16em;
+}
+
+/* The as-sent view: the sent artifact arrives with no styles of its own, so
+   these are the dropped sheet's values, scoped to the wrapper. Inline styles
+   in older artifacts still win, which is what keeps them looking as they did. */
+.db-email {
+  color: #252525;
+  font-family: var(--font-body);
+}
+
+.db-email h2 {
+  margin: 30px 0 12px;
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.18;
+  color: #171717;
+}
+
+.db-email p {
+  margin: 0 0 16px;
+}
+
+.db-email p,
+.db-email li {
+  font-size: 16px;
+  line-height: 1.55;
+}
+
+.db-email ul {
+  margin: 0 0 16px;
+  padding-left: 22px;
+  list-style: disc;
+}
+
+.db-email li {
+  margin-bottom: 12px;
+}
+
+.db-email a {
+  color: var(--color-cite);
+  text-decoration: underline;
+}
+
+.db-email li > p:last-child {
+  margin-bottom: 0;
+}
