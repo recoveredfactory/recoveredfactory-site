@@ -416,15 +416,15 @@
               <p class="text-sm text-slate-600 [&_a]:text-link [&_a:hover]:text-link/80">
                 {@html m.menu_about_blurb()}
               </p>
-              <p class="text-sm text-slate-600">
-                Logo by <a
-                  class="text-link transition hover:text-link/80"
-                  href="https://www.instagram.com/suku_mix/"
-                  rel="noopener noreferrer"
-                  target="_blank"
-                >
-                  @suku_mix
-                </a>.
+              <!-- The making credits, off the same messages the footer uses.
+                   This block used to hardcode "Logo by …" in English, so the
+                   Spanish menu said it in English too. One source per credit
+                   means adding a name is one line in each locale file. -->
+              <p
+                class="text-sm text-slate-600 [&_a]:text-link [&_a]:transition [&_a:hover]:text-link/80"
+              >
+                {@html m.footer_design_credit()}<br />
+                {@html m.footer_lettering_credit()}
               </p>
             </div>
             <div class="space-y-3 py-6 sm:py-0">
@@ -522,9 +522,15 @@
       </a>
       <div class="flex flex-col gap-3 text-xs text-slate-500 sm:flex-row sm:items-center sm:justify-between sm:gap-6">
         <p>{m.footer_copyright({ year: currentYear, name: m.site_name() })}</p>
-        <p class="text-slate-500 [&_a]:text-link [&_a:hover]:text-link/80">
-          {@html m.footer_lettering_credit()}
-        </p>
+        <!-- The two making credits ride together on the right, so the row stays
+             copyright on one end and the people who made it look like this on
+             the other. They stack on a phone the way the row above them does. -->
+        <div
+          class="flex flex-col gap-3 sm:flex-row sm:gap-6 [&_a]:text-link [&_a:hover]:text-link/80"
+        >
+          <p>{@html m.footer_design_credit()}</p>
+          <p>{@html m.footer_lettering_credit()}</p>
+        </div>
       </div>
     </div>
   </footer>

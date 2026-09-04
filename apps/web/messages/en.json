@@ -60,6 +60,7 @@
   "support_perk_once": "Includes: Monthly video calls and other perks to be determined. Supporters will help us decide what to do!",
   "support_institutional": "Contact us to offer institutional support.",
   "footer_copyright": "© {year} {name}",
-  "footer_lettering_credit": "Logo by <a href=https://www.instagram.com/suku_mix/>@suku_mix</a>",
+  "footer_design_credit": "Design by <a href=\"https://lunalimon.co.com\" target=\"_blank\" rel=\"noopener noreferrer\">Diana Vanessa Riascos-Gamez</a>",
+  "footer_lettering_credit": "Logo by <a href=\"https://www.instagram.com/suku_mix/\" target=\"_blank\" rel=\"noopener noreferrer\">@suku_mix</a>",
   "footer_powered_by": "Powered by"
 }
