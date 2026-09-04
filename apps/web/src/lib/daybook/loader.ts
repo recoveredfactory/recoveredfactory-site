@@ -53,6 +53,24 @@ export type EditionMeta = {
    * Written by the pull off the edition manifest; see `getUpcoming`.
    */
   upcomingIds?: string;
+  /**
+   * `"true"` on an edition that deliberately ran no calendar.
+   *
+   * An empty calendar and an unreadable one look identical from here, and the
+   * page treats the second as a reason to rebuild one from the snapshot. On an
+   * edition that skipped Upcoming on purpose — 2026-09-04 was the first, whose
+   * email told readers the section was "in the shop for a tuneup" — that
+   * reconstruction prints a slate of deadlines the edition never ran, directly
+   * contradicting what it said. So the skip is recorded rather than inferred:
+   * inferring it would also suppress the calendar on the editions that meant to
+   * run one and lost it upstream, which is exactly the case the snapshot
+   * fallback exists for.
+   *
+   * A string, not a boolean, because the frontmatter is a flat key/value format
+   * with no types — the pull writes a bare `true` and it is read back as one.
+   * Set by hand and carried forward by the pull, the way `dossier` is.
+   */
+  upcomingSkipped?: string;
   kitBroadcastId?: number;
   docUrl?: string;
   sourceStatus?: string;

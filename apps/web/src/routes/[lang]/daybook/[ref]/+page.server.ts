@@ -58,9 +58,16 @@ export const load = ({ params, url }) => {
       // selection, so an entry the edition ran and the slate does not hold could
       // not be shown at all. On Aug. 26 that cost three of eight, one of them a
       // deadline on the story the newsletter had led with the day before.
-      upcoming: edition.upcoming.length
-        ? { editionDate: ref, entries: edition.upcoming }
-        : getUpcoming(lang, ref, parseUpcomingIds(edition.upcomingIds)),
+      // An edition that skipped the calendar on purpose gets none: the
+      // fallback below cannot tell "ran no calendar" from "shipped one we
+      // could not read", and on the first kind it prints deadlines the
+      // edition never carried. See `upcomingSkipped` in the loader.
+      upcoming:
+        edition.upcomingSkipped === 'true'
+          ? null
+          : edition.upcoming.length
+            ? { editionDate: ref, entries: edition.upcoming }
+            : getUpcoming(lang, ref, parseUpcomingIds(edition.upcomingIds)),
       alternates,
       newer: at > 0 ? all[at - 1] : null,
       older: at >= 0 && at < all.length - 1 ? all[at + 1] : null,

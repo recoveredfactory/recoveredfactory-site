@@ -863,6 +863,11 @@ function applyOverrides(prepared, existing, lang, date) {
     // is pointing at, so the pull's only job is to not lose them.
     dossier: existing.dossier ?? '',
     instagramPost: existing.instagramPost ?? '',
+    // Set by hand on an edition that ran no calendar on purpose, and carried
+    // here so a re-pull does not quietly hand the page its snapshot fallback
+    // back. Never derived: an empty Upcoming section usually means the calendar
+    // was lost upstream, which is the case the fallback is for.
+    upcomingSkipped: existing.upcomingSkipped === 'true',
     // Defaulted rather than only carried forward: a new edition's file does not
     // exist yet when this runs, so there is nothing to carry, and a credit that
     // only survives a re-pull is not a credit. An edition that names someone
@@ -882,6 +887,7 @@ function serializeEdition(
     translationEditor,
     dossier,
     instagramPost,
+    upcomingSkipped,
   },
   lang,
   date,
@@ -907,6 +913,7 @@ function serializeEdition(
     socialImage ? `socialImage: "${socialImage}"` : null,
     dossier ? `dossier: "${escapeYaml(dossier)}"` : null,
     instagramPost ? `instagramPost: "${escapeYaml(instagramPost)}"` : null,
+    upcomingSkipped ? 'upcomingSkipped: true' : null,
     // The calendar the email actually carried, so the page renders that set
     // rather than the whole eligible slate. Absent on editions pulled before
     // this was read, which keep the old fall-back behaviour.
