@@ -1,0 +1,87 @@
+{
+  "date": "2026-09-08",
+  "lang": "es",
+  "note": "El correo en español envió Próximamente como un encabezado vacío. Este calendario es el que llevó la edición en inglés, traducido. Pendiente de revisión editorial.",
+  "entries": [
+    {
+      "date": "2026-09-09",
+      "summary": "Los mayores usuarios de visas H-1B y L-1 deberán pagar una cuota federal en las peticiones de extensión con el mismo empleador, no solo en las contrataciones nuevas o los cambios de empleador. La cuota es de $4,000 por petición H-1B y de $4,500 por petición L-1 para las empresas con 50 o más empleados en Estados Unidos cuando más de la mitad tiene visa H-1B o L-1.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/08/10/2026-16231/9-11-response-and-biometric-entry-exit-fee-for-h-1b-and-l-1-visas"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-09",
+      "summary": "Está previsto que termine el Estatus de Protección Temporal (TPS) para las personas salvadoreñas. La decisión del DHS sobre la extensión vencía en julio y no se publicó; según la ley, la designación continúa automáticamente por seis meses si no se publica un aviso de terminación.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2025/01/17/2025-00626/extension-of-the-designation-of-el-salvador-for-temporary-protected-status"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-10",
+      "summary": "Las agencias internacionales de intermediación matrimonial enfrentarán un proceso formal del Departamento de Justicia para sanciones civiles cuando no entreguen la información exigida a las personas contactadas o divulguen información que no pueden compartir. La regla interina entra en vigor el 10 de septiembre; el periodo de comentarios públicos sigue abierto.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16290/adjudication-of-civil-penalties-against-international-marriage-brokers"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-15",
+      "summary": "USCIS aceptará únicamente las ediciones del 09/15/26 del Formulario I-539, que se usa para extensiones y cambios de estatus, y del Formulario I-765, la solicitud de permiso de trabajo. Las ediciones anteriores serán rechazadas al recibirlas; la fecha de presentación es la del envío en línea o, en papel, la del matasellos.",
+      "sources": [
+        {
+          "label": "USCIS",
+          "url": "https://www.uscis.gov/newsroom/alerts/uscis-to-publish-new-editions-of-form-i-539-and-form-i-765-older-editions-will-be-rejected-starting"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-15",
+      "summary": "Está previsto que entre en vigor la regla del DHS que reemplaza la duración del estatus por fechas fijas de término de admisión para estudiantes F-1, visitantes de intercambio J y representantes de medios extranjeros. Quienes necesiten más tiempo tendrían que solicitar a USCIS una extensión de estadía.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/07/17/2026-14439/establishing-a-fixed-time-period-of-admission-and-an-extension-of-stay-procedure-for-nonimmigrant"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-18",
+      "summary": "USCIS aceptará únicamente la edición del 09/18/26 del Formulario I-485, la solicitud de ajuste de estatus. Ese día también entra en vigor el estándar más amplio de carga pública para las solicitudes de residencia y de admisión que cubre.",
+      "sources": [
+        {
+          "label": "USCIS",
+          "url": "https://www.uscis.gov/i-485"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-25",
+      "summary": "Cierra el periodo de comentarios de la Oficina de Reasentamiento de Refugiados sobre una propuesta para seguir usando su formulario de evaluación de salud mental y combinar sus informes de tuberculosis activa y de otras enfermedades en un solo Formulario de Intervención de Salud en el Sitio.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/07/27/2026-15087/proposed-information-collection-activity-mental-health-assessment-form-and-onsite-health"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-28",
+      "summary": "Cierra el periodo de comentarios públicos sobre una regla propuesta que permitiría a los jueces de inmigración imponer multas civiles por desacato y que establece los procedimientos para las multas y las apelaciones.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15458/civil-money-penalty-for-actions-in-contempt-of-an-immigration-judges-proper-exercise-of-authority"
+        }
+      ]
+    }
+  ]
+}
