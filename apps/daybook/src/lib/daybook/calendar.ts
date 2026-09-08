@@ -194,7 +194,7 @@ function readEntries(block: string, lang: Lang, editionDate: string): UpcomingEn
  * about an entry's neighbour, and until the sort has run an entry does not have
  * its final one.
  */
-function inDateOrder(entries: UpcomingEntry[]): UpcomingEntry[] {
+export function inDateOrder(entries: UpcomingEntry[]): UpcomingEntry[] {
   const ordered = [...entries].sort((a, b) => a.date.localeCompare(b.date));
   return ordered.map((entry, at) => ({
     ...entry,

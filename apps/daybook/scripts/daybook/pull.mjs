@@ -32,6 +32,8 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import {
+  calendarFromEmail,
+  handCalendar,
   loadUpcoming,
   publishedFromText,
   upcomingItems,
@@ -428,12 +430,42 @@ if (snapshot) {
   }
 }
 
-const calendarFor = (lang) =>
-  noUpcoming
-    ? []
-    : upcomingItems(snapshot, lang, upcomingIds)
-        .map((item) => toEntryFromSnapshot(item, lang, snapshot, editionDate))
-        .filter(Boolean);
+// The calendar for one language's carousel, in the order the sources are
+// trusted: what that language's email actually ran, then a hand-written
+// translation supplied beside the edition, then the pipeline's snapshot.
+//
+// The snapshot used to come first, narrowed by the ids publishedFromText
+// recovered. It is last now because the ids can only ever name watch items, and
+// on 2026-09-08 the edition ran three deadlines that had no watch item at all —
+// the two Sept. 15 form cutovers and the Sept. 18 I-485, which were the lede.
+// The email is what subscribers got and it needs no id to be read.
+const calendarFor = (lang, html) => {
+  if (noUpcoming) return [];
+
+  const fromEmail = calendarFromEmail(html, lang, editionDate);
+  if (fromEmail.length) {
+    console.log(`Upcoming: ${fromEmail.length} entries on the ${lang} board, off the ${lang} email.`);
+    return fromEmail;
+  }
+
+  const byHand = handCalendar(webRoot, lang, editionDate);
+  if (byHand.length) {
+    console.log(
+      `Upcoming: ${byHand.length} entries on the ${lang} board, off ` +
+        `src/content/daybook/${lang}/${editionDate}.upcoming.json — the ${lang} email carried none.`,
+    );
+    return byHand;
+  }
+
+  console.warn(
+    `WARNING: ${editionDate} ${lang}: no calendar in the email and none written beside the ` +
+      'edition. The board falls back to the snapshot, which is the eligible slate rather than ' +
+      'what shipped — check it before posting.',
+  );
+  return upcomingItems(snapshot, lang, upcomingIds)
+    .map((item) => toEntryFromSnapshot(item, lang, snapshot, editionDate))
+    .filter(Boolean);
+};
 
 if (noUpcoming) console.log('--no-upcoming: the calendar stays off the carousel this run.');
 
@@ -512,14 +544,15 @@ for (const lang of LANGS) {
       console.log(`Upcoming: ${fromEmail.length} published, read off the ${lang} email.`);
     } else if (!upcomingIds) {
       console.warn(
-        `WARNING: ${editionDate}: no calendar recoverable from the ${lang} email and none on ` +
-          'the manifest. Falling back to the whole eligible slate, which is wider than what ' +
-          'shipped — check the board before posting it.',
+        `WARNING: ${editionDate}: no watch ids recoverable from the ${lang} email and none on ` +
+          'the manifest, so the edition archives none. The board reads the email itself and is ' +
+          "unaffected; the page's own last-resort snapshot fallback would be the whole eligible " +
+          'slate.',
       );
     }
   }
 
-  const built = buildDeck(edition, editionDate, calendarFor(lang), deckShape, lang);
+  const built = buildDeck(edition, editionDate, calendarFor(lang, sanitized), deckShape, lang);
   decks[lang] = built.deck;
   deckShape = built.shape;
 

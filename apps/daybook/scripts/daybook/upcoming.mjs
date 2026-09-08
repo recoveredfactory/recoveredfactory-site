@@ -318,3 +318,147 @@ const MONTH_LABEL = {
   en: ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'],
   es: ['ENE', 'FEB', 'MAR', 'ABR', 'MAY', 'JUN', 'JUL', 'AGO', 'SEP', 'OCT', 'NOV', 'DIC'],
 };
+
+// ---------------------------------------------------------------------------
+
+/**
+ * The calendar as the email set it, for the carousel.
+ *
+ * `publishedFromText` above answers a narrower question — which watch items went
+ * out — and it answers it by finding each item's own `plain_summary` in the sent
+ * text. That held until 2026-09-08, when the composer rewrote every summary on
+ * its way into the email ("The Office of Refugee Resettlement, which houses
+ * unaccompanied immigrant children, wants to keep using…" became "The Office of
+ * Refugee Resettlement's comment period closes on a proposal to keep using…")
+ * and all eight matches missed. Three of the eight entries that shipped that day
+ * had no watch item behind them at all, so no amount of matching would have
+ * recovered the set: the snapshot cannot express that calendar.
+ *
+ * What can is the email itself, read the way src/lib/daybook/calendar.ts already
+ * reads it for the page — the two-cell table row, a 54-pixel date chip beside
+ * the entry's prose and its citation, a shape that has outlived three
+ * serialisations of the markdown beside it. This is that parse, emitting deck
+ * entries instead of page entries. The two live apart because the page is
+ * TypeScript the pull cannot import; they are the same twenty lines and a change
+ * to one belongs in the other.
+ *
+ * The snapshot stays behind this as the fallback, for an edition whose email
+ * never came back.
+ */
+export function calendarFromEmail(html, lang, editionDate) {
+  if (!html) return [];
+
+  const entries = [];
+  for (const [, chipCell, bodyCell] of html.matchAll(EMAIL_ROW)) {
+    const chip = chipCell.match(CHIP);
+    if (!chip) continue;
+
+    const month = CHIP_MONTHS[lang][chip[1].toLowerCase().slice(0, 3)];
+    if (month === undefined) continue;
+
+    const iso = chipIso(month, Number(chip[2]), editionDate);
+    if (!iso) continue;
+
+    // The entry's prose is the cell's first div that is not the citation row;
+    // the publisher is the first link's label, which is what the email prints.
+    const divs = [...bodyCell.matchAll(CELL_DIV)].map(([, inner]) => inner);
+    const text = fromHtml(divs.find((inner) => !/<a\b/i.test(inner)) ?? '');
+    if (!text) continue;
+
+    const publisher = fromHtml(bodyCell.match(ANCHOR)?.[1] ?? '');
+
+    entries.push(entryFrom({ iso, text, publisher }, lang, editionDate));
+  }
+
+  return entries.sort((a, b) => a.iso.localeCompare(b.iso));
+}
+
+/**
+ * A calendar written by hand, for a language whose email shipped without one.
+ *
+ * The Spanish edition has run `Próximamente` as a bare heading over the footer
+ * on Aug. 21, Aug. 26, Aug. 27 and Sept. 8. On those days Spanish readers got no
+ * calendar and the page had nothing of the edition's to read, so it fell through
+ * to the snapshot — which on Sept. 8 meant three October items the edition never
+ * ran, and none of the three September form deadlines its own lede was about.
+ *
+ * So the calendar can be supplied beside the edition, translated from the one
+ * the other language actually sent, and credited like the rest of the
+ * translation. It is committed, it is never written or overwritten by the pull,
+ * and it is only ever reached when the edition's own email carried nothing.
+ */
+export function handCalendar(webRoot, lang, editionDate, from = editionDate) {
+  const path = join(webRoot, 'src', 'content', 'daybook', lang, `${editionDate}.upcoming.json`);
+  if (!existsSync(path)) return [];
+
+  const doc = JSON.parse(readFileSync(path, 'utf8'));
+  return (doc.entries ?? [])
+    .filter((entry) => entry.date && entry.summary?.trim())
+    .map((entry) =>
+      entryFrom(
+        {
+          iso: entry.date,
+          text: entry.summary.trim(),
+          publisher: entry.sources?.[0]?.label ?? '',
+        },
+        lang,
+        from,
+      ),
+    )
+    .sort((a, b) => a.iso.localeCompare(b.iso));
+}
+
+/** The month/day/weekday/countdown furniture every calendar entry carries. */
+function entryFrom({ iso, text, publisher }, lang, from) {
+  const date = new Date(`${iso}T00:00:00Z`);
+  return {
+    iso,
+    month: MONTH_LABEL[lang][date.getUTCMonth()],
+    day: String(date.getUTCDate()),
+    weekday: weekdayLabel(date, lang),
+    countdown: countdownLabel(iso, from, lang),
+    publisher: publisher.trim(),
+    text,
+  };
+}
+
+// A chip carries a month and a day and no year. The calendar looks forward, so a
+// month before the edition's belongs to the next year — a December edition
+// pointing at JAN 12 means the January after it.
+function chipIso(month, day, editionDate) {
+  if (!Number.isInteger(day) || day < 1 || day > 31) return null;
+
+  const [editionYear, editionMonth] = editionDate.split('-').map(Number);
+  const year = month < editionMonth - 1 ? editionYear + 1 : editionYear;
+
+  const iso = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+  const check = new Date(`${iso}T00:00:00Z`);
+  return Number.isNaN(check.getTime()) || check.getUTCDate() !== day ? null : iso;
+}
+
+const EMAIL_ROW = /<td[^>]*width="54"[^>]*>([\s\S]*?)<\/td>\s*<td[^>]*>([\s\S]*?)<\/td>/gi;
+
+// An abbreviated month over a bare day, each in its own div. Three letters names
+// a month in both languages, so "SEPT" and "SEP" land on the same one.
+const CHIP = /<div[^>]*>\s*([A-Za-zÁÉÍÓÚÑ]{3,5})\.?\s*<\/div>\s*<div[^>]*>\s*(\d{1,2})\s*<\/div>/i;
+
+const CELL_DIV = /<div[^>]*>([\s\S]*?)<\/div>/gi;
+
+const ANCHOR = /<a\b[^>]*\shref="[^"]*"[^>]*>([\s\S]*?)<\/a>/i;
+
+const CHIP_MONTHS = {
+  en: { jan: 0, feb: 1, mar: 2, apr: 3, may: 4, jun: 5, jul: 6, aug: 7, sep: 8, oct: 9, nov: 10, dec: 11 },
+  es: { ene: 0, feb: 1, mar: 2, abr: 3, may: 4, jun: 5, jul: 6, ago: 7, sep: 8, oct: 9, nov: 10, dic: 11 },
+};
+
+const ENTITIES = { amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", nbsp: ' ' };
+
+// Enough of an HTML decoder for prose the pipeline wrote and the mailer escaped.
+const fromHtml = (value) =>
+  value
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+    .replace(/&#x([0-9a-f]+);/gi, (_, code) => String.fromCodePoint(parseInt(code, 16)))
+    .replace(/&([a-z]+);/gi, (whole, name) => ENTITIES[name.toLowerCase()] ?? whole)
+    .replace(/\s+/g, ' ')
+    .trim();

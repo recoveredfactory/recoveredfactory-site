@@ -2,7 +2,7 @@ import { marked } from 'marked';
 import { dev } from '$app/environment';
 import { env } from '$env/dynamic/public';
 
-import { liftCalendar, readEmailCalendar } from '$lib/daybook/calendar';
+import { inDateOrder, liftCalendar, readEmailCalendar } from '$lib/daybook/calendar';
 import { extractEvents, type CalendarEvent } from '$lib/daybook/schema';
 import type { UpcomingEntry } from '$lib/daybook/upcoming';
 import type { Lang } from '$lib/i18n';
@@ -168,6 +168,41 @@ const emailByLang = {
     import: 'default',
   }),
 } satisfies Record<Lang, Record<string, string>>;
+
+// A calendar written by hand, for a language whose email shipped without one.
+//
+// The Spanish edition has run `Próximamente` as a bare heading over the footer
+// on Aug. 21, Aug. 26, Aug. 27 and Sept. 8. On those days the page had nothing
+// of the edition's own to read and fell through to the pipeline's snapshot,
+// which holds the eligible slate rather than the selection: on Sept. 8 that was
+// three October items the edition never ran, and none of the three September
+// form deadlines its lede was about. So the calendar the other language sent can
+// be translated and committed beside the edition, and it is read here, ahead of
+// the snapshot and behind anything the edition itself carried.
+const handByLang = {
+  en: import.meta.glob<{ entries?: UpcomingEntry[] }>(
+    '/src/content/daybook/en/*.upcoming.json',
+    { eager: true, import: 'default' },
+  ),
+  es: import.meta.glob<{ entries?: UpcomingEntry[] }>(
+    '/src/content/daybook/es/*.upcoming.json',
+    { eager: true, import: 'default' },
+  ),
+} satisfies Record<Lang, Record<string, unknown>>;
+
+const handCalendars = {
+  en: handByDate(handByLang.en),
+  es: handByDate(handByLang.es),
+};
+
+function handByDate<T>(files: Record<string, T>): Map<string, T> {
+  const map = new Map<string, T>();
+  for (const [path, value] of Object.entries(files)) {
+    const date = path.split('/').pop()?.replace(/\.upcoming\.json$/, '') ?? '';
+    if (/^\d{4}-\d{2}-\d{2}$/.test(date)) map.set(date, value);
+  }
+  return map;
+}
 
 const editionsByLang = {
   en: parseAll(rawByLang.en, 'en'),
@@ -349,9 +384,13 @@ const rendered = (
   // carried one nearly every day since the launch edition, so it is read here
   // whatever the page is going to do with the email itself.
   const email = emailsByDate[lang].get(entry.meta.date) ?? '';
+  const fromEmail = readEmailCalendar(email, lang, entry.meta.date);
+  const byHand = handCalendars[lang].get(entry.meta.date)?.entries ?? [];
   const upcoming = calendar.entries.length
     ? calendar.entries
-    : readEmailCalendar(email, lang, entry.meta.date);
+    : fromEmail.length
+      ? fromEmail
+      : inDateOrder(byHand);
 
   return {
     // The whole-body render is what the month roundups draw, and those print the
