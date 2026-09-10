@@ -349,15 +349,20 @@ export function calendarFromEmail(html, lang, editionDate) {
   if (!html) return [];
 
   const entries = [];
+
+  // A row whose chip is empty carries the date of the row above it; see the twin
+  // of this loop in src/lib/daybook/calendar.ts. First seen 2026-09-10.
+  let carried = null;
+
   for (const [, chipCell, bodyCell] of html.matchAll(EMAIL_ROW)) {
     const chip = chipCell.match(CHIP);
-    if (!chip) continue;
+    const month = chip ? CHIP_MONTHS[lang][chip[1].toLowerCase().slice(0, 3)] : undefined;
 
-    const month = CHIP_MONTHS[lang][chip[1].toLowerCase().slice(0, 3)];
-    if (month === undefined) continue;
-
-    const iso = chipIso(month, Number(chip[2]), editionDate);
+    const iso =
+      chip && month !== undefined ? chipIso(month, Number(chip[2]), editionDate) : carried;
     if (!iso) continue;
+
+    carried = iso;
 
     // The entry's prose is the cell's first div that is not the citation row;
     // the publisher is the first link's label, which is what the email prints.

@@ -241,15 +241,24 @@ const CHIP_MONTHS: Record<Lang, Record<string, number>> = {
 export function readEmailCalendar(html: string, lang: Lang, editionDate: string): UpcomingEntry[] {
   const entries: UpcomingEntry[] = [];
 
+  // A row whose chip is empty carries the date of the row above it. The email
+  // started leaving the chip off a repeated date on 2026-09-10 — two entries
+  // fell on Sept. 15, the second shipped with a bare <td width="54"></td>, and
+  // skipping it dropped the duration-of-status rule off both the page and the
+  // board five days before it took effect. The set is emitted in date order, so
+  // the row above is the only date an empty chip can mean; `repeatsDate`, which
+  // inDateOrder sets from the neighbour, is the page's name for the same fact.
+  let carried: string | null = null;
+
   for (const [, chipCell, bodyCell] of html.matchAll(EMAIL_ROW)) {
     const chip = chipCell.match(CHIP);
-    if (!chip) continue;
+    const month = chip ? CHIP_MONTHS[lang][chip[1].toLowerCase().slice(0, 3)] : undefined;
 
-    const month = CHIP_MONTHS[lang][chip[1].toLowerCase().slice(0, 3)];
-    if (month === undefined) continue;
-
-    const date = toIso(month, Number(chip[2]), editionDate);
+    const date =
+      chip && month !== undefined ? toIso(month, Number(chip[2]), editionDate) : carried;
     if (!date) continue;
+
+    carried = date;
 
     const sources = new Map<string, { label: string; url: string }>();
     for (const [, url, label] of bodyCell.matchAll(ANCHOR)) {
