@@ -1,0 +1,77 @@
+{
+  "date": "2026-09-10",
+  "lang": "es",
+  "note": "El correo en español volvió a enviar Próximamente como un encabezado vacío. Este calendario es el que llevó la edición en inglés. Cuatro entradas (334, 343, 350, 244) usan el plain_summary_es del propio artefacto, que es el texto que el correo habría llevado; las otras tres no tienen watch item y son traducción. Pendiente de revisión editorial.",
+  "entries": [
+    {
+      "date": "2026-09-15",
+      "summary": "USCIS aceptará únicamente las ediciones del 09/15/26 del Formulario I-539, que se usa para extensiones y cambios de estatus, y del Formulario I-765, la solicitud de permiso de trabajo. Las ediciones anteriores serán rechazadas al recibirlas; la fecha de presentación es la del envío en línea o, en papel, la del matasellos.",
+      "sources": [
+        {
+          "label": "USCIS",
+          "url": "https://www.uscis.gov/newsroom/alerts/uscis-to-publish-new-editions-of-form-i-539-and-form-i-765-older-editions-will-be-rejected-starting"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-15",
+      "summary": "Los estudiantes internacionales (visa F), las personas en programas de intercambio (visa J) y los periodistas extranjeros (visa I) dejarán de ser admitidos por \"duración del estatus\" —es decir, mientras dure el programa— y recibirán una fecha fija de vencimiento; para quedarse más tiempo tendrán que pedir una extensión. La regla está sujeta a revisión del Congreso: si la fecha de entrada en vigor cambia, DHS publicará un aviso en el Federal Register con la fecha real o para anularla.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/07/17/2026-14439/establishing-a-fixed-time-period-of-admission-and-an-extension-of-stay-procedure-for-nonimmigrant"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-18",
+      "summary": "Quienes soliciten la residencia permanente desde dentro de Estados Unidos enfrentarán una prueba de carga pública más amplia —si un oficial considera que podrían llegar a depender de beneficios del gobierno— después de que el DHS deroga la regla más estrecha de 2022. USCIS emitirá una nueva edición de la solicitud de residencia (Formulario I-485) y dejará de aceptar las ediciones anteriores a partir de esa fecha.",
+      "sources": [
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "url": "https://wolfsdorf.com/wr-immigration-news-digest-20260716/"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-25",
+      "summary": "La oficina federal que cuida a los niños y adolescentes que llegaron solos al país y están bajo custodia del gobierno (ORR) quiere renovar por tres años los formularios de evaluación de salud mental y de atención médica en los albergues, y unir en uno solo los dos formularios que hoy se usan para investigar casos de tuberculosis y otras enfermedades. Cualquier persona puede enviar comentarios antes de la fecha límite.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/07/27/2026-15087/proposed-information-collection-activity-mental-health-assessment-form-and-onsite-health"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-28",
+      "summary": "El Departamento de Justicia propone dar a los jueces de inmigración la facultad de imponer multas (civil money penalty) por desacato a su autoridad en la corte de inmigración, lo que alcanzaría a abogados y otras personas que comparecen ante ellos; la propuesta definiría el alcance de esa facultad, cómo se determina y se paga la multa, y cómo apelarla. El público puede enviar comentarios hasta las 11:59 p.m. del este del 28 de septiembre de 2026.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15458/civil-money-penalty-for-actions-in-contempt-of-an-immigration-judges-proper-exercise-of-authority"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-01",
+      "summary": "El 1 de octubre empieza el año fiscal 2027 y se renueva el cupo anual de green cards por empleo, lo que suele liberar números que estaban agotados. En el Boletín de Visas de octubre de 2026 se podrá ver si avanzan las fechas en las categorías más congestionadas, como EB-2 para India.",
+      "sources": [
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "url": "https://wolfsdorf.com/wr-immigration-news-digest-20260618/"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-05",
+      "summary": "La oficina federal que alberga a los niños migrantes que llegan sin padre, madre o tutor, la Oficina de Reasentamiento de Refugiados (ORR), quiere modificar los formularios que usan sus inspectores para verificar si los albergues cumplen las reglas de licencia y otros requisitos legales. Cualquier persona puede enviar comentarios hasta el 5 de octubre de 2026.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/08/05/2026-15842/proposed-information-collection-activity-monitoring-and-compliance-for-office-of-refugee"
+        }
+      ]
+    }
+  ]
+}
