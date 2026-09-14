@@ -1024,10 +1024,16 @@ function renderEditionCard(lang, date, headline) {
 function buildDeck({ body, headline }, date, events, shape, lang) {
   const sections = body.split(/\n(?=## )/);
 
-  // Story sections, in order, rubrics dropped.
+  // Story sections, in order, rubrics dropped. The first section is the lede
+  // and never a rubric whatever its length — the exemption deriveDek makes, for
+  // the same reason: on 2026-09-11 "A narrower margin after a job ends" (34
+  // chars) fell out here, the ICE-arrests story was taken for the lede, and the
+  // cover put its claim under the H-1B hed with no slide left for it.
   const raw = sections
     .map(readStory)
-    .filter((story) => story.headline.length > RUBRIC_MAX_CHARS);
+    .filter(
+      (story, i) => (i === 0 && story.headline) || story.headline.length > RUBRIC_MAX_CHARS,
+    );
 
   // The hed on the cover is the deck's hed, which may be hand-set and is what a
   // reader actually sees; the beats are tested against their own headlines.
