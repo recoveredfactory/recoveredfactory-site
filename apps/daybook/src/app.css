@@ -220,6 +220,14 @@
   margin-bottom: 0;
 }
 
+/* A chart the email ran, put back into the markdown by the pull as an image on
+   a line of its own, which marked wraps in a p. The column is the measure. */
+.db-prose img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
 /* The section head — the only furniture between one story and the next, so it
    gets more room above than a heading usually does. `pretty`, not `balance`:
    these run to two and three lines and balancing pulls them all in. */

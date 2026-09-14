@@ -77,6 +77,12 @@ const TRANSLATION_EDITOR = 'Diana Vanessa Riascos-Gamez';
 // them without hardcoding a list per language.
 const RUBRIC_MAX_CHARS = 35;
 
+// How much of a paragraph's folded text names it when an image the email ran
+// is put back after the same paragraph in the markdown. Same figure as the
+// calendar match in upcoming.mjs, for the same reason: long enough to be
+// unique, short enough to survive a copy edit further in.
+const IMAGE_ANCHOR_CHARS = 60;
+
 // The Upcoming calendar flattened to text: an indented month abbreviation, then
 // an indented day. See stripFlattenedCalendar. Declared up here with the rest of
 // the configuration for the dead-zone reason the dek settings give.
@@ -510,7 +516,7 @@ for (const lang of LANGS) {
   // the file that is about to be overwritten.
   const existing = readFrontmatter(path);
   const edition = applyOverrides(
-    prepareEdition(md.data, lang, editionDate, emailHeadings(html), existing),
+    prepareEdition(md.data, lang, editionDate, emailHeadings(html), existing, emailImages(html)),
     existing,
     lang,
     editionDate,
@@ -703,7 +709,7 @@ function sanitizeEmailHtml(html) {
 // standing note, derive a title and description from what the edition actually
 // says (never invented here — the archive should not put words in the
 // newsletter's mouth), and record the provenance the manifest carries.
-function prepareEdition(markdown, lang, date, headings = [], existing = {}) {
+function prepareEdition(markdown, lang, date, headings = [], existing = {}, images = []) {
   let body = markdown.trim();
 
   let standing = '';
@@ -732,6 +738,7 @@ function prepareEdition(markdown, lang, date, headings = [], existing = {}) {
   body = dropOrphanBullets(body, lang, date);
   body = stripEmailFooter(body, lang, date);
   body = recoverLedeHeading(body, headings, existing, lang, date);
+  body = restoreImages(body, images, lang, date);
 
   // The lede story's headline is the first H2. It is the searchable thing about
   // an edition — nobody looks for "Immigration Daybook August 3", they look for
@@ -753,18 +760,101 @@ function emailHeadings(html) {
   if (!html) return [];
 
   return [...html.matchAll(/<h2\b[^>]*>([\s\S]*?)<\/h2>/gi)]
-    .map((match) =>
-      match[1]
-        .replace(/<[^>]+>/g, '')
-        .replace(
-          /&(amp|lt|gt|quot|apos|#39|nbsp);/g,
-          (_, name) =>
-            ({ amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", '#39': "'", nbsp: ' ' })[name],
-        )
-        .replace(/\s+/g, ' ')
-        .trim(),
-    )
+    .map((match) => decodeEntities(match[1].replace(/<[^>]+>/g, '')).replace(/\s+/g, ' ').trim())
     .filter(Boolean);
+}
+
+function decodeEntities(value) {
+  return value.replace(
+    /&(amp|lt|gt|quot|apos|#39|nbsp);/g,
+    (_, name) => ({ amp: '&', lt: '<', gt: '>', quot: '"', apos: "'", '#39': "'", nbsp: ' ' })[name],
+  );
+}
+
+/**
+ * The images the email ran, each with the text of the block it followed.
+ *
+ * 2026-09-11 was the first edition to carry graphics — two charts off 287(g)
+ * Watch, between two paragraphs of the second story — and they went out as
+ * <img> tags in the English email and nowhere else. The markdown artifact has
+ * no trace of them, so the page would drop the graphic its own prose calls
+ * "the accompanying graphic". Same repair as the lede's headline: the email is
+ * the record of what shipped, so they are read back from there.
+ *
+ * Position is the preceding block's text rather than an index, because the
+ * markdown and the email do not have the same blocks — the standing note, the
+ * calendar and the footer all differ — but the paragraph an image follows is
+ * the same prose in both. A 1×1 is a tracking pixel, not a graphic.
+ */
+function emailImages(html) {
+  if (!html) return [];
+
+  const images = [];
+  let after = '';
+  for (const match of html.matchAll(/<(h2|p)\b[^>]*>([\s\S]*?)<\/\1\s*>|<img\b[^>]*>/gi)) {
+    if (match[1]) {
+      after = foldText(emailText(match[2])).slice(0, IMAGE_ANCHOR_CHARS);
+      continue;
+    }
+    const attr = (name) =>
+      decodeEntities(match[0].match(new RegExp(`\\b${name}\\s*=\\s*"([^"]*)"`, 'i'))?.[1] ?? '');
+    if (/\b(width|height)\s*=\s*"1"/i.test(match[0])) continue;
+    const src = attr('src');
+    if (src) images.push({ src, alt: attr('alt'), after });
+  }
+  return images;
+}
+
+/**
+ * Put the email's images back into the markdown, each after the paragraph it
+ * followed in the email. The .html beside the edition carries them regardless;
+ * this is for the page, the RSS and the .md companion, which render the body.
+ */
+function restoreImages(body, images, lang, date) {
+  if (!images.length) return body;
+
+  const blocks = body.split(/\n\s*\n/);
+  const keys = blocks.map((block) =>
+    foldText(stripInlineMd(block.replace(/^#+ /, ''))).slice(0, IMAGE_ANCHOR_CHARS),
+  );
+  const inserts = new Map();
+  const lost = [];
+
+  for (const image of images) {
+    const at = image.after ? keys.indexOf(image.after) : -1;
+    if (at < 0) {
+      lost.push(image.src);
+      continue;
+    }
+    inserts.set(at, [...(inserts.get(at) ?? []), `![${image.alt}](${image.src})`]);
+  }
+
+  if (lost.length) {
+    console.warn(
+      `WARNING: ${date} ${lang}: the email ran ${lost.length} image(s) the markdown has no ` +
+        `paragraph to hang on (${lost.join(', ')}). The .html still carries them; the page will not.`,
+    );
+  }
+  if (inserts.size) {
+    console.warn(
+      `WARNING: ${date} ${lang}: the markdown dropped ${images.length - lost.length} image(s) ` +
+        'the email ran. Restored off the email, after the paragraph each followed there.',
+    );
+  }
+
+  return blocks.flatMap((block, i) => [block, ...(inserts.get(i) ?? [])]).join('\n\n');
+}
+
+// Case, accents, punctuation, entities and tag whitespace all differ between a
+// paragraph in the markdown and the same paragraph set into an email. Bare
+// letters and digits make the comparison about the words. A declaration, like
+// stripInlineMd below, because it runs from the top-level loop.
+function foldText(value) {
+  return value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-z0-9]+/g, '');
 }
 
 /**
