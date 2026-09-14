@@ -486,6 +486,10 @@ const decks = {};
 // follows.
 let deckShape = null;
 
+// Where the first language's images went, so a second language whose email ran
+// none gets them at the same place. See carryImages.
+let placedImages = null;
+
 for (const lang of LANGS) {
   const md = artifact(`daybook_final_${lang}_md`);
   if (!md?.data) {
@@ -738,7 +742,9 @@ function prepareEdition(markdown, lang, date, headings = [], existing = {}, imag
   body = dropOrphanBullets(body, lang, date);
   body = stripEmailFooter(body, lang, date);
   body = recoverLedeHeading(body, headings, existing, lang, date);
-  body = restoreImages(body, images, lang, date);
+  body = images.length
+    ? restoreImages(body, images, lang, date)
+    : carryImages(body, lang, date);
 
   // The lede story's headline is the first H2. It is the searchable thing about
   // an edition — nobody looks for "Immigration Daybook August 3", they look for
@@ -840,9 +846,47 @@ function restoreImages(body, images, lang, date) {
       `WARNING: ${date} ${lang}: the markdown dropped ${images.length - lost.length} image(s) ` +
         'the email ran. Restored off the email, after the paragraph each followed there.',
     );
+    placedImages ??= { lang, blocks: blocks.length, inserts };
   }
 
   return blocks.flatMap((block, i) => [block, ...(inserts.get(i) ?? [])]).join('\n\n');
+}
+
+/**
+ * Give a language whose email ran no images the ones the first language ran,
+ * at the same place.
+ *
+ * The Spanish edition is built in parallel from the English draft, section for
+ * section and paragraph for paragraph, so the block that follows a chart in
+ * English is the translation of the block that follows it in Spanish — the
+ * text cannot anchor across languages but the position can. On 2026-09-11 the
+ * Spanish email had none of the two English charts while its prose still said
+ * "el gráfico adjunto"; the call was to run the English charts in Spanish for
+ * now and replace them by hand later. So: the same images, at the same block
+ * indexes, with English alt text, and a warning that says so. Only when the
+ * two bodies have the same number of blocks — if they do not, the positions
+ * mean nothing and the page goes without.
+ */
+function carryImages(body, lang, date) {
+  if (!placedImages || placedImages.lang === lang) return body;
+
+  const blocks = body.split(/\n\s*\n/);
+  const count = [...placedImages.inserts.values()].flat().length;
+  if (blocks.length !== placedImages.blocks) {
+    console.warn(
+      `WARNING: ${date} ${lang}: the email ran none of the ${count} image(s) ${placedImages.lang} ` +
+        `ran, and the bodies do not line up (${blocks.length} blocks against ` +
+        `${placedImages.blocks}), so none are carried across. The page shows the prose without them.`,
+    );
+    return body;
+  }
+
+  console.warn(
+    `WARNING: ${date} ${lang}: the email ran none of the ${count} image(s) ${placedImages.lang} ran. ` +
+      `Carried across at the same positions, ${placedImages.lang} alt text and all — replace by hand ` +
+      'when there is a translation.',
+  );
+  return blocks.flatMap((block, i) => [block, ...(placedImages.inserts.get(i) ?? [])]).join('\n\n');
 }
 
 // Case, accents, punctuation, entities and tag whitespace all differ between a
