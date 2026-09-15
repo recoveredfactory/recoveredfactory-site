@@ -1,7 +1,7 @@
 ---
 id: "recovered-factory-intro"
 title: "Presentamos Recovered Factory"
-date: "2025-01-19"
+date: "2026-01-19"
 description: "Los periodistas solían desbloquear datos por el bien público. En una era de colapso, ¿puede esa labor sobrevivir fuera de las instituciones tradicionales?"
 previewImage: "/images/brukman-workers.jpg"
 type: "post"

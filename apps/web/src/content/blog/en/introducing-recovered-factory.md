@@ -1,7 +1,7 @@
 ---
 id: "recovered-factory-intro"
 title: "Introducing Recovered Factory"
-date: "2025-01-19"
+date: "2026-01-19"
 description: "Journalists used to unlock data for the public good. In an era of collapse, can that work live outside traditional institutions?"
 previewImage: "/images/brukman-workers.jpg"
 type: "post"
