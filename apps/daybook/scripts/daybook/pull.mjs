@@ -88,6 +88,13 @@ const IMAGE_ANCHOR_CHARS = 60;
 // the configuration for the dead-zone reason the dek settings give.
 const FLATTENED_CALENDAR = /^[ \t]+\p{Lu}{3,12}[ \t]*\n[ \t]+\d{1,2}[ \t]*$/mu;
 
+// The same calendar glued instead of indented, 2026-09-15: the bucket label,
+// the month, the day and the prose run together at the head of one paragraph
+// per entry — "TodaySEP15USCIS will accept…", "Esta semanaSEP18Las personas…".
+// Nothing prose does either. Up to a few words of label, then three capitals,
+// a day, and the prose starting with no space between.
+const GLUED_CALENDAR = /^[\p{L} ]{0,24}\p{Lu}{3}\d{1,2}\p{L}/mu;
+
 // The email's sign-off, which the markdown began carrying on 2026-08-26: the
 // project line, the sibling-project links and the copyright. Recognised by where
 // its links go — everything in it points at our own sites, PromptQL or the
@@ -714,7 +721,12 @@ function sanitizeEmailHtml(html) {
 // says (never invented here — the archive should not put words in the
 // newsletter's mouth), and record the provenance the manifest carries.
 function prepareEdition(markdown, lang, date, headings = [], existing = {}, images = []) {
-  let body = markdown.trim();
+  // 2026-09-15: the markdown opened on the email's masthead — "# Immigration
+  // Daybook — Tuesday, September 15, 2026" — above the note and the lede. The
+  // page sets its own masthead, and with that line in the way the note was no
+  // longer the single paragraph ahead of the first heading, so it stayed in the
+  // body and the lede read as headless. Nothing else is ever an H1.
+  let body = markdown.trim().replace(/^# .+\n+/, '');
 
   let standing = '';
   const noteMatch = body.match(STANDING_NOTE);
@@ -827,6 +839,10 @@ function restoreImages(body, images, lang, date) {
   const lost = [];
 
   for (const image of images) {
+    // 2026-09-15: the markdown carried its own copies of the photos, captioned,
+    // where the email ran them bare under the heading. One already in the body
+    // stays where the composer put it.
+    if (body.includes(image.src)) continue;
     const at = image.after ? keys.indexOf(image.after) : -1;
     if (at < 0) {
       lost.push(image.src);
@@ -841,10 +857,11 @@ function restoreImages(body, images, lang, date) {
         `paragraph to hang on (${lost.join(', ')}). The .html still carries them; the page will not.`,
     );
   }
-  if (inserts.size) {
+  const placed = [...inserts.values()].flat().length;
+  if (placed) {
     console.warn(
-      `WARNING: ${date} ${lang}: the markdown dropped ${images.length - lost.length} image(s) ` +
-        'the email ran. Restored off the email, after the paragraph each followed there.',
+      `WARNING: ${date} ${lang}: the markdown dropped ${placed} image(s) the email ran. ` +
+        'Restored off the email, after the paragraph each followed there.',
     );
     placedImages ??= { lang, blocks: blocks.length, inserts };
   }
@@ -1575,7 +1592,10 @@ function stripUnresolvedSections(body, lang, date) {
 // email's calendar block reduced to text — an indented month abbreviation, an
 // indented day, then the entry's prose and its source link, each on its own
 // indented line. Markdown reads that as a run of paragraphs, so the page would
-// print "AUG" and "24" as two lines of body copy.
+// print "AUG" and "24" as two lines of body copy. On 2026-09-15 the same block
+// came glued instead — "TodaySEP15USCIS will accept…", one paragraph an entry —
+// which the page's liftCalendar cannot read either, since it looks for a bolded
+// date. Both shapes go, and the page reads the calendar off the email.
 //
 // Matched on shape rather than on the rubric's name, for the reason readBriefs
 // gives: the Spanish rubric is not stable across editions. An indented line of
@@ -1588,7 +1608,7 @@ function stripUnresolvedSections(body, lang, date) {
 // This shape has never been readable, so there is nothing in it to keep.
 function stripFlattenedCalendar(body, lang, date) {
   const kept = body.split(/\n(?=## )/).filter((section) => {
-    if (!FLATTENED_CALENDAR.test(section)) return true;
+    if (!FLATTENED_CALENDAR.test(section) && !GLUED_CALENDAR.test(section)) return true;
 
     const heading = section.match(/^## (.+)$/m)?.[1]?.trim() ?? '(untitled)';
     console.warn(
