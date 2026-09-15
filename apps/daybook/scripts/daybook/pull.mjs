@@ -72,10 +72,13 @@ const DEK_MAX_CHARS = 380;
 const TRANSLATION_EDITOR = 'Diana Vanessa Riascos-Gamez';
 
 // Standing rubrics ("Upcoming", "Around the system", "Who saw what?",
-// "Próximamente", "¿Quién vio qué?") are section furniture, not beats. They are
-// reliably short where a story headline is a full clause, so length separates
-// them without hardcoding a list per language.
-const RUBRIC_MAX_CHARS = 35;
+// "Próximamente", "¿Quién vio qué?", "Alrededor del sistema") are section
+// furniture, not beats. They are reliably short where a story headline is a
+// full clause, so length separates them without hardcoding a list per language.
+// The longest rubric yet is 21 characters; 35 was the cutoff until 2026-09-15,
+// and it ate "Spotlight turns to children" (27), "A narrower margin after a job
+// ends" (34) and "Public charge returns to the courts" (35) as furniture.
+const RUBRIC_MAX_CHARS = 25;
 
 // How much of a paragraph's folded text names it when an image the email ran
 // is put back after the same paragraph in the markdown. Same figure as the
