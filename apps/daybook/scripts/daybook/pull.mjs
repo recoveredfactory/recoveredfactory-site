@@ -751,6 +751,7 @@ function prepareEdition(markdown, lang, date, headings = [], existing = {}, imag
     }
   }
 
+  body = stripBarePlaceholders(body, lang, date);
   body = stripUnresolvedSections(body, lang, date);
   body = stripFlattenedCalendar(body, lang, date);
   body = repairCalendarBullets(body);
@@ -1587,6 +1588,31 @@ function stripUnresolvedSections(body, lang, date) {
   });
 
   return kept.join('\n');
+}
+
+// The fourth way `## Upcoming` came through wrong: a placeholder in a syntax the
+// section strip does not know, orphaned from the heading it belonged to. On
+// 2026-09-17 the English markdown carried a bare `###UPCOMING###` line in the
+// middle of the last story, with no `## Upcoming` anywhere above it — so
+// stripUnresolvedSections saw one story section full of real copy and kept the
+// token along with it.
+//
+// Dropping the whole section is exactly wrong here, because the section is a
+// story. Cut the token's line and let the section stand. When the token does sit
+// under its own heading, cutting it leaves that heading empty and
+// stripUnresolvedSections, which runs next, drops it with the warning it has.
+function stripBarePlaceholders(body, lang, date) {
+  let cut = 0;
+  const stripped = body.replace(/^[ \t]*###[ \t]*\w+[ \t]*###[ \t]*$\r?\n?/gm, (match) => {
+    cut += 1;
+    console.warn(
+      `WARNING: ${date} ${lang}: cut an unresolved placeholder (${match.trim()}) from ` +
+        'the markdown. The email HTML still carries that section; RSS and the .md ' +
+        'companion will not.',
+    );
+    return '';
+  });
+  return cut ? stripped.replace(/\n{3,}/g, '\n\n') : body;
 }
 
 // The calendar section when it arrives flattened.
