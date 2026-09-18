@@ -4,8 +4,9 @@
 // Usage: node scripts/daybook/og.mjs [--lang en,es] [--card landing,announcement]
 //                                    [--out ../../static/images]
 //
-// Needs google-chrome and ImageMagick's `convert` on the PATH, and network
-// access the first time so Chrome can fetch Lora + Jost from Google Fonts.
+// Needs Chrome and ImageMagick's `convert` on the PATH, and network access the
+// first time so Chrome can fetch Lora + Jost from Google Fonts. See chrome()
+// below for which binary names count as Chrome.
 //
 // Two cards, because they do different jobs:
 //
@@ -28,10 +29,24 @@
 // tag runs through the image resizer at w=1600 (see getSocialImageUrl), so a
 // 1200px card would be upscaled and softened on the way out.
 
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+// Chrome's binary name is not portable. Debian and Fedora ship `google-chrome`;
+// the Arch AUR package installs only `google-chrome-stable`; the distro repos
+// call their build `chromium`. Take the first one that answers, and let $CHROME
+// name a binary none of these guesses would find.
+let chromeBin;
+function chrome() {
+  if (chromeBin) return chromeBin;
+  const tried = [process.env.CHROME, 'google-chrome', 'google-chrome-stable', 'chromium'].filter(Boolean);
+  for (const bin of tried) {
+    if (!spawnSync(bin, ['--version'], { stdio: 'ignore' }).error) return (chromeBin = bin);
+  }
+  throw new Error(`no Chrome on the PATH: tried ${tried.join(', ')}. Install one, or set CHROME.`);
+}
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -1215,7 +1230,7 @@ function renderSlide({ slide, cardName, lang, frame, outSize }) {
   writeFileSync(html, slide.html);
 
   execFileSync(
-    'google-chrome',
+    chrome(),
     [
       '--headless=new',
       '--disable-gpu',
