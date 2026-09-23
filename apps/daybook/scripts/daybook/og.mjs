@@ -38,6 +38,18 @@ import { fileURLToPath } from 'node:url';
 // the Arch AUR package installs only `google-chrome-stable`; the distro repos
 // call their build `chromium`. Take the first one that answers, and let $CHROME
 // name a binary none of these guesses would find.
+// ImageMagick 7 renamed the tool `magick` and prints a deprecation line on
+// every `convert` call — thirteen of them on a full edition, enough to bury a
+// real warning. Prefer `magick` and fall back to `convert` for IMv6.
+let convertBin;
+function convert() {
+  if (convertBin) return convertBin;
+  for (const bin of ['magick', 'convert']) {
+    if (!spawnSync(bin, ['-version'], { stdio: 'ignore' }).error) return (convertBin = bin);
+  }
+  throw new Error('no ImageMagick on the PATH: tried magick, convert.');
+}
+
 let chromeBin;
 function chrome() {
   if (chromeBin) return chromeBin;
@@ -1247,7 +1259,7 @@ function renderSlide({ slide, cardName, lang, frame, outSize }) {
     { stdio: ['ignore', 'ignore', 'ignore'] },
   );
 
-  execFileSync('convert', [raw, '-resize', outSize, '-strip', out]);
+  execFileSync(convert(), [raw, '-resize', outSize, '-strip', out]);
   rmSync(raw, { force: true });
   rmSync(html, { force: true });
 
