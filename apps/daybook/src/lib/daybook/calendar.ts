@@ -28,39 +28,66 @@ import type { Lang } from '$lib/i18n';
 // AP-style English months as the Daybook writes them, and Spanish month names.
 // Both maps are keyed lowercase and stripped of the trailing period so
 // "Sept." and "sept" land on the same index.
+//
+// Each language carries both spellings, because the composer writes both and not
+// always the one its own prose uses. English runs AP style in the entries
+// ("Sept. 28") and full month names in the date headings it began emitting on
+// 2026-09-24; Spanish runs full names in some editions and "28 de sept." in
+// others — that gap left the Spanish calendar unparsed on 2026-09-23 and the
+// page printed it twice, once as prose and once as the card.
 const MONTHS: Record<Lang, Record<string, number>> = {
   en: {
     jan: 0,
+    january: 0,
     feb: 1,
+    february: 1,
     march: 2,
     april: 3,
     may: 4,
     june: 5,
     july: 6,
     aug: 7,
+    august: 7,
     sept: 8,
+    september: 8,
     oct: 9,
+    october: 9,
     nov: 10,
+    november: 10,
     dec: 11,
+    december: 11,
   },
   es: {
+    ene: 0,
     enero: 0,
+    feb: 1,
     febrero: 1,
+    mar: 2,
     marzo: 2,
+    abr: 3,
     abril: 3,
+    may: 4,
     mayo: 4,
+    jun: 5,
     junio: 5,
+    jul: 6,
     julio: 6,
+    ago: 7,
     agosto: 7,
+    sep: 8,
+    sept: 8,
     septiembre: 8,
+    oct: 9,
     octubre: 9,
+    nov: 10,
     noviembre: 10,
+    dic: 11,
     diciembre: 11,
   },
 };
 
 export const EVENT_DATE: Record<Lang, RegExp> = {
-  en: /^(jan\.|feb\.|march|april|may|june|july|aug\.|sept\.|oct\.|nov\.|dec\.)\s+(\d{1,2})\b/i,
+  en: /^(january|jan\.|february|feb\.|march|april|may|june|july|august|aug\.|september|sept\.|october|oct\.|november|nov\.|december|dec\.)\s+(\d{1,2})\b/i,
   es: /^(\d{1,2})\s+de\s+([a-záéíóú]+)/i,
 };
 
@@ -147,13 +174,33 @@ export function liftCalendar(
 function readEntries(block: string, lang: Lang, editionDate: string): UpcomingEntry[] {
   const entries: UpcomingEntry[] = [];
 
+  // 2026-09-24: the calendar grew date headings. Every entry used to open on its
+  // own date — "Sept. 28 — Fines for contempt" — and now the date sits in a
+  // `### September 28` above a group, whose entries open on a rubric ("Fines for
+  // contempt:") or, that day, on nothing bold at all. So a heading's date is
+  // carried down to what follows it.
+  //
+  // Only within a block that declared one: a story section has no date heading,
+  // so `carried` stays null there and a story's bolded lead is still no more a
+  // calendar entry than it ever was.
+  let carried: string | null = null;
+
   for (const paragraph of block.split(/\n[ \t]*\n/)) {
     const text = paragraph.trim().replace(/^## .*\n?/, '');
-    const entry = text.match(ENTRY);
-    if (!entry) continue;
 
-    const [, bolded, tail] = entry;
-    const date = parseEntryDate(bolded, lang, editionDate);
+    const heading = text.match(/^#{3,6}[ \t]+(.+)$/);
+    if (heading) {
+      carried = parseEntryDate(heading[1], lang, editionDate) ?? carried;
+      continue;
+    }
+
+    const entry = text.match(ENTRY);
+    const bolded = entry ? entry[1] : '';
+    // An entry under a date heading need not be bolded at all, and then the
+    // whole paragraph is the sentence about the date.
+    const tail = entry ? entry[2] : text;
+
+    const date = (bolded && parseEntryDate(bolded, lang, editionDate)) || carried;
     if (!date) continue;
 
     // The bolded run also names the rule — "Aug. 28 — Alien Registration Form
