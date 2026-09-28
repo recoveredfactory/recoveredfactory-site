@@ -18,9 +18,12 @@ pnpm daybook
 
 Runs `apps/daybook/scripts/daybook/pull.mjs`. Two facts that shape everything else:
 
-- **There is no date selector.** The endpoint always returns the latest row on
-  the shelf. If the date that comes back is not the one you were asked for, stop
-  and say so — you cannot ask for another one from here.
+- **Plain `pnpm daybook` returns the latest row on the shelf.** If you were asked
+  for an earlier edition, or the latest has already moved past the one you
+  want, use `pnpm daybook --date=YYYY-MM-DD`. It sends `edition_date` in the
+  trigger, which the program has honored since 2026-09-28, and it refuses to
+  write anything if a different date comes back. Sept. 25 was missed because
+  this selector did not exist yet.
 - **A re-run overwrites the markdown body.** Only frontmatter marked
   `titleOverride: true` / `descriptionOverride: true`, plus `dossier`,
   `instagramPost` and `translationEditor`, survive. Never hand-edit the body.
@@ -48,7 +51,8 @@ which one showed up today. Read them all before committing.
 | `the lede has no headline and the email has none to lift` | Same, but no source — usually Spanish, whose email is a heading short too. Hed, dek, card and carousel are all leading on the **second** story. | Put the lede's headline in `title:` with `titleOverride: true`, then `pnpm daybook:again`. That one line restores the body heading and everything derives off it. A Spanish headline is editorial work — **flag it for David rather than shipping your translation silently.** |
 | `dropped section "Upcoming"/"Próximamente" … no content under the heading` | The calendar shipped as a bare heading. | Nothing to fix. The page reads the calendar off the email HTML instead. Note it. |
 | The same, but the edition **meant** to skip Upcoming | Ask, or read the email: on 2026-09-04 it told readers the section was "in the shop for a tuneup". The page would otherwise rebuild a calendar off the snapshot and print deadlines the edition never ran. | Set `upcomingSkipped: true` in both languages' frontmatter, re-run `pnpm daybook:again --no-upcoming` so the board drops its calendar slide too. |
-| `dropped section … it arrived as the email calendar flattened to text` | Worse shape: no calendar in the markdown *or* recoverable from it. | Page falls back to the snapshot, which is narrower than what shipped. Check the board and say so in the commit. |
+| `dropped section … it arrived as the email calendar flattened to text` | The markdown ran the email's calendar layout as text: indented, glued (`TodaySEP15…`) or bold paragraphs (`**SEP**` / `**28**`). | The page reads the calendar off the email instead. Confirm the `Upcoming: N entries … off the <lang> email` line follows; if the email had none either, the page falls to the snapshot, so say so in the commit. |
+| `dropped the email masthead from the head of the markdown` | The wordmark, domain link and ⁘ dateline arrived as paragraphs above the lede. | Nothing. Stripped. Without the strip, the lede reads as headless. |
 | `dropped N empty list markers` | Round-up bullets arrived as bare `-` lines. | Cosmetic, already stripped. Note the count. |
 | `N story sections where the first language had M` | The two languages' decks disagree. | Usually a symptom of a lost heading in one language. Fix that first, then confirm this clears. |
 | `the es email ran a different calendar than the en` | The two emails ran different deadlines. **English is the standard** (David, 2026-09-28). | Write `es/<date>.upcoming.json` with the English entries, then `pnpm daybook:again`. A hand file outranks everything on both the page and the board. Take the Spanish text from the composer, not your own: this email for entries both ran, an earlier Spanish edition for the rest, English sources throughout. `es/2026-09-28.upcoming.json` is the model. Only translate what no Spanish edition ever carried, and flag it. |

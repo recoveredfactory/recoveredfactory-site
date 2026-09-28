@@ -2,7 +2,9 @@
 // Pull an Immigration Daybook edition from the PromptQL automation and write it
 // into the archive as plain markdown: src/content/daybook/{en,es}/YYYY-MM-DD.md.
 //
-// Usage: node scripts/daybook/pull.mjs [--raw-only] [--offline] [--force]
+// Usage: node scripts/daybook/pull.mjs [--date=YYYY-MM-DD] [--raw-only] [--offline] [--force]
+//   --date       ask for that edition instead of the latest; stops without writing
+//                if a different one comes back (see the note below)
 //   --raw-only   fetch and save scripts/daybook/out/response.json, write nothing
 //   --offline    re-template from the saved response.json instead of hitting the
 //                API (deterministic re-runs; no LLM spend)
@@ -12,12 +14,16 @@
 //
 // Reads PQL_DAYBOOK_URL / PQL_DAYBOOK_KEY from apps/daybook/.env.
 //
-// The endpoint takes no parameters that select an edition: a run always returns
-// the latest row on the `immigration_daybook_finals` shelf, and passing an
-// `edition_date` in the manifest is silently ignored (verified 2026-08-04). So
-// this script is a daily "fetch whatever is current" job, not a backfill tool.
-// Editions already on disk are left alone unless their date matches the one that
-// comes back. Reaching further back means going at the shelf table directly.
+// With no --date, a run returns the latest row on the `immigration_daybook_finals`
+// shelf. Until 2026-09-28 that was the only thing it could return: an
+// `edition_date` in the manifest was silently ignored (verified 2026-08-04), and
+// so was one in a trigger input. The Sept. 25 edition was never pulled, which is
+// how the gap showed up, and the program was fixed upstream that day to honor
+// `edition_date` in its trigger JSON, the same input the upcoming_json request
+// already sends. --date sends it. The date that comes back is still checked
+// against the one asked for before anything is written, because "silently
+// ignored" is how this endpoint has failed before. Editions already on disk are
+// left alone unless their date matches the one that comes back.
 //
 // Unlike the DDP pull, this writes plain markdown with no <script> block and no
 // Svelte components. Editions are loaded by src/lib/daybook/loader.ts with ?raw
@@ -98,11 +104,22 @@ const FLATTENED_CALENDAR = /^[ \t]+\p{Lu}{3,12}[ \t]*\n[ \t]+\d{1,2}[ \t]*$/mu;
 // a day, and the prose starting with no space between.
 const GLUED_CALENDAR = /^[\p{L} ]{0,24}\p{Lu}{3}\d{1,2}\p{L}/mu;
 
+// And bolded, 2026-09-25: the month and the day as bold paragraphs of their own,
+// "**SEP**" then "**28**" in English and "**SEP 28**" in one in Spanish, each
+// entry's rubric and prose in the paragraph after. No story paragraph is ever
+// just a bolded date.
+const BOLD_CALENDAR = /^\*\*\p{Lu}{3,4}(?:\*\*[ \t]*\n\s*\*\*| )\d{1,2}\*\*[ \t]*$/mu;
+
 // The email's sign-off, which the markdown began carrying on 2026-08-26: the
 // project line, the sibling-project links and the copyright. Recognised by where
 // its links go — everything in it points at our own sites, PromptQL or the
 // licence. See stripEmailFooter.
 const FOOTER_HOSTS = /^(?:[a-z0-9-]+\.)*(?:recoveredfactory\.net|promptql\.io|creativecommons\.org)$/;
+
+// The email's masthead as paragraphs, 2026-09-25: the wordmark, the domain link,
+// the ⁘ dateline. See stripMasthead.
+const MASTHEAD =
+  /^(?:\*\*)?immigration daybook(?:\*\*)?[ \t]*\n\s*(?:\[[^\]\n]*\]\(https?:\/\/(?:www\.)?immigrationdaybook\.com\/?\)[ \t]*\n\s*)?(?:[^\n]*⁘[^\n]*\n\s*)?/i;
 
 
 // Carousel tuning, up here for the same dead-zone reason as the dek settings.
@@ -247,6 +264,16 @@ const args = new Set(process.argv.slice(2));
 const offline = args.has('--offline');
 const rawOnly = args.has('--raw-only');
 const force = args.has('--force');
+// An edition by date rather than the latest. See the note at the top.
+const requestedDate =
+  process.argv
+    .slice(2)
+    .find((arg) => arg.startsWith('--date='))
+    ?.slice('--date='.length) ?? null;
+if (requestedDate && !/^\d{4}-\d{2}-\d{2}$/.test(requestedDate)) {
+  console.error(`--date wants YYYY-MM-DD (got ${JSON.stringify(requestedDate)}).`);
+  process.exit(1);
+}
 // Cards need headless Chrome and ImageMagick; --skip-cards is for environments
 // that have neither, and for re-running the templating quickly.
 const skipCards = args.has('--skip-cards');
@@ -296,8 +323,25 @@ if (offline) {
   console.log('Offline: re-templating from scripts/daybook/out/response.json');
 } else {
   // Same contract as the DDP automation: multipart/form-data, 'manifest' first.
+  // A dated request declares a trigger input and sends the date in it, in the
+  // shape loadUpcoming already uses for the snapshot.
   const form = new FormData();
-  form.append('manifest', '{}');
+  if (requestedDate) {
+    const manifest = {
+      inputs: [
+        { name: 'trigger', title: 'Immigration Daybook final trigger', artifact_type: 'text' },
+      ],
+      timezone: 'America/Bogota',
+      entrypoint: 'default.run.json',
+    };
+    form.append('manifest', new Blob([JSON.stringify(manifest)], { type: 'application/json' }));
+    form.append(
+      'trigger',
+      new Blob([JSON.stringify({ edition_date: requestedDate })], { type: 'text/plain' }),
+    );
+  } else {
+    form.append('manifest', '{}');
+  }
 
   const res = await fetch(url, {
     method: 'POST',
@@ -336,6 +380,13 @@ const manifest = JSON.parse(manifestArtifact.data);
 const editionDate = manifest.edition_date;
 if (!/^\d{4}-\d{2}-\d{2}$/.test(editionDate ?? '')) {
   console.error(`Manifest has no usable edition_date (got ${JSON.stringify(editionDate)}).`);
+  process.exit(1);
+}
+if (requestedDate && editionDate !== requestedDate) {
+  console.error(
+    `Asked for ${requestedDate} and the automation served ${editionDate}. Nothing written. ` +
+      'If the program has stopped honoring edition_date again, that is upstream.',
+  );
   process.exit(1);
 }
 
@@ -748,7 +799,7 @@ function prepareEdition(markdown, lang, date, headings = [], existing = {}, imag
   // page sets its own masthead, and with that line in the way the note was no
   // longer the single paragraph ahead of the first heading, so it stayed in the
   // body and the lede read as headless. Nothing else is ever an H1.
-  let body = markdown.trim().replace(/^# .+\n+/, '');
+  let body = stripMasthead(markdown.trim().replace(/^# .+\n+/, ''), lang, date);
 
   let standing = '';
   const noteMatch = body.match(STANDING_NOTE);
@@ -1656,13 +1707,16 @@ function stripBarePlaceholders(body, lang, date) {
 // This shape has never been readable, so there is nothing in it to keep.
 function stripFlattenedCalendar(body, lang, date) {
   const kept = body.split(/\n(?=## )/).filter((section) => {
-    if (!FLATTENED_CALENDAR.test(section) && !GLUED_CALENDAR.test(section)) return true;
+    if (![FLATTENED_CALENDAR, GLUED_CALENDAR, BOLD_CALENDAR].some((shape) => shape.test(section))) {
+      return true;
+    }
 
     const heading = section.match(/^## (.+)$/m)?.[1]?.trim() ?? '(untitled)';
     console.warn(
       `WARNING: ${date} ${lang}: dropped section "${heading}" from the markdown — ` +
-        'it arrived as the email calendar flattened to text. The page falls back to ' +
-        'the upcoming snapshot; RSS and the .md companion get no calendar at all.',
+        'it arrived as the email calendar flattened to text. The page reads the calendar ' +
+        'off the email instead (the snapshot if the email has none); RSS and the .md ' +
+        'companion get no calendar at all.',
     );
     return false;
   });
@@ -1670,6 +1724,27 @@ function stripFlattenedCalendar(body, lang, date) {
   return kept.join('\n');
 }
 
+
+// The email's masthead in paragraph form, 2026-09-25: not the "# Immigration
+// Daybook — …" H1 of Sept. 15 but three paragraphs — the wordmark ("Immigration
+// Daybook", "**IMMIGRATION DAYBOOK**" in Spanish), the domain link, and the
+// dateline with its ⁘ separators. Three paragraphs ahead of the first heading are
+// neither a standing note (one paragraph) nor a lede, so the lede read as
+// headless in both languages while its `##` sat right below.
+//
+// Only taken when the body opens on the wordmark itself, and then only the link
+// and the dateline straight after it, so a standing note that follows is left
+// for the note split. See MASTHEAD.
+function stripMasthead(body, lang, date) {
+  const match = body.match(MASTHEAD);
+  if (!match) return body;
+
+  console.warn(
+    `WARNING: ${date} ${lang}: dropped the email masthead from the head of the markdown — ` +
+      'the page sets its own.',
+  );
+  return body.slice(match[0].length).trim();
+}
 
 // The email's sign-off, which the markdown began carrying on 2026-08-26: the
 // project line, the row of sibling-project links, the copyright. It is the
