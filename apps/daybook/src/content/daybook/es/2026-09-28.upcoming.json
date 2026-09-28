@@ -1,0 +1,57 @@
+{
+  "date": "2026-09-28",
+  "lang": "es",
+  "note": "El correo en español llevó un calendario distinto al inglés: el 30 de septiembre en lugar del 5 y el 13 de octubre. El inglés es el estándar, así que estas cinco entradas son las del correo en inglés. Ninguna es traducción nuestra: las del 28 de septiembre y el 1 de octubre son el texto del propio correo en español; las del 5 y el 13 de octubre, el texto de la edición en español del 24 de septiembre, que las publicó. Las fuentes son las del correo en inglés.",
+  "entries": [
+    {
+      "date": "2026-09-28",
+      "summary": "Las personas que pidieron asilo por su cuenta ante USCIS (asilo afirmativo) podrán ser referidas a la corte de inmigración sin haber tenido una entrevista; USCIS mantiene la entrevista solo antes de aprobar o negar el asilo. La regla también elimina el requisito de que la carta que explica el referido incluya una evaluación de la credibilidad de la persona. Es una regla interina ya vigente y se pueden enviar comentarios hasta el 28 de septiembre de 2026.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/07/28/2026-15190/affirmative-asylum-referrals-without-interview"
+        }
+      ]
+    },
+    {
+      "date": "2026-09-28",
+      "summary": "El Departamento de Justicia propone dar a los jueces de inmigración la facultad de imponer multas (civil money penalty) por desacato a su autoridad en la corte de inmigración, lo que alcanzaría a abogados y otras personas que comparecen ante ellos; la propuesta definiría el alcance de esa facultad, cómo se determina y se paga la multa, y cómo apelarla. El público puede enviar comentarios hasta las 11:59 p.m. del este del 28 de septiembre de 2026.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/07/30/2026-15458/civil-money-penalty-for-actions-in-contempt-of-an-immigration-judges-proper-exercise-of-authority"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-01",
+      "summary": "El 1 de octubre empieza el año fiscal 2027 y se renueva el cupo anual de green cards por empleo, lo que suele liberar números que estaban agotados. En el Boletín de Visas de octubre de 2026 se podrá ver si avanzan las fechas en las categorías más congestionadas, como EB-2 para India.",
+      "sources": [
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "url": "https://wolfsdorf.com/wr-immigration-news-digest-20260618/"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-05",
+      "summary": "La oficina federal que alberga a niños inmigrantes que llegan sin un padre, madre o tutor, la Office of Refugee Resettlement (ORR), quiere revisar los formularios que usan sus inspectores para verificar si los albergues cumplen las normas de licenciamiento y otros requisitos legales. Cualquier persona puede comentar hasta el 5 de octubre de 2026.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/08/05/2026-15842/proposed-information-collection-activity-monitoring-and-compliance-for-office-of-refugee"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-13",
+      "summary": "USCIS ahora puede exigir que ciertas solicitudes y peticiones se presenten en línea en vez de en papel, y la regla establece cómo designará cuáles serán. Las personas que no puedan presentar electrónicamente pueden solicitar una exención. El cambio ya está en vigor como regla final provisional, pero los comentarios están abiertos hasta el 13 de octubre de 2026.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16313/mandatory-electronic-filing-e-filing"
+        }
+      ]
+    }
+  ]
+}
