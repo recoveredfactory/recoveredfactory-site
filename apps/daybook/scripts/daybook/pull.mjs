@@ -447,30 +447,49 @@ if (snapshot) {
 }
 
 // The calendar for one language's carousel, in the order the sources are
-// trusted: what that language's email actually ran, then a hand-written
-// translation supplied beside the edition, then the pipeline's snapshot.
+// trusted: a calendar written by hand beside the edition, then what that
+// language's email actually ran, then the pipeline's snapshot.
 //
 // The snapshot used to come first, narrowed by the ids publishedFromText
 // recovered. It is last now because the ids can only ever name watch items, and
 // on 2026-09-08 the edition ran three deadlines that had no watch item at all —
 // the two Sept. 15 form cutovers and the Sept. 18 I-485, which were the lede.
 // The email is what subscribers got and it needs no id to be read.
+//
+// The hand file comes first because it is only ever written on purpose. It
+// began as the stand-in for a Spanish email that carried no calendar, and on
+// 2026-09-28 it became the correction for one that carried the wrong calendar:
+// the Spanish email ran Sept. 30 where the English ran Oct. 5 and Oct. 13, and
+// English is the standard.
+let firstCalendar = null;
+
 const calendarFor = (lang, html) => {
   if (noUpcoming) return [];
-
-  const fromEmail = calendarFromEmail(html, lang, editionDate);
-  if (fromEmail.length) {
-    console.log(`Upcoming: ${fromEmail.length} entries on the ${lang} board, off the ${lang} email.`);
-    return fromEmail;
-  }
 
   const byHand = handCalendar(webRoot, lang, editionDate);
   if (byHand.length) {
     console.log(
       `Upcoming: ${byHand.length} entries on the ${lang} board, off ` +
-        `src/content/daybook/${lang}/${editionDate}.upcoming.json — the ${lang} email carried none.`,
+        `src/content/daybook/${lang}/${editionDate}.upcoming.json.`,
     );
     return byHand;
+  }
+
+  const fromEmail = calendarFromEmail(html, lang, editionDate);
+  if (fromEmail.length) {
+    console.log(`Upcoming: ${fromEmail.length} entries on the ${lang} board, off the ${lang} email.`);
+    const dates = fromEmail.map((entry) => entry.iso).join(', ');
+    if (!firstCalendar) {
+      firstCalendar = { lang, dates };
+    } else if (firstCalendar.dates !== dates) {
+      console.warn(
+        `WARNING: ${editionDate} ${lang}: the ${lang} email ran a different calendar than the ` +
+          `${firstCalendar.lang} [${firstCalendar.dates}] — this one is [${dates}]. English is ` +
+          `the standard: write src/content/daybook/${lang}/${editionDate}.upcoming.json with the ` +
+          `${firstCalendar.lang} entries and re-run --offline.`,
+      );
+    }
+    return fromEmail;
   }
 
   console.warn(

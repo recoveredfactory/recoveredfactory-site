@@ -177,8 +177,13 @@ const emailByLang = {
 // which holds the eligible slate rather than the selection: on Sept. 8 that was
 // three October items the edition never ran, and none of the three September
 // form deadlines its lede was about. So the calendar the other language sent can
-// be translated and committed beside the edition, and it is read here, ahead of
-// the snapshot and behind anything the edition itself carried.
+// be translated and committed beside the edition, and it is read here ahead of
+// everything else — the edition's markdown, its email, the snapshot.
+//
+// Ahead of all three because the file is only ever written on purpose. On
+// Sept. 28 the Spanish email ran a calendar, but a different one from the
+// English — Sept. 30 where the English ran Oct. 5 and Oct. 13 — and English is
+// the standard, so the file is also how a wrong calendar gets corrected.
 const handByLang = {
   en: import.meta.glob<{ entries?: UpcomingEntry[] }>(
     '/src/content/daybook/en/*.upcoming.json',
@@ -386,11 +391,11 @@ const rendered = (
   const email = emailsByDate[lang].get(entry.meta.date) ?? '';
   const fromEmail = readEmailCalendar(email, lang, entry.meta.date);
   const byHand = handCalendars[lang].get(entry.meta.date)?.entries ?? [];
-  const upcoming = calendar.entries.length
-    ? calendar.entries
-    : fromEmail.length
-      ? fromEmail
-      : inDateOrder(byHand);
+  const upcoming = byHand.length
+    ? inDateOrder(byHand)
+    : calendar.entries.length
+      ? calendar.entries
+      : fromEmail;
 
   return {
     // The whole-body render is what the month roundups draw, and those print the
