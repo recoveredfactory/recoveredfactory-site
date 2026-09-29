@@ -86,6 +86,21 @@ const TRANSLATION_EDITOR = 'Diana Vanessa Riascos-Gamez';
 // ends" (34) and "Public charge returns to the courts" (35) as furniture.
 const RUBRIC_MAX_CHARS = 25;
 
+// Length alone stopped being enough on 2026-09-29: "Children before the judge"
+// (25) and "ICE’s quieter dragnet" (21) were stories, and the English deck and
+// dek lost both while the Spanish kept "La redada más discreta de ICE" (29). So a
+// short headline is a rubric only when the section under it is shaped like one —
+// see isRubric. A story is a paragraph or two opening on a bolded claim; every
+// round-up set as bold-lead paragraphs so far has run four items or more.
+const STORY_MAX_LEADS = 3;
+
+// The composer's notes to whoever sends the email, 2026-09-29: "**Proposed
+// subject:** …" and "**Proposed preview text:** …" ("**Asunto propuesto:**",
+// "**Texto de vista previa propuesto:**") as the last two paragraphs of the
+// markdown, under the round-up. The email carried neither. See stripSenderNotes.
+const SENDER_NOTE =
+  /^\*\*[^*\n]*\b(?:subject|preview|preheader|asunto|vista previa)\b[^*\n]*(?::\*\*|\*\*:)/i;
+
 // How much of a paragraph's folded text names it when an image the email ran
 // is put back after the same paragraph in the markdown. Same figure as the
 // calendar match in upcoming.mjs, for the same reason: long enough to be
@@ -800,6 +815,7 @@ function prepareEdition(markdown, lang, date, headings = [], existing = {}, imag
   // longer the single paragraph ahead of the first heading, so it stayed in the
   // body and the lede read as headless. Nothing else is ever an H1.
   let body = stripMasthead(markdown.trim().replace(/^# .+\n+/, ''), lang, date);
+  body = stripSenderNotes(body, lang, date);
 
   let standing = '';
   const noteMatch = body.match(STANDING_NOTE);
@@ -1255,10 +1271,9 @@ function buildDeck({ body, headline }, date, events, shape, lang) {
   // chars) fell out here, the ICE-arrests story was taken for the lede, and the
   // cover put its claim under the H-1B hed with no slide left for it.
   const raw = sections
+    .filter((section, i) => i === 0 || !isRubric(section))
     .map(readStory)
-    .filter(
-      (story, i) => (i === 0 && story.headline) || story.headline.length > RUBRIC_MAX_CHARS,
-    );
+    .filter((story) => story.headline);
 
   // The hed on the cover is the deck's hed, which may be hand-set and is what a
   // reader actually sees; the beats are tested against their own headlines.
@@ -1315,6 +1330,25 @@ function buildDeck({ body, headline }, date, events, shape, lang) {
     },
     shape: decided,
   };
+}
+
+/**
+ * Is this section standing furniture rather than a story?
+ *
+ * A long headline is always a story. A short one is a rubric when what sits
+ * under it is shaped like one: a list or subheads (the round-up, the calendar),
+ * nothing opening on a bolded claim, or more bold-lead items than a story ever
+ * runs. See STORY_MAX_LEADS.
+ */
+function isRubric(section) {
+  const headline = stripInlineMd(section.match(/^## (.+)$/m)?.[1] ?? '');
+  if (headline.length > RUBRIC_MAX_CHARS) return false;
+
+  const body = section.replace(/^## .+$/m, '');
+  if (/^(?:[-*•][ \t]|#{3,6} )/m.test(body)) return true;
+
+  const leads = body.split(/\n[ \t]*\n/).filter((block) => /^\*\*(?!\s)/.test(block.trim()));
+  return leads.length === 0 || leads.length > STORY_MAX_LEADS;
 }
 
 /**
@@ -1746,6 +1780,34 @@ function stripMasthead(body, lang, date) {
   return body.slice(match[0].length).trim();
 }
 
+// The composer's proposed subject line and preview text, 2026-09-29. They are
+// notes to the sender, not the edition, and the email did not print them; on
+// the page they would print under the round-up. Taken wherever they fall, since
+// nothing in an edition opens on a bolded "subject:" label. See SENDER_NOTE.
+function stripSenderNotes(body, lang, date) {
+  // Split keeping the separators, so what is left is byte-for-byte what came in.
+  const parts = body.split(/(\n[ \t]*\n)/);
+  const kept = [];
+  let dropped = 0;
+
+  for (let i = 0; i < parts.length; i += 2) {
+    if (SENDER_NOTE.test(parts[i].trim())) {
+      dropped += 1;
+      continue;
+    }
+    if (kept.length) kept.push(parts[i - 1]);
+    kept.push(parts[i]);
+  }
+
+  if (!dropped) return body;
+
+  console.warn(
+    `WARNING: ${date} ${lang}: dropped ${dropped} note${dropped === 1 ? '' : 's'} to the ` +
+      "sender from the markdown (a proposed subject or preview text) — the email did not carry them.",
+  );
+  return kept.join('');
+}
+
 // The email's sign-off, which the markdown began carrying on 2026-08-26: the
 // project line, the row of sibling-project links, the copyright. It is the
 // email's chrome, and on the page it would print inside the article, above the
@@ -1822,9 +1884,11 @@ function deriveDek(body) {
   // "Spotlight turns to children" (27 chars) fell out of the English dek while
   // "La atención se vuelca hacia la niñez" (36) stayed, so the same edition
   // summarized itself two different ways in its two languages.
-  const beats = [...body.matchAll(/^## (.+)$/gm)]
-    .map((match) => stripInlineMd(match[1]))
-    .filter((headline, i) => i === 0 || headline.length > RUBRIC_MAX_CHARS);
+  const beats = body
+    .split(/\n(?=## )/)
+    .filter((section) => section.startsWith('## '))
+    .filter((section, i) => i === 0 || !isRubric(section))
+    .map((section) => stripInlineMd(section.match(/^## (.+)$/m)[1]));
 
   const picked = [];
   for (const beat of beats.slice(0, DEK_BEATS)) {
