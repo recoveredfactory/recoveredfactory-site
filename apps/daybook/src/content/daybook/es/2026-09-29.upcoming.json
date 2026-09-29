@@ -1,0 +1,57 @@
+{
+  "date": "2026-09-29",
+  "lang": "es",
+  "note": "El correo en español salió sin calendario: el encabezado de Próximamente, sin entradas. El inglés es el estándar, así que estas cinco entradas son las del correo en inglés. Tres son texto de ediciones en español anteriores: la del 1 de octubre, del correo del 25 de septiembre, que tradujo la misma redacción que el inglés usó hoy; las del 5 y el 13 de octubre, de la edición del 24 de septiembre, como el 28 de septiembre. Las del 2 y el 19 de octubre son nuevas en el calendario de hoy (el inglés dice que se agregaron), ninguna edición en español las publicó y son traducción nuestra, apoyada en la redacción de las notas en español del 28 y el 29 de septiembre: pendientes de revisión de la editora. Las fuentes son las del correo en inglés.",
+  "entries": [
+    {
+      "date": "2026-10-01",
+      "summary": "Un nuevo suministro de números de tarjetas de residencia basadas en el empleo para el año fiscal estará disponible el 1 de octubre, por lo que el Boletín de Visas de octubre de 2026 —la tabla del Departamento de Estado que determina quién puede presentar una solicitud o ser aprobado según su lugar en la fila (fecha de prioridad)— puede mostrar avances en categorías con retrasos acumulados como EB-2 India.",
+      "sources": [
+        {
+          "label": "WR Immigration (Wolfsdorf Rosenthal)",
+          "url": "https://wolfsdorf.com/wr-immigration-news-digest-20260618/"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-02",
+      "summary": "USCIS dice que ciertos documentos de trabajo del TPS emitidos bajo la designación de 2023 para Venezuela siguen vigentes hasta el 2 de octubre por orden de un tribunal federal. Agregamos esta fecha porque USCIS todavía la señala, aunque su efecto sigue ligado al litigio.",
+      "sources": [
+        {
+          "label": "USCIS",
+          "url": "https://www.uscis.gov/humanitarian/temporary-protected-status/temporary-protected-status-designated-country-venezuela"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-05",
+      "summary": "La oficina federal que alberga a niños inmigrantes que llegan sin un padre, madre o tutor, la Office of Refugee Resettlement (ORR), quiere revisar los formularios que usan sus inspectores para verificar si los albergues cumplen las normas de licenciamiento y otros requisitos legales. Cualquier persona puede comentar hasta el 5 de octubre de 2026.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/08/05/2026-15842/proposed-information-collection-activity-monitoring-and-compliance-for-office-of-refugee"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-13",
+      "summary": "USCIS ahora puede exigir que ciertas solicitudes y peticiones se presenten en línea en vez de en papel, y la regla establece cómo designará cuáles serán. Las personas que no puedan presentar electrónicamente pueden solicitar una exención. El cambio ya está en vigor como regla final provisional, pero los comentarios están abiertos hasta el 13 de octubre de 2026.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16313/mandatory-electronic-filing-e-filing"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-19",
+      "summary": "Para Ucrania, USCIS indica el 19 de octubre de 2026 en los documentos del TPS; ciertos documentos de trabajo del TPS para Sudán también siguen vigentes hasta el 19 de octubre de 2026. Es una fecha para seguir de cerca, no una fecha final definitiva: la extensión que la ley prevé para Ucrania y su implementación oficial siguen sin resolverse.",
+      "sources": [
+        {
+          "label": "USCIS",
+          "url": "https://www.uscis.gov/humanitarian/temporary-protected-status/TPS-Ukraine"
+        }
+      ]
+    }
+  ]
+}
