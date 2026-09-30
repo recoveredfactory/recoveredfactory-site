@@ -132,9 +132,15 @@ const BOLD_CALENDAR = /^\*\*\p{Lu}{3,4}(?:\*\*[ \t]*\n\s*\*\*| )\d{1,2}\*\*[ \t]
 const FOOTER_HOSTS = /^(?:[a-z0-9-]+\.)*(?:recoveredfactory\.net|promptql\.io|creativecommons\.org)$/;
 
 // The email's masthead as paragraphs, 2026-09-25: the wordmark, the domain link,
-// the ⁘ dateline. See stripMasthead.
+// the ⁘ dateline. Or, 2026-09-30, the wordmark as the H1 the pull already takes
+// off and the dateline alone under it. See stripMasthead.
 const MASTHEAD =
-  /^(?:\*\*)?immigration daybook(?:\*\*)?[ \t]*\n\s*(?:\[[^\]\n]*\]\(https?:\/\/(?:www\.)?immigrationdaybook\.com\/?\)[ \t]*\n\s*)?(?:[^\n]*⁘[^\n]*\n\s*)?/i;
+  /^(?:(?:\*\*)?immigration daybook(?:\*\*)?[ \t]*\n\s*(?:\[[^\]\n]*\]\(https?:\/\/(?:www\.)?immigrationdaybook\.com\/?\)[ \t]*\n\s*)?(?:[^\n]*⁘[^\n]*\n\s*)?|[^\n⁘]+⁘[^\n⁘]+⁘[^\n]+\n\s*)/i;
+
+// A note set as raw HTML, 2026-09-30: a correction above the lede and a
+// clarification under the round-up, each `<p style="…"><em><strong>Correction:
+// </strong> …</em></p>` on a line of its own. See unwrapHtmlNotes.
+const HTML_NOTE = /^<p\b[^>]*>(.*)<\/p>[ \t]*$/gm;
 
 
 // Carousel tuning, up here for the same dead-zone reason as the dek settings.
@@ -816,6 +822,7 @@ function prepareEdition(markdown, lang, date, headings = [], existing = {}, imag
   // body and the lede read as headless. Nothing else is ever an H1.
   let body = stripMasthead(markdown.trim().replace(/^# .+\n+/, ''), lang, date);
   body = stripSenderNotes(body, lang, date);
+  body = unwrapHtmlNotes(body, lang, date);
 
   let standing = '';
   const noteMatch = body.match(STANDING_NOTE);
@@ -1778,6 +1785,33 @@ function stripMasthead(body, lang, date) {
       'the page sets its own.',
   );
   return body.slice(match[0].length).trim();
+}
+
+// Editor's notes as raw HTML, 2026-09-30. The page escapes every `<` in an
+// edition, so the tags would print as text. Rewritten as the markdown the
+// Sept. 3 correction arrived in, `***Correction:** …*`. Only a paragraph that
+// is one <p> holding nothing but <em>, <strong> and <a> is touched — the Aug. 6
+// chart, an <img> in a <p>, is left alone. Runs ahead of the note split, so a
+// correction above the lede becomes the standing note it sat in on the email.
+function unwrapHtmlNotes(body, lang, date) {
+  let count = 0;
+  const out = body.replace(HTML_NOTE, (line, inner) => {
+    if (/<(?!\/?(?:em|strong|a)\b)/i.test(inner)) return line;
+    count++;
+    return inner
+      .replace(/<a\b[^>]*\bhref="([^"]*)"[^>]*>([\s\S]*?)<\/a>/gi, '[$2]($1)')
+      .replace(/<\/?strong\b[^>]*>/gi, '**')
+      .replace(/<\/?em\b[^>]*>/gi, '*')
+      .trim();
+  });
+
+  if (count) {
+    console.warn(
+      `WARNING: ${date} ${lang}: rewrote ${count} note${count === 1 ? '' : 's'} set as raw ` +
+        'HTML into markdown — the page escapes HTML and would print the tags.',
+    );
+  }
+  return out;
 }
 
 // The composer's proposed subject line and preview text, 2026-09-29. They are
