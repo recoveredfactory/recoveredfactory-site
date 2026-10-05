@@ -132,10 +132,11 @@ const BOLD_CALENDAR = /^\*\*\p{Lu}{3,4}(?:\*\*[ \t]*\n\s*\*\*| )\d{1,2}\*\*[ \t]
 const FOOTER_HOSTS = /^(?:[a-z0-9-]+\.)*(?:recoveredfactory\.net|promptql\.io|creativecommons\.org)$/;
 
 // The email's masthead as paragraphs, 2026-09-25: the wordmark, the domain link,
-// the ⁘ dateline. Or, 2026-09-30, the wordmark as the H1 the pull already takes
-// off and the dateline alone under it. See stripMasthead.
+// the ⁘ dateline. Or the wordmark as the H1 the pull already takes off, and
+// under it the dateline alone (2026-09-30) or the link and the dateline
+// (2026-10-02). See stripMasthead.
 const MASTHEAD =
-  /^(?:(?:\*\*)?immigration daybook(?:\*\*)?[ \t]*\n\s*(?:\[[^\]\n]*\]\(https?:\/\/(?:www\.)?immigrationdaybook\.com\/?\)[ \t]*\n\s*)?(?:[^\n]*⁘[^\n]*\n\s*)?|[^\n⁘]+⁘[^\n⁘]+⁘[^\n]+\n\s*)/i;
+  /^(?:(?:\*\*)?immigration daybook(?:\*\*)?[ \t]*\n\s*(?:\[[^\]\n]*\]\(https?:\/\/(?:www\.)?immigrationdaybook\.com\/?\)[ \t]*\n\s*)?(?:[^\n]*⁘[^\n]*\n\s*)?|(?:\[[^\]\n]*\]\(https?:\/\/(?:www\.)?immigrationdaybook\.com\/?\)[ \t]*\n\s*)?[^\n⁘]+⁘[^\n⁘]+⁘[^\n]+\n\s*)/i;
 
 // A note set as raw HTML, 2026-09-30: a correction above the lede and a
 // clarification under the round-up, each `<p style="…"><em><strong>Correction:
