@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-05",
+  "lang": "es",
+  "note": "El correo en español llevó la sección Próximamente sin entradas. El inglés es el estándar, así que estas cuatro entradas son las del correo en inglés, que repitió palabra por palabra el calendario del 2 de octubre. Ninguna es traducción nuestra: el texto es el de la edición en español del 2 de octubre, que las publicó. Las fuentes son las del correo en inglés.",
+  "entries": [
+    {
+      "date": "2026-10-05",
+      "summary": "La Office of Refugee Resettlement quiere revisar los formularios que usan sus inspectores para verificar si los albergues para niños que llegan sin un padre, madre o tutor cumplen con los requisitos de licencia y otros requisitos legales. Los comentarios cierran el 5 de octubre.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/08/05/2026-15842/proposed-information-collection-activity-monitoring-and-compliance-for-office-of-refugee"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-13",
+      "summary": "USCIS puede exigir que ciertas solicitudes y peticiones de inmigración se presenten en línea en lugar de en papel, con un proceso de exención para las personas que no pueden presentar electrónicamente. Los comentarios sobre la regla provisional cierran el 13 de octubre.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16313/mandatory-electronic-filing-e-filing"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-16",
+      "summary": "Los aumentos de tarifas de USCIS exigidos por H.R. 1 entran en vigor el 16 de octubre. Las solicitudes de beneficios migratorios con matasellos de ese día o posterior pueden ser rechazadas si no incluyen la nueva tarifa requerida.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/10/01/2026-20187/fiscal-year-2027-inflation-adjustment-to-hr-1-immigration-fees"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-18",
+      "summary": "Se ordena a la División de Salarios y Horas del Departamento de Trabajo comenzar a revisar las solicitudes de condiciones laborales H-1B presentadas anteriormente para decidir si puede estar justificada una acción contra los empleadores patrocinadores.",
+      "sources": [
+        {
+          "label": "The Insightful Immigration Blog",
+          "url": "https://blog.cyrusmehta.com/2026/09/additional-h-1b-barriers-outside-the-statute-the-september-18-executive-order-on-layoffs-and-the-extension-of-the-100000-proclamation.html"
+        }
+      ]
+    }
+  ]
+}
