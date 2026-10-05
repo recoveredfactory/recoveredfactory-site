@@ -39,7 +39,7 @@ I might not have a knack for audio or video, but I am decently good at engineeri
   />
 </div>
 
-That forms the core of a fundamental shortcut we’re using to generate social video: A web-driven “asset bakery.” The asset bakery, data pipeline, and frontend for this project are [open source](https://github.com/recoveredfactory/287g-explorer/) if you want to go deeper.
+That forms the core of a fundamental shortcut we’re using to generate social video: A web-driven “asset bakery.” The asset bakery, data pipeline, and frontend for this project are [open source](https://github.com/recoveredfactory/287g-watch) if you want to go deeper.
 
 ## The trick: the video is a web page
 
@@ -61,7 +61,7 @@ Previewing and debugging is easier: We can open the page in a browser, scrub it 
 
 ## A storyboard, written as a tiny script
 
-A [single short file](https://github.com/recoveredfactory/287g-explorer/blob/main/packages/web/src/lib/video/storyboard.ts) describes the timing and transformations, like a director's shot list: hold on today's totals for a beat, fade to black, jump back to December 2024 (where the data starts), then run forward through eighteen months of growth, and settle back on today. The whole thing is just a handful of named beats with durations: a 1.5-second hold on today, a 0.7-second fade, a 1.5-second hold on the December 2024 start,  etc., which all builds up to a roughly fourteen second clip.
+A [single short file](https://github.com/recoveredfactory/287g-watch/blob/main/packages/web/src/lib/video/storyboard.ts) describes the timing and transformations, like a director's shot list: hold on today's totals for a beat, fade to black, jump back to December 2024 (where the data starts), then run forward through eighteen months of growth, and settle back on today. The whole thing is just a handful of named beats with durations: a 1.5-second hold on today, a 0.7-second fade, a 1.5-second hold on the December 2024 start,  etc., which all builds up to a roughly fourteen second clip.
 
 Everything on screen — the chart drawing itself, the map dots appearing, the counters climbing — is tied to one moving "playhead," a controller that ensures all components render correctly at a given timestamp, so nothing ever drifts out of step. The playhead architecture is critical for the next trick as well.
 
@@ -79,7 +79,7 @@ That core “playhead” architecture allows us to tell the page, "show me exact
 
 The result is deterministic and testable: run it twice, you should get verifiably identical frames. The screenshot images it dumps are a valuable asset on their own. It’s also easy to reason about: Double the frames, roughly double the compute time required to render and space required to store.
 
-A few hard-won details make this run reliably on a plain server. The full details are in the [open-source release](https://github.com/recoveredfactory/287g-explorer); a couple are worth calling out here:
+A few hard-won details make this run reliably on a plain server. The full details are in the [open-source release](https://github.com/recoveredfactory/287g-watch); a couple are worth calling out here:
 
 - **Drawing the map without a graphics card.** The national map uses [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/), which paints with WebGL code that normally expects a GPU. Our servers don't have one, so we tell Chromium to render using software instead. It's slower than real graphics hardware, but it runs on almost any platform at the same quality.
 - **Cheap frames.** We save each frame as a JPEG rather than a PNG. PNG encoding is the slow part of taking a screenshot, and the video looks identical either way — so it's a free speed-up across a few hundred frames.
@@ -93,7 +93,7 @@ All of this is wired into our automated data pipeline, which runs as a scheduled
 
 If fresh data lands, the job rebuilds and redeploys the site, bakes all four cuts — square and vertical aspect ratios, English and Spanish — and publishes them to our CloudFront CDN, so the public download page always offers the latest cut in each language we support.
 
-The final step is automated upload of [draft posts to YouTube](https://github.com/recoveredfactory/287g-explorer/blob/main/packages/web/scripts/publish-social-youtube.mjs), a [notification to publish](https://github.com/recoveredfactory/287g-explorer/blob/main/packages/web/scripts/notify-social-ready.mjs) to Instagram, and soon TikTok integration as well.
+The final step is automated upload of [draft posts to YouTube](https://github.com/recoveredfactory/287g-watch/blob/main/packages/web/scripts/publish-social-youtube.mjs), a [notification to publish](https://github.com/recoveredfactory/287g-watch/blob/main/packages/web/scripts/notify-social-ready.mjs) to Instagram, and soon TikTok integration as well.
 
 We’re not categorically opposed to full automation, but for this project we wanted to draw a deliberate line: We want human involvement, editorial control over headlines and captions, and final review of every video that goes out. We know even the best systems can get fouled by bad input data or generate the wrong thing. We’d rather use our judgment every few days about how best to publish and characterize these videos than blindly publishing.
 

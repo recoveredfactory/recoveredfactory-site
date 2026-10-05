@@ -39,7 +39,7 @@ Puede que no tenga talento para el audio o el video, pero soy bastante bueno en 
   />
 </div>
 
-Eso forma el núcleo de un atajo fundamental que estamos usando para generar video social: una “panadería de recursos” impulsada por la web. La panadería de recursos, el pipeline de datos y el frontend de este proyecto son de [código abierto](https://github.com/recoveredfactory/287g-explorer/) si quieres profundizar.
+Eso forma el núcleo de un atajo fundamental que estamos usando para generar video social: una “panadería de recursos” impulsada por la web. La panadería de recursos, el pipeline de datos y el frontend de este proyecto son de [código abierto](https://github.com/recoveredfactory/287g-watch) si quieres profundizar.
 
 ## El truco: el video es una página web
 
@@ -61,7 +61,7 @@ Previsualizar y depurar es más fácil: podemos abrir la página en un navegador
 
 ## Un storyboard, escrito como un pequeño script
 
-Un [único archivo corto](https://github.com/recoveredfactory/287g-explorer/blob/main/packages/web/src/lib/video/storyboard.ts) describe los tiempos y las transformaciones, como la lista de tomas de un director: mantener los totales de hoy por un instante, fundir a negro, saltar atrás a diciembre de 2024 (donde comienzan los datos), luego avanzar a través de dieciocho meses de crecimiento y volver a asentarse en hoy. Todo el asunto es solo un puñado de momentos con nombre y duración: una pausa de 1.5 segundos en hoy, un fundido de 0.7 segundos, una pausa de 1.5 segundos en el inicio de diciembre de 2024, etc., lo que en conjunto suma un clip de aproximadamente catorce segundos.
+Un [único archivo corto](https://github.com/recoveredfactory/287g-watch/blob/main/packages/web/src/lib/video/storyboard.ts) describe los tiempos y las transformaciones, como la lista de tomas de un director: mantener los totales de hoy por un instante, fundir a negro, saltar atrás a diciembre de 2024 (donde comienzan los datos), luego avanzar a través de dieciocho meses de crecimiento y volver a asentarse en hoy. Todo el asunto es solo un puñado de momentos con nombre y duración: una pausa de 1.5 segundos en hoy, un fundido de 0.7 segundos, una pausa de 1.5 segundos en el inicio de diciembre de 2024, etc., lo que en conjunto suma un clip de aproximadamente catorce segundos.
 
 Todo lo que aparece en pantalla — la gráfica dibujándose, los puntos del mapa apareciendo, los contadores subiendo — está atado a un único “cabezal de reproducción” en movimiento, un controlador que garantiza que todos los componentes se rendericen correctamente en un instante dado, de modo que nada se desfase jamás. La arquitectura del cabezal de reproducción también es crítica para el siguiente truco.
 
@@ -79,7 +79,7 @@ Esa arquitectura central del “cabezal de reproducción” nos permite decirle 
 
 El resultado es determinista y comprobable: si lo ejecutas dos veces, deberías obtener cuadros verificablemente idénticos. Las imágenes de captura de pantalla que genera son un recurso valioso por sí solas. También es fácil de razonar: el doble de cuadros implica aproximadamente el doble de tiempo de cómputo para renderizar y de espacio para almacenar.
 
-Unos cuantos detalles duramente ganados hacen que esto corra de manera confiable en un servidor común y corriente. Los detalles completos están en la [versión de código abierto](https://github.com/recoveredfactory/287g-explorer); vale la pena destacar un par aquí:
+Unos cuantos detalles duramente ganados hacen que esto corra de manera confiable en un servidor común y corriente. Los detalles completos están en la [versión de código abierto](https://github.com/recoveredfactory/287g-watch); vale la pena destacar un par aquí:
 
 - **Dibujar el mapa sin tarjeta gráfica.** El mapa nacional usa [MapLibre GL JS](https://maplibre.org/maplibre-gl-js/docs/), que pinta con código WebGL que normalmente espera una GPU. Nuestros servidores no tienen una, así que le decimos a Chromium que renderice por software. Es más lento que el hardware gráfico real, pero corre en casi cualquier plataforma con la misma calidad.
 - **Cuadros baratos.** Guardamos cada cuadro como JPEG en lugar de PNG. La codificación PNG es la parte lenta de tomar una captura de pantalla, y el video se ve idéntico de cualquier manera — así que es una aceleración gratuita a lo largo de unos cientos de cuadros.
@@ -93,7 +93,7 @@ Todo esto está conectado a nuestro pipeline automatizado de datos, que corre co
 
 Si llegan datos frescos, el trabajo reconstruye y vuelve a desplegar el sitio, hornea los cuatro cortes — proporciones cuadrada y vertical, en inglés y en español — y los publica en nuestra CDN de CloudFront, de modo que la página pública de descargas siempre ofrece el corte más reciente en cada idioma que soportamos.
 
-El paso final es la subida automatizada de [borradores a YouTube](https://github.com/recoveredfactory/287g-explorer/blob/main/packages/web/scripts/publish-social-youtube.mjs), una [notificación para publicar](https://github.com/recoveredfactory/287g-explorer/blob/main/packages/web/scripts/notify-social-ready.mjs) en Instagram, y pronto también la integración con TikTok.
+El paso final es la subida automatizada de [borradores a YouTube](https://github.com/recoveredfactory/287g-watch/blob/main/packages/web/scripts/publish-social-youtube.mjs), una [notificación para publicar](https://github.com/recoveredfactory/287g-watch/blob/main/packages/web/scripts/notify-social-ready.mjs) en Instagram, y pronto también la integración con TikTok.
 
 No nos oponemos categóricamente a la automatización total, pero para este proyecto quisimos trazar una línea deliberada: queremos participación humana, control editorial sobre titulares y descripciones, y una revisión final de cada video que sale. Sabemos que hasta los mejores sistemas pueden estropearse por datos de entrada defectuosos o generar algo equivocado. Preferimos usar nuestro juicio cada pocos días sobre cuál es la mejor manera de publicar y caracterizar estos videos que publicar a ciegas.
 
