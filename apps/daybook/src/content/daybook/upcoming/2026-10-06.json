@@ -1,0 +1,241 @@
+{
+  "audit": {
+    "collapsed_count": 58,
+    "eligible_count": 2,
+    "non_us_excluded_count": 43,
+    "other_past_excluded_count": 61,
+    "paperwork_excluded_count": 71,
+    "past_effective_review_count": 51,
+    "raw_selected_count": 269,
+    "selected_count": 0
+  },
+  "edition_date": "2026-10-06",
+  "eligible_items": [
+    {
+      "bucket": "next_four_weeks",
+      "correction_state": "row_owned",
+      "date_authority": "federal-register",
+      "document_status": "",
+      "eligible_order": 1,
+      "framing_source": "federal-register",
+      "id": 1010,
+      "key_date": "2026-10-13",
+      "key_date_raw": "Comments close October 13, 2026",
+      "language_readiness": {
+        "en": {
+          "available": true,
+          "edited": false,
+          "sha256": "979b1ebe671884de051e52901694221dfd4b8d72a7f52a7c0c4f26fa3c92ba2d"
+        },
+        "es": {
+          "available": true,
+          "edited": false,
+          "sha256": "902b10ffd7e3826a0078ca93025c838fc5a94c97a69986249484e10bf8dfc792"
+        }
+      },
+      "logical_item_id": "2026-16313",
+      "member_ids": [
+        1010
+      ],
+      "plain_summary": "USCIS can now require that certain applications and petitions be filed online rather than on paper, and the rule sets out how it will designate which ones. People who cannot file electronically can ask for a waiver. The change is already in force as an interim final rule, but comments are open until October 13, 2026.",
+      "plain_summary_edited": false,
+      "plain_summary_es": "USCIS podrá exigir que ciertas solicitudes se presenten en línea (e-filing) en lugar de en papel, y la regla fija el procedimiento que seguirá para hacerlo y cómo pedir una exención si usted no puede presentar su caso electrónicamente. Se trata de una regla interina que ya viene con pedido de comentarios: cualquier persona puede enviar los suyos hasta el 13 de octubre de 2026.",
+      "plain_summary_es_edited": false,
+      "plain_summary_es_stale_since": "",
+      "primary_citation": {
+        "label": "Federal Register",
+        "match_reason": "federal-register-document",
+        "role": "primary_document",
+        "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16313/mandatory-electronic-filing-e-filing"
+      },
+      "primary_citation_url": "https://www.federalregister.gov/documents/2026/08/11/2026-16313/mandatory-electronic-filing-e-filing",
+      "publisher": "Federal Register",
+      "row_revision": "2026-08-18T02:25:24.525887",
+      "row_sha256": "427b58094c3f75a3c7e27e2e6a2a94ac2137c939a9e5d82b019b52fcb46f48ce",
+      "secondary_citations": [],
+      "source": "federal-register",
+      "source_label": "Federal Register",
+      "source_roles": [
+        {
+          "label": "Federal Register",
+          "match_reason": "federal-register-document",
+          "role": "primary_document",
+          "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16313/mandatory-electronic-filing-e-filing"
+        }
+      ],
+      "source_url": "https://www.federalregister.gov/documents/2026/08/11/2026-16313/mandatory-electronic-filing-e-filing",
+      "spanish_selection_preference": "eligible",
+      "status": "comment_period_open",
+      "theme": "Rule — Homeland Security Department",
+      "tier": "approaching",
+      "title": "Mandatory Electronic Filing (e-Filing)"
+    },
+    {
+      "bucket": "next_four_weeks",
+      "correction_state": "row_owned",
+      "date_authority": "cyrusmehta-blog-rss",
+      "document_status": "",
+      "eligible_order": 2,
+      "framing_source": "cyrusmehta-blog-rss",
+      "id": 228,
+      "key_date": "2026-11-01",
+      "key_date_raw": "2026-11-01",
+      "language_readiness": {
+        "en": {
+          "available": true,
+          "edited": false,
+          "sha256": "969016bf76c0789fcd9965e39b31315ea186e2b1f7cdfc38c60feab9ad7ec14d"
+        },
+        "es": {
+          "available": true,
+          "edited": false,
+          "sha256": "27e6213d95f0ddc12cb7ab09ddb5715dda952b198429cb24762e1af676772e74"
+        }
+      },
+      "logical_item_id": "20b37bfa0e37a1fbc94052cfd0a2f47c",
+      "member_ids": [
+        228
+      ],
+      "plain_summary": "Congress may take up a bill giving permanent status to people with protection from deportation because their home country is in crisis (TPS) — a route that would sidestep the Supreme Court's Mullin v. Doe ruling. Any bill needs a simple House majority and 60 Senate votes, so its chances turn on who wins the November 2026 midterms.",
+      "plain_summary_edited": false,
+      "plain_summary_es": "En el Congreso podría avanzar un proyecto de ley que dé residencia permanente a las personas con TPS, la protección contra la deportación para quienes vienen de países en crisis; hasta ahora no existe tal ley y nada cambia mientras no se apruebe. Necesitaría mayoría simple en la Cámara y 60 votos en el Senado, y sus posibilidades pueden variar según cómo queden ambas cámaras tras las elecciones de noviembre de 2026.",
+      "plain_summary_es_edited": false,
+      "plain_summary_es_stale_since": "",
+      "primary_citation": {
+        "label": "The Insightful Immigration Blog (Cyrus D. Mehta & Partners)",
+        "match_reason": "source-url",
+        "role": "primary_document",
+        "url": "https://blog.cyrusmehta.com/2026/06/mullin-v-doe-blessing-a-race-neutral-cover-for-racial-animus.html"
+      },
+      "primary_citation_url": "https://blog.cyrusmehta.com/2026/06/mullin-v-doe-blessing-a-race-neutral-cover-for-racial-animus.html",
+      "publisher": "The Insightful Immigration Blog (Cyrus D. Mehta & Partners)",
+      "row_revision": "2026-07-26T21:58:44.525421",
+      "row_sha256": "0b95250450c6c53c6e20f141c0c03ddc1874f29daca33887cb94360b1f80b00d",
+      "secondary_citations": [],
+      "source": "cyrusmehta-blog-rss",
+      "source_label": "The Insightful Immigration Blog (Cyrus D. Mehta & Partners)",
+      "source_roles": [
+        {
+          "label": "The Insightful Immigration Blog (Cyrus D. Mehta & Partners)",
+          "match_reason": "source-url",
+          "role": "primary_document",
+          "url": "https://blog.cyrusmehta.com/2026/06/mullin-v-doe-blessing-a-race-neutral-cover-for-racial-animus.html"
+        }
+      ],
+      "source_url": "https://blog.cyrusmehta.com/2026/06/mullin-v-doe-blessing-a-race-neutral-cover-for-racial-animus.html",
+      "spanish_selection_preference": "eligible",
+      "status": "pending",
+      "theme": "Legislative relief for TPS holders",
+      "tier": "horizon",
+      "title": "Congressional bill to legalize status of TPS holders"
+    }
+  ],
+  "horizon": {
+    "days": 28,
+    "end_inclusive": "2026-11-03",
+    "start_inclusive": "2026-10-06"
+  },
+  "language_policy": {
+    "english_field": "plain_summary",
+    "english_missing_selected_ids": [],
+    "shared_structure": [
+      "logical_item_id",
+      "selected_order",
+      "key_date",
+      "source_roles"
+    ],
+    "spanish_field": "plain_summary_es",
+    "spanish_may_not_render_when_missing": true,
+    "spanish_missing_selected_ids": []
+  },
+  "manifest_sha256": "8e19133f6a86633b9c9f6337e22e9bb102b19324de0749edd0d592995eceeaf2",
+  "policy": {
+    "active_tiers": [
+      "approaching",
+      "due",
+      "future",
+      "horizon",
+      "open_ended"
+    ],
+    "geo_focus_keep": [
+      "bilateral",
+      "us"
+    ],
+    "hard_out_ids": [
+      327,
+      336,
+      341,
+      346
+    ],
+    "horizon_days": 28,
+    "max_items": 12,
+    "max_open_ended": 0,
+    "max_per_normalized_theme": 2,
+    "summary_policy": {
+      "composer_rewriting": false,
+      "en": "plain_summary verbatim",
+      "es": "plain_summary_es verbatim",
+      "fallbacks": [],
+      "render_time_translation": false
+    }
+  },
+  "policy_sha256": "5a7a5843900e0a5fa396a2d9819fdf880a2bf731730e3a5892813a755d4b8fb4",
+  "schema_version": "immigration-daybook-upcoming-manifest.v2",
+  "selected_items": [],
+  "selection": {
+    "language_neutral": true,
+    "mode": "eligible_only",
+    "selected_count": 0,
+    "selected_ids_in_order": [],
+    "unknown_selected_ids": [],
+    "zero_selection_confirmed": false
+  },
+  "source_contract": {
+    "source_freshness": [
+      {
+        "active_items": 126,
+        "dated_items": 52,
+        "days_since_seen": 0,
+        "last_seen_at": "2026-10-06T01:36:56.993031",
+        "latest_generated_as_of": "2026-10-05",
+        "source": "cyrusmehta-blog-rss"
+      },
+      {
+        "active_items": 1,
+        "dated_items": 1,
+        "days_since_seen": 51,
+        "last_seen_at": "2026-08-16T19:39:02.277956",
+        "latest_generated_as_of": "2026-08-16",
+        "source": "editorial"
+      },
+      {
+        "active_items": 198,
+        "dated_items": 149,
+        "days_since_seen": 0,
+        "last_seen_at": "2026-10-06T01:35:09.215560",
+        "latest_generated_as_of": "2026-10-05",
+        "source": "federal-register"
+      },
+      {
+        "active_items": 6,
+        "dated_items": 3,
+        "days_since_seen": 23,
+        "last_seen_at": "2026-09-13T01:25:30.951394",
+        "latest_generated_as_of": "2026-09-10",
+        "source": "nationofimmigrators-rss"
+      },
+      {
+        "active_items": 209,
+        "dated_items": 117,
+        "days_since_seen": 0,
+        "last_seen_at": "2026-10-06T01:36:04.757183",
+        "latest_generated_as_of": "2026-10-05",
+        "source": "wolfsdorf-wr-rss"
+      }
+    ],
+    "upstream_logical_item_and_source_role_views_required": true,
+    "watch_item_citations": "app.v_watch_item_citations",
+    "watch_items": "app.v_watch_items",
+    "watch_sources": "app.v_watch_sources"
+  }
+}
