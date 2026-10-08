@@ -121,9 +121,11 @@ const GLUED_CALENDAR = /^[\p{L} ]{0,24}\p{Lu}{3}\d{1,2}\p{L}/mu;
 
 // And bolded, 2026-09-25: the month and the day as bold paragraphs of their own,
 // "**SEP**" then "**28**" in English and "**SEP 28**" in one in Spanish, each
-// entry's rubric and prose in the paragraph after. No story paragraph is ever
-// just a bolded date.
-const BOLD_CALENDAR = /^\*\*\p{Lu}{3,4}(?:\*\*[ \t]*\n\s*\*\*| )\d{1,2}\*\*[ \t]*$/mu;
+// entry's rubric and prose in the paragraph after. On 2026-10-07 the Spanish
+// came day first with the month spelled out, "**13 DE OCTUBRE**". No story
+// paragraph is ever just a bolded date.
+const BOLD_CALENDAR =
+  /^\*\*(?:\p{Lu}{3,4}(?:\*\*[ \t]*\n\s*\*\*| )\d{1,2}|\d{1,2} DE \p{Lu}{4,10})\*\*[ \t]*$/mu;
 
 // The email's sign-off, which the markdown began carrying on 2026-08-26: the
 // project line, the sibling-project links and the copyright. Recognised by where
@@ -820,8 +822,10 @@ function prepareEdition(markdown, lang, date, headings = [], existing = {}, imag
   // Daybook — Tuesday, September 15, 2026" — above the note and the lede. The
   // page sets its own masthead, and with that line in the way the note was no
   // longer the single paragraph ahead of the first heading, so it stayed in the
-  // body and the lede read as headless. Nothing else is ever an H1.
+  // body and the lede read as headless. Nothing else was an H1 until Oct. 7;
+  // see demoteStrayH1.
   let body = stripMasthead(markdown.trim().replace(/^# .+\n+/, ''), lang, date);
+  body = demoteStrayH1(body, lang, date);
   body = stripSenderNotes(body, lang, date);
   body = unwrapHtmlNotes(body, lang, date);
 
@@ -1786,6 +1790,22 @@ function stripMasthead(body, lang, date) {
       'the page sets its own.',
   );
   return body.slice(match[0].length).trim();
+}
+
+// The round-up's rubric as an H1, 2026-10-07: "# Around the system" and
+// "# En el sistema", straight after the calendar. Every strip here splits the
+// body on `## `, so an H1 is no boundary at all, and the section above swallows
+// everything under it. That day the English calendar arrived flattened and was
+// dropped, and the round-up and the sign-off went with it. Once the masthead is
+// off, an H1 can only be a section heading set a level too high.
+function demoteStrayH1(body, lang, date) {
+  return body.replace(/^# (.+)$/gm, (line, heading) => {
+    console.warn(
+      `WARNING: ${date} ${lang}: set the H1 "${heading.trim()}" as an H2 — ` +
+        'every section in an edition is an H2, and the section above would have taken it in.',
+    );
+    return `## ${heading}`;
+  });
 }
 
 // Editor's notes as raw HTML, 2026-09-30. The page escapes every `<` in an
