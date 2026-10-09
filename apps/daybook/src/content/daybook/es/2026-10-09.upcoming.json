@@ -1,0 +1,47 @@
+{
+  "date": "2026-10-09",
+  "lang": "es",
+  "note": "El correo en español llevó la sección Próximamente sin entradas, solo la invitación a enviar correcciones. El inglés es el estándar y corrió estas mismas cuatro fechas. El texto es el del propio markdown en español de esta edición, que sí llevaba el calendario, aunque en una forma que la página no puede leer. Nada aquí es traducción nuestra. Las fuentes son las del correo en inglés.",
+  "entries": [
+    {
+      "date": "2026-10-13",
+      "summary": "USCIS puede exigir que ciertas solicitudes y peticiones migratorias se presenten en línea en lugar de en papel, con un proceso de exención para las personas que no puedan presentarlas electrónicamente. El plazo para comentarios sobre la norma provisional vence el 13 de octubre.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/08/11/2026-16313/mandatory-electronic-filing-e-filing"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-16",
+      "summary": "Los aumentos de tarifas de USCIS exigidos por H.R. 1 entran en vigor el 16 de octubre. Las solicitudes de beneficios migratorios con matasellos de ese día o posterior pueden ser rechazadas si no incluyen la nueva tarifa requerida.",
+      "sources": [
+        {
+          "label": "Federal Register",
+          "url": "https://www.federalregister.gov/documents/2026/10/01/2026-20187/fiscal-year-2027-inflation-adjustment-to-hr-1-immigration-fees"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-18",
+      "summary": "La División de Salarios y Horas del Departamento de Trabajo recibe la instrucción de comenzar a revisar las solicitudes de condiciones laborales H-1B presentadas previamente para determinar si podrían justificarse medidas contra los empleadores patrocinadores.",
+      "sources": [
+        {
+          "label": "The Insightful Immigration Blog",
+          "url": "https://blog.cyrusmehta.com/2026/09/additional-h-1b-barriers-outside-the-statute-the-september-18-executive-order-on-layoffs-and-the-extension-of-the-100000-proclamation.html"
+        }
+      ]
+    },
+    {
+      "date": "2026-10-19",
+      "summary": "Las personas elegibles de Ucrania y Sudán con TPS y renovaciones pendientes de permisos de trabajo están autorizadas hasta el 19 de octubre, sujetas a cualquier nueva guía de USCIS sobre extensión o terminación.",
+      "sources": [
+        {
+          "label": "WR Immigration",
+          "url": "https://wolfsdorf.com/wr-immigration-news-digest-20260820/"
+        }
+      ]
+    }
+  ]
+}
