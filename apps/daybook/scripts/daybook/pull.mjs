@@ -98,8 +98,14 @@ const STORY_MAX_LEADS = 3;
 // subject:** …" and "**Proposed preview text:** …" ("**Asunto propuesto:**",
 // "**Texto de vista previa propuesto:**") as the last two paragraphs of the
 // markdown, under the round-up. The email carried neither. See stripSenderNotes.
+// On 2026-10-09 they moved above the lede, the Spanish preview as "**Avance:**".
 const SENDER_NOTE =
-  /^\*\*[^*\n]*\b(?:subject|preview|preheader|asunto|vista previa)\b[^*\n]*(?::\*\*|\*\*:)/i;
+  /^\*\*[^*\n]*\b(?:subject|preview|preheader|asunto|vista previa|avance)\b[^*\n]*(?::\*\*|\*\*:)/i;
+
+// The standing note set as its own little section, 2026-10-09: "### Editor's
+// note" ("### Nota del editor"), the note, then "—David" as a paragraph of its
+// own, all above the masthead. See foldEditorsNote.
+const EDITORS_NOTE = /^#{3,6}[ \t]+(?:editor['’]s note|nota del editor)[ \t]*\n/i;
 
 // How much of a paragraph's folded text names it when an image the email ran
 // is put back after the same paragraph in the markdown. Same figure as the
@@ -828,6 +834,7 @@ function prepareEdition(markdown, lang, date, headings = [], existing = {}, imag
   body = demoteStrayH1(body, lang, date);
   body = stripSenderNotes(body, lang, date);
   body = unwrapHtmlNotes(body, lang, date);
+  body = foldEditorsNote(body, lang, date);
 
   let standing = '';
   const noteMatch = body.match(STANDING_NOTE);
@@ -1797,15 +1804,49 @@ function stripMasthead(body, lang, date) {
 // body on `## `, so an H1 is no boundary at all, and the section above swallows
 // everything under it. That day the English calendar arrived flattened and was
 // dropped, and the round-up and the sign-off went with it. Once the masthead is
-// off, an H1 can only be a section heading set a level too high.
+// off, an H1 can only be a section heading set a level too high — unless it is
+// the masthead itself. On 2026-10-09 that came second, under the editor's note,
+// where the leading strip cannot see it, and demoted it led the edition as an
+// empty story. A masthead H1 goes wherever it falls.
 function demoteStrayH1(body, lang, date) {
-  return body.replace(/^# (.+)$/gm, (line, heading) => {
+  return body.replace(/^# (.+)$(\n*)/gm, (line, heading, gap) => {
+    if (/^immigration daybook\b/i.test(heading.trim())) {
+      console.warn(
+        `WARNING: ${date} ${lang}: dropped the email masthead ("${heading.trim()}") from ` +
+          'the markdown — the page sets its own.',
+      );
+      return '';
+    }
     console.warn(
       `WARNING: ${date} ${lang}: set the H1 "${heading.trim()}" as an H2 — ` +
         'every section in an edition is an H2, and the section above would have taken it in.',
     );
-    return `## ${heading}`;
+    return `## ${heading}${gap}`;
   });
+}
+
+// The standing note as a section of its own, 2026-10-09: "### Editor's note",
+// the note, then "—David" as a paragraph of its own. The English email printed
+// it the way the notes have always run, one unlabeled paragraph signed inline,
+// so that is what it becomes, and the note split takes it as one paragraph.
+// Only at the head of the body, and only up to the next heading.
+function foldEditorsNote(body, lang, date) {
+  const label = body.match(EDITORS_NOTE);
+  if (!label) return body;
+
+  const rest = body.slice(label[0].length);
+  const end = rest.search(/^#/m);
+  const note = (end < 0 ? rest : rest.slice(0, end))
+    .trim()
+    .split(/\n[ \t]*\n/)
+    .map((paragraph) => paragraph.trim())
+    .join(' ');
+
+  console.warn(
+    `WARNING: ${date} ${lang}: folded the "${label[0].replace(/^#+\s*/, '').trim()}" ` +
+      'section into the standing note — the email ran it as one paragraph, signed inline.',
+  );
+  return end < 0 ? note : `${note}\n\n${rest.slice(end)}`;
 }
 
 // Editor's notes as raw HTML, 2026-09-30. The page escapes every `<` in an
