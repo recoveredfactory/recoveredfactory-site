@@ -95,6 +95,29 @@ describe('remote editions merged with the archive', () => {
     expect(warn).toHaveBeenCalledWith(expect.stringContaining('ECONNREFUSED'));
   });
 
+  it('reads a 403 as nothing published, the way the bucket answers a missing key', async () => {
+    // Anonymous callers cannot list the bucket, so S3 answers a missing object
+    // with AccessDenied: true of the index until the first edition is published.
+    serve({ 'editions/index.json': 403 });
+    const { listEditions } = await loader();
+
+    expect((await listEditions('en'))[0].date).toBe('2026-10-09');
+    expect(warn).not.toHaveBeenCalled();
+
+    serve({ 'editions/index.json': index(entry('2026-10-19')), 'editions/2026-10-19/en.json': 403 });
+    const fresh = await loader();
+    expect(await fresh.getEdition('en', '2026-10-19')).toBeUndefined();
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('listed in the index but not found'));
+  });
+
+  it('treats a 5xx as unreachable rather than empty', async () => {
+    serve({ 'editions/index.json': 503 });
+    const { listEditions } = await loader();
+
+    expect((await listEditions('en'))[0].date).toBe('2026-10-09');
+    expect(warn).toHaveBeenCalledWith(expect.stringContaining('HTTP 503'));
+  });
+
   it('keeps serving the last good index through a failed refresh', async () => {
     vi.useFakeTimers({ toFake: ['Date'] });
     try {
