@@ -5,14 +5,21 @@ import { homePath } from '$lib/urls';
 
 // The home page is the archive. It opens on the ask and the newest edition,
 // then lists every edition by month underneath.
-export const load = ({ params }) => {
+export const load = async ({ params }) => {
   const { lang } = params;
   if (!isLang(lang)) {
     throw error(404, 'Not found');
   }
 
-  const newest = listEditions(lang)[0];
-  const edition = newest ? getEdition(lang, newest.date) : undefined;
+  // The newest edition that actually renders. A published record that will not
+  // read is skipped for the one before it rather than leaving the page without
+  // a latest edition.
+  const editions = await listEditions(lang);
+  let edition: Awaited<ReturnType<typeof getEdition>> = undefined;
+  for (const candidate of editions.slice(0, 3)) {
+    edition = await getEdition(lang, candidate.date);
+    if (edition) break;
+  }
 
   return {
     lang,
@@ -27,6 +34,6 @@ export const load = ({ params }) => {
           headings: edition.sections.map((section) => section.heading).filter(Boolean),
         }
       : null,
-    months: listMonths(lang),
+    months: await listMonths(lang),
   };
 };

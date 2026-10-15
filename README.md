@@ -36,6 +36,31 @@ Required for the web app (wired in `sst.config.ts`):
 
 - `PUBLIC_SITE_URL` — public site base URL
 
+## Immigration Daybook editions
+
+The Daybook site (`apps/daybook`) serves editions from two places, merged in
+`apps/daybook/src/lib/daybook/loader.ts`:
+
+- **The committed archive:** `apps/daybook/src/content/daybook/{en,es}/YYYY-MM-DD.md`
+  (plus the sent email `.html` and any hand calendar), written by `pnpm daybook`.
+  Every edition through Oct. 9, 2026.
+- **Editions published to S3, from the Oct. 19, 2026 relaunch on.** The news
+  ingester writes each locked edition's `daybook/1` record to a public bucket:
+  `editions/index.json` lists them, and `editions/{date}/{lang}.json` holds each one.
+  The site reads them at request time (`apps/daybook/src/lib/daybook/remote.ts`),
+  cached for a minute per server instance. Publishing is the upload: no commit and no
+  deploy.
+
+`DAYBOOK_EDITIONS_URL` (the bucket's base URL, passed through `sst.config.ts` at deploy
+time) turns the second source on; unset, the site serves the archive only. If a date
+is both committed and published, the committed file wins. That's the hand override
+for a published edition, and the server logs it once. If the bucket can't be reached,
+the site serves the archive and logs it, and a failed refresh keeps the last good
+index. A published record carries its own calendar (`upcoming`), so a record with
+none ran none. It has no sent email, no hand calendar and no snapshot fallback.
+
+Tests: `pnpm -C apps/daybook test`.
+
 ## Paraglide i18n
 
 - Message sources live in `apps/web/messages` (`en.json`, `es.json`).

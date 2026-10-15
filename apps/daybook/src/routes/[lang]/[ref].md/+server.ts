@@ -8,16 +8,16 @@ const MONTH = /^\d{4}-\d{2}$/;
 // A markdown twin of every archive page, at the same path plus `.md`. Agents
 // and crawlers that want the text do better with the source than with HTML
 // they have to strip. Companions, not canonical: kept out of the sitemap.
-export const GET = ({ params }) => {
+export const GET = async ({ params }) => {
   const { lang, ref } = params;
   if (!isLang(lang)) {
     throw error(404, 'Not found');
   }
 
   const text = DATE.test(ref)
-    ? getEditionMarkdown(lang, ref)
+    ? await getEditionMarkdown(lang, ref)
     : MONTH.test(ref)
-      ? monthMarkdown(lang, ref)
+      ? await monthMarkdown(lang, ref)
       : undefined;
 
   if (!text) {
@@ -32,14 +32,15 @@ export const GET = ({ params }) => {
   });
 };
 
-function monthMarkdown(lang: 'en' | 'es', month: string): string | undefined {
-  const editions = getMonth(lang, month);
+async function monthMarkdown(lang: 'en' | 'es', month: string): Promise<string | undefined> {
+  const editions = await getMonth(lang, month);
   if (!editions.length) return undefined;
 
-  return editions
-    .map((edition) => {
-      const body = getEditionMarkdown(lang, edition.date) ?? '';
+  const bodies = await Promise.all(
+    editions.map(async (edition) => {
+      const body = (await getEditionMarkdown(lang, edition.date)) ?? '';
       return `# ${edition.date}\n\n${body}`;
-    })
-    .join('\n\n---\n\n');
+    }),
+  );
+  return bodies.join('\n\n---\n\n');
 }

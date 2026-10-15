@@ -181,6 +181,10 @@ export default $config({
           : process.env.PUBLIC_DAYBOOK_SITE_URL ?? "",
         KIT_API_KEY: kitApiKey.value,
         KIT_API_SECRET: kitApiSecret.value,
+        // Editions published to S3 by the news ingester at lock, read at request
+        // time beside the committed archive (apps/daybook/src/lib/daybook/remote.ts).
+        // Unset, the site serves the committed archive only.
+        DAYBOOK_EDITIONS_URL: process.env.DAYBOOK_EDITIONS_URL ?? "",
       },
     });
 

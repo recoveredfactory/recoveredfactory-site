@@ -17,22 +17,22 @@ const escapeXml = (value: string) =>
 // feed, so it is split across two sections — the standard escape.
 const cdata = (value: string) => `<![CDATA[${value.replaceAll(']]>', ']]]]><![CDATA[>')}]]>`;
 
-export const GET = ({ params }) => {
+export const GET = async ({ params }) => {
   const { lang } = params;
   if (!isLang(lang)) {
     throw error(404, 'Not found');
   }
 
-  const editions = listEditions(lang);
+  const editions = await listEditions(lang);
   const channelUrl = new URL(homePath(lang), SITE_URL).href;
   const feedUrl = new URL(feedPath(lang), SITE_URL).href;
 
   // Full text, not excerpts. The point of this feed is to be readable and
   // ingestible end to end — a truncated newsletter archive gives a crawler the
   // headline and none of the reporting under it.
-  const items = editions
-    .map((summary) => {
-      const edition = getEdition(lang, summary.date);
+  const rendered = await Promise.all(editions.map((summary) => getEdition(lang, summary.date)));
+  const items = rendered
+    .map((edition) => {
       if (!edition) return '';
       const url = new URL(editionPath(lang, edition.date), SITE_URL).href;
 
