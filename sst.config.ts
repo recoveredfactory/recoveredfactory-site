@@ -191,11 +191,17 @@ export default $config({
         // The bucket is news-ingester's deploy output `daybookEditionsUrl`
         // (news-ingester docs/EDITIONS.md). Pinned here rather than read from the
         // deploy shell, so a ship without the variable can't quietly switch
-        // remote editions off. Staging reads the same published editions. Dev
-        // can point it elsewhere, or set it empty for the archive alone.
+        // remote editions off. Staging reads the bucket's test/ area, where
+        // publish_edition writes with "test": true, so the flow can be
+        // rehearsed without an edition reaching the live site. Dev can point it
+        // elsewhere, or set it empty for the archive alone.
         DAYBOOK_EDITIONS_URL:
           process.env.DAYBOOK_EDITIONS_URL ??
-          (stage === "prod" || stage === "staging" ? DAYBOOK_EDITIONS_BUCKET_URL : ""),
+          (stage === "prod"
+            ? DAYBOOK_EDITIONS_BUCKET_URL
+            : stage === "staging"
+              ? `${DAYBOOK_EDITIONS_BUCKET_URL}/test`
+              : ""),
       },
     });
 
