@@ -491,12 +491,12 @@ const nutSize = (text) => {
 // two, which reads as a broken masthead, so the date sizes to what is left.
 const dateSize = (text) => (text.length <= 8 ? 29 : text.length <= 16 ? 26 : 22);
 
-const portraitFrame = (body, { date = '', site = true }) => `
+const portraitFrame = (body, { date = '', site = true, tally = '' }) => `
   <header class="masthead">
     <p class="lockup">Immigration Daybook</p>
     ${date ? `<p class="date">${escapeHtml(date)}</p>` : ''}
   </header>
-  <div class="stage">${body}</div>
+  <div class="stage">${body}</div>${tally ? `\n  <p class="tally">${escapeHtml(tally)}</p>` : ''}
   ${site ? `<footer class="site">${HOME_URL}</footer>` : ''}
 ${FIT_SCRIPT}`;
 
@@ -663,21 +663,79 @@ const portraitCss = (date) => `
 //
 // The hed steps down a size when prose rides with it: at full display size the
 // two compete instead of ranking.
-const coverSlide = ({ hed, nut, detail, sources, date }) =>
+const coverSlide = ({ hed, nut, detail, sources, date, kicker = null }) =>
   shell(
     portraitCss(date) +
       `\n  .hed { font-size: ${fitpx(nut ? Math.round(coverHedSize(hed) * 0.82) : coverHedSize(hed))}; }` +
       (nut ? `\n  .nut { font-size: ${fitpx(nutSize(nut))}; }` : '') +
-      (detail ? `\n  .detail { font-size: ${fitpx(Math.round(nutSize(detail) * 0.92))}; }` : ''),
+      (detail ? `\n  .detail { font-size: ${fitpx(Math.round(nutSize(detail) * 0.92))}; }` : '') +
+      (kicker ? KICKER_CSS : ''),
     portraitFrame(
-      `<h1 class="hed">${escapeHtml(hed)}</h1>` +
+      (kicker ? `<p class="kicker">${escapeHtml(kicker.label)}</p>` : '') +
+        `<h1 class="hed">${escapeHtml(hed)}</h1>` +
         (nut ? `<p class="nut">${escapeHtml(nut)}</p>` : '') +
         (detail ? `<p class="detail">${escapeHtml(detail)}</p>` : '') +
         creditLine(sources),
-      { date },
+      { date, tally: kicker?.tally ?? '' },
     ),
     PORTRAIT,
   );
+
+// The cover as a rundown's front page rather than the first story: a kicker
+// over the hed saying what the deck is, and a tally above the domain saying how
+// much is behind it. Off by default — the cover dives straight into the lede —
+// and switched on per deck with `coverKicker` (record-deck.mjs --cover-kicker),
+// so the two can be put side by side.
+//
+// Both stay under the hed. The kicker is set like the rubrics but smaller and
+// in the quiet value, so it labels the cover instead of heading it; the tally is
+// chrome, like the domain under it, at a fixed size outside the fitted stage —
+// so the fitter sees the room it takes and sizes the story to what is left.
+//
+// A full cover has no slack, so anything added costs the hed some size: on the
+// 10-14 cover the fit went 1.27 -> 1.17 with the kicker set at rubric size. Both
+// were cut down until the cost was under a step of coverHedSize — at these
+// sizes it is 1.27 -> 1.23, a 91px hed set at 88px. The kicker gives, not the hed.
+const COVER_KICKER = {
+  en: {
+    label: 'Today’s rundown',
+    stories: (n) => `${n} more ${n === 1 ? 'story' : 'stories'}`,
+    dates: (n) => `${n} ${n === 1 ? 'date' : 'dates'} ahead`,
+  },
+  es: {
+    label: 'El resumen de hoy',
+    stories: (n) => `${n} ${n === 1 ? 'historia' : 'historias'} más`,
+    dates: (n) => `${n} ${n === 1 ? 'fecha' : 'fechas'} por delante`,
+  },
+};
+
+const coverKicker = (lang, stories, dates) => {
+  const copy = COVER_KICKER[lang] ?? COVER_KICKER.en;
+  const tally = [stories ? copy.stories(stories) : '', dates ? copy.dates(dates) : '']
+    .filter(Boolean)
+    .join(' · ');
+  return { label: copy.label, tally };
+};
+
+const KICKER_CSS = `
+  .kicker {
+    font-family: "Jost", sans-serif;
+    font-size: ${fitpx(18)};
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: ${GRAY.ink500};
+    margin-bottom: ${fitpx(10)};
+  }
+  .tally {
+    padding-top: 12px;
+    font-family: "Jost", sans-serif;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: ${GRAY.ink700};
+  }`;
 
 // A story slide: one of the edition's other beats — headline, the bolded claim,
 // the sentence the edition offers in support of it, and who reported it. The
@@ -746,7 +804,7 @@ const UPCOMING_LABEL = { en: 'What’s coming', es: 'Lo que viene' };
 // size that serves that is the size that fits four.
 const ENTRY_TEXT_SIZE = 30;
 
-const upcomingSlide = ({ entries, lang, date }) =>
+const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
   shell(
     portraitCss(date) +
       `
@@ -763,6 +821,21 @@ const upcomingSlide = ({ entries, lang, date }) =>
     text-transform: uppercase;
     color: ${GRAY.ink900};
     margin-bottom: ${fitpx(-6)};
+  }
+  /* A rundown's calendar can run to a second board. The count sits at the end
+     of the rubric's line in the quiet value, set like the date in the masthead:
+     furniture that says there is more, not a heading of its own. A single
+     board carries none. */
+  .rubric.paged {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+  }
+  .rubric .page {
+    font-size: ${fitpx(26)};
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    color: ${GRAY.ink500};
   }
   .entry {
     display: flex;
@@ -856,7 +929,10 @@ const upcomingSlide = ({ entries, lang, date }) =>
     color: ${CRIMSON};
   }`,
     portraitFrame(
-      `<p class="rubric">${escapeHtml(UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en)}</p>` +
+      (pages > 1
+        ? `<p class="rubric paged"><span>${escapeHtml(UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en)}</span>` +
+          `<span class="page">${page}/${pages}</span></p>`
+        : `<p class="rubric">${escapeHtml(UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en)}</p>`) +
         entries.map(upcomingEntry).join(''),
       { date },
     ),
@@ -1171,12 +1247,24 @@ const carouselSlides = (lang) => {
   }
 
   const slides = [
-    { name: 'cover', html: coverSlide({ hed: deck.hed, nut: deck.nut, detail: deck.detail, sources: deck.sources, date }) },
+    {
+      name: 'cover',
+      html: coverSlide({
+        hed: deck.hed,
+        nut: deck.nut,
+        detail: deck.detail,
+        sources: deck.sources,
+        date,
+        kicker: deck.coverKicker
+          ? coverKicker(lang, beats.length, upcoming.reduce((n, slide) => n + slide.entries.length, 0))
+          : null,
+      }),
+    },
     ...stories,
     ...briefs.map((slide) => ({ name: 'roundup', html: briefsSlide({ ...slide, date }) })),
-    ...upcoming.map((slide) => ({
+    ...upcoming.map((slide, i) => ({
       name: 'upcoming',
-      html: upcomingSlide({ entries: slide.entries, lang, date }),
+      html: upcomingSlide({ entries: slide.entries, lang, date, page: i + 1, pages: upcoming.length }),
     })),
     { name: 'subscribe', html: closingSlide({ ...CLOSING[lang], date }) },
   ];
