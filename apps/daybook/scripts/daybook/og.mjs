@@ -92,8 +92,20 @@ const OUT_SIZE = '1600x840';
 const INK = '#12161d';
 const CREAM = '#f3f1e9';
 const CRIMSON = '#e8244f';
-// The sheet an exhibit is set on. See exhibitSlide.
-const PAPER = '#fdfcf9';
+// The carousel's ground: the cool-gray ramp off 287(g) Watch (Tory's, 287g-explorer
+// 27a0a96), so the two projects' social posts read as one shop's. Light paper and
+// blue-gray ink where the cards above are ink and cream. The landing and
+// announcement cards keep the page's own colours; only the portrait deck moved.
+// `rule` is the map's county gray, which holds a hairline on paper-100 where
+// paper-200 vanishes; `header` is the gray the 287(g) video headers are set on.
+const GRAY = {
+  paper100: '#F8F8F9',
+  ink900: '#191D21',
+  ink700: '#393F46',
+  ink500: '#656C75',
+  rule: '#DADEE2',
+  header: '#BFC6CF',
+};
 
 const FONTS =
   'https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Lora:wght@400;500;600&display=swap';
@@ -510,7 +522,7 @@ const sourceName = (name) => {
 // to sit beside 40px type; fetching them at render time makes the deck depend
 // on a dozen third-party servers being up, and the failure is silent, which is
 // the one thing a card must never be. And a row of brand-coloured squares
-// across an ink-and-crimson card reads as an aggregator's link farm. The names
+// across a quiet gray card reads as an aggregator's link farm. The names
 // are the thing the favicon was standing in for anyway, and they are legible at
 // a thumb's distance.
 const creditLine = (sources) =>
@@ -522,17 +534,25 @@ const creditLine = (sources) =>
 
 const portraitCss = (date) => `
   :root { --fit: 1; }
-  body { justify-content: flex-start; }
+  body { justify-content: flex-start; background: ${GRAY.paper100}; color: ${GRAY.ink900}; }
   /* No rule under the wordmark. There was a 4px crimson bar here doing two jobs
-     badly at once: branding a masthead that is already crimson and already the
-     loudest thing on the card, and dividing it. The wordmark and the spacing
-     hold the top without it, and the hairlines between calendar entries are now
-     the only rule system on the deck. */
+     badly at once: branding a masthead that was already the loudest thing on
+     the card, and dividing it. The band below ends the masthead on its own, and
+     the hairlines between calendar entries and briefs are the only rule system
+     on the deck. */
+  /* The masthead is a band in the header gray, edge to edge: the negative
+     margins undo PORTRAIT's padding (92px 84px), so the band meets the top and
+     both sides of the card and the stage keeps its margins. It is the one
+     block of tone on the deck, and it holds the top of every slide the same way
+     the 287(g) video headers hold theirs. */
   .masthead {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 24px;
+    margin: -92px -84px 0;
+    padding: 40px 84px 34px;
+    background: ${GRAY.header};
   }
   .lockup {
     font-family: "Jost", sans-serif;
@@ -541,10 +561,10 @@ const portraitCss = (date) => `
     letter-spacing: 0.13em;
     text-transform: uppercase;
     white-space: nowrap;
-    color: ${CRIMSON};
+    color: ${GRAY.ink900};
   }
-  /* Furniture rather than argument, so it takes the quiet value and lets the
-     crimson wordmark lead. */
+  /* Furniture rather than argument, so it takes the quieter value and lets the
+     wordmark lead. */
   .date {
     font-family: "Jost", sans-serif;
     font-size: ${dateSize(date)}px;
@@ -552,7 +572,7 @@ const portraitCss = (date) => `
     letter-spacing: 0.14em;
     text-transform: uppercase;
     white-space: nowrap;
-    color: rgba(243, 241, 233, 0.58);
+    color: ${GRAY.ink700};
   }
   /* Centred at the foot, and the only centred thing on the deck — which is the
      point: it is not part of the reading, it is where to go afterwards. */
@@ -564,7 +584,7 @@ const portraitCss = (date) => `
     font-weight: 600;
     letter-spacing: 0.16em;
     text-transform: uppercase;
-    color: rgba(243, 241, 233, 0.5);
+    color: ${GRAY.ink500};
   }
   /* Top-anchored under the masthead, so every slide starts at the same height
      and grows downward. */
@@ -584,7 +604,7 @@ const portraitCss = (date) => `
     font-weight: 600;
     line-height: 1.12;
     letter-spacing: -0.02em;
-    color: ${CREAM};
+    color: ${GRAY.ink900};
     text-wrap: balance;
   }
   /* Three tiers of prose, and they have to rank without changing typeface:
@@ -598,7 +618,7 @@ const portraitCss = (date) => `
     font-family: "Jost", sans-serif;
     font-weight: 500;
     line-height: 1.4;
-    color: rgba(243, 241, 233, 0.92);
+    color: ${GRAY.ink900};
     margin-top: ${fitpx(30)};
     text-wrap: pretty;
   }
@@ -606,23 +626,23 @@ const portraitCss = (date) => `
     font-family: "Jost", sans-serif;
     font-weight: 400;
     line-height: 1.44;
-    color: rgba(243, 241, 233, 0.62);
+    color: ${GRAY.ink700};
     margin-top: ${fitpx(24)};
     text-wrap: pretty;
   }
   .credit {
     margin-top: ${fitpx(34)};
     padding-top: ${fitpx(20)};
-    border-top: 2px solid rgba(243, 241, 233, 0.22);
+    border-top: 2px solid ${GRAY.rule};
     font-family: "Jost", sans-serif;
     font-size: ${fitpx(24)};
     font-weight: 600;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: ${CRIMSON};
+    color: ${GRAY.ink700};
   }
   .credit .sep {
-    color: rgba(243, 241, 233, 0.34);
+    color: ${GRAY.header};
     padding: 0 0.55em;
   }
   /* The one opt-out of the house all-caps. See VERBATIM_SOURCES.
@@ -733,15 +753,15 @@ const upcomingSlide = ({ entries, lang, date }) =>
   .stage { gap: ${fitpx(32)}; }
   /* The rubric came off the wordmark's line, where it sat at caption size and
      read as a footnote to the masthead rather than as the name of what follows.
-     Down here at the head of the stage, in the deck's one accent colour, it is
-     doing the job it was put there to do. */
+     Down here at the head of the stage, at the size of a heading, it is doing
+     the job it was put there to do. */
   .rubric {
     font-family: "Jost", sans-serif;
     font-size: ${fitpx(38)};
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: ${CRIMSON};
+    color: ${GRAY.ink900};
     margin-bottom: ${fitpx(-6)};
   }
   .entry {
@@ -753,7 +773,7 @@ const upcomingSlide = ({ entries, lang, date }) =>
      landed above the first one too, where it separates the entry from nothing.
      A separator that separates nothing is just another line. */
   .entry + .entry {
-    border-top: 2px solid rgba(243, 241, 233, 0.24);
+    border-top: 2px solid ${GRAY.rule};
     padding-top: ${fitpx(32)};
   }
   /* Fixed width so the prose of every entry starts on the same left edge —
@@ -777,7 +797,7 @@ const upcomingSlide = ({ entries, lang, date }) =>
     font-weight: 600;
     line-height: 0.98;
     letter-spacing: -0.03em;
-    color: ${CREAM};
+    color: ${GRAY.ink900};
   }
   /* The weekday is the one thing the snapshot knows that a reader has to work
      out for themselves otherwise, and "a week Monday" is how people actually
@@ -788,7 +808,7 @@ const upcomingSlide = ({ entries, lang, date }) =>
     font-size: ${fitpx(21)};
     font-weight: 600;
     letter-spacing: 0.16em;
-    color: rgba(243, 241, 233, 0.5);
+    color: ${GRAY.ink500};
     margin-top: ${fitpx(6)};
   }
   .entry .body {
@@ -801,7 +821,7 @@ const upcomingSlide = ({ entries, lang, date }) =>
     font-size: ${fitpx(ENTRY_TEXT_SIZE)};
     font-weight: 400;
     line-height: 1.4;
-    color: rgba(243, 241, 233, 0.88);
+    color: ${GRAY.ink900};
     text-wrap: pretty;
   }
   /* The foot of an entry: who says so on the left, how long is left on the
@@ -823,7 +843,7 @@ const upcomingSlide = ({ entries, lang, date }) =>
     font-weight: 600;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: rgba(243, 241, 233, 0.5);
+    color: ${GRAY.ink500};
   }
   .entry .meta .left {
     min-width: 0;
@@ -911,12 +931,15 @@ const exhibitSlide = ({ hed, nut, caption, panel, specDir, date }) =>
       `
   .hed { font-size: ${fitpx(Math.round(coverHedSize(hed) * 0.78))}; }
   ${nut ? `.nut { font-size: ${fitpx(Math.round(nutSize(nut) * 0.94))}; }` : ''}
-  /* The sheet. Flat, like everything else on the deck — the value jump off the
-     ink is all the lift a document needs. The panel does not scale with --fit:
+  /* The sheet. Flat, like everything else on the deck — white with a hairline,
+     which on paper gray is all the lift a document needs. The marks over it stay
+     crimson: they are a highlighter on the operative words, not a colour scheme,
+     and gray ones would not mark anything. The panel does not scale with --fit:
      type negotiates for the space around a document, and the document does not
      shrink to flatter the type. */
   .panel {
-    background: ${PAPER};
+    background: #fff;
+    border: 2px solid ${GRAY.rule};
     padding: 24px;
     margin-top: ${fitpx(30)};
   }
@@ -928,7 +951,7 @@ const exhibitSlide = ({ hed, nut, caption, panel, specDir, date }) =>
   .strip + .strip {
     margin-top: 22px;
     padding-top: 22px;
-    border-top: 1px solid #d9d5c9;
+    border-top: 1px solid ${GRAY.rule};
   }
   .strip img { display: block; width: 100%; height: auto; }
   .mark { position: absolute; display: block; }
@@ -951,7 +974,7 @@ const exhibitSlide = ({ hed, nut, caption, panel, specDir, date }) =>
     font-size: ${fitpx(22)};
     font-weight: 600;
     letter-spacing: 0.05em;
-    color: rgba(243, 241, 233, 0.55);
+    color: ${GRAY.ink500};
     margin-top: ${fitpx(18)};
     text-wrap: pretty;
   }`,
@@ -979,8 +1002,8 @@ const exhibitSlide = ({ hed, nut, caption, panel, specDir, date }) =>
 // once — it gives the eye somewhere to enter three stacked paragraphs, and it
 // says who reported this before the reader has read it rather than after.
 //
-// Crimson for the same reason it is crimson on the calendar: it marks whatever
-// on the card is the checkable thing. There it is the date. Here it is the byline.
+// Ink rather than crimson. Crimson on the deck means time — the calendar's
+// dates and countdowns — and a byline is not a date.
 const briefsSlide = ({ rubric, items, date }) =>
   shell(
     portraitCss(date) +
@@ -992,13 +1015,13 @@ const briefsSlide = ({ rubric, items, date }) =>
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: ${CRIMSON};
+    color: ${GRAY.ink900};
     margin-bottom: ${fitpx(-8)};
   }
   /* Same rule system as the calendar board: hairlines between items, never
      above the first one. */
   .brief + .brief {
-    border-top: 2px solid rgba(243, 241, 233, 0.24);
+    border-top: 2px solid ${GRAY.rule};
     padding-top: ${fitpx(34)};
   }
   .brief .slug {
@@ -1007,7 +1030,7 @@ const briefsSlide = ({ rubric, items, date }) =>
     font-weight: 600;
     letter-spacing: 0.15em;
     text-transform: uppercase;
-    color: ${CRIMSON};
+    color: ${GRAY.ink700};
     margin-bottom: ${fitpx(12)};
   }
   .brief .text {
@@ -1015,7 +1038,7 @@ const briefsSlide = ({ rubric, items, date }) =>
     font-size: ${fitpx(32)};
     font-weight: 400;
     line-height: 1.4;
-    color: rgba(243, 241, 233, 0.88);
+    color: ${GRAY.ink900};
     text-wrap: pretty;
   }`,
     portraitFrame(
@@ -1051,7 +1074,7 @@ const closingSlide = ({ call, url, date }) =>
     font-size: ${fitpx(46)};
     font-weight: 600;
     letter-spacing: 0.04em;
-    color: ${CRIMSON};
+    color: ${GRAY.ink900};
     margin-top: ${fitpx(34)};
   }`,
     portraitFrame(
@@ -1087,7 +1110,9 @@ const carouselSlides = (lang) => {
   if (!deck) return null;
 
   const beats = deck.beats ?? [];
-  const briefs = deck.briefs ?? null;
+  // One round-up slide off a pull; a rundown (record-deck.mjs) carries every
+  // brief, four to a slide, as a list of them.
+  const briefs = [deck.briefs ?? []].flat();
   const upcoming = deck.upcoming ?? [];
   const dir = `social/${deck.date}/${lang}`;
 
@@ -1148,7 +1173,7 @@ const carouselSlides = (lang) => {
   const slides = [
     { name: 'cover', html: coverSlide({ hed: deck.hed, nut: deck.nut, detail: deck.detail, sources: deck.sources, date }) },
     ...stories,
-    ...(briefs ? [{ name: 'roundup', html: briefsSlide({ ...briefs, date }) }] : []),
+    ...briefs.map((slide) => ({ name: 'roundup', html: briefsSlide({ ...slide, date }) })),
     ...upcoming.map((slide) => ({
       name: 'upcoming',
       html: upcomingSlide({ entries: slide.entries, lang, date }),
