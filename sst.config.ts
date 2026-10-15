@@ -17,6 +17,11 @@ const DAYBOOK_REDIRECTS = [
 ];
 const DAYBOOK_STAGE_DOMAIN = "daybook--stage.recoveredfactory.net";
 
+// news-ingester's public DaybookEditions bucket (its deploy output
+// `daybookEditionsUrl`, created 2026-10-15).
+const DAYBOOK_EDITIONS_BUCKET_URL =
+  "https://news-ingester-production-daybookeditionsbucket-bcneortr.s3.amazonaws.com";
+
 export default $config({
   app() {
     return {
@@ -183,8 +188,14 @@ export default $config({
         KIT_API_SECRET: kitApiSecret.value,
         // Editions published to S3 by the news ingester at lock, read at request
         // time beside the committed archive (apps/daybook/src/lib/daybook/remote.ts).
-        // Unset, the site serves the committed archive only.
-        DAYBOOK_EDITIONS_URL: process.env.DAYBOOK_EDITIONS_URL ?? "",
+        // The bucket is news-ingester's deploy output `daybookEditionsUrl`
+        // (news-ingester docs/EDITIONS.md). Pinned here rather than read from the
+        // deploy shell, so a ship without the variable can't quietly switch
+        // remote editions off. Staging reads the same published editions. Dev
+        // can point it elsewhere, or set it empty for the archive alone.
+        DAYBOOK_EDITIONS_URL:
+          process.env.DAYBOOK_EDITIONS_URL ??
+          (stage === "prod" || stage === "staging" ? DAYBOOK_EDITIONS_BUCKET_URL : ""),
       },
     });
 
