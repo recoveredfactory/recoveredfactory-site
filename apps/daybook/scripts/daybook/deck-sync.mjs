@@ -4,12 +4,14 @@
 //
 // Usage: node scripts/daybook/deck-sync.mjs [--test] [--date YYYY-MM-DD] [--dry-run]
 //                                           [--base <url>] [--bucket <name>] [--work <dir>]
+//                                           [--post-langs en[,es]]
 //   --test     read test/editions/…, write test/social/… (the bucket's rehearsal mirror)
 //   --date     that edition date only; default today and yesterday in America/Bogota
 //   --dry-run  render, but upload nothing; print the keys and the manifest instead
 //   --base     the bucket's base URL; default $DAYBOOK_EDITIONS_URL, then the production bucket
 //   --bucket   the bucket uploads go to; default the one in --base's hostname
 //   --work     where records, deck JSON and PNGs go; default a fresh temp directory
+//   --post-langs  which languages' decks to offer for posting; default en,es (see below)
 //
 // The contract is news-ingester's docs/EDITIONS.md. In short: the index
 // (editions/index.json) says what is published and at which revision; a deck
@@ -98,6 +100,24 @@ export function needsRender(revision, manifest) {
 }
 
 /**
+ * The decks ready to post: in a language being posted, current in the bucket
+ * (rendered this run, or already up to date) and with no posted.json yet.
+ * `rendered` holds `date/lang` for decks this run uploaded; `posted` maps
+ * `date/lang` to the posted.json found, or null. A deck re-rendered after a
+ * republish already has a posted.json and is not offered again: deck-post.mjs
+ * never posts a date and language twice to one platform.
+ */
+export function postable(planned, rendered, posted, langs) {
+  return planned.flatMap(({ date, langs: published }) =>
+    published
+      .filter((l) => langs.includes(l.lang))
+      .filter((l) => !l.render || rendered.has(`${date}/${l.lang}`))
+      .filter((l) => !posted[`${date}/${l.lang}`])
+      .map((l) => ({ date, lang: l.lang, revision: l.revision })),
+  );
+}
+
+/**
  * The deck.json for one language: the slides in deck order, by the name og.mjs
  * gave them (`03-story.png` → `story`) and their public URL.
  */
@@ -147,6 +167,7 @@ async function main() {
   }
 
   const rows = [];
+  const rendered = new Set();
   let failed = false;
 
   for (const { date, langs } of plan(index, dates, manifests)) {
@@ -191,6 +212,7 @@ async function main() {
 
         console.log(`${date} ${lang} r${revision}: ${files.length} slides and deck.json uploaded.`);
         rows.push({ date, lang, revision, result: `rendered ${files.length} slides` });
+        rendered.add(`${date}/${lang}`);
       }
     } catch (err) {
       failed = true;
@@ -202,6 +224,20 @@ async function main() {
   if (!rows.some((row) => /^rendered|^dry run/.test(row.result)) && !failed) {
     console.log('Nothing to do: every published deck is current.');
   }
+  // What the posting job may take up. Only a deck that is in the bucket counts,
+  // so a dry run, which uploads nothing, offers only decks rendered before it.
+  const postLangs = (value('--post-langs') ?? 'en,es').split(',').map((lang) => lang.trim()).filter(Boolean);
+  const planned = plan(index, dates, manifests);
+  const posted = {};
+  for (const { date, langs } of planned) {
+    for (const l of langs) {
+      if (postLangs.includes(l.lang)) posted[`${date}/${l.lang}`] = await getJson(`${base}/${prefix}social/${date}/${l.lang}/posted.json`);
+    }
+  }
+  const ready = postable(planned, rendered, posted, postLangs);
+  console.log(ready.length ? `Ready to post: ${ready.map((d) => `${d.date} ${d.lang}`).join(', ')}.` : 'Nothing ready to post.');
+  if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `postable=${JSON.stringify(ready)}\n`);
+
   summarize(rows, { test, dryRun, dates });
   if (failed) process.exit(1);
 }
