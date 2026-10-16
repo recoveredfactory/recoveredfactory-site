@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { getDossier } from '$lib/daybook/dossier';
-import { getEdition, getMonth, listEditions } from '$lib/daybook/loader';
+import { getEdition, getMonth, hasEdition, listEditions } from '$lib/daybook/loader';
 import { getUpcoming, parseUpcomingIds } from '$lib/daybook/upcoming';
 import { isLang, LANGS } from '$lib/i18n';
 import { editionPath } from '$lib/urls';
@@ -10,7 +10,7 @@ const MONTH = /^\d{4}-\d{2}$/;
 
 // One dynamic segment serves both an edition (`2026-08-05`) and a month roundup
 // (`2026-08`). They are the same content at two altitudes.
-export const load = ({ params, url }) => {
+export const load = async ({ params, url }) => {
   const { lang, ref } = params;
   // `?sent` shows the edition as it landed in the inbox — the archive's record
   // of what subscribers actually received, one link away from the web render.
@@ -20,7 +20,7 @@ export const load = ({ params, url }) => {
   }
 
   if (DATE.test(ref)) {
-    const edition = getEdition(lang, ref);
+    const edition = await getEdition(lang, ref);
     if (!edition) {
       throw error(404, 'Not found');
     }
@@ -28,9 +28,14 @@ export const load = ({ params, url }) => {
     // The two languages share the edition date as their id, so the hreflang
     // pair resolves without any slug matching — but only when the other
     // language actually published that day.
-    const other = LANGS.find((candidate) => candidate !== lang && getEdition(candidate, ref));
+    const others = await Promise.all(
+      LANGS.map(async (candidate) =>
+        candidate !== lang && (await hasEdition(candidate, ref)) ? candidate : undefined,
+      ),
+    );
+    const other = others.find(Boolean);
 
-    const all = listEditions(lang);
+    const all = await listEditions(lang);
     const at = all.findIndex((entry) => entry.date === ref);
 
     return {
@@ -59,12 +64,22 @@ export const load = ({ params, url }) => {
   }
 
   if (MONTH.test(ref)) {
-    const editions = getMonth(lang, ref);
+    const editions = await getMonth(lang, ref);
     if (!editions.length) {
       throw error(404, 'Not found');
     }
 
-    const other = LANGS.find((candidate) => candidate !== lang && getMonth(candidate, ref).length);
+    // Whether the other language has the month at all; its listing answers that
+    // without rendering every edition in it.
+    const others = await Promise.all(
+      LANGS.map(async (candidate) =>
+        candidate !== lang &&
+        (await listEditions(candidate)).some((entry) => entry.date.startsWith(ref))
+          ? candidate
+          : undefined,
+      ),
+    );
+    const other = others.find(Boolean);
 
     return {
       lang,

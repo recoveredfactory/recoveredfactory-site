@@ -15,7 +15,7 @@ type SitemapEntry = {
 const escapeXml = (value: string) =>
   value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('"', '&quot;');
 
-export const GET = () => {
+export const GET = async () => {
   const urls: SitemapEntry[] = [];
 
   for (const lang of LANGS) {
@@ -30,8 +30,8 @@ export const GET = () => {
   // the date of the most recent edition they hold. Pilot editions are absent
   // for free: listEditions filters them out in production.
   const editionsByLang = Object.fromEntries(
-    LANGS.map((lang) => [lang, listEditions(lang)]),
-  ) as Record<Lang, ReturnType<typeof listEditions>>;
+    await Promise.all(LANGS.map(async (lang) => [lang, await listEditions(lang)] as const)),
+  ) as Record<Lang, Awaited<ReturnType<typeof listEditions>>>;
 
   for (const lang of LANGS) {
     for (const edition of editionsByLang[lang]) {
@@ -46,7 +46,7 @@ export const GET = () => {
       });
     }
 
-    for (const month of listMonths(lang)) {
+    for (const month of await listMonths(lang)) {
       urls.push({
         url: withBase(editionPath(lang, month.month)),
         lastmod: month.editions[0]?.date,

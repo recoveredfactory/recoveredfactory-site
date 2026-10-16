@@ -1,8 +1,10 @@
 import { marked } from 'marked';
 import { dev } from '$app/environment';
+import { env as privateEnv } from '$env/dynamic/private';
 import { env } from '$env/dynamic/public';
 
 import { inDateOrder, liftCalendar, readEmailCalendar } from '$lib/daybook/calendar';
+import { createRemote, type EditionRecord, type IndexEntry, type Remote } from '$lib/daybook/remote';
 import { extractEvents, type CalendarEvent } from '$lib/daybook/schema';
 import type { UpcomingEntry } from '$lib/daybook/upcoming';
 import type { Lang } from '$lib/i18n';
@@ -138,7 +140,16 @@ export type EditionMonth = {
   editions: EditionSummary[];
 };
 
-type RawEdition = { meta: EditionMeta; body: string };
+type RawEdition = {
+  meta: EditionMeta;
+  body: string;
+  /**
+   * Set on an edition published to S3 (see ./remote). Its calendar is the
+   * record's own `upcoming`, and it has no sent email, hand calendar or
+   * snapshot to fall back on — the record is the whole edition.
+   */
+  remote?: { upcoming: UpcomingEntry[] };
+};
 
 const rawByLang = {
   en: import.meta.glob<string>('/src/content/daybook/en/*.md', {
@@ -275,23 +286,164 @@ function splitFrontmatter(source: string): { meta: Record<string, unknown>; body
 const isPilot = (date: string) => date < ARCHIVE_START;
 const isVisible = (date: string) => SHOW_PILOT || !isPilot(date);
 
+// Remote editions are never pilots: the bucket only exists from the relaunch on.
 const toSummary = (entry: RawEdition): EditionSummary => ({
   ...entry.meta,
-  pilot: isPilot(entry.meta.date),
+  pilot: !entry.remote && isPilot(entry.meta.date),
 });
 
-/** Every visible edition for a language, newest first. */
-export function listEditions(lang: Lang): EditionSummary[] {
-  return [...editionsByLang[lang].values()]
+// ---------------------------------------------------------------------------
+
+// Editions published to S3 since the 2026-10-19 relaunch; see ./remote. Off when
+// DAYBOOK_EDITIONS_URL is unset, which leaves the site exactly the archive on
+// disk. Built on first use rather than at import, so the environment is read
+// when a request needs it.
+let remoteSource: Remote | undefined;
+const remote = () =>
+  (remoteSource ??= createRemote({ baseUrl: privateEnv.DAYBOOK_EDITIONS_URL ?? '' }));
+
+// A date both committed here and published remotely is served from the file.
+// Committing an edition is deliberate — it is the hand override for one that
+// was published wrong — so the file wins. Said once per edition per instance,
+// not on every request.
+const collisions = new Set<string>();
+
+function remoteSummaries(lang: Lang, entries: IndexEntry[]): EditionSummary[] {
+  const summaries: EditionSummary[] = [];
+  const seen = new Set<string>();
+
+  for (const entry of entries) {
+    if (entry.lang !== lang || seen.has(entry.date)) continue;
+    seen.add(entry.date);
+
+    if (editionsByLang[lang].has(entry.date)) {
+      const key = `${lang}/${entry.date}`;
+      if (!collisions.has(key)) {
+        collisions.add(key);
+        console.warn(
+          `daybook remote: ${key} is published and committed; serving the committed file`,
+        );
+      }
+      continue;
+    }
+
+    summaries.push({
+      date: entry.date,
+      lang,
+      title: entry.title,
+      description: entry.description,
+      pilot: false,
+    });
+  }
+
+  return summaries;
+}
+
+/** The remote edition for a date, if the index lists one and its record reads. */
+async function remoteRaw(lang: Lang, date: string): Promise<RawEdition | undefined> {
+  if (editionsByLang[lang].has(date)) return undefined;
+  const index = await remote().index();
+  const listed = index.some((entry) => entry.lang === lang && entry.date === date);
+  if (!listed) return undefined;
+  const record = await remote().record(date, lang);
+  return record ? fromRecord(record) : undefined;
+}
+
+const isText = (value: unknown): value is string => typeof value === 'string' && value.trim() !== '';
+
+/**
+ * A daybook/1 record as the same raw edition a markdown file becomes.
+ *
+ * The record has no frontmatter, so the meta comes from its fields. Its body is
+ * the edition's markdown in the archive's own shape — an optional italic lead,
+ * `##` sections, Around the system — and goes through the same render. The
+ * calendar is not in the body: it is `upcoming`, structured, in the order the
+ * desk chose it.
+ */
+function fromRecord(record: EditionRecord): RawEdition {
+  const upcoming = recordUpcoming(record.upcoming);
+  const headings = [...record.body_md.matchAll(/^## (.+)$/gm)].map((found) => found[1].trim());
+
+  return {
+    meta: {
+      date: record.date,
+      lang: record.lang,
+      title: record.title.trim(),
+      // The pull's own fallback: the section heads, joined the way the archive's
+      // descriptions are.
+      description: isText(record.description) ? record.description.trim() : headings.join(' · '),
+      ...(isText(record.standing) ? { standing: record.standing.trim() } : {}),
+      // The record is the edition, calendar included. One that carried no
+      // calendar ran none, so the page draws none instead of reaching for the
+      // snapshot reconstruction the archive falls back on.
+      ...(upcoming.length ? {} : { upcomingSkipped: 'true' }),
+    },
+    body: record.body_md,
+    remote: { upcoming },
+  };
+}
+
+/**
+ * The record's calendar as the entries the card draws. An entry with no usable
+ * date or no text is dropped rather than printed as an empty row, the same rule
+ * the snapshot reader keeps.
+ */
+function recordUpcoming(items: unknown): UpcomingEntry[] {
+  const entries: UpcomingEntry[] = [];
+
+  for (const item of Array.isArray(items) ? items : []) {
+    const row = (item ?? {}) as { date?: unknown; text?: unknown; sources?: unknown };
+    const date = typeof row.date === 'string' ? row.date.slice(0, 10) : '';
+    const summary = typeof row.text === 'string' ? row.text.trim() : '';
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !summary) continue;
+
+    const sources = (Array.isArray(row.sources) ? row.sources : [])
+      .map((source) => (source ?? {}) as { label?: unknown; url?: unknown })
+      .filter((source): source is { label?: unknown; url: string } =>
+        typeof source.url === 'string' && /^https?:\/\//.test(source.url),
+      )
+      .map((source) => ({
+        label: isText(source.label) ? source.label.trim() : source.url,
+        url: source.url,
+      }));
+
+    entries.push({ date, summary, sources, repeatsDate: entries.at(-1)?.date === date });
+  }
+
+  return entries;
+}
+
+/** A record rendered as an edition page, the way getEdition renders one. */
+export function editionFromRecord(record: EditionRecord): Edition {
+  const entry = fromRecord(record);
+  const page = rendered(entry, record.lang, 2, { withEmail: true, ledeLevel: 1 });
+  return { ...toSummary(entry), ...page };
+}
+
+// ---------------------------------------------------------------------------
+
+/** Every visible edition for a language, newest first — the archive on disk and the bucket. */
+export async function listEditions(lang: Lang): Promise<EditionSummary[]> {
+  const local = [...editionsByLang[lang].values()]
     .filter((entry) => isVisible(entry.meta.date))
-    .sort((a, b) => b.meta.date.localeCompare(a.meta.date))
     .map(toSummary);
+  const published = remoteSummaries(lang, await remote().index());
+
+  return [...local, ...published].sort((a, b) => b.date.localeCompare(a.date));
+}
+
+/** Whether a language has a visible edition for a date, without rendering it. */
+export async function hasEdition(lang: Lang, date: string): Promise<boolean> {
+  if (editionsByLang[lang].has(date)) return isVisible(date);
+  return (await remote().index()).some((entry) => entry.lang === lang && entry.date === date);
 }
 
 /** One edition, rendered. Undefined for a date that is missing or not yet visible. */
-export function getEdition(lang: Lang, date: string): Edition | undefined {
-  const entry = editionsByLang[lang].get(date);
-  if (!entry || !isVisible(date)) return undefined;
+export async function getEdition(lang: Lang, date: string): Promise<Edition | undefined> {
+  const local = editionsByLang[lang].get(date);
+  if (local && !isVisible(date)) return undefined;
+  const entry = local ?? (await remoteRaw(lang, date));
+  if (!entry) return undefined;
 
   // An edition page draws no headline above the stories, so the lede's own
   // heading is the h1 and the sections under it are h2s.
@@ -299,10 +451,10 @@ export function getEdition(lang: Lang, date: string): Edition | undefined {
 }
 
 /** Visible editions grouped by `YYYY-MM`, newest month first. */
-export function listMonths(lang: Lang): EditionMonth[] {
+export async function listMonths(lang: Lang): Promise<EditionMonth[]> {
   const byMonth = new Map<string, EditionSummary[]>();
 
-  for (const edition of listEditions(lang)) {
+  for (const edition of await listEditions(lang)) {
     const month = edition.date.slice(0, 7);
     const bucket = byMonth.get(month);
     if (bucket) bucket.push(edition);
@@ -315,18 +467,24 @@ export function listMonths(lang: Lang): EditionMonth[] {
 }
 
 /** Every edition in a month, rendered, oldest first — the month page reads forward. */
-export function getMonth(lang: Lang, month: string): Edition[] {
+export async function getMonth(lang: Lang, month: string): Promise<Edition[]> {
   if (!/^\d{4}-\d{2}$/.test(month)) return [];
+
+  const editions = (await listEditions(lang))
+    .filter((edition) => edition.date.startsWith(month))
+    .sort((a, b) => a.date.localeCompare(b.date));
 
   // A month page reads h1 (the month) → h2 (each edition's headline) → h3 (that
   // edition's sections), so everything shifts down one from the edition view.
-  return listEditions(lang)
-    .filter((edition) => edition.date.startsWith(month))
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .map((edition) => ({
-      ...edition,
-      ...rendered(editionsByLang[lang].get(edition.date)!, lang, 3),
-    }));
+  // A published edition whose record will not read is left off the month
+  // rather than taking the page down.
+  const months = await Promise.all(
+    editions.map(async (edition) => {
+      const entry = editionsByLang[lang].get(edition.date) ?? (await remoteRaw(lang, edition.date));
+      return entry ? { ...edition, ...rendered(entry, lang, 3) } : null;
+    }),
+  );
+  return months.filter((edition): edition is Edition => edition !== null);
 }
 
 // `withEmail` is false for the month roundups: thirty editions stacked on one
@@ -387,15 +545,18 @@ const rendered = (
   // The body is the better source when it has one — it is the edition's own
   // text — but it has carried a calendar exactly once. The sent artifact has
   // carried one nearly every day since the launch edition, so it is read here
-  // whatever the page is going to do with the email itself.
-  const email = emailsByDate[lang].get(entry.meta.date) ?? '';
+  // whatever the page is going to do with the email itself. A published record
+  // carries its calendar structured and has no email beside it.
+  const email = entry.remote ? '' : (emailsByDate[lang].get(entry.meta.date) ?? '');
   const fromEmail = readEmailCalendar(email, lang, entry.meta.date);
-  const byHand = handCalendars[lang].get(entry.meta.date)?.entries ?? [];
-  const upcoming = byHand.length
-    ? inDateOrder(byHand)
-    : calendar.entries.length
-      ? calendar.entries
-      : fromEmail;
+  const byHand = entry.remote ? [] : (handCalendars[lang].get(entry.meta.date)?.entries ?? []);
+  const upcoming = entry.remote
+    ? entry.remote.upcoming
+    : byHand.length
+      ? inDateOrder(byHand)
+      : calendar.entries.length
+        ? calendar.entries
+        : fromEmail;
 
   return {
     // The whole-body render is what the month roundups draw, and those print the
@@ -408,7 +569,7 @@ const rendered = (
     // frontmatter rather than the body, so it misses the body's render and was
     // reaching the page as its own source text, brackets and URL and all.
     standingHtml: entry.meta.standing ? renderInline(entry.meta.standing) : '',
-    emailHtml: withEmail ? (emailsByDate[lang].get(entry.meta.date) ?? null) : null,
+    emailHtml: withEmail && !entry.remote ? (emailsByDate[lang].get(entry.meta.date) ?? null) : null,
     upcoming,
     events: extractEvents(entry.body, lang, entry.meta.date),
   };
@@ -439,10 +600,11 @@ function split(
 }
 
 /** The raw markdown, for the `.md` companion routes. Undefined if not visible. */
-export function getEditionMarkdown(lang: Lang, date: string): string | undefined {
-  const entry = editionsByLang[lang].get(date);
-  if (!entry || !isVisible(date)) return undefined;
-  return entry.body.trim();
+export async function getEditionMarkdown(lang: Lang, date: string): Promise<string | undefined> {
+  const local = editionsByLang[lang].get(date);
+  if (local && !isVisible(date)) return undefined;
+  const entry = local ?? (await remoteRaw(lang, date));
+  return entry?.body.trim();
 }
 
 // Date formatting lives in ./format — importing this module drags every
