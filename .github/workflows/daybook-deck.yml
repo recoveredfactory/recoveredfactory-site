@@ -103,6 +103,8 @@ jobs:
       - name: Check the Meta credentials
         working-directory: apps/daybook
         env:
+          # A system user token, when set, wins over the Page token (deck-post.mjs).
+          DAYBOOK_META_SYSTEM_TOKEN: ${{ secrets.DAYBOOK_META_SYSTEM_TOKEN }}
           DAYBOOK_FB_PAGE_ID: ${{ secrets.DAYBOOK_FB_PAGE_ID }}
           DAYBOOK_META_PAGE_TOKEN: ${{ secrets.DAYBOOK_META_PAGE_TOKEN }}
           DAYBOOK_META_APP_SECRET: ${{ secrets.DAYBOOK_META_APP_SECRET }}
@@ -214,10 +216,15 @@ jobs:
         env:
           POSTABLE: ${{ needs.render.outputs.postable }}
           TEST_POST: ${{ inputs.test_post }}
+          # A Business Settings system user token, when set, wins over the Page
+          # token: the Page token is derived from it at run time, and Instagram
+          # publishes with it. Facebook Login for Business can't grant posting
+          # permissions to a user token, so this is the route that posts.
+          DAYBOOK_META_SYSTEM_TOKEN: ${{ secrets.DAYBOOK_META_SYSTEM_TOKEN }}
           DAYBOOK_FB_PAGE_ID: ${{ secrets.DAYBOOK_FB_PAGE_ID }}
           DAYBOOK_META_PAGE_TOKEN: ${{ secrets.DAYBOOK_META_PAGE_TOKEN }}
           DAYBOOK_META_APP_SECRET: ${{ secrets.DAYBOOK_META_APP_SECRET }}
-          # Absent until Instagram is linked; Instagram is skipped until then.
+          # With a system token and no id, the Page's own Instagram account is used.
           DAYBOOK_IG_USER_ID: ${{ secrets.DAYBOOK_IG_USER_ID }}
           # Threads joins here with its own token once its account exists.
         run: |

@@ -28,13 +28,24 @@
 // get in each other's way.
 //
 // Credentials come from the environment, which the workflow fills from the
-// GitHub environment `social` (written by meta-auth.mjs):
-//   DAYBOOK_FB_PAGE_ID, DAYBOOK_META_PAGE_TOKEN   the Page, and its non-expiring token
+// GitHub environment `social` (written by meta-auth.mjs, or set by hand):
+//   DAYBOOK_META_SYSTEM_TOKEN                     a Business Settings system user token,
+//                                                 which never expires. When set it wins:
+//                                                 the Page token is derived from it at run
+//                                                 time (GET /{page}?fields=access_token,…),
+//                                                 Facebook posts with that Page token, and
+//                                                 Instagram publishes with the system token.
+//   DAYBOOK_FB_PAGE_ID                            the Page. With a system token and no id,
+//                                                 the Page named "Recovered Factory" in
+//                                                 /me/accounts is used, or the run fails.
+//   DAYBOOK_META_PAGE_TOKEN                       the older route: a Page token, used only
+//                                                 when there is no system token
 //   DAYBOOK_META_APP_SECRET                       for appsecret_proof, when present
 //   DAYBOOK_META_APP_ID                           with the secret, lets --check read the
 //                                                 token's scopes (debug_token)
-//   DAYBOOK_IG_USER_ID                            the linked Instagram account; absent
-//                                                 until it is linked, and Instagram is skipped
+//   DAYBOOK_IG_USER_ID                            the linked Instagram account. With a
+//                                                 system token and no id, the Page's own
+//                                                 instagram_business_account is used.
 //
 // What was posted is kept beside the deck as social/{date}/{lang}/posted.json:
 // `{facebook: {id, permalink, posted_at, revision}, instagram: {…}}`. A platform
@@ -140,11 +151,11 @@ export function fitInstagram(slides, max = INSTAGRAM_MAX_ITEMS) {
   return { slides: kept, dropped };
 }
 
-/** Which platforms this deck should go to, given the credentials present and what posted.json already holds. */
-export function choosePlatforms(env, posted, { force = false } = {}) {
-  return Object.entries(PLATFORMS).map(([name, platform]) => {
-    const account = platform.account(env);
-    if (!account) return { name, action: 'skip', reason: platform.missing, unconfigured: true };
+/** Which platforms this deck should go to, given the resolved credentials and what posted.json already holds. */
+export function choosePlatforms(creds, posted, { force = false } = {}) {
+  return Object.keys(PLATFORMS).map((name) => {
+    const account = creds.accounts[name];
+    if (!account) return { name, action: 'skip', reason: creds.missing[name], unconfigured: true };
     if (posted?.[name] && !force) {
       return { name, action: 'skip', reason: `already posted r${posted[name].revision}: ${posted[name].permalink}` };
     }
@@ -179,25 +190,103 @@ export function graphClient({ token, appSecret, fetch = globalThis.fetch, versio
 // threads_publish) — the same shape as Instagram's.
 
 export const PLATFORMS = {
-  facebook: {
-    account: (env) =>
-      env.DAYBOOK_FB_PAGE_ID && env.DAYBOOK_META_PAGE_TOKEN
-        ? { id: env.DAYBOOK_FB_PAGE_ID, token: env.DAYBOOK_META_PAGE_TOKEN, appSecret: env.DAYBOOK_META_APP_SECRET }
-        : null,
-    missing: 'no DAYBOOK_FB_PAGE_ID / DAYBOOK_META_PAGE_TOKEN',
-    slides: (slides) => ({ slides, dropped: [] }),
-    post: postFacebook,
-  },
-  instagram: {
-    account: (env) =>
-      env.DAYBOOK_IG_USER_ID && env.DAYBOOK_META_PAGE_TOKEN
-        ? { id: env.DAYBOOK_IG_USER_ID, token: env.DAYBOOK_META_PAGE_TOKEN, appSecret: env.DAYBOOK_META_APP_SECRET }
-        : null,
-    missing: 'no DAYBOOK_IG_USER_ID; no Instagram account is linked yet',
-    slides: (slides) => fitInstagram(slides),
-    post: postInstagram,
-  },
+  facebook: { slides: (slides) => ({ slides, dropped: [] }), post: postFacebook },
+  instagram: { slides: (slides) => fitInstagram(slides), post: postInstagram },
 };
+
+// ── Credentials ────────────────────────────────────────────────────────────
+
+const PAGE_NAME = 'Recovered Factory';
+const PAGE_FIELDS = 'access_token,name,instagram_business_account{id,username}';
+
+/**
+ * Who posts, and with which token: `{mode, page, igAccount, igSource, notes,
+ * accounts: {facebook, instagram}, missing}`. An account is `{id, token,
+ * appSecret}`, or null with the reason in `missing`.
+ *
+ * With DAYBOOK_META_SYSTEM_TOKEN (it wins over a Page token): the Page and its
+ * token are read with it, Facebook uses that Page token, and Instagram the
+ * system token. Facebook Login for Business can't grant the posting
+ * permissions to a user token (its configurations offer only
+ * business_management and pages_show_list), so a system user is the route.
+ * Without one, the Page token is used for both, as before, and nothing is
+ * fetched. Never logs a token.
+ */
+export async function resolveCredentials({ env, fetch = globalThis.fetch, log = () => {}, version = GRAPH_VERSION }) {
+  const appSecret = env.DAYBOOK_META_APP_SECRET || undefined;
+  const system = env.DAYBOOK_META_SYSTEM_TOKEN || null;
+
+  if (!system) {
+    const token = env.DAYBOOK_META_PAGE_TOKEN || null;
+    const pageId = env.DAYBOOK_FB_PAGE_ID || null;
+    const igId = env.DAYBOOK_IG_USER_ID || null;
+    return {
+      mode: 'page',
+      page: pageId ? { id: pageId, name: null } : null,
+      igAccount: null,
+      igSource: igId ? 'env' : null,
+      notes: [],
+      accounts: {
+        facebook: pageId && token ? { id: pageId, token, appSecret } : null,
+        instagram: igId && token ? { id: igId, token, appSecret } : null,
+      },
+      missing: {
+        facebook: 'no DAYBOOK_FB_PAGE_ID / DAYBOOK_META_PAGE_TOKEN',
+        instagram: 'no DAYBOOK_IG_USER_ID; no Instagram account is linked yet',
+      },
+    };
+  }
+
+  const api = graphClient({ token: system, appSecret, fetch, version });
+  let page;
+  if (env.DAYBOOK_FB_PAGE_ID) {
+    page = { id: env.DAYBOOK_FB_PAGE_ID, ...(await api.get(env.DAYBOOK_FB_PAGE_ID, PAGE_FIELDS)) };
+  } else {
+    const { data = [] } = await api.get('me/accounts', `id,${PAGE_FIELDS}`);
+    const named = data.filter((p) => (p.name ?? '').trim().toLowerCase() === PAGE_NAME.toLowerCase());
+    if (named.length !== 1) {
+      const list = data.map((p) => `${p.id} "${p.name}"`).join('; ') || 'none';
+      throw new Error(
+        `DAYBOOK_FB_PAGE_ID is not set, and ${named.length ? 'more than one' : 'none'} of the system user's Pages ` +
+          `is named "${PAGE_NAME}". Its Pages: ${list}. Set DAYBOOK_FB_PAGE_ID.`,
+      );
+    }
+    page = named[0];
+    log(`No DAYBOOK_FB_PAGE_ID: using the Page "${page.name}" (${page.id}) from the system user's Pages.`);
+  }
+
+  const pageId = String(page.id);
+  const igAccount = page.instagram_business_account ?? null;
+  let igId = env.DAYBOOK_IG_USER_ID || null;
+  let igSource = igId ? 'env' : null;
+  if (!igId && igAccount) {
+    igId = String(igAccount.id);
+    igSource = 'page';
+    log(`No DAYBOOK_IG_USER_ID: using the Page's Instagram account @${igAccount.username ?? '?'} (${igAccount.id}).`);
+  }
+
+  const notes = [];
+  if (!page.access_token) {
+    notes.push(`The system user got no Page token for ${pageId}: assign it to the Page in Business Settings, with content permissions.`);
+  }
+
+  return {
+    mode: 'system',
+    page: { id: pageId, name: page.name ?? null },
+    igAccount,
+    igSource,
+    notes,
+    accounts: {
+      facebook: page.access_token ? { id: pageId, token: page.access_token, appSecret } : null,
+      // Instagram publishes with the system token itself, as Meta's docs show for a system user.
+      instagram: igId ? { id: igId, token: system, appSecret } : null,
+    },
+    missing: {
+      facebook: `no Page token for ${pageId} from the system user`,
+      instagram: 'no DAYBOOK_IG_USER_ID, and no Instagram account on the Page',
+    },
+  };
+}
 
 /**
  * Facebook: each slide uploaded to the Page unpublished, then one feed post
@@ -254,12 +343,13 @@ const defaultSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
  * per-platform outcome; never throws for one platform's failure, so what did
  * post is still recorded.
  */
-export async function postDeck({ deck, record, posted, env, confirm, force = false, test = false, fetch = globalThis.fetch, now = () => new Date(), log = console.log, sleep }) {
+export async function postDeck({ deck, record, posted, env, creds, confirm, force = false, test = false, fetch = globalThis.fetch, now = () => new Date(), log = console.log, sleep }) {
   const caption = buildCaption(record, { test });
   const outcome = [];
   const merged = { ...(posted ?? {}) };
+  const accounts = creds ?? (await resolveCredentials({ env, fetch, log }));
 
-  for (const choice of choosePlatforms(env, posted, { force })) {
+  for (const choice of choosePlatforms(accounts, posted, { force })) {
     // A dry run still previews a platform that has no account yet, so the
     // caption and slides can be checked before the credentials exist.
     if (choice.action === 'skip' && (confirm || !choice.unconfigured)) {
@@ -320,8 +410,24 @@ export async function runPosts({ targets, load, env, confirm, force = false, tes
   // A test post reads and records only in the test/ mirror, whatever it is handed.
   const area = testPost ? prefixFor(true) : prefix;
 
+  // Credentials once a run. With a system token this reads the Page (a GET,
+  // never a post); a failure fails every deck in the run, loudly.
+  let creds = null;
+  let credsError = null;
+  try {
+    creds = await resolveCredentials({ env, fetch, log });
+    for (const note of creds.notes) log(`Note: ${note}`);
+  } catch (err) {
+    credsError = `credentials: ${err.message}`;
+    log(credsError);
+  }
+
   for (const target of orderTargets(targets)) {
     const key = postedKey(area, target.date, target.lang);
+    if (credsError) {
+      results.push({ target, key, outcome: [{ platform: '—', result: `FAILED: ${credsError}`, failed: true }], changed: false });
+      continue;
+    }
     const { deck, record, posted } = await load(target);
     if (!deck || !record) {
       log(`${target.date} ${target.lang}: no ${deck ? 'record' : 'deck'} yet; skipped.`);
@@ -352,7 +458,7 @@ export async function runPosts({ targets, load, env, confirm, force = false, tes
     }
 
     log(`\nDeck ${deck.date} ${deck.lang} r${deck.revision}, ${deck.slides.length} slides${confirm ? '' : ' — dry run'}.`);
-    const result = await postDeck({ deck, record, posted, env, confirm, force, test: testPost, fetch, log, now, sleep });
+    const result = await postDeck({ deck, record, posted, creds, confirm, force, test: testPost, fetch, log, now, sleep });
     results.push({ target, key, deck, ...result });
     previous = { ...target, changed: result.changed };
   }
@@ -400,28 +506,54 @@ const INSTAGRAM_SCOPES = ['instagram_basic', 'instagram_content_publish'];
 
 /**
  * What the credentials can do, read-only: the Page and the Instagram account
- * linked to it, the Page token's scopes (debug_token, which needs the app id
- * and secret), and a verdict per platform. Never posts, never prints the token,
- * and never throws for a failed lookup: it reports it.
+ * linked to it, the scopes of the token in use (debug_token, which needs the
+ * app id and secret), and a verdict per platform. With a system token, that is
+ * the token debugged, and the Page token is derived but never shown. Never
+ * posts, never prints a token, and never throws for a failed lookup: it
+ * reports it.
  */
 export async function checkAccounts({ env, fetch = globalThis.fetch, version = GRAPH_VERSION }) {
-  const pageId = env.DAYBOOK_FB_PAGE_ID;
-  const token = env.DAYBOOK_META_PAGE_TOKEN;
-  const report = { page: null, instagram: null, igEnv: env.DAYBOOK_IG_USER_ID || null, token: null, notes: [], verdict: {} };
+  const system = env.DAYBOOK_META_SYSTEM_TOKEN || null;
+  const token = system || env.DAYBOOK_META_PAGE_TOKEN || null;
+  const report = {
+    mode: system ? 'system' : 'page',
+    page: null,
+    instagram: null,
+    igEnv: env.DAYBOOK_IG_USER_ID || null,
+    igSource: null,
+    pageToken: null,
+    token: null,
+    notes: [],
+    verdict: {},
+  };
 
-  if (!pageId || !token) {
-    const reason = 'no DAYBOOK_FB_PAGE_ID / DAYBOOK_META_PAGE_TOKEN';
+  if (!token || (!system && !env.DAYBOOK_FB_PAGE_ID)) {
+    const reason = 'no DAYBOOK_META_SYSTEM_TOKEN, and no DAYBOOK_FB_PAGE_ID / DAYBOOK_META_PAGE_TOKEN';
     report.verdict = { facebook: { canPost: false, reason }, instagram: { canPost: false, reason } };
     return report;
   }
 
-  const api = graphClient({ token, appSecret: env.DAYBOOK_META_APP_SECRET, fetch, version });
-  try {
-    const page = await api.get(pageId, 'name,instagram_business_account{id,username}');
-    report.page = { id: page.id ?? pageId, name: page.name ?? null };
-    report.instagram = page.instagram_business_account ?? null;
-  } catch (err) {
-    report.notes.push(`Page lookup failed: ${err.message}`);
+  if (system) {
+    try {
+      const creds = await resolveCredentials({ env, fetch, version, log: (line) => report.notes.push(line) });
+      report.page = creds.page;
+      report.instagram = creds.igAccount;
+      report.igSource = creds.igSource;
+      report.pageToken = Boolean(creds.accounts.facebook);
+      report.notes.push(...creds.notes);
+    } catch (err) {
+      report.notes.push(`Page lookup failed: ${err.message}`);
+    }
+  } else {
+    const api = graphClient({ token, appSecret: env.DAYBOOK_META_APP_SECRET, fetch, version });
+    try {
+      const page = await api.get(env.DAYBOOK_FB_PAGE_ID, 'name,instagram_business_account{id,username}');
+      report.page = { id: page.id ?? env.DAYBOOK_FB_PAGE_ID, name: page.name ?? null };
+      report.instagram = page.instagram_business_account ?? null;
+      report.igSource = report.igEnv ? 'env' : null;
+    } catch (err) {
+      report.notes.push(`Page lookup failed: ${err.message}`);
+    }
   }
 
   if (env.DAYBOOK_META_APP_ID && env.DAYBOOK_META_APP_SECRET) {
@@ -444,7 +576,7 @@ export async function checkAccounts({ env, fetch = globalThis.fetch, version = G
     report.notes.push('No DAYBOOK_META_APP_ID: the token\'s scopes can\'t be read, so neither verdict is certain.');
   }
 
-  report.verdict = verdicts(report, pageId);
+  report.verdict = verdicts(report, report.page?.id ?? env.DAYBOOK_FB_PAGE_ID);
   return report;
 }
 
@@ -457,36 +589,44 @@ function verdicts(report, pageId) {
   };
 
   let facebook;
-  if (!scopes) facebook = { canPost: null, reason: 'unknown: the token\'s scopes could not be read' };
+  if (report.mode === 'system' && report.pageToken === false) facebook = { canPost: false, reason: 'the system user got no Page token for this Page' };
+  else if (report.mode === 'system' && !report.page) facebook = { canPost: false, reason: 'the Page could not be read with the system token' };
+  else if (!scopes) facebook = { canPost: null, reason: 'unknown: the token\'s scopes could not be read' };
   else if (report.token.is_valid === false) facebook = { canPost: false, reason: 'the token is not valid' };
   else if (missing(FACEBOOK_SCOPES).length) facebook = { canPost: false, reason: `missing ${missing(FACEBOOK_SCOPES).join(', ')}` };
   else if (!grantedFor('pages_manage_posts', pageId)) facebook = { canPost: false, reason: `pages_manage_posts is not granted for Page ${pageId}` };
   else facebook = { canPost: true, reason: 'pages_manage_posts granted' };
 
   const ig = report.instagram;
-  const match = !ig
+  const account = !ig
     ? null
-    : !report.igEnv
-      ? `DAYBOOK_IG_USER_ID is not set, so the post job skips Instagram until it is`
-      : report.igEnv === String(ig.id)
+    : report.igEnv
+      ? report.igEnv === String(ig.id)
         ? 'matches DAYBOOK_IG_USER_ID'
-        : `does NOT match DAYBOOK_IG_USER_ID (${report.igEnv})`;
+        : `does NOT match DAYBOOK_IG_USER_ID (${report.igEnv})`
+      : report.mode === 'system'
+        ? 'DAYBOOK_IG_USER_ID is not set; posting uses this account, from the Page'
+        : 'DAYBOOK_IG_USER_ID is not set, so the post job skips Instagram until it is';
   let instagram;
   if (!ig) instagram = { canPost: false, reason: 'the Page has no Instagram business account' };
   else if (!scopes) instagram = { canPost: null, reason: 'unknown: the token\'s scopes could not be read' };
   else if (report.token.is_valid === false) instagram = { canPost: false, reason: 'the token is not valid' };
   else if (missing(INSTAGRAM_SCOPES).length) instagram = { canPost: false, reason: `missing ${missing(INSTAGRAM_SCOPES).join(', ')}` };
   else instagram = { canPost: true, reason: 'instagram_basic and instagram_content_publish granted' };
-  if (match) instagram.account = match;
+  if (account) instagram.account = account;
 
   return { facebook, instagram };
 }
 
-/** The check, as lines: never the token itself. */
+/** The check, as lines: never a token itself. */
 export function formatCheck(report) {
   const when = (t) => (t === 0 ? 'never' : t ? new Date(t * 1000).toISOString() : 'unknown');
   const yes = (v) => (v === true ? 'CAN post' : v === false ? 'can NOT post' : 'unknown');
   const lines = ['Meta check (read-only; nothing is posted)'];
+  lines.push(
+    `Token in use: ${report.mode === 'system' ? 'system user token (DAYBOOK_META_SYSTEM_TOKEN)' : 'Page token (DAYBOOK_META_PAGE_TOKEN)'}` +
+      (report.mode === 'system' ? `; Page token derived: ${report.pageToken === null ? 'not tried' : report.pageToken ? 'yes' : 'NO'}` : ''),
+  );
   lines.push(`Page: ${report.page ? `${report.page.name ?? '?'} (${report.page.id})` : 'not read'}`);
   lines.push(
     `Instagram on the Page: ${report.instagram ? `@${report.instagram.username ?? '?'} (${report.instagram.id})` : 'none'}` +
