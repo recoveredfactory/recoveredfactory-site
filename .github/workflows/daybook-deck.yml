@@ -1,0 +1,96 @@
+# Render each published Immigration Daybook edition's social deck into the
+# editions bucket (news-ingester docs/EDITIONS.md).
+#
+# Every 15 minutes through the Bogota morning, deck-sync.mjs reads the bucket's
+# public index and renders a deck only for a language whose
+# social/{date}/{lang}/deck.json is missing or older than the index's revision.
+# Most runs find nothing new and say so in the job summary. Slides go to
+# social/{date}/{lang}/r{revision}/; the manifest goes last.
+#
+# Manual runs: `date` picks one edition, `test` reads test/editions and writes
+# test/social (the rehearsal mirror), and `dry_run` renders without uploading.
+# The AWS role trusts only refs/heads/main of this repo, so a run from any other
+# branch must be a dry run.
+
+name: Daybook deck
+
+on:
+  schedule:
+    # 10:00-17:45 UTC is 05:00-12:45 in Bogota, when editions lock.
+    - cron: '*/15 10-17 * * *'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: 'Edition date (YYYY-MM-DD). Empty: today and yesterday in Bogota.'
+        required: false
+        type: string
+      test:
+        description: 'Use the test/ mirror (read test/editions, write test/social)'
+        required: false
+        type: boolean
+        default: false
+      dry_run:
+        description: 'Render, but upload nothing'
+        required: false
+        type: boolean
+        default: false
+
+concurrency:
+  group: daybook-deck
+  cancel-in-progress: false
+
+permissions:
+  id-token: write # OIDC: assume the deck role
+  contents: read
+
+jobs:
+  deck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      # The deck scripts use Node built-ins only, so there is no install step.
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+
+      - name: ImageMagick
+        run: command -v magick || command -v convert || (sudo apt-get update && sudo apt-get install -y imagemagick)
+
+      # og.mjs looks for google-chrome, google-chrome-stable, then chromium; the
+      # runner image ships Google Chrome as google-chrome.
+      - name: Chrome
+        run: |
+          command -v google-chrome || command -v google-chrome-stable || command -v chromium
+          google-chrome --version || true
+          # Ubuntu 24.04 can block the unprivileged user namespaces Chrome's
+          # sandbox needs; headless Chrome then exits without a screenshot.
+          sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0 || true
+
+      - name: AWS credentials
+        if: ${{ inputs.dry_run != true }}
+        uses: aws-actions/configure-aws-credentials@7474bc4690e29a8392af63c5b98e7449536d5c3a # v4
+        with:
+          # news-ingester's deploy output daybookDeckRoleArn. Not a secret: the
+          # role trusts only this repo's main branch through GitHub OIDC, and may
+          # only PutObject under social/* and test/social/* (no list, no delete).
+          role-to-assume: arn:aws:iam::647111127395:role/DaybookDeckRenderRole-e04ebe5
+          aws-region: us-east-1
+
+      - name: Render and upload
+        working-directory: apps/daybook
+        env:
+          DATE: ${{ inputs.date }}
+          TEST: ${{ inputs.test }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: |
+          args=()
+          if [ -n "$DATE" ]; then args+=(--date "$DATE"); fi
+          if [ "$TEST" = "true" ]; then args+=(--test); fi
+          if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          node scripts/daybook/deck-sync.mjs "${args[@]}"
+
+      # Posting goes here once the Instagram, Threads and Facebook accounts
+      # exist (pending, David). It would read each new deck.json this run wrote
+      # and post its slide URLs; Instagram fetches the images from the bucket.
