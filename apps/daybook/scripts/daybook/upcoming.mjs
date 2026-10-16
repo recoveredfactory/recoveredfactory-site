@@ -413,8 +413,11 @@ export function handCalendar(webRoot, lang, editionDate, from = editionDate) {
     .sort((a, b) => a.iso.localeCompare(b.iso));
 }
 
-/** The month/day/weekday/countdown furniture every calendar entry carries. */
-function entryFrom({ iso, text, publisher }, lang, from) {
+/**
+ * The month/day/weekday/countdown furniture every calendar entry carries.
+ * Exported for record-deck.mjs, whose calendar arrives already structured.
+ */
+export function entryFrom({ iso, text, publisher }, lang, from) {
   const date = new Date(`${iso}T00:00:00Z`);
   return {
     iso,
