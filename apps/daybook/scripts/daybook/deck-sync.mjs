@@ -196,8 +196,11 @@ async function main() {
       // English one for its shape even when only Spanish is being drawn.
       const records = {};
       for (const l of langs) records[l.lang] = await getJson(`${base}/${prefix}editions/${date}/${l.lang}.json`);
-      const rendered = renderDate({ date, langs, due, records, work });
-      for (const { lang, revision, dir, files } of rendered) {
+      // `drawn`, not `rendered`: that name is the run-wide set of uploaded
+      // decks the posting step reads, and shadowing it here broke the first
+      // real upload (run 38902725604: "rendered.add is not a function").
+      const drawn = renderDate({ date, langs, due, records, work });
+      for (const { lang, revision, dir, files } of drawn) {
         const manifest = buildManifest({ base, prefix, date, lang, revision, files, renderedAt: new Date().toISOString() });
 
         if (dryRun) {
@@ -285,12 +288,28 @@ function renderDate({ date, langs, due, records, work }) {
   });
 }
 
-/** JSON at a URL, or null when the bucket says it is not there (403 or 404: anonymous reads of a missing key are 403). */
-async function getJson(url) {
-  const res = await fetch(url, { headers: { 'cache-control': 'no-cache' } });
-  if (res.status === 403 || res.status === 404) return null;
-  if (!res.ok) throw new Error(`GET ${url}: HTTP ${res.status}`);
-  return res.json();
+/**
+ * JSON at a URL, or null when the bucket says it is not there (403 or 404:
+ * anonymous reads of a missing key are 403). A network-level failure is retried
+ * twice before it fails the run, and says why: the first real run lost its
+ * posting step to a bare "fetch failed" on one read.
+ */
+async function getJson(url, tries = 3) {
+  for (let attempt = 1; ; attempt++) {
+    let res;
+    try {
+      res = await fetch(url, { headers: { 'cache-control': 'no-cache' } });
+    } catch (err) {
+      const why = err.cause?.code ?? err.cause?.message ?? err.message;
+      if (attempt >= tries) throw new Error(`GET ${url}: ${why}`);
+      console.warn(`GET ${url}: ${why}; retrying (${attempt}/${tries - 1})`);
+      await new Promise((r) => setTimeout(r, 1000 * attempt));
+      continue;
+    }
+    if (res.status === 403 || res.status === 404) return null;
+    if (!res.ok) throw new Error(`GET ${url}: HTTP ${res.status}`);
+    return res.json();
+  }
 }
 
 function upload(path, bucket, key, contentType, cacheControl) {
