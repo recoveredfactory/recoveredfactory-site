@@ -3,11 +3,18 @@
 // its Instagram account once one is linked. A dry run unless --confirm.
 //
 // Usage: node scripts/daybook/deck-post.mjs (--postable <json> | --date YYYY-MM-DD --lang en|es | --deck <url>)
-//                                           [--test] [--confirm] [--force] [--record-dir <dir>]
+//                                           [--test | --test-post] [--confirm] [--force] [--record-dir <dir>]
 //                                           [--base <url>] [--pause-seconds <n>]
+//        node scripts/daybook/deck-post.mjs --check
 //   --postable    the decks to post, as deck-sync.mjs's `postable` output: [{date, lang}, …]
 //   --date/--lang one deck by name; --deck one deck by its manifest URL
 //   --test        read the bucket's test/ mirror. A test deck is never posted, only dry-run.
+//   --test-post   a REAL post of a deck from the test/ mirror, to the live accounts, for
+//                 checking the path end to end. With --confirm it posts. The caption says it
+//                 is a test, links to the site's home page, and the permalinks print with
+//                 "delete by hand". Its posted.json goes under test/social/, never the live path.
+//   --check       read-only: the Page, its Instagram account, the token's scopes, and whether
+//                 each platform can post. Never posts; always exits 0.
 //   --confirm     post. Without it, print exactly what would be posted and make no Graph call.
 //   --force       post to a platform even when posted.json says it already has this deck
 //   --record-dir  where each updated posted.json is written (see below); default: not written
@@ -24,6 +31,8 @@
 // GitHub environment `social` (written by meta-auth.mjs):
 //   DAYBOOK_FB_PAGE_ID, DAYBOOK_META_PAGE_TOKEN   the Page, and its non-expiring token
 //   DAYBOOK_META_APP_SECRET                       for appsecret_proof, when present
+//   DAYBOOK_META_APP_ID                           with the secret, lets --check read the
+//                                                 token's scopes (debug_token)
 //   DAYBOOK_IG_USER_ID                            the linked Instagram account; absent
 //                                                 until it is linked, and Instagram is skipped
 //
@@ -33,14 +42,15 @@
 // republished revision included, unless --force. This script reads that file
 // from the bucket but does not write it there: the posting job runs in the
 // `social` environment, which the deck role does not trust, so it writes the
-// merged file to --record-dir and a follow-up job uploads it. See the workflow.
+// merged file under --record-dir at its bucket key ({record-dir}/social/… or
+// {record-dir}/test/social/…) and a follow-up job uploads it. See the workflow.
 //
 // The caption is built from the record, never by a model: title, description,
 // and the line that says where to read it.
 
 import { createHmac } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { dirname, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { trimToClause } from './deck.mjs';
@@ -78,24 +88,35 @@ const READ_LINE = {
   es: (link) => `El Immigration Daybook de hoy, gratis cada mañana entre semana: ${link}`,
 };
 
+// The first line of a --test-post caption, so nobody who sees it before it is
+// deleted takes it for an edition.
+const TEST_LINE = {
+  en: 'Test post: this will be deleted shortly.',
+  es: 'Publicación de prueba: se borrará en breve.',
+};
+
 // ── Pure parts (tested in deck-post.test.mjs) ─────────────────────────────
 
 /**
  * The post's caption: the title, the description, and where to read the
  * edition. Under CAPTION_MAX, the description gives way first, cut at a
  * sentence or clause; the title and the link line are never cut.
+ *
+ * A test post opens on a line saying so, and links to the site's home page:
+ * a test edition does not exist on the live site, so its date path would 404.
  */
-export function buildCaption(record, max = CAPTION_MAX) {
+export function buildCaption(record, { test = false, max = CAPTION_MAX } = {}) {
   const lang = record.lang === 'es' ? 'es' : 'en';
   const title = record.title.trim();
-  const read = READ_LINE[lang](`${SITE}/${lang}/${record.date}`);
-  const fixed = `${title}\n\n${read}`;
+  const head = test ? `${TEST_LINE[lang]}\n${title}` : title;
+  const read = READ_LINE[lang](test ? SITE : `${SITE}/${lang}/${record.date}`);
+  const fixed = `${head}\n\n${read}`;
 
   let description = (record.description ?? '').trim();
   const room = max - fixed.length - 1; // the newline under the title
   if (description && description.length > room) description = room > 40 ? trimToClause(description, room - 1) : '';
 
-  const caption = description ? `${title}\n${description}\n\n${read}` : fixed;
+  const caption = description ? `${head}\n${description}\n\n${read}` : fixed;
   return caption.length <= max ? caption : `${caption.slice(0, max - 1).replace(/\s+\S*$/, '')}…`;
 }
 
@@ -146,7 +167,7 @@ export function graphClient({ token, appSecret, fetch = globalThis.fetch, versio
     return json;
   };
   return {
-    get: (path, fields) => call('GET', path, { fields }),
+    get: (path, fields, params = {}) => call('GET', path, { ...(fields ? { fields } : {}), ...params }),
     post: (path, params) => call('POST', path, params),
   };
 }
@@ -233,8 +254,8 @@ const defaultSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
  * per-platform outcome; never throws for one platform's failure, so what did
  * post is still recorded.
  */
-export async function postDeck({ deck, record, posted, env, confirm, force = false, fetch = globalThis.fetch, now = () => new Date(), log = console.log, sleep }) {
-  const caption = buildCaption(record);
+export async function postDeck({ deck, record, posted, env, confirm, force = false, test = false, fetch = globalThis.fetch, now = () => new Date(), log = console.log, sleep }) {
+  const caption = buildCaption(record, { test });
   const outcome = [];
   const merged = { ...(posted ?? {}) };
 
@@ -269,14 +290,15 @@ export async function postDeck({ deck, record, posted, env, confirm, force = fal
       const done = await platform.post({ api, account: choice.account, caption, slides, ...(sleep ? { sleep } : {}) });
       merged[choice.name] = { id: done.id, permalink: done.permalink, posted_at: now().toISOString(), revision: deck.revision };
       log(`${deck.date} ${deck.lang} ${choice.name}: posted ${done.id} ${done.permalink ?? ''}`);
-      outcome.push({ platform: choice.name, result: `posted: ${done.permalink ?? done.id}` });
+      if (test) log(`  TEST POST — delete by hand: ${done.permalink ?? `${choice.name} post ${done.id}`}`);
+      outcome.push({ platform: choice.name, result: `${test ? 'TEST posted (delete by hand)' : 'posted'}: ${done.permalink ?? done.id}` });
     } catch (err) {
       log(`${deck.date} ${deck.lang} ${choice.name}: FAILED: ${err.message}`);
       outcome.push({ platform: choice.name, result: `FAILED: ${err.message}`, failed: true });
     }
   }
 
-  return { posted: merged, outcome, changed: confirm && outcome.some((o) => o.result.startsWith('posted')) };
+  return { posted: merged, outcome, changed: confirm && outcome.some((o) => /^(TEST )?posted/.test(o.result)) };
 }
 
 /** Decks in posting order: by date, English before Spanish. */
@@ -292,21 +314,32 @@ export function orderTargets(targets) {
  * whose record has moved past it is not posted: the caption and the slides
  * would disagree.
  */
-export async function runPosts({ targets, load, env, confirm, force = false, fetch, sleep = defaultSleep, pauseMs = PAUSE_MS, log = console.log, now }) {
+export async function runPosts({ targets, load, env, confirm, force = false, testPost = false, prefix = '', fetch, sleep = defaultSleep, pauseMs = PAUSE_MS, log = console.log, now }) {
   const results = [];
   let previous = null;
+  // A test post reads and records only in the test/ mirror, whatever it is handed.
+  const area = testPost ? prefixFor(true) : prefix;
 
   for (const target of orderTargets(targets)) {
+    const key = postedKey(area, target.date, target.lang);
     const { deck, record, posted } = await load(target);
     if (!deck || !record) {
       log(`${target.date} ${target.lang}: no ${deck ? 'record' : 'deck'} yet; skipped.`);
-      results.push({ target, outcome: [{ platform: '—', result: `skipped: no ${deck ? 'record' : 'deck'} yet` }], changed: false });
+      results.push({ target, key, outcome: [{ platform: '—', result: `skipped: no ${deck ? 'record' : 'deck'} yet` }], changed: false });
       continue;
     }
     if (Number(record.revision) !== Number(deck.revision)) {
       const reason = `the deck is r${deck.revision} but the record is r${record.revision}; wait for the re-render`;
       log(`${target.date} ${target.lang}: ${reason}.`);
-      results.push({ target, deck, outcome: [{ platform: '—', result: `FAILED: ${reason}`, failed: true }], changed: false });
+      results.push({ target, key, deck, outcome: [{ platform: '—', result: `FAILED: ${reason}`, failed: true }], changed: false });
+      continue;
+    }
+    // A real post of a test deck must be a test deck all the way down: every
+    // slide it would hand Meta has to live in the test/ mirror.
+    if (testPost && !isTestDeck(deck)) {
+      const reason = 'not a test-area deck (every slide must be under test/social/); refusing to test-post it';
+      log(`${target.date} ${target.lang}: ${reason}.`);
+      results.push({ target, key, deck, outcome: [{ platform: '—', result: `FAILED: ${reason}`, failed: true }], changed: false });
       continue;
     }
 
@@ -319,11 +352,156 @@ export async function runPosts({ targets, load, env, confirm, force = false, fet
     }
 
     log(`\nDeck ${deck.date} ${deck.lang} r${deck.revision}, ${deck.slides.length} slides${confirm ? '' : ' — dry run'}.`);
-    const result = await postDeck({ deck, record, posted, env, confirm, force, fetch, log, now, sleep });
-    results.push({ target, deck, ...result });
+    const result = await postDeck({ deck, record, posted, env, confirm, force, test: testPost, fetch, log, now, sleep });
+    results.push({ target, key, deck, ...result });
     previous = { ...target, changed: result.changed };
   }
   return results;
+}
+
+/** Where a deck's posted.json lives in the bucket. */
+export const postedKey = (prefix, date, lang) => `${prefix}social/${date}/${lang}/posted.json`;
+
+/** A deck whose every slide is in the test/ mirror. */
+export function isTestDeck(deck) {
+  return (
+    Array.isArray(deck?.slides) &&
+    deck.slides.length > 0 &&
+    deck.slides.every((slide) => {
+      try {
+        return new URL(slide.url).pathname.startsWith('/test/social/');
+      } catch {
+        return false;
+      }
+    })
+  );
+}
+
+/**
+ * Each changed posted.json, written under `dir` at its own bucket key, for the
+ * record job to upload as is. Returns the keys written.
+ */
+export function writePosted(results, dir) {
+  const keys = [];
+  for (const result of results) {
+    if (!result.changed) continue;
+    const path = join(dir, result.key);
+    mkdirSync(dirname(path), { recursive: true });
+    writeFileSync(path, JSON.stringify(result.posted, null, 2));
+    keys.push(result.key);
+  }
+  return keys;
+}
+
+// ── --check ────────────────────────────────────────────────────────────────
+
+const FACEBOOK_SCOPES = ['pages_manage_posts'];
+const INSTAGRAM_SCOPES = ['instagram_basic', 'instagram_content_publish'];
+
+/**
+ * What the credentials can do, read-only: the Page and the Instagram account
+ * linked to it, the Page token's scopes (debug_token, which needs the app id
+ * and secret), and a verdict per platform. Never posts, never prints the token,
+ * and never throws for a failed lookup: it reports it.
+ */
+export async function checkAccounts({ env, fetch = globalThis.fetch, version = GRAPH_VERSION }) {
+  const pageId = env.DAYBOOK_FB_PAGE_ID;
+  const token = env.DAYBOOK_META_PAGE_TOKEN;
+  const report = { page: null, instagram: null, igEnv: env.DAYBOOK_IG_USER_ID || null, token: null, notes: [], verdict: {} };
+
+  if (!pageId || !token) {
+    const reason = 'no DAYBOOK_FB_PAGE_ID / DAYBOOK_META_PAGE_TOKEN';
+    report.verdict = { facebook: { canPost: false, reason }, instagram: { canPost: false, reason } };
+    return report;
+  }
+
+  const api = graphClient({ token, appSecret: env.DAYBOOK_META_APP_SECRET, fetch, version });
+  try {
+    const page = await api.get(pageId, 'name,instagram_business_account{id,username}');
+    report.page = { id: page.id ?? pageId, name: page.name ?? null };
+    report.instagram = page.instagram_business_account ?? null;
+  } catch (err) {
+    report.notes.push(`Page lookup failed: ${err.message}`);
+  }
+
+  if (env.DAYBOOK_META_APP_ID && env.DAYBOOK_META_APP_SECRET) {
+    // An app token (id|secret) is how debug_token is asked; it takes no appsecret_proof.
+    const app = graphClient({ token: `${env.DAYBOOK_META_APP_ID}|${env.DAYBOOK_META_APP_SECRET}`, fetch, version });
+    try {
+      const { data = {} } = await app.get('debug_token', null, { input_token: token });
+      report.token = {
+        type: data.type ?? null,
+        is_valid: data.is_valid ?? null,
+        expires_at: data.expires_at ?? null,
+        data_access_expires_at: data.data_access_expires_at ?? null,
+        scopes: data.scopes ?? [],
+        granular_scopes: (data.granular_scopes ?? []).map((g) => ({ scope: g.scope, target_ids: g.target_ids ?? [] })),
+      };
+    } catch (err) {
+      report.notes.push(`debug_token failed: ${err.message}`);
+    }
+  } else {
+    report.notes.push('No DAYBOOK_META_APP_ID: the token\'s scopes can\'t be read, so neither verdict is certain.');
+  }
+
+  report.verdict = verdicts(report, pageId);
+  return report;
+}
+
+function verdicts(report, pageId) {
+  const scopes = report.token?.scopes ?? null;
+  const missing = (wanted) => wanted.filter((scope) => !scopes.includes(scope));
+  const grantedFor = (scope, id) => {
+    const grant = report.token.granular_scopes.find((g) => g.scope === scope);
+    return !grant || !grant.target_ids.length || grant.target_ids.includes(String(id));
+  };
+
+  let facebook;
+  if (!scopes) facebook = { canPost: null, reason: 'unknown: the token\'s scopes could not be read' };
+  else if (report.token.is_valid === false) facebook = { canPost: false, reason: 'the token is not valid' };
+  else if (missing(FACEBOOK_SCOPES).length) facebook = { canPost: false, reason: `missing ${missing(FACEBOOK_SCOPES).join(', ')}` };
+  else if (!grantedFor('pages_manage_posts', pageId)) facebook = { canPost: false, reason: `pages_manage_posts is not granted for Page ${pageId}` };
+  else facebook = { canPost: true, reason: 'pages_manage_posts granted' };
+
+  const ig = report.instagram;
+  const match = !ig
+    ? null
+    : !report.igEnv
+      ? `DAYBOOK_IG_USER_ID is not set, so the post job skips Instagram until it is`
+      : report.igEnv === String(ig.id)
+        ? 'matches DAYBOOK_IG_USER_ID'
+        : `does NOT match DAYBOOK_IG_USER_ID (${report.igEnv})`;
+  let instagram;
+  if (!ig) instagram = { canPost: false, reason: 'the Page has no Instagram business account' };
+  else if (!scopes) instagram = { canPost: null, reason: 'unknown: the token\'s scopes could not be read' };
+  else if (report.token.is_valid === false) instagram = { canPost: false, reason: 'the token is not valid' };
+  else if (missing(INSTAGRAM_SCOPES).length) instagram = { canPost: false, reason: `missing ${missing(INSTAGRAM_SCOPES).join(', ')}` };
+  else instagram = { canPost: true, reason: 'instagram_basic and instagram_content_publish granted' };
+  if (match) instagram.account = match;
+
+  return { facebook, instagram };
+}
+
+/** The check, as lines: never the token itself. */
+export function formatCheck(report) {
+  const when = (t) => (t === 0 ? 'never' : t ? new Date(t * 1000).toISOString() : 'unknown');
+  const yes = (v) => (v === true ? 'CAN post' : v === false ? 'can NOT post' : 'unknown');
+  const lines = ['Meta check (read-only; nothing is posted)'];
+  lines.push(`Page: ${report.page ? `${report.page.name ?? '?'} (${report.page.id})` : 'not read'}`);
+  lines.push(
+    `Instagram on the Page: ${report.instagram ? `@${report.instagram.username ?? '?'} (${report.instagram.id})` : 'none'}` +
+      (report.verdict.instagram?.account ? ` — ${report.verdict.instagram.account}` : ''),
+  );
+  if (report.token) {
+    const t = report.token;
+    lines.push(`Token: type ${t.type ?? '?'}, is_valid ${t.is_valid}, expires_at ${when(t.expires_at)}, data access until ${when(t.data_access_expires_at)}`);
+    lines.push(`  scopes: ${t.scopes.join(', ') || '(none)'}`);
+    for (const g of t.granular_scopes) lines.push(`  granular: ${g.scope} → ${g.target_ids.join(', ') || '(all)'}`);
+  }
+  for (const note of report.notes) lines.push(`Note: ${note}`);
+  lines.push('Verdict:');
+  for (const [name, v] of Object.entries(report.verdict)) lines.push(`  ${name}: ${yes(v.canPost)} — ${v.reason}`);
+  return lines;
 }
 
 // ── The run ────────────────────────────────────────────────────────────────
@@ -334,14 +512,30 @@ async function main() {
     const i = argv.indexOf(name);
     return i === -1 ? null : argv[i + 1];
   };
+  if (argv.includes('--check')) {
+    // A report, not a gate: exit 0 whatever it finds.
+    const report = await checkAccounts({ env: process.env });
+    const lines = formatCheck(report);
+    console.log(lines.join('\n'));
+    if (process.env.GITHUB_STEP_SUMMARY) {
+      writeFileSync(process.env.GITHUB_STEP_SUMMARY, `### Meta check\n\n\`\`\`\n${lines.join('\n')}\n\`\`\`\n`, { flag: 'a' });
+    }
+    return;
+  }
+
   const test = argv.includes('--test');
+  const testPost = argv.includes('--test-post');
   const confirm = argv.includes('--confirm');
   const force = argv.includes('--force');
   const base = (value('--base') ?? process.env.DAYBOOK_EDITIONS_URL ?? DEFAULT_BASE).replace(/\/+$/, '');
-  const prefix = prefixFor(test);
+  const prefix = prefixFor(test || testPost);
   const pauseMs = value('--pause-seconds') ? Number(value('--pause-seconds')) * 1000 : PAUSE_MS;
 
-  if (test && confirm) throw new Error('A test deck is never posted. Drop --confirm for a dry run.');
+  if (test && confirm) throw new Error('A test deck is never posted. Drop --confirm for a dry run, or use --test-post.');
+  if (test && testPost) throw new Error('--test and --test-post are two different things; pick one.');
+  if (testPost && value('--deck') && !new URL(value('--deck')).pathname.startsWith('/test/social/')) {
+    throw new Error(`--test-post takes only a deck from the test area (test/social/…); ${value('--deck')} is not one.`);
+  }
 
   let targets;
   if (value('--postable')) {
@@ -365,18 +559,13 @@ async function main() {
     record: await getJson(`${base}/${prefix}editions/${date}/${lang}.json`),
     posted: await getJson(`${base}/${prefix}social/${date}/${lang}/posted.json`),
   });
-  const results = await runPosts({ targets, load, env: process.env, confirm, force, pauseMs });
+  const results = await runPosts({ targets, load, env: process.env, confirm, force, testPost, prefix, pauseMs });
 
   const recordDir = value('--record-dir');
-  for (const result of results) {
-    if (recordDir && result.changed) {
-      mkdirSync(recordDir, { recursive: true });
-      const path = join(recordDir, `posted-${result.target.date}-${result.target.lang}.json`);
-      writeFileSync(path, JSON.stringify(result.posted, null, 2));
-      console.log(`Wrote ${path} for ${prefix}social/${result.target.date}/${result.target.lang}/posted.json.`);
-    }
-    summarize(result.target, result.deck, result.outcome, confirm);
+  if (recordDir) {
+    for (const key of writePosted(results, recordDir)) console.log(`Wrote ${join(recordDir, key)} for ${key}.`);
   }
+  for (const result of results) summarize(result.target, result.deck, result.outcome, confirm, testPost);
   if (results.some((result) => result.outcome.some((o) => o.failed))) process.exit(1);
 }
 
@@ -387,11 +576,11 @@ async function getJson(url) {
   return res.json();
 }
 
-function summarize(target, deck, outcome, confirm) {
+function summarize(target, deck, outcome, confirm, testPost = false) {
   const path = process.env.GITHUB_STEP_SUMMARY;
   if (!path) return;
   const lines = [
-    `### Daybook post — ${target.date} ${target.lang}${deck ? ` r${deck.revision}` : ''}${confirm ? '' : ', dry run'}`,
+    `### Daybook ${testPost ? 'TEST post (delete by hand)' : 'post'} — ${target.date} ${target.lang}${deck ? ` r${deck.revision}` : ''}${confirm ? '' : ', dry run'}`,
     '',
     '| Platform | Result |',
     '|---|---|',
