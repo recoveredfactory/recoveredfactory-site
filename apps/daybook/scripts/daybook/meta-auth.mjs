@@ -27,7 +27,17 @@
 // admin rights on this repo. Standard Access is enough to post to a Page you
 // manage; no App Review.
 //
+// A Business-type app logs in through Facebook Login for Business, which takes a
+// saved configuration instead of a list of scopes: passing scopes to it gets
+// "Invalid Scopes" even when the permissions are assigned (2026-10-16). Create
+// one under Facebook Login for Business → Configurations (token type: user
+// access token; the Pages and Instagram permissions below; your Page and its
+// Instagram account as assets) and pass its id as META_CONFIG_ID or
+// --config-id. Without one, the scope list is sent, which suits a classic
+// Facebook Login app.
+//
 // Flags:
+//   --config-id <id>   Facebook Login for Business configuration (or META_CONFIG_ID)
 //   --page <id>        pick the Page when you manage several
 //   --print            print the secrets instead of saving them (avoid; anything
 //                      printed can end up in a log or a transcript)
@@ -59,6 +69,7 @@ const appId = process.env.META_APP_ID || process.env.INSTAGRAM_APP_ID || valueOf
 const appSecret = process.env.META_APP_SECRET || process.env.INSTAGRAM_APP_SECRET;
 if (!appId || !appSecret) die('Set META_APP_ID and META_APP_SECRET in the environment.');
 
+const configId = process.env.META_CONFIG_ID || valueOf('--config-id');
 const port = Number(valueOf('--port') || 4180);
 const apiVersion = valueOf('--api-version') || 'v25.0';
 const wantPage = valueOf('--page');
@@ -87,7 +98,17 @@ const scope = [
 
 const authUrl =
   `https://www.facebook.com/${apiVersion}/dialog/oauth?` +
-  new URLSearchParams({ client_id: appId, redirect_uri: redirectUri, scope, response_type: 'code' });
+  new URLSearchParams(
+    configId
+      ? {
+          client_id: appId,
+          redirect_uri: redirectUri,
+          config_id: configId,
+          response_type: 'code',
+          override_default_response_type: 'true',
+        }
+      : { client_id: appId, redirect_uri: redirectUri, scope, response_type: 'code' },
+  );
 
 const proof = (tok) => createHmac('sha256', appSecret).update(tok).digest('hex');
 
@@ -214,7 +235,10 @@ const server = createServer(async (req, res) => {
 });
 
 server.listen(port, () => {
-  console.log('\nOpening Facebook. Sign in as the account that manages the Daybook Page and approve:\n');
+  console.log(
+    `\nOpening Facebook (${configId ? `Login for Business, configuration ${configId}` : 'scopes'}). ` +
+      'Sign in as the account that manages the Page and approve:\n',
+  );
   console.log(authUrl + '\n');
   console.log(`(Listening on ${redirectUri} for the callback…)\n`);
   const opener = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
