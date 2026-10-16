@@ -1,17 +1,20 @@
 # Render each published Immigration Daybook edition's social deck into the
 # editions bucket (news-ingester docs/EDITIONS.md), then post it.
 #
-# Every 15 minutes through the Bogota morning, deck-sync.mjs reads the bucket's
-# public index and renders a deck only for a language whose
-# social/{date}/{lang}/deck.json is missing or older than the index's revision.
-# Most runs find nothing new and say so in the job summary. Slides go to
-# social/{date}/{lang}/r{revision}/; the manifest goes last.
+# No schedule. news-ingester's UpcomingApi starts this workflow (workflow_dispatch,
+# with `date`) the moment the desk publishes or broadcasts an edition; a failed
+# start shows in the desk's reply, and calling the op again retries. Each run,
+# deck-sync.mjs reads the bucket's public index and renders a deck only for a
+# language whose social/{date}/{lang}/deck.json is missing or older than the
+# index's revision. Slides go to social/{date}/{lang}/r{revision}/; the
+# manifest goes last.
 #
-# Rendering is the preview: a deck renders as soon as its edition is published
-# (David's web lock, publish_edition). Posting follows his second lock,
-# broadcast_edition, which writes editions/{date}/broadcast.json: a deck posts
-# only once that mark lists its language. Until then the render log says
-# "rendered; waiting for broadcast".
+# David's order (2026-10-16): publish to the web as often as he likes (each
+# publish re-renders the deck: the site and the slides are the preview), then
+# broadcast (broadcast_edition writes editions/{date}/broadcast.json, and a
+# deck posts only once that mark lists its language; until then the log says
+# "rendered; waiting for broadcast"), then the email last, which the desk drafts
+# from the posts' links in posted.json.
 #
 # Then three jobs:
 #   render  renders, and lists the decks ready to post: current in the bucket, in
@@ -42,9 +45,6 @@
 name: Daybook deck
 
 on:
-  schedule:
-    # 10:00-17:45 UTC is 05:00-12:45 in Bogota, when editions lock.
-    - cron: '*/15 10-17 * * *'
   workflow_dispatch:
     inputs:
       date:
