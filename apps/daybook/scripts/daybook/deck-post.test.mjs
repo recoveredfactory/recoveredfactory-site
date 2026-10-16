@@ -4,7 +4,25 @@ import assert from 'node:assert/strict';
 import { createHmac } from 'node:crypto';
 import { test } from 'node:test';
 
-import { CAPTION_MAX, PAUSE_MS, buildCaption, fitInstagram, postDeck, runPosts } from './deck-post.mjs';
+import { spawnSync } from 'node:child_process';
+import { existsSync, mkdtempSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+import {
+  CAPTION_MAX,
+  PAUSE_MS,
+  buildCaption,
+  checkAccounts,
+  fitInstagram,
+  formatCheck,
+  isTestDeck,
+  postDeck,
+  resolveCredentials,
+  runPosts,
+  writePosted,
+} from './deck-post.mjs';
 import { postable } from './deck-sync.mjs';
 
 const record = {
@@ -348,4 +366,321 @@ test('a Spanish deck that is not rendered yet is skipped, not failed', async () 
   assert.equal(results[0].changed, true);
   assert.match(results[1].outcome[0].result, /skipped: no deck yet/);
   assert.equal(results[1].outcome[0].failed, undefined);
+});
+
+// ── --check ────────────────────────────────────────────────────────────────
+
+const checkEnv = {
+  DAYBOOK_FB_PAGE_ID: '111',
+  DAYBOOK_META_PAGE_TOKEN: 'page-token-SECRET',
+  DAYBOOK_META_APP_SECRET: 'app-secret',
+  DAYBOOK_META_APP_ID: '4242',
+};
+
+/** A fake Graph API for --check: the Page lookup and debug_token. Anything else, or any POST, fails the test. */
+function fakeCheck({ page, debug }) {
+  const calls = [];
+  const fetch = async (url, init = {}) => {
+    assert.equal(init.method, 'GET', '--check only reads');
+    const u = new URL(url);
+    calls.push({ path: u.pathname.replace(/^\/v25\.0\//, ''), params: Object.fromEntries(u.searchParams) });
+    const reply = (json) => ({ ok: true, status: 200, json: async () => json });
+    if (u.pathname.endsWith('/111')) return reply(page);
+    if (u.pathname.endsWith('/debug_token')) return reply({ data: debug });
+    throw new Error(`unexpected ${u.pathname}`);
+  };
+  return { fetch, calls };
+}
+
+test('--check on the first real token: no pages_manage_posts, so Facebook can not post', async () => {
+  const graph = fakeCheck({
+    page: { id: '111', name: 'Recovered Factory' },
+    debug: {
+      type: 'PAGE',
+      is_valid: true,
+      expires_at: 0,
+      scopes: ['pages_show_list', 'pages_read_engagement', 'business_management', 'public_profile'],
+      granular_scopes: [{ scope: 'pages_show_list', target_ids: ['111'] }],
+    },
+  });
+  const report = await checkAccounts({ env: checkEnv, fetch: graph.fetch });
+  assert.equal(report.verdict.facebook.canPost, false);
+  assert.match(report.verdict.facebook.reason, /missing pages_manage_posts/);
+  assert.equal(report.verdict.instagram.canPost, false);
+  assert.match(report.verdict.instagram.reason, /no Instagram business account/);
+
+  // debug_token is asked with the app token, about the Page token.
+  const debugCall = graph.calls.find((c) => c.path === 'debug_token');
+  assert.equal(debugCall.params.access_token, '4242|app-secret');
+  assert.equal(debugCall.params.input_token, 'page-token-SECRET');
+  assert.equal(debugCall.params.appsecret_proof, undefined);
+
+  const out = formatCheck(report).join('\n');
+  assert.match(out, /facebook: can NOT post — missing pages_manage_posts/);
+  assert.match(out, /expires_at never/);
+  assert.match(out, /granular: pages_show_list → 111/);
+  assert.ok(!out.includes('page-token-SECRET') && !out.includes('app-secret'), 'never prints a secret');
+});
+
+test('--check with everything granted: both platforms can post, and the Instagram account matches', async () => {
+  const graph = fakeCheck({
+    page: { id: '111', name: 'Recovered Factory', instagram_business_account: { id: '999', username: 'recoveredfactory' } },
+    debug: {
+      type: 'PAGE',
+      is_valid: true,
+      expires_at: 0,
+      data_access_expires_at: 1798761600,
+      scopes: ['pages_show_list', 'pages_read_engagement', 'pages_manage_posts', 'business_management', 'instagram_basic', 'instagram_content_publish'],
+      granular_scopes: [
+        { scope: 'pages_manage_posts', target_ids: ['111'] },
+        { scope: 'instagram_content_publish', target_ids: ['999'] },
+        { scope: 'instagram_basic', target_ids: ['999'] },
+      ],
+    },
+  });
+  const report = await checkAccounts({ env: { ...checkEnv, DAYBOOK_IG_USER_ID: '999' }, fetch: graph.fetch });
+  assert.deepEqual(
+    [report.verdict.facebook.canPost, report.verdict.instagram.canPost],
+    [true, true],
+  );
+  assert.equal(report.verdict.instagram.account, 'matches DAYBOOK_IG_USER_ID');
+  const out = formatCheck(report).join('\n');
+  assert.match(out, /Instagram on the Page: @recoveredfactory \(999\) — matches DAYBOOK_IG_USER_ID/);
+  assert.match(out, /instagram: CAN post/);
+
+  // The same grants with the wrong account id configured: said plainly.
+  const wrong = await checkAccounts({ env: { ...checkEnv, DAYBOOK_IG_USER_ID: '123' }, fetch: graph.fetch });
+  assert.match(wrong.verdict.instagram.account, /does NOT match DAYBOOK_IG_USER_ID \(123\)/);
+});
+
+test('--check without an app id reports what it can and says the verdicts are unknown', async () => {
+  const graph = fakeCheck({ page: { id: '111', name: 'Recovered Factory' }, debug: {} });
+  const { DAYBOOK_META_APP_ID, ...env } = checkEnv;
+  const report = await checkAccounts({ env, fetch: graph.fetch });
+  assert.equal(report.verdict.facebook.canPost, null);
+  assert.ok(report.notes.some((n) => /No DAYBOOK_META_APP_ID/.test(n)));
+  assert.equal(graph.calls.some((c) => c.path === 'debug_token'), false);
+});
+
+// ── --test-post ────────────────────────────────────────────────────────────
+
+const testDeck = {
+  ...deck,
+  slides: deck.slides.map((s) => ({ ...s, url: s.url.replace('/social/', '/test/social/') })),
+};
+
+test('a test post says so, and links to the site rather than an edition that does not exist', () => {
+  assert.equal(
+    buildCaption(record, { test: true }),
+    'Test post: this will be deleted shortly.\n' +
+      'Refugees get 10 days to contest status termination\n' +
+      'A final work-permit rule takes effect, and San Antonio sues over a proposed detention site.\n\n' +
+      'Today’s Immigration Daybook, free every weekday morning: immigrationdaybook.com',
+  );
+  assert.equal(
+    buildCaption({ ...record, lang: 'es', title: 'Refugiados: 10 días para impugnar', description: '' }, { test: true }),
+    'Publicación de prueba: se borrará en breve.\n' +
+      'Refugiados: 10 días para impugnar\n\n' +
+      'El Immigration Daybook de hoy, gratis cada mañana entre semana: immigrationdaybook.com',
+  );
+});
+
+test('--test-post records posted.json only under test/, and posts the test caption', async () => {
+  const graph = fakeGraph();
+  const lines = [];
+  const results = await runPosts({
+    targets: [{ date: '2026-10-14', lang: 'en' }],
+    load: async () => ({ deck: testDeck, record, posted: null }),
+    env,
+    confirm: true,
+    testPost: true,
+    prefix: '', // ignored: a test post always records in the test mirror
+    fetch: graph.fetch,
+    sleep: noSleep,
+    log: (line) => lines.push(line),
+  });
+  assert.equal(results[0].key, 'test/social/2026-10-14/en/posted.json');
+  assert.match(graph.calls.find((c) => c.path === '111/feed').params.message, /^Test post: this will be deleted shortly\./);
+  assert.ok(lines.some((l) => /TEST POST — delete by hand: https:\/\/www\.facebook\.com\/111\/posts\/555/.test(l)));
+
+  const dir = mkdtempSync(join(tmpdir(), 'deck-post-'));
+  try {
+    assert.deepEqual(writePosted(results, dir), ['test/social/2026-10-14/en/posted.json']);
+    assert.ok(existsSync(join(dir, 'test/social/2026-10-14/en/posted.json')));
+    assert.equal(existsSync(join(dir, 'social')), false, 'nothing on the live path');
+    assert.equal(JSON.parse(readFileSync(join(dir, 'test/social/2026-10-14/en/posted.json'), 'utf8')).facebook.id, '111_555');
+  } finally {
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('--test-post refuses a deck that is not in the test area', async () => {
+  assert.equal(isTestDeck(testDeck), true);
+  assert.equal(isTestDeck(deck), false);
+  assert.equal(isTestDeck({ ...testDeck, slides: [...testDeck.slides, slide(9, 'story')] }), false, 'one live slide is enough to refuse');
+
+  const graph = fakeGraph();
+  const results = await runPosts({
+    targets: [{ date: '2026-10-14', lang: 'en' }],
+    load: async () => ({ deck, record, posted: null }),
+    env,
+    confirm: true,
+    testPost: true,
+    fetch: graph.fetch,
+    sleep: noSleep,
+    log: quiet,
+  });
+  assert.equal(graph.calls.length, 0, 'no Graph call for a live deck');
+  assert.match(results[0].outcome[0].result, /not a test-area deck/);
+  assert.equal(results[0].outcome[0].failed, true);
+
+  // And on the command line, before anything is fetched.
+  const script = join(dirname(fileURLToPath(import.meta.url)), 'deck-post.mjs');
+  const cli = spawnSync('node', [script, '--test-post', '--confirm', '--deck', 'https://bucket.s3.amazonaws.com/social/2026-10-14/en/deck.json'], { encoding: 'utf8' });
+  assert.equal(cli.status, 1);
+  assert.match(cli.stderr, /--test-post takes only a deck from the test area/);
+});
+
+// ── A system user token ────────────────────────────────────────────────────
+
+const systemEnv = {
+  DAYBOOK_META_SYSTEM_TOKEN: 'system-token-SECRET',
+  DAYBOOK_META_PAGE_TOKEN: 'old-page-token-SECRET',
+  DAYBOOK_FB_PAGE_ID: '111',
+  DAYBOOK_META_APP_SECRET: 'app-secret',
+};
+const rfPage = {
+  id: '111',
+  name: 'Recovered Factory',
+  access_token: 'derived-page-token-SECRET',
+  instagram_business_account: { id: '999', username: 'recoveredfactory' },
+};
+const proofOf = (token) => createHmac('sha256', 'app-secret').update(token).digest('hex');
+
+/** fakeGraph, plus the Page lookup and /me/accounts a system token makes. */
+function fakeSystemGraph({ page = rfPage, accounts = [rfPage] } = {}) {
+  const graph = fakeGraph();
+  const fetch = async (url, init = {}) => {
+    const u = new URL(url);
+    const path = u.pathname.replace(/^\/v25\.0\//, '');
+    if (init.method === 'GET' && (path === '111' || path === 'me/accounts')) {
+      graph.calls.push({ method: 'GET', path, params: Object.fromEntries(u.searchParams) });
+      return { ok: true, status: 200, json: async () => (path === '111' ? page : { data: accounts }) };
+    }
+    return graph.fetch(url, init);
+  };
+  return { fetch, calls: graph.calls };
+}
+
+test('a system token wins: the Page token is derived from it, and the old Page token is never used', async () => {
+  const graph = fakeSystemGraph();
+  const results = await runPosts({
+    targets: [{ date: '2026-10-14', lang: 'en' }],
+    load: async () => ({ deck, record, posted: null }),
+    env: { ...systemEnv, DAYBOOK_IG_USER_ID: '999' },
+    confirm: true,
+    fetch: graph.fetch,
+    sleep: noSleep,
+    log: quiet,
+  });
+  assert.equal(results[0].changed, true);
+
+  // First call: the Page, read with the system token, asking for its token.
+  const [lookup] = graph.calls;
+  assert.equal(lookup.path, '111');
+  assert.equal(lookup.params.access_token, 'system-token-SECRET');
+  assert.equal(lookup.params.appsecret_proof, proofOf('system-token-SECRET'));
+  assert.match(lookup.params.fields, /access_token/);
+
+  // Facebook posts with the derived Page token; Instagram with the system token.
+  const facebook = graph.calls.filter((c) => c.path.startsWith('111/') || c.path === '111_555');
+  assert.ok(facebook.length > 0 && facebook.every((c) => c.params.access_token === 'derived-page-token-SECRET' && c.params.appsecret_proof === proofOf('derived-page-token-SECRET')));
+  const instagram = graph.calls.filter((c) => c.path.startsWith('999/') || c.path === 'carousel1' || c.path === 'igmedia1');
+  assert.ok(instagram.length > 0 && instagram.every((c) => c.params.access_token === 'system-token-SECRET'));
+
+  assert.equal(graph.calls.some((c) => c.params.access_token === 'old-page-token-SECRET'), false, 'the old Page token is never used');
+});
+
+test('with no DAYBOOK_IG_USER_ID, a system token posts to the Page\'s own Instagram account, and says so', async () => {
+  const graph = fakeSystemGraph();
+  const lines = [];
+  const results = await runPosts({
+    targets: [{ date: '2026-10-14', lang: 'en' }],
+    load: async () => ({ deck, record, posted: null }),
+    env: systemEnv, // no DAYBOOK_IG_USER_ID
+    confirm: true,
+    fetch: graph.fetch,
+    sleep: noSleep,
+    log: (line) => lines.push(line),
+  });
+  assert.ok(lines.some((l) => /No DAYBOOK_IG_USER_ID: using the Page's Instagram account @recoveredfactory \(999\)/.test(l)));
+  assert.ok(graph.calls.some((c) => c.path === '999/media_publish'));
+  assert.equal(results[0].posted.instagram.permalink, 'https://www.instagram.com/p/abc/');
+
+  // The Page token route keeps the old rule: no id, no Instagram.
+  const pageOnly = await resolveCredentials({ env: { DAYBOOK_META_PAGE_TOKEN: 't', DAYBOOK_FB_PAGE_ID: '111' }, fetch: async () => assert.fail('no fetch') });
+  assert.equal(pageOnly.accounts.instagram, null);
+});
+
+test('with no DAYBOOK_FB_PAGE_ID, a system token finds "Recovered Factory" in /me/accounts, or fails with the list', async () => {
+  const { DAYBOOK_FB_PAGE_ID, ...env } = systemEnv;
+  const daybook = { id: '222', name: 'Immigration Daybook', access_token: 'other' };
+  const found = await resolveCredentials({ env, fetch: fakeSystemGraph({ accounts: [daybook, rfPage] }).fetch });
+  assert.equal(found.page.id, '111');
+  assert.equal(found.accounts.facebook.token, 'derived-page-token-SECRET');
+
+  const graph = fakeSystemGraph({ accounts: [rfPage, { ...rfPage, id: '333' }, daybook] });
+  const results = await runPosts({
+    targets: [{ date: '2026-10-14', lang: 'en' }],
+    load: async () => assert.fail('no deck is loaded when the credentials fail'),
+    env,
+    confirm: true,
+    fetch: graph.fetch,
+    sleep: noSleep,
+    log: quiet,
+  });
+  assert.equal(results[0].outcome[0].failed, true);
+  assert.match(results[0].outcome[0].result, /more than one.*111 "Recovered Factory"; 333 "Recovered Factory"; 222 "Immigration Daybook"/);
+  assert.equal(graph.calls.some((c) => c.method === 'POST'), false);
+});
+
+test('--check debugs the system token when that is in use, and prints no token', async () => {
+  const calls = [];
+  const fetch = async (url, init = {}) => {
+    assert.equal(init.method, 'GET', '--check only reads');
+    const u = new URL(url);
+    calls.push({ path: u.pathname.replace(/^\/v25\.0\//, ''), params: Object.fromEntries(u.searchParams) });
+    const reply = (json) => ({ ok: true, status: 200, json: async () => json });
+    if (u.pathname.endsWith('/111')) return reply(rfPage);
+    if (u.pathname.endsWith('/debug_token')) {
+      return reply({
+        data: {
+          type: 'SYSTEM_USER',
+          is_valid: true,
+          expires_at: 0,
+          scopes: ['pages_show_list', 'pages_read_engagement', 'pages_manage_posts', 'business_management', 'instagram_basic', 'instagram_content_publish'],
+          granular_scopes: [{ scope: 'pages_manage_posts', target_ids: ['111'] }, { scope: 'instagram_content_publish', target_ids: ['999'] }],
+        },
+      });
+    }
+    throw new Error(`unexpected ${u.pathname}`);
+  };
+  const report = await checkAccounts({ env: { ...systemEnv, DAYBOOK_META_APP_ID: '4242' }, fetch });
+  assert.equal(calls.find((c) => c.path === 'debug_token').params.input_token, 'system-token-SECRET');
+  assert.deepEqual([report.verdict.facebook.canPost, report.verdict.instagram.canPost], [true, true]);
+  const out = formatCheck(report).join('\n');
+  assert.match(out, /Token in use: system user token \(DAYBOOK_META_SYSTEM_TOKEN\); Page token derived: yes/);
+  assert.match(out, /Token: type SYSTEM_USER, is_valid true, expires_at never/);
+  assert.match(out, /posting uses this account, from the Page/);
+  for (const secret of ['system-token-SECRET', 'derived-page-token-SECRET', 'old-page-token-SECRET', 'app-secret']) {
+    assert.ok(!out.includes(secret), `never prints ${secret}`);
+  }
+
+  // A system user that isn't assigned to the Page gets no Page token: Facebook can't post.
+  const unassigned = await checkAccounts({
+    env: { ...systemEnv, DAYBOOK_META_APP_ID: '4242' },
+    fetch: async (url, init) => (new URL(url).pathname.endsWith('/111') ? { ok: true, status: 200, json: async () => ({ ...rfPage, access_token: undefined }) } : fetch(url, init)),
+  });
+  assert.equal(unassigned.verdict.facebook.canPost, false);
+  assert.match(unassigned.verdict.facebook.reason, /no Page token/);
 });

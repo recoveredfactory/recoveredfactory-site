@@ -20,6 +20,16 @@
 # `langs` picks which languages may post. A test run or a dry run never posts;
 # it can at most preview. The AWS role trusts only refs/heads/main of this repo,
 # so a run from any other branch must be a dry run.
+#
+# Two manual runs for the first real post:
+#   check      read-only: the Page, its Instagram account, the token's scopes, and
+#              whether each platform can post. Runs alone, in the `social`
+#              environment, because it needs the secrets; nothing is rendered or posted.
+#   test_post  a REAL post of a test edition's deck to the live accounts, to be
+#              deleted by hand: renders the test/ mirror for `date` (required),
+#              posts with a caption that says it is a test (David approves, as
+#              always), and records test/social/{date}/{lang}/posted.json. English
+#              only unless `langs` says otherwise.
 
 name: Daybook deck
 
@@ -30,7 +40,7 @@ on:
   workflow_dispatch:
     inputs:
       date:
-        description: 'Edition date (YYYY-MM-DD). Empty: today and yesterday in Bogota.'
+        description: 'Edition date (YYYY-MM-DD). Empty: today and yesterday in Bogota. Required for test_post.'
         required: false
         type: string
       test:
@@ -44,10 +54,20 @@ on:
         type: boolean
         default: false
       langs:
-        description: 'Languages whose decks may post, comma-separated'
+        description: 'Languages whose decks may post, comma-separated. Empty: en,es (en for test_post).'
         required: false
         type: string
-        default: 'en,es'
+        default: ''
+      check:
+        description: 'Only check what the Meta credentials can do (read-only; nothing renders or posts)'
+        required: false
+        type: boolean
+        default: false
+      test_post:
+        description: 'REAL post of the test edition for `date` to the live accounts, to delete by hand'
+        required: false
+        type: boolean
+        default: false
 
 # No workflow-wide concurrency: the post job can wait hours for David's
 # approval, and a run-wide group would hold every render behind it. Each job
@@ -66,7 +86,34 @@ env:
   DAYBOOK_BUCKET: news-ingester-production-daybookeditionsbucket-bcneortr
 
 jobs:
+  check:
+    if: ${{ inputs.check == true }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # The secrets live in the `social` environment, so this asks for David's
+    # approval like a post does. It only reads.
+    environment: social
+    steps:
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+
+      - name: Check the Meta credentials
+        working-directory: apps/daybook
+        env:
+          # A system user token, when set, wins over the Page token (deck-post.mjs).
+          DAYBOOK_META_SYSTEM_TOKEN: ${{ secrets.DAYBOOK_META_SYSTEM_TOKEN }}
+          DAYBOOK_FB_PAGE_ID: ${{ secrets.DAYBOOK_FB_PAGE_ID }}
+          DAYBOOK_META_PAGE_TOKEN: ${{ secrets.DAYBOOK_META_PAGE_TOKEN }}
+          DAYBOOK_META_APP_SECRET: ${{ secrets.DAYBOOK_META_APP_SECRET }}
+          DAYBOOK_META_APP_ID: ${{ secrets.DAYBOOK_META_APP_ID }}
+          DAYBOOK_IG_USER_ID: ${{ secrets.DAYBOOK_IG_USER_ID }}
+        run: node scripts/daybook/deck-post.mjs --check
+
   render:
+    if: ${{ inputs.check != true }}
     runs-on: ubuntu-latest
     timeout-minutes: 15
     concurrency:
@@ -75,6 +122,12 @@ jobs:
     outputs:
       postable: ${{ steps.sync.outputs.postable }}
     steps:
+      - name: Inputs
+        if: ${{ inputs.test_post == true && inputs.date == '' }}
+        run: |
+          echo "::error::test_post needs a date: the test edition to post."
+          exit 1
+
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
       # The deck scripts use Node built-ins only, so there is no install step.
@@ -102,14 +155,15 @@ jobs:
           role-to-assume: ${{ env.DECK_ROLE_ARN }}
           aws-region: us-east-1
 
+      # A test post renders the test/ mirror, like a test run.
       - name: Render and upload
         id: sync
         working-directory: apps/daybook
         env:
           DATE: ${{ inputs.date }}
-          TEST: ${{ inputs.test }}
+          TEST: ${{ inputs.test == true || inputs.test_post == true }}
           DRY_RUN: ${{ inputs.dry_run }}
-          LANGS: ${{ inputs.langs || 'en,es' }}
+          LANGS: ${{ inputs.langs || (inputs.test_post && 'en' || 'en,es') }}
         run: |
           args=(--post-langs "$LANGS")
           if [ -n "$DATE" ]; then args+=(--date "$DATE"); fi
@@ -126,14 +180,16 @@ jobs:
         env:
           POSTABLE: ${{ steps.sync.outputs.postable }}
           TEST: ${{ inputs.test }}
+          TEST_POST: ${{ inputs.test_post }}
         run: |
           args=(--postable "$POSTABLE")
-          if [ "$TEST" = "true" ]; then args+=(--test); fi
+          if [ "$TEST_POST" = "true" ]; then args+=(--test-post); elif [ "$TEST" = "true" ]; then args+=(--test); fi
           node scripts/daybook/deck-post.mjs "${args[@]}"
 
   post:
     needs: render
-    if: ${{ needs.render.outputs.postable != '' && needs.render.outputs.postable != '[]' && inputs.test != true && inputs.dry_run != true }}
+    # A plain test run never posts; a test_post run does, from the test mirror.
+    if: ${{ needs.render.outputs.postable != '' && needs.render.outputs.postable != '[]' && inputs.dry_run != true && (inputs.test_post == true || inputs.test != true) }}
     runs-on: ubuntu-latest
     # English, a three-minute pause, Spanish; Instagram's container wait is at
     # most five minutes a language.
@@ -159,15 +215,25 @@ jobs:
         working-directory: apps/daybook
         env:
           POSTABLE: ${{ needs.render.outputs.postable }}
+          TEST_POST: ${{ inputs.test_post }}
+          # A Business Settings system user token, when set, wins over the Page
+          # token: the Page token is derived from it at run time, and Instagram
+          # publishes with it. Facebook Login for Business can't grant posting
+          # permissions to a user token, so this is the route that posts.
+          DAYBOOK_META_SYSTEM_TOKEN: ${{ secrets.DAYBOOK_META_SYSTEM_TOKEN }}
           DAYBOOK_FB_PAGE_ID: ${{ secrets.DAYBOOK_FB_PAGE_ID }}
           DAYBOOK_META_PAGE_TOKEN: ${{ secrets.DAYBOOK_META_PAGE_TOKEN }}
           DAYBOOK_META_APP_SECRET: ${{ secrets.DAYBOOK_META_APP_SECRET }}
-          # Absent until Instagram is linked; Instagram is skipped until then.
+          # With a system token and no id, the Page's own Instagram account is used.
           DAYBOOK_IG_USER_ID: ${{ secrets.DAYBOOK_IG_USER_ID }}
           # Threads joins here with its own token once its account exists.
-        run: node scripts/daybook/deck-post.mjs --postable "$POSTABLE" --confirm --record-dir posted
+        run: |
+          args=(--postable "$POSTABLE" --confirm --record-dir posted)
+          if [ "$TEST_POST" = "true" ]; then args+=(--test-post); fi
+          node scripts/daybook/deck-post.mjs "${args[@]}"
 
-      # Whatever posted, even if a later platform failed, goes to the record job.
+      # Whatever posted, even if a later platform failed, goes to the record job,
+      # keyed by its bucket path (social/… or, for a test post, test/social/…).
       # This job can't write to the bucket itself: in the `social` environment
       # its OIDC subject is repo:…:environment:social, which the deck role does
       # not trust.
@@ -178,13 +244,16 @@ jobs:
         run: |
           node -e '
             const fs = require("fs");
+            const path = require("path");
             const out = {};
-            if (fs.existsSync("posted")) {
-              for (const file of fs.readdirSync("posted")) {
-                const m = file.match(/^posted-(\d{4}-\d{2}-\d{2})-([a-z]+)\.json$/);
-                if (m) out[`${m[1]}/${m[2]}`] = JSON.parse(fs.readFileSync(`posted/${file}`, "utf8"));
+            const walk = (dir) => {
+              for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+                const full = path.join(dir, entry.name);
+                if (entry.isDirectory()) walk(full);
+                else if (entry.name === "posted.json") out[path.relative("posted", full)] = JSON.parse(fs.readFileSync(full, "utf8"));
               }
-            }
+            };
+            if (fs.existsSync("posted")) walk("posted");
             fs.appendFileSync(process.env.GITHUB_OUTPUT, `posted=${JSON.stringify(out)}\n`);
             console.log(`posted.json for: ${Object.keys(out).join(", ") || "nothing"}`);
           '
@@ -203,20 +272,24 @@ jobs:
           role-to-assume: ${{ env.DECK_ROLE_ARN }}
           aws-region: us-east-1
 
+      # Only a posted.json key, live or test, is ever written.
       - name: Write posted.json
         env:
           POSTED: ${{ needs.post.outputs.posted }}
         run: |
           node -e '
             const fs = require("fs");
+            const KEY = /^(test\/)?social\/\d{4}-\d{2}-\d{2}\/[a-z]{2}\/posted\.json$/;
+            let n = 0;
             for (const [key, posted] of Object.entries(JSON.parse(process.env.POSTED))) {
-              const [date, lang] = key.split("/");
-              fs.writeFileSync(`${process.env.RUNNER_TEMP}/posted-${date}-${lang}.json`, JSON.stringify(posted, null, 2));
-              console.log(`${date} ${lang}`);
+              if (!KEY.test(key)) throw new Error(`refusing to write ${key}`);
+              fs.writeFileSync(`${process.env.RUNNER_TEMP}/posted-${n}.json`, JSON.stringify(posted, null, 2));
+              console.log(`${n} ${key}`);
+              n += 1;
             }
           ' > "$RUNNER_TEMP/posted.txt"
-          while read -r date lang; do
-            aws s3 cp "$RUNNER_TEMP/posted-$date-$lang.json" "s3://$DAYBOOK_BUCKET/social/$date/$lang/posted.json" \
+          while read -r n key; do
+            aws s3 cp "$RUNNER_TEMP/posted-$n.json" "s3://$DAYBOOK_BUCKET/$key" \
               --content-type application/json --cache-control 'public, max-age=60' --only-show-errors
-            echo "social/$date/$lang/posted.json written"
+            echo "$key written"
           done < "$RUNNER_TEMP/posted.txt"
