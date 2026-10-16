@@ -20,6 +20,8 @@
 //   DAYBOOK_META_PAGE_TOKEN   the Page token (Facebook posts, and Instagram via the Page)
 //   DAYBOOK_IG_USER_ID        the linked Instagram account, when there is one
 //   DAYBOOK_META_APP_SECRET   for appsecret_proof, if the app requires it
+//   DAYBOOK_META_APP_ID       with the secret, lets the posting job's --check ask
+//                             Meta which permissions the token actually holds
 //
 // Prereqs, all from 287g-explorer's setup (docs/SOCIAL_UPLOAD.md there): the
 // Meta app with Facebook Login, http://localhost:4180/ among its Valid OAuth
@@ -216,6 +218,7 @@ const server = createServer(async (req, res) => {
       DAYBOOK_FB_PAGE_ID: chosen.id,
       DAYBOOK_META_PAGE_TOKEN: chosen.access_token,
       DAYBOOK_META_APP_SECRET: appSecret,
+      DAYBOOK_META_APP_ID: appId,
       ...(ig ? { DAYBOOK_IG_USER_ID: ig.id } : {}),
     };
     if (printOnly) {
