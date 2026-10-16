@@ -203,7 +203,11 @@ jobs:
       group: daybook-deck-post
       cancel-in-progress: false
     outputs:
-      posted: ${{ steps.collect.outputs.posted }}
+      # A count, not the records: GitHub drops a job output that contains a
+      # secret's value, and a Facebook post id embeds the Page id, which is
+      # stored as a secret. That silently skipped the record job on the first
+      # real post (run 38903051764). The records travel as an artifact instead.
+      posted_count: ${{ steps.collect.outputs.posted_count }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
 
@@ -232,35 +236,32 @@ jobs:
           if [ "$TEST_POST" = "true" ]; then args+=(--test-post); fi
           node scripts/daybook/deck-post.mjs "${args[@]}"
 
-      # Whatever posted, even if a later platform failed, goes to the record job,
-      # keyed by its bucket path (social/… or, for a test post, test/social/…).
-      # This job can't write to the bucket itself: in the `social` environment
-      # its OIDC subject is repo:…:environment:social, which the deck role does
-      # not trust.
-      - name: Hand posted.json to the record job
+      # Whatever posted, even if a later platform failed, goes to the record job
+      # as an artifact, laid out by bucket path (social/… or, for a test post,
+      # test/social/…). This job can't write to the bucket itself: in the
+      # `social` environment its OIDC subject is repo:…:environment:social,
+      # which the deck role does not trust.
+      - name: Count posted.json
         id: collect
         if: always()
         working-directory: apps/daybook
         run: |
-          node -e '
-            const fs = require("fs");
-            const path = require("path");
-            const out = {};
-            const walk = (dir) => {
-              for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
-                const full = path.join(dir, entry.name);
-                if (entry.isDirectory()) walk(full);
-                else if (entry.name === "posted.json") out[path.relative("posted", full)] = JSON.parse(fs.readFileSync(full, "utf8"));
-              }
-            };
-            if (fs.existsSync("posted")) walk("posted");
-            fs.appendFileSync(process.env.GITHUB_OUTPUT, `posted=${JSON.stringify(out)}\n`);
-            console.log(`posted.json for: ${Object.keys(out).join(", ") || "nothing"}`);
-          '
+          n=$(find posted -name posted.json 2>/dev/null | wc -l | tr -d ' ')
+          echo "posted_count=$n" >> "$GITHUB_OUTPUT"
+          echo "posted.json files: $n"
+
+      - name: Hand posted.json to the record job
+        if: always() && steps.collect.outputs.posted_count != '0'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: posted
+          path: apps/daybook/posted/
+          if-no-files-found: ignore
+          retention-days: 7
 
   record:
     needs: post
-    if: ${{ always() && needs.post.outputs.posted != '' && needs.post.outputs.posted != '{}' }}
+    if: ${{ always() && needs.post.outputs.posted_count != '' && needs.post.outputs.posted_count != '0' }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
@@ -272,24 +273,21 @@ jobs:
           role-to-assume: ${{ env.DECK_ROLE_ARN }}
           aws-region: us-east-1
 
+      - name: Fetch posted.json from the post job
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4.3.0
+        with:
+          name: posted
+          path: posted
+
       # Only a posted.json key, live or test, is ever written.
       - name: Write posted.json
-        env:
-          POSTED: ${{ needs.post.outputs.posted }}
         run: |
-          node -e '
-            const fs = require("fs");
-            const KEY = /^(test\/)?social\/\d{4}-\d{2}-\d{2}\/[a-z]{2}\/posted\.json$/;
-            let n = 0;
-            for (const [key, posted] of Object.entries(JSON.parse(process.env.POSTED))) {
-              if (!KEY.test(key)) throw new Error(`refusing to write ${key}`);
-              fs.writeFileSync(`${process.env.RUNNER_TEMP}/posted-${n}.json`, JSON.stringify(posted, null, 2));
-              console.log(`${n} ${key}`);
-              n += 1;
-            }
-          ' > "$RUNNER_TEMP/posted.txt"
-          while read -r n key; do
-            aws s3 cp "$RUNNER_TEMP/posted-$n.json" "s3://$DAYBOOK_BUCKET/$key" \
+          KEY='^(test/)?social/[0-9]{4}-[0-9]{2}-[0-9]{2}/[a-z]{2}/posted\.json$'
+          cd posted
+          # A for loop, not a piped while: a pipe's subshell would swallow exit 1.
+          for key in $(find . -name posted.json | sed 's|^\./||' | sort); do
+            if ! echo "$key" | grep -Eq "$KEY"; then echo "refusing to write $key"; exit 1; fi
+            aws s3 cp "$key" "s3://$DAYBOOK_BUCKET/$key" \
               --content-type application/json --cache-control 'public, max-age=60' --only-show-errors
             echo "$key written"
-          done < "$RUNNER_TEMP/posted.txt"
+          done
