@@ -20,14 +20,26 @@
 //   DAYBOOK_META_PAGE_TOKEN   the Page token (Facebook posts, and Instagram via the Page)
 //   DAYBOOK_IG_USER_ID        the linked Instagram account, when there is one
 //   DAYBOOK_META_APP_SECRET   for appsecret_proof, if the app requires it
+//   DAYBOOK_META_APP_ID       with the secret, lets the posting job's --check ask
+//                             Meta which permissions the token actually holds
 //
 // Prereqs, all from 287g-explorer's setup (docs/SOCIAL_UPLOAD.md there): the
-// Meta app with Facebook Login, http://localhost:4180 among its Valid OAuth
+// Meta app with Facebook Login, http://localhost:4180/ among its Valid OAuth
 // Redirect URIs, your login holding a role on the app, and `gh` logged in with
 // admin rights on this repo. Standard Access is enough to post to a Page you
 // manage; no App Review.
 //
+// A Business-type app logs in through Facebook Login for Business, which takes a
+// saved configuration instead of a list of scopes: passing scopes to it gets
+// "Invalid Scopes" even when the permissions are assigned (2026-10-16). Create
+// one under Facebook Login for Business → Configurations (token type: user
+// access token; the Pages and Instagram permissions below; your Page and its
+// Instagram account as assets) and pass its id as META_CONFIG_ID or
+// --config-id. Without one, the scope list is sent, which suits a classic
+// Facebook Login app.
+//
 // Flags:
+//   --config-id <id>   Facebook Login for Business configuration (or META_CONFIG_ID)
 //   --page <id>        pick the Page when you manage several
 //   --print            print the secrets instead of saving them (avoid; anything
 //                      printed can end up in a log or a transcript)
@@ -59,13 +71,18 @@ const appId = process.env.META_APP_ID || process.env.INSTAGRAM_APP_ID || valueOf
 const appSecret = process.env.META_APP_SECRET || process.env.INSTAGRAM_APP_SECRET;
 if (!appId || !appSecret) die('Set META_APP_ID and META_APP_SECRET in the environment.');
 
+const configId = process.env.META_CONFIG_ID || valueOf('--config-id');
 const port = Number(valueOf('--port') || 4180);
 const apiVersion = valueOf('--api-version') || 'v25.0';
 const wantPage = valueOf('--page');
 const repo = valueOf('--repo') || 'recoveredfactory/recoveredfactory-site';
 const envName = valueOf('--env') || 'social';
 const printOnly = has('--print');
-const redirectUri = `http://localhost:${port}`;
+// With the trailing slash, in the dialog and in the code exchange alike:
+// Facebook normalises a bare host to `http://localhost:4180/` when it
+// redirects, and the exchange then fails "Error validating verification code
+// ... redirect_uri is identical" if it was sent without one (2026-10-16).
+const redirectUri = `http://localhost:${port}/`;
 const GRAPH = `https://graph.facebook.com/${apiVersion}`;
 
 if (!printOnly) {
@@ -87,7 +104,17 @@ const scope = [
 
 const authUrl =
   `https://www.facebook.com/${apiVersion}/dialog/oauth?` +
-  new URLSearchParams({ client_id: appId, redirect_uri: redirectUri, scope, response_type: 'code' });
+  new URLSearchParams(
+    configId
+      ? {
+          client_id: appId,
+          redirect_uri: redirectUri,
+          config_id: configId,
+          response_type: 'code',
+          override_default_response_type: 'true',
+        }
+      : { client_id: appId, redirect_uri: redirectUri, scope, response_type: 'code' },
+  );
 
 const proof = (tok) => createHmac('sha256', appSecret).update(tok).digest('hex');
 
@@ -191,6 +218,7 @@ const server = createServer(async (req, res) => {
       DAYBOOK_FB_PAGE_ID: chosen.id,
       DAYBOOK_META_PAGE_TOKEN: chosen.access_token,
       DAYBOOK_META_APP_SECRET: appSecret,
+      DAYBOOK_META_APP_ID: appId,
       ...(ig ? { DAYBOOK_IG_USER_ID: ig.id } : {}),
     };
     if (printOnly) {
@@ -214,7 +242,10 @@ const server = createServer(async (req, res) => {
 });
 
 server.listen(port, () => {
-  console.log('\nOpening Facebook. Sign in as the account that manages the Daybook Page and approve:\n');
+  console.log(
+    `\nOpening Facebook (${configId ? `Login for Business, configuration ${configId}` : 'scopes'}). ` +
+      'Sign in as the account that manages the Page and approve:\n',
+  );
   console.log(authUrl + '\n');
   console.log(`(Listening on ${redirectUri} for the callback…)\n`);
   const opener = process.platform === 'darwin' ? 'open' : process.platform === 'win32' ? 'start' : 'xdg-open';
