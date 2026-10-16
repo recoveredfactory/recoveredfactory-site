@@ -156,8 +156,15 @@ async function main() {
 
   console.log(`Deck sync: ${test ? 'test' : 'live'} area of ${base}, dates ${dates.join(', ')}${dryRun ? ', dry run' : ''}.`);
 
-  const index = await getJson(`${base}/${prefix}editions/index.json`);
-  if (!index) throw new Error(`No index at ${base}/${prefix}editions/index.json.`);
+  // No index means nothing has been published in this area yet, which is the
+  // normal state before the first edition and for an idle test area. That's
+  // nothing to do, not a failure: a scheduled run every 15 minutes must not
+  // fail (and email) until something is published.
+  let index = await getJson(`${base}/${prefix}editions/index.json`);
+  if (!index) {
+    console.log(`No index at ${base}/${prefix}editions/index.json yet: nothing published in this area.`);
+    index = { format: 'daybook-index/1', editions: [] };
+  }
   if (index.format !== 'daybook-index/1') throw new Error(`Index format is ${index.format}, not daybook-index/1.`);
 
   const manifests = {};
