@@ -244,7 +244,7 @@ test('a dry run makes no Graph call at all, and prints the post per platform', a
   for (const s of deck.slides) assert.ok(out.includes(s.url));
 });
 
-test('decks offered for posting: current, in a posted language, not yet posted', () => {
+test('decks offered for posting: current, in a posted language, broadcast, not yet posted', () => {
   const planned = [
     {
       date: '2026-10-14',
@@ -256,16 +256,19 @@ test('decks offered for posting: current, in a posted language, not yet posted',
     { date: '2026-10-15', langs: [{ lang: 'en', revision: 1, render: true }] },
   ];
   const rendered = new Set(['2026-10-15/en']);
-  assert.deepEqual(postable(planned, rendered, {}, ['en']), [
+  // Both dates broadcast in both languages, so only currency and posted.json decide here.
+  const mark = (date) => ({ format: 'daybook-broadcast/1', date, langs: { en: { revision: 1 }, es: { revision: 1 } } });
+  const broadcast = { '2026-10-14': mark('2026-10-14'), '2026-10-15': mark('2026-10-15') };
+  assert.deepEqual(postable(planned, rendered, {}, ['en'], broadcast), [
     { date: '2026-10-14', lang: 'en', revision: 2 },
     { date: '2026-10-15', lang: 'en', revision: 1 },
   ]);
-  assert.deepEqual(postable(planned, rendered, { '2026-10-14/en': { facebook: {} } }, ['en', 'es']), [
+  assert.deepEqual(postable(planned, rendered, { '2026-10-14/en': { facebook: {} } }, ['en', 'es'], broadcast), [
     { date: '2026-10-14', lang: 'es', revision: 1 },
     { date: '2026-10-15', lang: 'en', revision: 1 },
   ]);
   // A deck whose render failed or was a dry run is not in the bucket, so it is not offered.
-  assert.deepEqual(postable(planned, new Set(), {}, ['en']), [{ date: '2026-10-14', lang: 'en', revision: 2 }]);
+  assert.deepEqual(postable(planned, new Set(), {}, ['en'], broadcast), [{ date: '2026-10-14', lang: 'en', revision: 2 }]);
 });
 
 // Both languages post every day (David, 2026-10-15): English, a pause, Spanish.

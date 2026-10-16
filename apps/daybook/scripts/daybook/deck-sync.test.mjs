@@ -10,6 +10,8 @@ import {
   manifestKey,
   needsRender,
   plan,
+  postStatus,
+  postable,
   prefixFor,
   slideKey,
 } from './deck-sync.mjs';
@@ -97,4 +99,51 @@ test('the manifest lists slides in deck order with their public URLs', () => {
       { name: 'subscribe', url: `${DEFAULT_BASE}/social/2026-10-14/en/r2/08-subscribe.png` },
     ],
   });
+});
+
+// ── The broadcast gate ─────────────────────────────────────────────────────
+// Rendering is the preview (the web lock); posting waits for the broadcast lock.
+
+const published = [
+  {
+    date: '2026-10-19',
+    langs: [
+      { lang: 'en', revision: 1, render: false },
+      { lang: 'es', revision: 1, render: false },
+    ],
+  },
+];
+const markFor = (...langs) => ({
+  '2026-10-19': {
+    format: 'daybook-broadcast/1',
+    date: '2026-10-19',
+    langs: Object.fromEntries(langs.map((lang) => [lang, { broadcast_at: '2026-10-19T11:00:00Z', revision: 1 }])),
+  },
+});
+
+test('a published, current deck with no broadcast mark is not postable: it waits', () => {
+  assert.deepEqual(postable(published, new Set(), {}, ['en', 'es'], { '2026-10-19': null }), []);
+  assert.deepEqual(
+    postStatus(published, new Set(), {}, ['en', 'es'], { '2026-10-19': null }).map((d) => `${d.lang} ${d.status}`),
+    ['en waiting for broadcast', 'es waiting for broadcast'],
+  );
+});
+
+test('a mark for English only: English is postable, Spanish waits', () => {
+  assert.deepEqual(postable(published, new Set(), {}, ['en', 'es'], markFor('en')), [{ date: '2026-10-19', lang: 'en', revision: 1 }]);
+  assert.equal(postStatus(published, new Set(), {}, ['en', 'es'], markFor('en'))[1].status, 'waiting for broadcast');
+});
+
+test('a marked deck that is already posted is not postable again', () => {
+  const posted = { '2026-10-19/en': { facebook: { id: '1', revision: 1 } } };
+  assert.deepEqual(postable(published, new Set(), posted, ['en', 'es'], markFor('en', 'es')), [{ date: '2026-10-19', lang: 'es', revision: 1 }]);
+  assert.equal(postStatus(published, new Set(), posted, ['en'], markFor('en'))[0].status, 'already posted');
+});
+
+test('a test post ignores the broadcast mark', () => {
+  assert.deepEqual(postable(published, new Set(), {}, ['en'], {}, { gate: false }), [{ date: '2026-10-19', lang: 'en', revision: 1 }]);
+  // The gate off doesn't make a stale or posted deck postable.
+  const stale = [{ date: '2026-10-19', langs: [{ lang: 'en', revision: 2, render: true }] }];
+  assert.deepEqual(postable(stale, new Set(), {}, ['en'], {}, { gate: false }), []);
+  assert.deepEqual(postable(published, new Set(), { '2026-10-19/en': { facebook: {} } }, ['en'], {}, { gate: false }), []);
 });
