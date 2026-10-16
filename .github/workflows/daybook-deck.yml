@@ -7,18 +7,25 @@
 # Most runs find nothing new and say so in the job summary. Slides go to
 # social/{date}/{lang}/r{revision}/; the manifest goes last.
 #
+# Rendering is the preview: a deck renders as soon as its edition is published
+# (David's web lock, publish_edition). Posting follows his second lock,
+# broadcast_edition, which writes editions/{date}/broadcast.json: a deck posts
+# only once that mark lists its language. Until then the render log says
+# "rendered; waiting for broadcast".
+#
 # Then three jobs:
 #   render  renders, and lists the decks ready to post: current in the bucket, in
-#           a posted language (English and Spanish by default), with no
-#           posted.json yet. It previews each post as a dry run, with no credentials.
+#           a posted language (English and Spanish by default), marked for
+#           broadcast, with no posted.json yet. It logs what will post, as a dry
+#           run with no credentials.
 #   post    posts them, in the `social` environment: English, a few minutes'
-#           pause, then Spanish, to the same accounts. David approves it.
+#           pause, then Spanish, to the same accounts.
 #   record  writes each posted.json into the bucket, so nothing posts twice.
 #
 # Manual runs: `date` picks one edition, `test` reads test/editions and writes
 # test/social (the rehearsal mirror), `dry_run` renders without uploading, and
 # `langs` picks which languages may post. A test run or a dry run never posts;
-# it can at most preview. The AWS role trusts only refs/heads/main of this repo,
+# it can at most log what would. The AWS role trusts only refs/heads/main of this repo,
 # so a run from any other branch must be a dry run.
 #
 # Two manual runs for the first real post:
@@ -27,9 +34,10 @@
 #              environment, because it needs the secrets; nothing is rendered or posted.
 #   test_post  a REAL post of a test edition's deck to the live accounts, to be
 #              deleted by hand: renders the test/ mirror for `date` (required),
-#              posts with a caption that says it is a test (David approves, as
-#              always), and records test/social/{date}/{lang}/posted.json. English
-#              only unless `langs` says otherwise.
+#              posts with a caption that says it is a test, and records
+#              test/social/{date}/{lang}/posted.json. It is an explicit manual
+#              test, so the broadcast mark does not gate it. English only unless
+#              `langs` says otherwise.
 
 name: Daybook deck
 
@@ -69,9 +77,9 @@ on:
         type: boolean
         default: false
 
-# No workflow-wide concurrency: the post job can wait hours for David's
-# approval, and a run-wide group would hold every render behind it. Each job
-# that needs one has its own.
+# No workflow-wide concurrency: each job that needs a group has its own, so a
+# slow post (the pause between languages, Instagram's container wait) never
+# holds the next render behind it.
 
 permissions:
   id-token: write # OIDC: assume the deck role
@@ -90,8 +98,7 @@ jobs:
     if: ${{ inputs.check == true }}
     runs-on: ubuntu-latest
     timeout-minutes: 5
-    # The secrets live in the `social` environment, so this asks for David's
-    # approval like a post does. It only reads.
+    # The secrets live in the `social` environment. It only reads.
     environment: social
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -155,26 +162,29 @@ jobs:
           role-to-assume: ${{ env.DECK_ROLE_ARN }}
           aws-region: us-east-1
 
-      # A test post renders the test/ mirror, like a test run.
+      # A test post renders the test/ mirror, like a test run, and is offered for
+      # posting without a broadcast mark (--test-post).
       - name: Render and upload
         id: sync
         working-directory: apps/daybook
         env:
           DATE: ${{ inputs.date }}
           TEST: ${{ inputs.test == true || inputs.test_post == true }}
+          TEST_POST: ${{ inputs.test_post }}
           DRY_RUN: ${{ inputs.dry_run }}
           LANGS: ${{ inputs.langs || (inputs.test_post && 'en' || 'en,es') }}
         run: |
           args=(--post-langs "$LANGS")
           if [ -n "$DATE" ]; then args+=(--date "$DATE"); fi
           if [ "$TEST" = "true" ]; then args+=(--test); fi
+          if [ "$TEST_POST" = "true" ]; then args+=(--test-post); fi
           if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
           node scripts/daybook/deck-sync.mjs "${args[@]}"
 
-      # What the post job would post, from the public bucket, with no credentials
-      # and no Graph call: the caption and slides per platform. This is what David
-      # sees before he approves.
-      - name: Preview the posts
+      # A log of what will post: from the public bucket, with no credentials and
+      # no Graph call, the caption and slides per platform for each deck the post
+      # job is about to take.
+      - name: Log what will post
         if: ${{ steps.sync.outputs.postable != '' && steps.sync.outputs.postable != '[]' }}
         working-directory: apps/daybook
         env:
@@ -194,10 +204,8 @@ jobs:
     # English, a three-minute pause, Spanish; Instagram's container wait is at
     # most five minutes a language.
     timeout-minutes: 30
-    # The `social` environment holds the Meta credentials (meta-auth.mjs), and
-    # its required-reviewer rule is David's one-tap approval: this job waits
-    # until he approves it. The rule is set in the repo's environment settings,
-    # not here.
+    # The `social` environment holds the Meta credentials (meta-auth.mjs).
+    # What gets here is already marked for broadcast (or is a test_post).
     environment: social
     concurrency:
       group: daybook-deck-post

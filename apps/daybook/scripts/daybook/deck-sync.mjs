@@ -4,7 +4,7 @@
 //
 // Usage: node scripts/daybook/deck-sync.mjs [--test] [--date YYYY-MM-DD] [--dry-run]
 //                                           [--base <url>] [--bucket <name>] [--work <dir>]
-//                                           [--post-langs en[,es]]
+//                                           [--post-langs en[,es]] [--test-post]
 //   --test     read test/editions/…, write test/social/… (the bucket's rehearsal mirror)
 //   --date     that edition date only; default today and yesterday in America/Bogota
 //   --dry-run  render, but upload nothing; print the keys and the manifest instead
@@ -12,6 +12,8 @@
 //   --bucket   the bucket uploads go to; default the one in --base's hostname
 //   --work     where records, deck JSON and PNGs go; default a fresh temp directory
 //   --post-langs  which languages' decks to offer for posting; default en,es (see below)
+//   --test-post   a manual test post: the test area (implies --test), and the broadcast
+//                 mark does not gate what is offered for posting
 //
 // The contract is news-ingester's docs/EDITIONS.md. In short: the index
 // (editions/index.json) says what is published and at which revision; a deck
@@ -23,6 +25,12 @@
 // older revision than the index. So a rerun with nothing new reads the index
 // and the manifests, renders nothing, and says so — which is what the
 // fifteen-minute schedule does on every run but the one after a publish.
+//
+// Rendering is the preview: a deck renders as soon as its edition is published
+// (David's first lock, `publish_edition`). Posting waits for the second lock,
+// `broadcast_edition`, which writes editions/{date}/broadcast.json. A deck is
+// offered for posting only when that mark lists its language. Until then the
+// run logs "rendered; waiting for broadcast".
 //
 // Uploads go through the AWS CLI, which the runner has; the SDK is not a
 // dependency of this repo. A failed upload exits non-zero, and a language
@@ -100,21 +108,38 @@ export function needsRender(revision, manifest) {
 }
 
 /**
- * The decks ready to post: in a language being posted, current in the bucket
- * (rendered this run, or already up to date) and with no posted.json yet.
- * `rendered` holds `date/lang` for decks this run uploaded; `posted` maps
- * `date/lang` to the posted.json found, or null. A deck re-rendered after a
- * republish already has a posted.json and is not offered again: deck-post.mjs
- * never posts a date and language twice to one platform.
+ * Where each published deck stands for posting, in a language being posted:
+ * `ready`, or why not.
+ * - `not current`: its render is due and didn't land this run.
+ * - `already posted`: it has a posted.json. A deck re-rendered after a
+ *   republish keeps it, and is not offered again; deck-post.mjs never posts a
+ *   date and language twice to one platform.
+ * - `waiting for broadcast`: the date's broadcast.json doesn't list it yet.
+ *
+ * `rendered` holds `date/lang` for decks this run uploaded. `posted` maps
+ * `date/lang` to the posted.json found, or null. `broadcast` maps a date to its
+ * broadcast.json, or null. With `gate: false` (a manual test post) the mark is
+ * not consulted.
  */
-export function postable(planned, rendered, posted, langs) {
+export function postStatus(planned, rendered, posted, langs, broadcast = {}, { gate = true } = {}) {
   return planned.flatMap(({ date, langs: published }) =>
     published
       .filter((l) => langs.includes(l.lang))
-      .filter((l) => !l.render || rendered.has(`${date}/${l.lang}`))
-      .filter((l) => !posted[`${date}/${l.lang}`])
-      .map((l) => ({ date, lang: l.lang, revision: l.revision })),
+      .map((l) => {
+        const deck = { date, lang: l.lang, revision: l.revision };
+        if (l.render && !rendered.has(`${date}/${l.lang}`)) return { ...deck, status: 'not current' };
+        if (posted[`${date}/${l.lang}`]) return { ...deck, status: 'already posted' };
+        if (gate && !broadcast[date]?.langs?.[l.lang]) return { ...deck, status: 'waiting for broadcast' };
+        return { ...deck, status: 'ready' };
+      }),
   );
+}
+
+/** The decks ready to post: current, broadcast (unless the gate is off), and not yet posted. */
+export function postable(planned, rendered, posted, langs, broadcast = {}, options = {}) {
+  return postStatus(planned, rendered, posted, langs, broadcast, options)
+    .filter((deck) => deck.status === 'ready')
+    .map(({ date, lang, revision }) => ({ date, lang, revision }));
 }
 
 /**
@@ -143,7 +168,8 @@ async function main() {
     const i = argv.indexOf(name);
     return i === -1 ? null : argv[i + 1];
   };
-  const test = argv.includes('--test');
+  const testPost = argv.includes('--test-post');
+  const test = argv.includes('--test') || testPost;
   const dryRun = argv.includes('--dry-run');
   const base = (value('--base') ?? process.env.DAYBOOK_EDITIONS_URL ?? DEFAULT_BASE).replace(/\/+$/, '');
   const prefix = prefixFor(test);
@@ -239,12 +265,19 @@ async function main() {
   const postLangs = (value('--post-langs') ?? 'en,es').split(',').map((lang) => lang.trim()).filter(Boolean);
   const planned = plan(index, dates, manifests);
   const posted = {};
+  const broadcast = {};
   for (const { date, langs } of planned) {
-    for (const l of langs) {
-      if (postLangs.includes(l.lang)) posted[`${date}/${l.lang}`] = await getJson(`${base}/${prefix}social/${date}/${l.lang}/posted.json`);
-    }
+    const offered = langs.filter((l) => postLangs.includes(l.lang));
+    for (const l of offered) posted[`${date}/${l.lang}`] = await getJson(`${base}/${prefix}social/${date}/${l.lang}/posted.json`);
+    // The second lock: a missing mark answers 403, which getJson reads as null.
+    if (offered.length && !testPost) broadcast[date] = await getJson(`${base}/${prefix}editions/${date}/broadcast.json`);
   }
-  const ready = postable(planned, rendered, posted, postLangs);
+  if (testPost) console.log('Test post: the broadcast mark does not gate this run.');
+  const statuses = postStatus(planned, rendered, posted, postLangs, broadcast, { gate: !testPost });
+  for (const deck of statuses.filter((d) => d.status === 'waiting for broadcast')) {
+    console.log(`${deck.date} ${deck.lang}: rendered; waiting for broadcast`);
+  }
+  const ready = statuses.filter((d) => d.status === 'ready').map(({ date, lang, revision }) => ({ date, lang, revision }));
   console.log(ready.length ? `Ready to post: ${ready.map((d) => `${d.date} ${d.lang}`).join(', ')}.` : 'Nothing ready to post.');
   if (process.env.GITHUB_OUTPUT) appendFileSync(process.env.GITHUB_OUTPUT, `postable=${JSON.stringify(ready)}\n`);
 

@@ -23,9 +23,10 @@
 //
 // Both languages post every day to the same consolidated accounts (David,
 // 2026-10-15): English first, then Spanish a few minutes later, in the same
-// approved run. A Spanish deck that was not ready when its English one posted
-// gets its own run once it is; posted.json is per language, so the two never
-// get in each other's way.
+// run. A deck posts only once David's broadcast lock marks its language
+// (deck-sync.mjs decides what is offered). A Spanish deck that was not ready
+// when its English one posted gets its own run once it is; posted.json is per
+// language, so the two never get in each other's way.
 //
 // Credentials come from the environment, which the workflow fills from the
 // GitHub environment `social` (written by meta-auth.mjs, or set by hand):
@@ -85,7 +86,7 @@ const POLL_MS = 10_000;
 const POLL_MAX = 30;
 
 // Between a date's English post and its Spanish one, so the two don't land in
-// the feed as a pair. Minutes, not hours: one approval covers both.
+// the feed as a pair. Minutes, not hours: one run posts both.
 export const PAUSE_MS = 180_000;
 
 // The order a date's decks post in. English is the edition; Spanish is its
