@@ -22,7 +22,7 @@
 //   DAYBOOK_META_APP_SECRET   for appsecret_proof, if the app requires it
 //
 // Prereqs, all from 287g-explorer's setup (docs/SOCIAL_UPLOAD.md there): the
-// Meta app with Facebook Login, http://localhost:4180 among its Valid OAuth
+// Meta app with Facebook Login, http://localhost:4180/ among its Valid OAuth
 // Redirect URIs, your login holding a role on the app, and `gh` logged in with
 // admin rights on this repo. Standard Access is enough to post to a Page you
 // manage; no App Review.
@@ -76,7 +76,11 @@ const wantPage = valueOf('--page');
 const repo = valueOf('--repo') || 'recoveredfactory/recoveredfactory-site';
 const envName = valueOf('--env') || 'social';
 const printOnly = has('--print');
-const redirectUri = `http://localhost:${port}`;
+// With the trailing slash, in the dialog and in the code exchange alike:
+// Facebook normalises a bare host to `http://localhost:4180/` when it
+// redirects, and the exchange then fails "Error validating verification code
+// ... redirect_uri is identical" if it was sent without one (2026-10-16).
+const redirectUri = `http://localhost:${port}/`;
 const GRAPH = `https://graph.facebook.com/${apiVersion}`;
 
 if (!printOnly) {
