@@ -530,14 +530,28 @@ const portraitFrame = (body, { date = '', site = false, tally = '' }) => `
   ${site ? `<footer class="site">${HOME_URL}</footer>` : ''}
 ${FIT_SCRIPT}`;
 
-// Publications whose own mark is mixed case. LAist is LAist: the lowercase "ist"
-// is the mark, and LAIST reads as an outlet that does not exist. The house
-// all-caps that made this list necessary is gone (2026-10-17), but an upstream
-// "LAIST" in the edition's link text is still corrected here, matched
-// case-insensitively. This is a list of marks, not a list of preferences.
-const VERBATIM_SOURCES = new Map([['laist', 'LAist']]);
+// Publications as the cite row names them, keyed on the edition's link text and
+// matched case-insensitively. Two kinds of fix:
+// - Shorthand spelled out (David, 2026-10-17): "AP should be Associated Press,
+//   looks weird in this venue as the acronym". Initials that are the name
+//   itself stay: NPR, CNN, KPBS, and groups known by them, like the ACLU and
+//   USCIS ("could be broken eg. for ACLU"). The expansions are proper names,
+//   so they serve the Spanish deck as they are.
+// - Marks that are mixed case: LAist is LAist, and an upstream "LAIST" reads as
+//   an outlet that does not exist.
+// Anything not listed prints as the edition gave it.
+const SOURCE_NAMES = new Map([
+  ['ap', 'Associated Press'],
+  ['afp', 'Agence France-Presse'],
+  ['wsj', 'The Wall Street Journal'],
+  ['nyt', 'The New York Times'],
+  ['wapo', 'The Washington Post'],
+  ['lat', 'Los Angeles Times'],
+  ['ajc', 'The Atlanta Journal-Constitution'],
+  ['laist', 'LAist'],
+]);
 
-const sourceName = (name) => escapeHtml(VERBATIM_SOURCES.get(String(name).trim().toLowerCase()) ?? name);
+const sourceName = (name) => escapeHtml(SOURCE_NAMES.get(String(name).trim().toLowerCase()) ?? name);
 
 // The cite: who reported a story, each by the publication's own mark beside its
 // name (David, 2026-10-16).
