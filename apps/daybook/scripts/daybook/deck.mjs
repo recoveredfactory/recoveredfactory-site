@@ -212,7 +212,7 @@ export function buildDeck(
   // The lede rides on the cover under the hed and gets no slide of its own —
   // the hed was written off it, so that slide said the same thing twice. The
   // beats are what comes after.
-  const { nut = '', detail = '', sources = [] } = stories[0] ?? {};
+  const { nut = '', detail = '', sources = [], links = [] } = stories[0] ?? {};
   const beats = stories.slice(1, 1 + maxBeats);
 
   // The calendar is the payoff, so it goes on a whole slide rather than as a
@@ -242,6 +242,7 @@ export function buildDeck(
       nut,
       detail,
       sources,
+      links,
       beats,
       briefs: readBriefs(sections, maxBriefs),
       upcoming,
@@ -322,13 +323,14 @@ export function readBriefs(sections, limit = BRIEFS) {
  */
 function readStory(section) {
   const headline = stripInlineMd(section.match(/^## (.+)$/m)?.[1] ?? '');
-  const { prose, sources } = splitCredits(leadParagraph(section));
+  const { prose, sources, links } = splitCredits(leadParagraph(section));
 
   return {
     headline,
     claim: stripInlineMd(prose.match(/\*\*(?!\s)([^*]+?)\*\*/)?.[1] ?? ''),
     rest: stripInlineMd(prose.replace(/^[\s\S]*?\*\*(?!\s)[^*]+?\*\*/, '')),
     sources: sources.slice(0, CAROUSEL_SOURCES),
+    links: links.slice(0, CAROUSEL_SOURCES),
   };
 }
 
@@ -340,13 +342,14 @@ function readStory(section) {
  * comes off and everything moves up — the first sentence under it becomes the
  * claim, and the rest becomes the support. See RESTATEMENT_MAX_CHARS.
  */
-function shapeStory({ headline, claim, rest, sources }, promote, date, lang) {
+function shapeStory({ headline, claim, rest, sources, links }, promote, date, lang) {
   if (!promote) {
     return {
       headline,
       nut: trimToClause(claim, NUT_MAX_CHARS),
       detail: trimToClause(rest, DETAIL_MAX_CHARS),
       sources,
+      links,
     };
   }
 
@@ -358,6 +361,7 @@ function shapeStory({ headline, claim, rest, sources }, promote, date, lang) {
     nut: trimToClause(first, PROMOTED_NUT_MAX),
     detail: trimToClause(others.join(' '), DETAIL_MAX_CHARS),
     sources,
+    links,
   };
 }
 
@@ -449,10 +453,15 @@ function leadParagraph(section) {
  */
 export function splitCredits(paragraph) {
   const tail = paragraph.match(/((?:\[[^\]]+\]\([^)]*\)(?:\s*,\s*)?)+)\s*\.?\s*$/);
-  if (!tail) return { prose: paragraph, sources: [] };
+  if (!tail) return { prose: paragraph, sources: [], links: [] };
 
-  const sources = [...tail[1].matchAll(/\[([^\]]+)\]\([^)]*\)/g)].map((m) => stripInlineMd(m[1]));
-  return { prose: paragraph.slice(0, tail.index).trim(), sources };
+  // The names are what the credit prints; the links ride along so the carousel
+  // can set each publication's own mark beside its name (og.mjs, citeRow).
+  const links = [...tail[1].matchAll(/\[([^\]]+)\]\(([^)]*)\)/g)].map((m) => ({
+    name: stripInlineMd(m[1]),
+    url: m[2].trim(),
+  }));
+  return { prose: paragraph.slice(0, tail.index).trim(), sources: links.map((l) => l.name), links };
 }
 
 /**

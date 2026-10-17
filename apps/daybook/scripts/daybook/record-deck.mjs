@@ -12,16 +12,22 @@
 //   --images       og.mjs's --out for that render; default its own (static/images)
 //   --cover-kicker the cover as the rundown's front page: a kicker over the hed and a
 //                  count of what follows. Off, the cover is the lede story. See og.mjs.
+//   --no-287g      leave off the 287(g) map (it needs the network; see tracker287g)
 //
 // The record is the composer's output: `{format: "daybook/1", date, lang, title,
 // description, body_md, upcoming[], …}`. The stories are cut from it with
 // pull.mjs's own rules (deck.mjs), so a slide says what the edition says, in the
 // same cut. What makes it a rundown:
 //
-//   - every story gets a slide, not just the two after the lede;
+//   - the lede on the cover and the next three stories after it, not every one
+//     (David, 2026-10-16: "we want to keep this slim -- if there's five top
+//     sections in the email, there could be 3-4 here"); see DECK_STORIES;
 //   - every calendar entry is on the deck, three to a slide, at close to full
 //     length — the calendar is what the post is for;
-//   - no round-up. Around the system stays in the edition (David, 2026-10-15).
+//   - no round-up. Around the system stays in the edition (David, 2026-10-15);
+//   - a 287(g) map every day, between the stories and the calendar (David,
+//     2026-10-16): who joined ICE's list in the two weeks up to its last change,
+//     and how many days ago that change was. See tracker287g.
 //
 // The calendar comes off `upcoming[]`, which the composer assembles from the
 // watch-item rows, so there is nothing to parse out of an email and nothing to
@@ -33,19 +39,30 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { buildDeck, trimToClause } from './deck.mjs';
+import { tracker287g } from './tracker287g.mjs';
 import { entryFrom } from './upcoming.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
+// Story slides after the cover. The edition's order is its ranking, so the ones
+// past this are the ones it ranked lowest, and they stay in the edition.
+const DECK_STORIES = 3;
+
 // Instagram's ceiling on a carousel. A deck past it does not post at all.
 const MAX_SLIDES = 20;
 
-// Three entries a calendar slide, and as many slides as the record has entries
-// for. The pull's board is four to a slide at 190 characters each, which cut
-// most summaries to a clause of background before the deadline itself (the
-// 10-14 I-751 entry lost "comments until October 14"). Three to a slide buys
-// each entry about half as much room again, and that room goes to the text.
-const CALENDAR_PER_SLIDE = 3;
+// Entries per calendar slide, packed by length (2026-10-16). A flat three to a
+// slide set the boards at 23-27px, which David found too small on a phone. Now
+// a board takes entries in order until their text passes CALENDAR_SLIDE_CHARS,
+// never more than CALENDAR_PER_SLIDE and never fewer than one, so two long
+// summaries share a board and four short ones do. Set against og.mjs's
+// ENTRY_TEXT_SIZE of 40px, which the fitter takes to about 33px on a board of
+// two 400-character entries. Today's summaries run 300-480 characters; a
+// budget set for 40px held one each and made a six-board calendar that
+// Instagram's ten-slide cut would never reach. Short one-liners, when a program
+// writes them, will pack four to a board under the same budget.
+const CALENDAR_PER_SLIDE = 4;
+const CALENDAR_SLIDE_CHARS = 820;
 
 // Enough for a whole plain summary: the 10-14 English ones run 295-368
 // characters. Set against Spanish, which runs 20-30% longer than the English it
@@ -75,6 +92,7 @@ const valued = new Set(['--out', '--images']);
 const files = argv.filter((arg, i) => !arg.startsWith('--') && !valued.has(argv[i - 1]));
 const render = argv.includes('--render');
 const coverKicker = argv.includes('--cover-kicker');
+const with287g = !argv.includes('--no-287g');
 
 if (!files.length) {
   console.error('Usage: record-deck.mjs <record.json> [<record.json> …] [--out <deck.json>] [--render]');
@@ -104,6 +122,7 @@ records.sort((a, b) => (a.lang === 'en' ? -1 : b.lang === 'en' ? 1 : a.lang.loca
 
 let shape = null;
 const decks = {};
+const tracker = with287g ? await tracker287g(date) : null;
 
 for (const record of records) {
   const { lang } = record;
@@ -115,7 +134,7 @@ for (const record of records) {
   const body = start === -1 ? record.body_md : record.body_md.slice(start);
 
   // The stories only: no events, so buildDeck sets no board of its own.
-  const built = buildDeck({ body, headline: record.title }, date, [], shape, lang, { beats: Infinity });
+  const built = buildDeck({ body, headline: record.title }, date, [], shape, lang, { beats: DECK_STORIES });
   if (!shape) shape = built.shape;
   const deck = built.deck;
   delete deck.briefs;
@@ -125,12 +144,13 @@ for (const record of records) {
   if (!deck.nut && record.description) deck.nut = record.description;
 
   deck.upcoming = calendar(record.upcoming ?? [], lang);
+  if (tracker) deck.tracker = tracker;
   if (coverKicker) deck.coverKicker = true;
 
   // Cover, the stories, the calendar, the offer. Past Instagram's ceiling the
   // stories at the end come off first: they are the edition's own order, so the
   // last ones are the ones it ranked lowest, and the calendar is the payoff.
-  const fixed = 2 + deck.upcoming.length;
+  const fixed = 2 + deck.upcoming.length + (deck.tracker ? 1 : 0);
   if (fixed + deck.beats.length > MAX_SLIDES) {
     const keep = Math.max(0, MAX_SLIDES - fixed);
     const dropped = deck.beats.slice(keep).map((beat) => `"${beat.headline}"`);
@@ -143,8 +163,8 @@ for (const record of records) {
 
   decks[lang] = deck;
   console.log(
-    `${date} ${lang}: cover + ${deck.beats.length} stories + ${deck.upcoming.length} calendar + subscribe ` +
-      `= ${2 + deck.beats.length + deck.upcoming.length} slides.`,
+    `${date} ${lang}: cover + ${deck.beats.length} stories${deck.tracker ? ' + 287(g)' : ''} + ` +
+      `${deck.upcoming.length} calendar + subscribe = ${fixed + deck.beats.length} slides.`,
   );
 }
 
@@ -173,9 +193,10 @@ if (render) {
 }
 
 /**
- * Every entry the edition ran, in the record's order, CALENDAR_PER_SLIDE to a
- * slide. The last slide takes whatever is left, one entry included: a deadline
- * left off to make the boards even is a deadline a reader never sees.
+ * Every entry the edition ran, in the record's order, packed onto boards by
+ * length (see CALENDAR_SLIDE_CHARS). The last board takes whatever is left, one
+ * entry included: a deadline left off to make the boards even is a deadline a
+ * reader never sees.
  */
 function calendar(upcoming, lang) {
   const entries = upcoming
@@ -195,8 +216,17 @@ function calendar(upcoming, lang) {
     });
 
   const slides = [];
-  for (let i = 0; i < entries.length; i += CALENDAR_PER_SLIDE) {
-    slides.push({ entries: entries.slice(i, i + CALENDAR_PER_SLIDE) });
+  let board = [];
+  let chars = 0;
+  for (const entry of entries) {
+    if (board.length && (board.length === CALENDAR_PER_SLIDE || chars + entry.text.length > CALENDAR_SLIDE_CHARS)) {
+      slides.push({ entries: board });
+      board = [];
+      chars = 0;
+    }
+    board.push(entry);
+    chars += entry.text.length;
   }
+  if (board.length) slides.push({ entries: board });
   return slides;
 }
