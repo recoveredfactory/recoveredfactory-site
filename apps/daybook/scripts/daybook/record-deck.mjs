@@ -13,7 +13,8 @@
 //   --cover-kicker the cover as the rundown's front page: a kicker over the hed and a
 //                  count of what follows. Off, the cover is the lede story. See og.mjs.
 //   --no-287g      leave off the 287(g) map (it needs the network; see tracker287g)
-//   --pick <file>  the edition's one picked image, by hand until compose writes it
+//   --pick <file>  the edition's one picked image from a local crop, overriding
+//                  the record's social.pick (see pick.mjs)
 //                  into the record: {story, png, marks, dims, caption}; see attachPick
 //
 // The record is the composer's output: `{format: "daybook/1", date, lang, title,
@@ -36,11 +37,13 @@
 // reconcile between languages.
 
 import { spawnSync } from 'node:child_process';
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
+import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { buildDeck, packBoards, trimToClause } from './deck.mjs';
+import { loadPick, placePick } from './pick.mjs';
 import { tracker287g } from './tracker287g.mjs';
 import { entryFrom } from './upcoming.mjs';
 
@@ -123,6 +126,18 @@ let shape = null;
 const decks = {};
 const tracker = with287g ? await tracker287g(date) : null;
 
+// The picked image comes from the record (social.pick, pick.mjs). A Spanish
+// record without one of its own takes the English pick, which crops the same
+// document; its caption is the pick's caption_es if it has one. Made once a
+// run: both languages show the same crop.
+const englishPick = records.find((record) => record.lang === 'en')?.social?.pick;
+const picks = new Map();
+const pickFor = (pick) => {
+  const key = JSON.stringify([pick.pdf, pick.image, pick.page, pick.quote, pick.mark]);
+  if (!picks.has(key)) picks.set(key, loadPick(pick, { work: mkdtempSync(join(tmpdir(), 'daybook-pick-')), label: `${date}: ` }));
+  return picks.get(key);
+};
+
 for (const record of records) {
   const { lang } = record;
 
@@ -144,7 +159,13 @@ for (const record of records) {
 
   deck.upcoming = calendar(record.upcoming ?? [], lang);
   if (tracker) deck.tracker = tracker;
+  const pick = record.social?.pick ?? englishPick;
   if (flag('--pick')) attachPick(deck, flag('--pick'), lang);
+  else if (pick) {
+    const shown = await pickFor(pick);
+    const caption = (record.social?.pick ? pick.caption : pick[`caption_${lang}`] ?? pick.caption) ?? '';
+    if (shown) placePick(deck, { ...shown, caption }, pick.story, lang);
+  }
   if (coverKicker) deck.coverKicker = true;
 
   // Cover, the stories, the calendar, the offer. Past Instagram's ceiling the
@@ -218,9 +239,8 @@ function calendar(upcoming, lang) {
 }
 
 /**
- * The one picked image (David, 2026-10-16): at most one an edition, a crop of a
- * source document showing the change itself, set between a story's headline
- * and its line. Until compose writes it into the record, it comes in as a file:
+ * The one picked image from a local crop (--pick), which overrides the
+ * record's social.pick (pick.mjs). The file:
  *
  *   {"story": "cover" | a fragment of a story's headline,
  *    "png": "<crop, relative to this file>", "marks": [...], "dims": [...],
@@ -234,12 +254,6 @@ function attachPick(deck, file, lang) {
   const pick = JSON.parse(readFileSync(file, 'utf8'));
   const src = `data:image/png;base64,${readFileSync(resolve(dirname(file), pick.png)).toString('base64')}`;
   const shown = { src, marks: pick.marks ?? [], dims: pick.dims ?? [], caption: pick[`caption_${lang}`] ?? pick.caption ?? '' };
-  if (pick.story === 'cover') {
-    deck.pick = shown;
-    return;
-  }
-  const beat = deck.beats.find((b) => b.headline.toLowerCase().includes(String(pick.story ?? '').toLowerCase()));
-  if (beat) beat.pick = shown;
-  else console.warn(`WARNING: ${deck.date} ${lang}: the pick names "${pick.story}", which is not on the deck — dropped.`);
+  placePick(deck, shown, pick.story, lang);
 }
 

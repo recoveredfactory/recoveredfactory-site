@@ -150,6 +150,10 @@ jobs:
       - name: ImageMagick
         run: command -v magick || command -v convert || (sudo apt-get update && sudo apt-get install -y imagemagick)
 
+      # pdftotext and pdftoppm, for the picked image's crop (pdfcrop.py).
+      - name: Poppler
+        run: command -v pdftoppm || (sudo apt-get update && sudo apt-get install -y poppler-utils)
+
       # og.mjs looks for google-chrome, google-chrome-stable, then chromium; the
       # runner image ships Google Chrome as google-chrome.
       - name: Chrome
