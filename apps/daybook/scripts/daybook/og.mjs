@@ -597,6 +597,27 @@ const citeRow = (links, sources) => {
     .join('')}</div>`;
 };
 
+// The one picked image (David, 2026-10-16): at most one per edition, a crop of
+// a source document showing the change itself, chosen in compose. The crop
+// comes with its highlights and dimmed context as fractions of the image (see
+// record-deck.mjs --pick). Words outside the quote are dimmed, never hidden, so
+// the crop still shows the document as printed.
+const pickBox = (m) => `left:${m.l * 100}%;top:${m.t * 100}%;width:${m.w * 100}%;height:${m.h * 100}%`;
+const pickFigure = (pick) =>
+  pick?.src
+    ? `<figure class="pick"><div class="paper"><div class="crop"><img src="${pick.src}" alt="" />` +
+      (pick.dims ?? []).map((m) => `<i class="dim" style="${pickBox(m)}"></i>`).join('') +
+      (pick.marks ?? []).map((m) => `<i class="mark" style="${pickBox(m)}"></i>`).join('') +
+      `</div></div>${pick.caption ? `<figcaption>${escapeHtml(pick.caption)}</figcaption>` : ''}</figure>`
+    : '';
+
+// Under the headline, the line and its cite travel as one block. With a picked
+// image the order is headline, image, then this block; without one, the block
+// sits centred in the room under the headline (David, 2026-10-16), so a short
+// story doesn't leave a hole between its prose and its sources.
+const storyBody = (nut, links, sources) =>
+  `<div class="body">${nut ? `<p class="nut">${escapeHtml(nut)}</p>` : ''}${citeRow(links, sources)}</div>`;
+
 const portraitCss = (date) => `
   :root { --fit: 1; }
   body { justify-content: flex-start; background: ${GRAY.paper100}; color: ${GRAY.ink900}; }
@@ -685,11 +706,59 @@ const portraitCss = (date) => `
     margin-top: ${fitpx(30)};
     text-wrap: pretty;
   }
-  /* Pinned to the foot of the stage: whatever room the two levels leave goes
-     above it, not under it. Fixed sizes, outside the fit, like the masthead. */
+  /* See storyBody. margin-block: auto centres the block in whatever room the
+     headline leaves; after a picked image it follows straight on. */
+  .body {
+    margin-block: auto;
+  }
+  .pick + .body {
+    margin-block: ${fitpx(34)} 0;
+  }
+  .body .nut {
+    margin-top: 0;
+  }
+  .pick {
+    margin-top: ${fitpx(36)};
+  }
+  .pick .paper {
+    background: #fff;
+    border: 2px solid ${GRAY.rule};
+    box-shadow: 0 2px 0 ${GRAY.rule};
+    padding: 22px 26px;
+  }
+  .pick .crop {
+    position: relative;
+    line-height: 0;
+  }
+  .pick img {
+    width: 100%;
+    display: block;
+  }
+  .pick .dim {
+    position: absolute;
+    background: #fff;
+    opacity: 0.7;
+  }
+  /* A highlighter, not a box: it wraps across a line break the way a box can't. */
+  .pick .mark {
+    position: absolute;
+    background: ${CRIMSON};
+    opacity: 0.24;
+    mix-blend-mode: multiply;
+    border-radius: 5px;
+  }
+  .pick figcaption {
+    margin-top: 14px;
+    font-family: "Jost", sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 1.3;
+    color: ${GRAY.ink500};
+  }
+  /* Directly under the line it credits. Fixed sizes, outside the fit, like the
+     masthead. */
   .cite {
-    margin-top: auto;
-    padding-top: 30px;
+    margin-top: 28px;
     display: flex;
     flex-wrap: wrap;
     gap: 14px 30px;
@@ -734,7 +803,7 @@ const portraitCss = (date) => `
 // that answered "feels thin" in August; David, two months on: "three levels when
 // it should be two". The credit is no longer a tier of prose either — it is the
 // cite row, publication marks at the foot.
-const coverSlide = ({ hed, nut, sources, links, date, kicker = null }) =>
+const coverSlide = ({ hed, nut, sources, links, pick, date, kicker = null }) =>
   shell(
     portraitCss(date) +
       `\n  .hed { font-size: ${fitcap(coverHedSize(hed), coverHedSize(hed) * HED_GROWTH)}; }` +
@@ -743,8 +812,8 @@ const coverSlide = ({ hed, nut, sources, links, date, kicker = null }) =>
     portraitFrame(
       (kicker ? `<p class="kicker">${escapeHtml(kicker.label)}</p>` : '') +
         `<h1 class="hed">${escapeHtml(hed)}</h1>` +
-        (nut ? `<p class="nut">${escapeHtml(nut)}</p>` : '') +
-        citeRow(links, sources),
+        pickFigure(pick) +
+        storyBody(nut, links, sources),
       { date, tally: kicker?.tally ?? '' },
     ),
     PORTRAIT,
@@ -820,15 +889,15 @@ const KICKER_CSS = `
 // the words here are David's. A slide index is the other obvious candidate and
 // is worse — the deck is not all stories, so "2/2" would count something a
 // reader cannot see the whole of.
-const beatSlide = ({ headline, nut, sources, links, date }) =>
+const beatSlide = ({ headline, nut, sources, links, pick, date }) =>
   shell(
     portraitCss(date) +
       `\n  .hed { font-size: ${fitcap(beatHedSize(headline), beatHedSize(headline) * HED_GROWTH)}; }` +
       (nut ? `\n  .nut { font-size: ${fitpx(nutSize(nut))}; }` : ''),
     portraitFrame(
       `<h2 class="hed">${escapeHtml(headline)}</h2>` +
-        (nut ? `<p class="nut">${escapeHtml(nut)}</p>` : '') +
-        citeRow(links, sources),
+        pickFigure(pick) +
+        storyBody(nut, links, sources),
       { date },
     ),
     PORTRAIT,
@@ -1500,6 +1569,7 @@ const carouselSlides = (lang) => {
         nut: deck.nut,
         sources: deck.sources,
         links: deck.links,
+        pick: deck.pick,
         date,
         kicker: deck.coverKicker
           ? coverKicker(lang, beats.length, upcoming.reduce((n, slide) => n + slide.entries.length, 0))

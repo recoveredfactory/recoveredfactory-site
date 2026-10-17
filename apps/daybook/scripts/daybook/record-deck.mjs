@@ -13,6 +13,8 @@
 //   --cover-kicker the cover as the rundown's front page: a kicker over the hed and a
 //                  count of what follows. Off, the cover is the lede story. See og.mjs.
 //   --no-287g      leave off the 287(g) map (it needs the network; see tracker287g)
+//   --pick <file>  the edition's one picked image, by hand until compose writes it
+//                  into the record: {story, png, marks, dims, caption}; see attachPick
 //
 // The record is the composer's output: `{format: "daybook/1", date, lang, title,
 // description, body_md, upcoming[], …}`. The stories are cut from it with
@@ -88,7 +90,7 @@ const flag = (name) => {
   const i = argv.indexOf(name);
   return i === -1 ? null : argv[i + 1];
 };
-const valued = new Set(['--out', '--images']);
+const valued = new Set(['--out', '--images', '--pick']);
 const files = argv.filter((arg, i) => !arg.startsWith('--') && !valued.has(argv[i - 1]));
 const render = argv.includes('--render');
 const coverKicker = argv.includes('--cover-kicker');
@@ -145,6 +147,7 @@ for (const record of records) {
 
   deck.upcoming = calendar(record.upcoming ?? [], lang);
   if (tracker) deck.tracker = tracker;
+  if (flag('--pick')) attachPick(deck, flag('--pick'), lang);
   if (coverKicker) deck.coverKicker = true;
 
   // Cover, the stories, the calendar, the offer. Past Instagram's ceiling the
@@ -230,3 +233,30 @@ function calendar(upcoming, lang) {
   if (board.length) slides.push({ entries: board });
   return slides;
 }
+
+/**
+ * The one picked image (David, 2026-10-16): at most one an edition, a crop of a
+ * source document showing the change itself, set between a story's headline
+ * and its line. Until compose writes it into the record, it comes in as a file:
+ *
+ *   {"story": "cover" | a fragment of a story's headline,
+ *    "png": "<crop, relative to this file>", "marks": [...], "dims": [...],
+ *    "caption": "Interim final rule, Federal Register, Oct. 14, 2026"}
+ *
+ * marks and dims are fractions of the crop, the shape a text-anchored PDF crop
+ * produces. A pick whose story is not on the deck is dropped with a warning
+ * rather than set beside some other story.
+ */
+function attachPick(deck, file, lang) {
+  const pick = JSON.parse(readFileSync(file, 'utf8'));
+  const src = `data:image/png;base64,${readFileSync(resolve(dirname(file), pick.png)).toString('base64')}`;
+  const shown = { src, marks: pick.marks ?? [], dims: pick.dims ?? [], caption: pick[`caption_${lang}`] ?? pick.caption ?? '' };
+  if (pick.story === 'cover') {
+    deck.pick = shown;
+    return;
+  }
+  const beat = deck.beats.find((b) => b.headline.toLowerCase().includes(String(pick.story ?? '').toLowerCase()));
+  if (beat) beat.pick = shown;
+  else console.warn(`WARNING: ${deck.date} ${lang}: the pick names "${pick.story}", which is not on the deck — dropped.`);
+}
+
