@@ -2,19 +2,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import {
-  DEFAULT_BASE,
-  bogotaDates,
-  bucketFromBase,
-  buildManifest,
-  manifestKey,
-  needsRender,
-  plan,
-  postStatus,
-  postable,
-  prefixFor,
-  slideKey,
-} from './deck-sync.mjs';
+import { DEFAULT_BASE, SLIDE_FILE, bogotaDates, bucketFromBase, buildManifest, manifestKey, needsRender, plan, postStatus, postable, prefixFor, slideKey } from './deck-sync.mjs';
 
 const index = {
   format: 'daybook-index/1',
@@ -53,6 +41,8 @@ test('the plan renders only what changed, and a rerun renders nothing', () => {
     '2026-10-13/en': { revision: 1 },
   };
   assert.ok(plan(index, ['2026-10-14', '2026-10-13'], done).every(({ langs }) => langs.every((l) => !l.render)));
+  // A redraw after a design change: every published deck is due again.
+  assert.ok(plan(index, ['2026-10-14', '2026-10-13'], done, { rerender: true }).every(({ langs }) => langs.every((l) => l.render)));
 
   // A republish of the English bumps its revision: English is due, Spanish is not.
   const republished = plan(index, ['2026-10-14'], { ...done, '2026-10-14/en': { revision: 1 } });
@@ -146,4 +136,11 @@ test('a test post ignores the broadcast mark', () => {
   const stale = [{ date: '2026-10-19', langs: [{ lang: 'en', revision: 2, render: true }] }];
   assert.deepEqual(postable(stale, new Set(), {}, ['en'], {}, { gate: false }), []);
   assert.deepEqual(postable(published, new Set(), { '2026-10-19/en': { facebook: {} } }, ['en'], {}, { gate: false }), []);
+});
+
+test('every slide og.mjs draws is uploaded, the 287(g) map included', () => {
+  for (const file of ['01-cover.png', '02-story.png', '05-287g.png', '06-upcoming.png', '09-subscribe.png']) {
+    assert.ok(SLIDE_FILE.test(file), file);
+  }
+  for (const file of ['deck.json', 'cover.png', '01-cover.html']) assert.ok(!SLIDE_FILE.test(file), file);
 });

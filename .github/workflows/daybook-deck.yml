@@ -61,6 +61,11 @@ on:
         required: false
         type: boolean
         default: false
+      rerender:
+        description: 'Redraw decks that are already current (after a design change). Never posts anything twice.'
+        required: false
+        type: boolean
+        default: false
       langs:
         description: 'Languages whose decks may post, comma-separated. Empty: en,es (en for test_post).'
         required: false
@@ -172,6 +177,7 @@ jobs:
           TEST: ${{ inputs.test == true || inputs.test_post == true }}
           TEST_POST: ${{ inputs.test_post }}
           DRY_RUN: ${{ inputs.dry_run }}
+          RERENDER: ${{ inputs.rerender }}
           LANGS: ${{ inputs.langs || (inputs.test_post && 'en' || 'en,es') }}
         run: |
           args=(--post-langs "$LANGS")
@@ -179,6 +185,7 @@ jobs:
           if [ "$TEST" = "true" ]; then args+=(--test); fi
           if [ "$TEST_POST" = "true" ]; then args+=(--test-post); fi
           if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
+          if [ "$RERENDER" = "true" ]; then args+=(--rerender); fi
           node scripts/daybook/deck-sync.mjs "${args[@]}"
 
       # A log of what will post: from the public bucket, with no credentials and

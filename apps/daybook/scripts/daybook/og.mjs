@@ -107,8 +107,10 @@ const GRAY = {
   header: '#BFC6CF',
 };
 
+// Jost 400 is for the slide's line. Without it in the request, a weight-400
+// rule silently renders at 500, the nearest weight loaded.
 const FONTS =
-  'https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Lora:wght@400;500;600&display=swap';
+  'https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Lora:wght@400;500;600&display=swap';
 
 // The open-graph frame. Portrait cards pass their own — see PORTRAIT.
 const LANDSCAPE = { width: 1200, height: 630, padding: '0 86px' };
@@ -395,10 +397,24 @@ const PORTRAIT_SIZE = '1080x1350';
 // which is loud, and meant to be: it is a copy problem, not a layout one. Above
 // FIT_MAX a thin slide starts shouting, and a headline set at poster size to
 // use up space reads as having nothing to say.
+//
+// With two levels instead of three (2026-10-16, see beatSlide) a story slide has
+// room to spare, the fitter spent it on the headline, and David found the
+// headlines too big. So a headline now has a ceiling of its own (fitcap): the
+// fit still grows the line under it into the room, and the headline stops at
+// HED_GROWTH over its step. What neither can use sits above the cite.
+//
+// The line got a ceiling too (2026-10-17): grown to fill the room, a 44px line
+// came out near 59px, which is the "too big" David meant in the body copy. It
+// stops at LINE_GROWTH over its step, and the block centres in what's left.
 const FIT_MIN = 0.62;
 const FIT_MAX = 1.34;
+const HED_GROWTH = 1.08;
+const LINE_GROWTH = 1.04;
 
 const fitpx = (n) => `calc(var(--fit) * ${n}px)`;
+// Fitted, but never past `cap` px. Still monotonic in --fit, so the search holds.
+const fitcap = (n, cap) => `min(calc(var(--fit) * ${n}px), ${Math.round(cap)}px)`;
 
 // Runs before the screenshot: Chrome's virtual clock does not advance past the
 // screenshot until the page is quiet, so the await and the layout reads here
@@ -456,30 +472,39 @@ const FIT_SCRIPT = `
 // Sized for a phone held at arm's length, not for a 1080px PNG on a desktop
 // monitor — which is how the first pass got set, and why it read small on the
 // only screen that matters.
+//
+// Reset 2026-10-16 for two levels: the line under the headline is the only prose
+// on a story slide now, so it is set larger than any nut was, and the headline a
+// little under where the fitter used to take it.
 const coverHedSize = (text) => {
   const n = text.length;
-  if (n <= 40) return 104;
-  if (n <= 70) return 88;
-  if (n <= 100) return 74;
-  if (n <= 140) return 60;
+  if (n <= 40) return 80;
+  if (n <= 70) return 74;
+  if (n <= 100) return 66;
+  if (n <= 140) return 58;
   return 50;
 };
 
 const beatHedSize = (text) => {
   const n = text.length;
-  if (n <= 50) return 72;
-  if (n <= 90) return 62;
-  if (n <= 130) return 52;
-  return 44;
+  if (n <= 50) return 70;
+  if (n <= 90) return 64;
+  if (n <= 130) return 56;
+  return 50;
 };
 
+// The line is about two sentences now (deck.mjs storyLine), in the regular
+// weight (David, 2026-10-17: "lower the size and weight of the content font").
+// 40-44px: he tried 36-40 and 48 and settled between. On a phone the canvas
+// shows at about a third of its size, so 44px is about 16pt. Readers over 40 at
+// arm's length need about 17pt, and the August ads found that audience.
 const nutSize = (text) => {
   const n = text.length;
-  if (n <= 140) return 40;
-  if (n <= 220) return 36;
-  if (n <= 320) return 32;
-  return 29;
+  if (n <= 240) return 44;
+  if (n <= 340) return 42;
+  return 40;
 };
+const lineFont = (text) => fitcap(nutSize(text), nutSize(text) * LINE_GROWTH);
 
 // Shared chrome: wordmark and date on one line at the top, the domain centred
 // at the foot. Three fixed points, and everything between them is the slide.
@@ -491,46 +516,128 @@ const nutSize = (text) => {
 // two, which reads as a broken masthead, so the date sizes to what is left.
 const dateSize = (text) => (text.length <= 8 ? 29 : text.length <= 16 ? 26 : 22);
 
-const portraitFrame = (body, { date = '', site = true, tally = '' }) => `
+// The wordmark is the domain (David, 2026-10-16). The domain used to sit centred
+// at the foot of every slide as well, where it fought the cite row for the same
+// strip of card; set as the masthead, the address is still on every slide and
+// the foot belongs to the sources. `site` survives for the cards that still want
+// a footer, and is off by default.
+const portraitFrame = (body, { date = '', site = false, tally = '' }) => `
   <header class="masthead">
-    <p class="lockup">Immigration Daybook</p>
+    <p class="lockup">${HOME_URL}</p>
     ${date ? `<p class="date">${escapeHtml(date)}</p>` : ''}
   </header>
   <div class="stage">${body}</div>${tally ? `\n  <p class="tally">${escapeHtml(tally)}</p>` : ''}
   ${site ? `<footer class="site">${HOME_URL}</footer>` : ''}
 ${FIT_SCRIPT}`;
 
-// Publications whose own mark is mixed case, and which the house all-caps would
-// otherwise misspell. LAist is LAist: the lowercase "ist" is the mark, and
-// LAIST reads as an outlet that does not exist. The uppercase is CSS, not the
-// string, so the exception has to ride in a span that turns it back off.
-//
-// Keyed on what the edition's link text says and matched case-insensitively, so
-// an upstream "LAIST" is corrected here too rather than passed through. Anything
-// not on this list takes the all-caps, which is nearly everything — this is a
-// list of marks, not a list of preferences.
-const VERBATIM_SOURCES = new Map([['laist', 'LAist']]);
+// Publications as the cite row names them, keyed on the edition's link text and
+// matched case-insensitively. Two kinds of fix:
+// - Shorthand spelled out (David, 2026-10-17): "AP should be Associated Press,
+//   looks weird in this venue as the acronym". Initials that are the name
+//   itself stay: NPR, CNN, KPBS, and groups known by them, like the ACLU and
+//   USCIS ("could be broken eg. for ACLU"). The expansions are proper names,
+//   so they serve the Spanish deck as they are.
+// - Marks that are mixed case: LAist is LAist, and an upstream "LAIST" reads as
+//   an outlet that does not exist.
+// Anything not listed prints as the edition gave it.
+const SOURCE_NAMES = new Map([
+  ['ap', 'Associated Press'],
+  ['afp', 'Agence France-Presse'],
+  ['wsj', 'The Wall Street Journal'],
+  ['nyt', 'The New York Times'],
+  ['wapo', 'The Washington Post'],
+  ['lat', 'Los Angeles Times'],
+  ['ajc', 'The Atlanta Journal-Constitution'],
+  ['laist', 'LAist'],
+  // The other way round: NPR's name is just NPR now, not National Public Radio.
+  ['national public radio', 'NPR'],
+]);
 
-const sourceName = (name) => {
-  const verbatim = VERBATIM_SOURCES.get(String(name).trim().toLowerCase());
-  return verbatim ? `<span class="asis">${escapeHtml(verbatim)}</span>` : escapeHtml(name);
+const sourceName = (name) => escapeHtml(SOURCE_NAMES.get(String(name).trim().toLowerCase()) ?? name);
+
+// The cite: who reported a story, each by the publication's own mark beside its
+// name (David, 2026-10-16).
+//
+// Until then this was a line of names under a hairline, and favicons were ruled
+// out on three counts: they arrive at 16-32px and would be blown up four times;
+// fetching them makes the deck depend on a dozen servers, silently; and a row of
+// brand squares reads as a link farm. The marks are back on those terms. They
+// come from Google's favicon service at 128px and are used only when one comes
+// back at ICON_MIN or larger. A fetch that fails, times out or returns a small
+// icon falls back to the name alone, which is what every slide had before. And
+// the names stay beside the marks, so the row reads as credit.
+// Fetched once per render, before any slide is drawn (see loadIcons below).
+const ICON_MIN = 64;
+let ICONS = new Map();
+
+// The publication's registrable domain: the mark for news.bloomberglaw.com is
+// Bloomberg Law's. A Google News redirect names no publication, so it gets no
+// mark and keeps its name.
+const iconDomain = (url) => {
+  let host;
+  try {
+    host = new URL(url).hostname.replace(/^www\./, '');
+  } catch {
+    return null;
+  }
+  if (host === 'news.google.com') return null;
+  const parts = host.split('.');
+  const country = parts.length > 2 && parts.at(-1).length === 2 && ['co', 'com', 'org', 'gov', 'gob', 'ac', 'net'].includes(parts.at(-2));
+  return parts.slice(country ? -3 : -2).join('.');
 };
 
-// The publications a story slide was built from, named under a hairline.
-//
-// Not favicons. They arrive at 16-32px and would have to be blown up four times
-// to sit beside 40px type; fetching them at render time makes the deck depend
-// on a dozen third-party servers being up, and the failure is silent, which is
-// the one thing a card must never be. And a row of brand-coloured squares
-// across a quiet gray card reads as an aggregator's link farm. The names
-// are the thing the favicon was standing in for anyway, and they are legible at
-// a thumb's distance.
-const creditLine = (sources) =>
-  sources?.length
-    ? `<p class="credit">${sources
-        .map((s) => sourceName(s))
-        .join('<span class="sep">·</span>')}</p>`
+async function fetchIcon(domain) {
+  try {
+    const res = await fetch(`https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`, {
+      signal: AbortSignal.timeout(8000),
+    });
+    if (!res.ok) return null;
+    const png = Buffer.from(await res.arrayBuffer());
+    // The width is in the PNG's IHDR chunk, bytes 16-19.
+    if (png.length < 24 || png.readUInt32BE(0) !== 0x89504e47 || png.readUInt32BE(16) < ICON_MIN) return null;
+    return `data:image/png;base64,${png.toString('base64')}`;
+  } catch {
+    return null;
+  }
+}
+
+async function loadIcons(urls) {
+  const domains = [...new Set(urls.map(iconDomain).filter(Boolean))];
+  const icons = await Promise.all(domains.map(fetchIcon));
+  return new Map(domains.map((d, i) => [d, icons[i]]));
+}
+
+const citeRow = (links, sources) => {
+  const items = links?.length ? links : (sources ?? []).map((name) => ({ name }));
+  if (!items.length) return '';
+  return `<div class="cite">${items
+    .map((item) => {
+      const icon = item.url ? ICONS.get(iconDomain(item.url)) : null;
+      return `<span class="src">${icon ? `<img src="${icon}" alt="" />` : ''}<span>${sourceName(item.name)}</span></span>`;
+    })
+    .join('')}</div>`;
+};
+
+// The one picked image (David, 2026-10-16): at most one per edition, a crop of
+// a source document showing the change itself, chosen in compose. The crop
+// comes with its highlights and dimmed context as fractions of the image (see
+// record-deck.mjs --pick). Words outside the quote are dimmed, never hidden, so
+// the crop still shows the document as printed.
+const pickBox = (m) => `left:${m.l * 100}%;top:${m.t * 100}%;width:${m.w * 100}%;height:${m.h * 100}%`;
+const pickFigure = (pick) =>
+  pick?.src
+    ? `<figure class="pick"><div class="paper"><div class="crop"><img src="${pick.src}" alt="" />` +
+      (pick.dims ?? []).map((m) => `<i class="dim" style="${pickBox(m)}"></i>`).join('') +
+      (pick.marks ?? []).map((m) => `<i class="mark" style="${pickBox(m)}"></i>`).join('') +
+      `</div></div>${pick.caption ? `<figcaption>${escapeHtml(pick.caption)}</figcaption>` : ''}</figure>`
     : '';
+
+// Under the headline, the line and its cite travel as one block. With a picked
+// image the order is headline, image, then this block; without one, the block
+// sits centred in the room under the headline (David, 2026-10-16), so a short
+// story doesn't leave a hole between its prose and its sources.
+const storyBody = (nut, links, sources) =>
+  `<div class="body">${nut ? `<p class="nut">${keepForms(escapeHtml(nut))}</p>` : ''}${citeRow(links, sources)}</div>`;
 
 const portraitCss = (date) => `
   :root { --fit: 1; }
@@ -554,12 +661,15 @@ const portraitCss = (date) => `
     padding: 40px 84px 34px;
     background: ${GRAY.header};
   }
+  /* No capitals anywhere on the deck since 2026-10-17. Tracked, heavy caps were
+     what made Jost read as Gill Sans and the deck as a cliché (David). Jost is
+     kept for Renner. Set lower case and a weight lighter, it reads like Futura
+     as the Bauhaus used it. The domain is set as it's typed. */
   .lockup {
     font-family: "Jost", sans-serif;
     font-size: 34px;
-    font-weight: 700;
-    letter-spacing: 0.13em;
-    text-transform: uppercase;
+    font-weight: 500;
+    letter-spacing: -0.005em;
     white-space: nowrap;
     color: ${GRAY.ink900};
   }
@@ -567,10 +677,8 @@ const portraitCss = (date) => `
      wordmark lead. */
   .date {
     font-family: "Jost", sans-serif;
-    font-size: ${dateSize(date)}px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-size: ${dateSize(date) + 2}px;
+    font-weight: 400;
     white-space: nowrap;
     color: ${GRAY.ink700};
   }
@@ -580,10 +688,8 @@ const portraitCss = (date) => `
     padding-top: 30px;
     text-align: center;
     font-family: "Jost", sans-serif;
-    font-size: 26px;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
+    font-size: 28px;
+    font-weight: 500;
     color: ${GRAY.ink500};
   }
   /* Top-anchored under the masthead, so every slide starts at the same height
@@ -607,50 +713,102 @@ const portraitCss = (date) => `
     color: ${GRAY.ink900};
     text-wrap: balance;
   }
-  /* Three tiers of prose, and they have to rank without changing typeface:
-     the nut is the claim (heavier, brighter), the detail is the evidence for it
-     (lighter, quieter), the credit is who reported it. Two Jost paragraphs at
-     the same weight and value read as one long paragraph broken in half. */
+  /* Story slides are two levels since 2026-10-16: the serif headline and the
+     line under it, in the quieter value. One level of prose, about two sentences,
+     in the regular weight (2026-10-17). */
   /* text-wrap: pretty is for the widow. A nut ending "…orders on Aug. 6."
      breaks after the abbreviation and leaves "6." alone on a line of its own,
      which at this size is a hole in the middle of the card. */
   .nut {
     font-family: "Jost", sans-serif;
-    font-weight: 500;
+    font-weight: 400;
     line-height: 1.4;
-    color: ${GRAY.ink900};
+    color: ${GRAY.ink700};
     margin-top: ${fitpx(30)};
     text-wrap: pretty;
   }
-  .detail {
+  /* See storyBody. margin-block: auto centres the block in whatever room the
+     headline leaves; after a picked image it follows straight on.
+     The padding sets it at the optical centre rather than the measured one,
+     about 36px high: a block centred exactly reads as sitting low, and the
+     story's slides looked like they had slumped. */
+  .body {
+    margin-block: auto;
+    padding-bottom: 72px;
+  }
+  .pick + .body {
+    margin-block: ${fitpx(46)} 0;
+    padding-bottom: 0;
+  }
+  .body .nut {
+    margin-top: 0;
+  }
+  .pick {
+    margin-top: ${fitpx(38)};
+  }
+  /* A sheet of paper, edged by the deck's one rule colour. The hard 2px shadow
+     under it read as a heavier bottom edge, not as depth. */
+  .pick .paper {
+    background: #fff;
+    border: 2px solid ${GRAY.rule};
+    padding: 22px 26px;
+  }
+  .pick .crop {
+    position: relative;
+    line-height: 0;
+  }
+  .pick img {
+    width: 100%;
+    display: block;
+  }
+  .pick .dim {
+    position: absolute;
+    background: #fff;
+    opacity: 0.7;
+  }
+  /* A highlighter, not a box: it wraps across a line break the way a box can't. */
+  .pick .mark {
+    position: absolute;
+    background: ${CRIMSON};
+    opacity: 0.24;
+    mix-blend-mode: multiply;
+    border-radius: 5px;
+  }
+  /* The caption names the document, so it reads with the sheet above it: close
+     under it, and further from the line below (.pick + .body). At 22px it was
+     the squint on the cover. */
+  .pick figcaption {
+    margin-top: 12px;
     font-family: "Jost", sans-serif;
+    font-size: 27px;
     font-weight: 400;
-    line-height: 1.44;
-    color: ${GRAY.ink700};
-    margin-top: ${fitpx(24)};
-    text-wrap: pretty;
+    line-height: 1.3;
+    color: ${GRAY.ink500};
   }
-  .credit {
-    margin-top: ${fitpx(34)};
-    padding-top: ${fitpx(20)};
-    border-top: 2px solid ${GRAY.rule};
+  /* Directly under the line it credits. Fixed sizes, outside the fit, like the
+     masthead. */
+  .cite {
+    margin-top: 34px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px 30px;
+  }
+  .cite .src {
+    display: flex;
+    align-items: center;
+    gap: 12px;
     font-family: "Jost", sans-serif;
-    font-size: ${fitpx(24)};
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
+    font-size: 30px;
+    font-weight: 500;
     color: ${GRAY.ink700};
   }
-  .credit .sep {
-    color: ${GRAY.header};
-    padding: 0 0.55em;
+  .cite img {
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
   }
-  /* The one opt-out of the house all-caps. See VERBATIM_SOURCES.
-     The tracking goes with it: 0.15em is set for capitals, and on mixed case it
-     pulls the word apart into "L A i s t" — which is not the mark either. */
-  .asis {
-    text-transform: none;
-    letter-spacing: 0.02em;
+  .nb {
+    white-space: nowrap;
   }`;
 
 // The cover: the lede, cut the same way every other story on the deck is cut.
@@ -659,23 +817,27 @@ const portraitCss = (date) => `
 // a second sentence is just more of one story. That made the cover the one
 // slide with a different shape, which a reader reads as a different kind of
 // thing — and the lede is not a different kind of thing, it is the day's best
-// story. Same three tiers, same credit line.
+// story. Same two levels, same cite.
 //
-// The hed steps down a size when prose rides with it: at full display size the
-// two compete instead of ranking.
-const coverSlide = ({ hed, nut, detail, sources, date, kicker = null }) =>
+// The hed has a ceiling of its own (fitcap, HED_GROWTH): at full display size it
+// and the line under it compete instead of ranking.
+//
+// Two levels since 2026-10-16, on every story slide and the cover alike: the
+// headline and the line under it. The supporting sentence was the third tier
+// that answered "feels thin" in August; David, two months on: "three levels when
+// it should be two". The credit is no longer a tier of prose either — it is the
+// cite row, publication marks at the foot.
+const coverSlide = ({ hed, nut, sources, links, pick, date, kicker = null }) =>
   shell(
     portraitCss(date) +
-      `\n  .hed { font-size: ${fitpx(nut ? Math.round(coverHedSize(hed) * 0.82) : coverHedSize(hed))}; }` +
-      (nut ? `\n  .nut { font-size: ${fitpx(nutSize(nut))}; }` : '') +
-      (detail ? `\n  .detail { font-size: ${fitpx(Math.round(nutSize(detail) * 0.92))}; }` : '') +
+      `\n  .hed { font-size: ${fitcap(coverHedSize(hed), coverHedSize(hed) * HED_GROWTH)}; }` +
+      (nut ? `\n  .nut { font-size: ${lineFont(nut)}; }` : '') +
       (kicker ? KICKER_CSS : ''),
     portraitFrame(
       (kicker ? `<p class="kicker">${escapeHtml(kicker.label)}</p>` : '') +
         `<h1 class="hed">${escapeHtml(hed)}</h1>` +
-        (nut ? `<p class="nut">${escapeHtml(nut)}</p>` : '') +
-        (detail ? `<p class="detail">${escapeHtml(detail)}</p>` : '') +
-        creditLine(sources),
+        pickFigure(pick) +
+        storyBody(nut, links, sources),
       { date, tally: kicker?.tally ?? '' },
     ),
     PORTRAIT,
@@ -720,20 +882,16 @@ const coverKicker = (lang, stories, dates) => {
 const KICKER_CSS = `
   .kicker {
     font-family: "Jost", sans-serif;
-    font-size: ${fitpx(18)};
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-size: ${fitpx(24)};
+    font-weight: 500;
     color: ${GRAY.ink500};
     margin-bottom: ${fitpx(10)};
   }
   .tally {
     padding-top: 12px;
     font-family: "Jost", sans-serif;
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-size: 24px;
+    font-weight: 500;
     color: ${GRAY.ink700};
   }`;
 
@@ -751,19 +909,15 @@ const KICKER_CSS = `
 // the words here are David's. A slide index is the other obvious candidate and
 // is worse — the deck is not all stories, so "2/2" would count something a
 // reader cannot see the whole of.
-const beatSlide = ({ headline, nut, detail, sources, date }) =>
+const beatSlide = ({ headline, nut, sources, links, pick, date }) =>
   shell(
     portraitCss(date) +
-      `\n  .hed { font-size: ${fitpx(beatHedSize(headline))}; }` +
-      (nut ? `\n  .nut { font-size: ${fitpx(nutSize(nut))}; }` : '') +
-      // A step under the claim, before opacity is counted. Ranked by size and
-      // value together, because either alone is a difference a thumb misses.
-      (detail ? `\n  .detail { font-size: ${fitpx(Math.round(nutSize(detail) * 0.92))}; }` : ''),
+      `\n  .hed { font-size: ${fitcap(beatHedSize(headline), beatHedSize(headline) * HED_GROWTH)}; }` +
+      (nut ? `\n  .nut { font-size: ${lineFont(nut)}; }` : ''),
     portraitFrame(
       `<h2 class="hed">${escapeHtml(headline)}</h2>` +
-        (nut ? `<p class="nut">${escapeHtml(nut)}</p>` : '') +
-        (detail ? `<p class="detail">${escapeHtml(detail)}</p>` : '') +
-        creditLine(sources),
+        pickFigure(pick) +
+        storyBody(nut, links, sources),
       { date },
     ),
     PORTRAIT,
@@ -802,7 +956,13 @@ const UPCOMING_LABEL = { en: 'What’s coming', es: 'Lo que viene' };
 // Down from 36 with the move to four entries a card. The board is read by
 // scanning dates and stopping at one, not by reading top to bottom, and the
 // size that serves that is the size that fits four.
-const ENTRY_TEXT_SIZE = 30;
+//
+// Up to 40 on 2026-10-16: the boards fitted down to 23-27px, which David found
+// too small on a phone. Then 36-40 (David, 2026-10-17), three short calendar
+// lines to a board (record-deck.mjs). 38 is the step, and the fit may grow it to
+// 40 and no further.
+const ENTRY_TEXT_SIZE = 38;
+const ENTRY_TEXT_MAX = 40;
 
 const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
   shell(
@@ -813,14 +973,16 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
      read as a footnote to the masthead rather than as the name of what follows.
      Down here at the head of the stage, at the size of a heading, it is doing
      the job it was put there to do. */
+  /* Set as a headline since 2026-10-17, in the serif every other slide leads
+     with, rather than as tracked capitals in the sans. */
   .rubric {
-    font-family: "Jost", sans-serif;
-    font-size: ${fitpx(38)};
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-family: "Lora", serif;
+    font-size: ${fitcap(54, 54 * HED_GROWTH)};
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
     color: ${GRAY.ink900};
-    margin-bottom: ${fitpx(-6)};
+    margin-bottom: ${fitpx(-4)};
   }
   /* A rundown's calendar can run to a second board. The count sits at the end
      of the rubric's line in the quiet value, set like the date in the masthead:
@@ -832,135 +994,349 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
     justify-content: space-between;
   }
   .rubric .page {
-    font-size: ${fitpx(26)};
-    font-weight: 600;
-    letter-spacing: 0.14em;
+    font-family: "Jost", sans-serif;
+    font-size: ${fitpx(28)};
+    font-weight: 400;
+    letter-spacing: 0;
     color: ${GRAY.ink500};
   }
+  /* Set like a printed datebook (2026-10-17, after three rounds of "still
+     weird"). Each entry is two columns on one baseline: the date, then the
+     line. The date is set at the line's size, in the serif, with the weekday
+     written out under it. There is no big numeral over small labels, the same
+     "big number, squinty text, red" that came off the 287(g) slide. Entries on
+     the same day share one date, and a hairline marks each new day. The rhythm
+     runs from the top, not in stretched rows, so the space between a rule and
+     its entry is the same everywhere. What's left at the foot, the fit takes
+     into the spacing. */
   .entry {
-    display: flex;
-    gap: ${fitpx(32)};
-    align-items: flex-start;
+    display: grid;
+    /* Fixed, not fitted: the dates are capped at 40px, so a column that grew
+       with the fit opened a gutter wider than the dates. 200px holds "Sept. 30",
+       "Wednesday" and "miércoles". */
+    grid-template-columns: 200px 1fr;
+    column-gap: 36px;
+    align-items: baseline;
+    padding-block: ${fitpx(28)};
   }
-  /* The rule goes between entries and nowhere else. Set on every entry it also
-     landed above the first one too, where it separates the entry from nothing.
-     A separator that separates nothing is just another line. */
-  .entry + .entry {
+  .entry:first-child {
+    padding-top: ${fitpx(10)};
+  }
+  .entry.same {
+    padding-top: 0;
+  }
+  /* The rule goes between days and nowhere else. One rule: the crimson bar
+     that once topped each date came off (David, 2026-10-17). */
+  .entry + .entry:not(.same) {
     border-top: 2px solid ${GRAY.rule};
-    padding-top: ${fitpx(32)};
   }
-  /* Fixed width so the prose of every entry starts on the same left edge —
-     a ragged text column is the fastest way to make a list look unconsidered.
-     It scales with the type, or a grown numeral outruns its column. */
-  .chip {
-    flex: 0 0 ${fitpx(124)};
-    border-top: 5px solid ${CRIMSON};
-    padding-top: ${fitpx(14)};
-  }
-  .chip .month {
-    font-family: "Jost", sans-serif;
-    font-size: ${fitpx(26)};
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    color: ${CRIMSON};
-  }
-  .chip .day {
+  .when .date {
     font-family: "Lora", serif;
-    font-size: ${fitpx(68)};
+    font-size: ${fitcap(ENTRY_TEXT_SIZE, ENTRY_TEXT_MAX)};
     font-weight: 600;
-    line-height: 0.98;
-    letter-spacing: -0.03em;
+    line-height: 1.34;
+    letter-spacing: -0.01em;
     color: ${GRAY.ink900};
   }
   /* The weekday is the one thing the snapshot knows that a reader has to work
      out for themselves otherwise, and "a week Monday" is how people actually
-     hold a deadline. It closes the chip, so the date reads as a block rather
-     than as a numeral with a label stuck above it. */
-  .chip .dow {
+     hold a deadline. On the day itself it gives way to "Today", the one
+     countdown kept ("only TODAY matters", David) and the only red on the board. */
+  .when .dow {
     font-family: "Jost", sans-serif;
-    font-size: ${fitpx(21)};
-    font-weight: 600;
-    letter-spacing: 0.16em;
+    font-size: ${fitcap(32, 34)};
+    font-weight: 400;
+    line-height: 1.3;
     color: ${GRAY.ink500};
-    margin-top: ${fitpx(6)};
   }
-  .entry .body {
-    flex: 1;
-    min-width: 0;
-    padding-top: ${fitpx(12)};
+  .when .dow.today {
+    font-weight: 500;
+    color: ${CRIMSON};
   }
   .entry .text {
     font-family: "Jost", sans-serif;
-    font-size: ${fitpx(ENTRY_TEXT_SIZE)};
+    font-size: ${fitcap(ENTRY_TEXT_SIZE, ENTRY_TEXT_MAX)};
     font-weight: 400;
-    line-height: 1.4;
+    line-height: 1.34;
     color: ${GRAY.ink900};
     text-wrap: pretty;
-  }
-  /* The foot of an entry: who says so on the left, how long is left on the
-     right. Both are set as furniture, and only one of them is crimson.
-
-     The publisher is the authority behind the deadline, not a gloss on it, so it
-     stays quiet — a source line set as loudly as the date competes with the one
-     thing on this card worth acting on. The countdown gets the accent because it
-     is the other half of the date, and because ranged down the right edge of
-     four entries it is what makes this a board rather than a list. */
-  .entry .meta {
-    display: flex;
-    align-items: baseline;
-    justify-content: space-between;
-    gap: ${fitpx(20)};
-    margin-top: ${fitpx(16)};
-    font-family: "Jost", sans-serif;
-    font-size: ${fitpx(22)};
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: ${GRAY.ink500};
-  }
-  .entry .meta .left {
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .entry .meta .countdown {
-    flex: none;
-    color: ${CRIMSON};
   }`,
     portraitFrame(
       (pages > 1
         ? `<p class="rubric paged"><span>${escapeHtml(UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en)}</span>` +
           `<span class="page">${page}/${pages}</span></p>`
         : `<p class="rubric">${escapeHtml(UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en)}</p>`) +
-        entries.map(upcomingEntry).join(''),
+        `<div class="entries">${entries.map((entry, i) => upcomingEntry(entry, lang, i > 0 && entries[i - 1].iso === entry.iso)).join('')}</div>`,
       { date },
     ),
     PORTRAIT,
   );
 
-// A snapshot with no publisher leaves the entry as it was before any of this,
-// and an entry the countdown cannot place keeps its meta row without one.
-// Nothing here is invented to fill the row.
-const upcomingEntry = (entry) => `
-    <div class="entry">
-      <div class="chip">
-        <div class="month">${escapeHtml(entry.month)}</div>
-        <div class="day">${escapeHtml(entry.day)}</div>
-        ${entry.weekday ? `<div class="dow">${escapeHtml(entry.weekday)}</div>` : ''}
-      </div>
-      <div class="body">
-        <p class="text">${escapeHtml(entry.text)}</p>
-        ${
-          entry.publisher || entry.countdown
-            ? `<div class="meta">
-          <span class="left">${escapeHtml(entry.publisher ?? '')}</span>
-          ${entry.countdown ? `<span class="countdown">${escapeHtml(entry.countdown)}</span>` : ''}
-        </div>`
-            : ''
-        }
-      </div>
+// Form and document numbers stay on one line: "EOIR-42A" broke after the hyphen,
+// leaving "42A" to start a line on its own. Applied to escaped text.
+const keepForms = (html) => html.replace(/\b([A-Z]{1,5}-\d[\dA-Z-]*)/g, '<span class="nb">$1</span>');
+
+// The date as the house writes it (AP: "Oct. 14", "Sept. 30", "March 3"; in
+// Spanish "14 oct."), and the weekday written out. upcoming.mjs's own labels
+// are capital abbreviations for pull.mjs; the deck sets its own from the ISO
+// date.
+const calendarDate = (iso, lang) => {
+  const [, m, d] = iso.split('-').map(Number);
+  return lang === 'es' ? `${d} ${MONTHS_SHORT.es[m - 1]}` : `${MONTHS_SHORT.en[m - 1]} ${d}`;
+};
+const weekdayName = (iso, lang) =>
+  new Date(`${iso}T12:00:00Z`).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', { weekday: 'long', timeZone: 'UTC' });
+const TODAY_WORD = { en: 'Today', es: 'Hoy' };
+
+// upcoming.mjs labels the day of as "TODAY" / "HOY". That's the one countdown
+// the deck keeps.
+const isToday = (entry) => /^(today|hoy)$/i.test(entry.countdown ?? '');
+
+// `same`: the entry falls on the same day as the one before it on the board,
+// so it carries no date of its own and no rule above it.
+const upcomingEntry = (entry, lang, same) => `
+    <div class="entry${same ? ' same' : ''}">
+      <div class="when">${
+        same
+          ? ''
+          : `<div class="date">${escapeHtml(calendarDate(entry.iso, lang))}</div>` +
+            (isToday(entry)
+              ? `<div class="dow today">${TODAY_WORD[lang] ?? TODAY_WORD.en}</div>`
+              : `<div class="dow">${escapeHtml(weekdayName(entry.iso, lang))}</div>`)
+      }</div>
+      <p class="text">${keepForms(escapeHtml(entry.text))}</p>
     </div>`;
+
+// The 287(g) map: every day, between the stories and the calendar (David,
+// 2026-10-16). Crimson dots are the agencies ICE added to its published list in
+// the two weeks up to its last change; gray ones were already on it. When ICE
+// goes a week or more without a change, the count line says how long. The
+// numbers come from record-deck.mjs
+// (tracker287g.mjs), and nothing on this slide is a judgment call.
+//
+// Albers equal-area on the lower 48, drawn as plain SVG from 287(g) Watch's own
+// state outlines: no tiles, no WebGL, nothing for a runner to need but Chrome.
+const STATES_GEOJSON = 'https://287g.recoveredfactory.net/us-inset.geojson';
+const OUTSIDE_STATES = new Set([
+  'Alaska', 'Hawaii', 'Puerto Rico', 'United States Virgin Islands', 'Guam', 'American Samoa',
+  'Commonwealth of the Northern Mariana Islands',
+]);
+let STATE_RINGS = null; // projected outlines, loaded with the icons below
+
+const albers = ([lon, lat]) => {
+  const r = Math.PI / 180;
+  const p1 = 29.5 * r, p2 = 45.5 * r, p0 = 37.5 * r, l0 = -96 * r;
+  const n = (Math.sin(p1) + Math.sin(p2)) / 2;
+  const c = Math.cos(p1) ** 2 + 2 * n * Math.sin(p1);
+  const rho = (p) => Math.sqrt(c - 2 * n * Math.sin(p)) / n;
+  const theta = n * (lon * r - l0);
+  return [rho(lat * r) * Math.sin(theta), -(rho(p0) - rho(lat * r) * Math.cos(theta))];
+};
+
+async function loadStates() {
+  const res = await fetch(STATES_GEOJSON, { signal: AbortSignal.timeout(30000) });
+  if (!res.ok) throw new Error(`${res.status} from ${STATES_GEOJSON}`);
+  const rings = [];
+  for (const f of (await res.json()).features) {
+    if (OUTSIDE_STATES.has(f.properties?.name)) continue;
+    const polys = f.geometry.type === 'Polygon' ? [f.geometry.coordinates] : f.geometry.coordinates;
+    for (const poly of polys) rings.push(poly[0].map(albers));
+  }
+  return rings;
+}
+
+const STATE_NAMES = {
+  AL: 'Alabama', AZ: 'Arizona', AR: 'Arkansas', CA: 'California', CO: 'Colorado', CT: 'Connecticut',
+  DE: 'Delaware', DC: 'D.C.', FL: 'Florida', GA: 'Georgia', ID: 'Idaho', IL: 'Illinois', IN: 'Indiana',
+  IA: 'Iowa', KS: 'Kansas', KY: 'Kentucky', LA: 'Louisiana', ME: 'Maine', MD: 'Maryland',
+  MA: 'Massachusetts', MI: 'Michigan', MN: 'Minnesota', MS: 'Mississippi', MO: 'Missouri', MT: 'Montana',
+  NE: 'Nebraska', NV: 'Nevada', NH: 'New Hampshire', NJ: 'New Jersey', NM: 'New Mexico', NY: 'New York',
+  NC: 'North Carolina', ND: 'North Dakota', OH: 'Ohio', OK: 'Oklahoma', OR: 'Oregon', PA: 'Pennsylvania',
+  RI: 'Rhode Island', SC: 'South Carolina', SD: 'South Dakota', TN: 'Tennessee', TX: 'Texas', UT: 'Utah',
+  VT: 'Vermont', VA: 'Virginia', WA: 'Washington', WV: 'West Virginia', WI: 'Wisconsin', WY: 'Wyoming',
+  AK: 'Alaska', HI: 'Hawaii', PR: 'Puerto Rico',
+};
+const STATE_NAMES_ES = {
+  ...STATE_NAMES, DC: 'D.C.', LA: 'Luisiana', MS: 'Misisipi', MO: 'Misuri', NJ: 'Nueva Jersey',
+  NM: 'Nuevo México', NY: 'Nueva York', NC: 'Carolina del Norte', ND: 'Dakota del Norte',
+  PA: 'Pensilvania', SC: 'Carolina del Sur', SD: 'Dakota del Sur', WV: 'Virginia Occidental', HI: 'Hawái',
+};
+
+const MONTHS_SHORT = {
+  en: ['Jan.', 'Feb.', 'March', 'April', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'],
+  es: ['ene.', 'feb.', 'mar.', 'abr.', 'may.', 'jun.', 'jul.', 'ago.', 'sept.', 'oct.', 'nov.', 'dic.'],
+};
+const shortDay = (iso, lang) => {
+  const [, m, d] = iso.split('-').map(Number);
+  return lang === 'es' ? `${d} de ${MONTHS_SHORT.es[m - 1]}` : `${MONTHS_SHORT.en[m - 1]} ${d}`;
+};
+const dayAfter = (iso) => new Date(Date.parse(iso) + 864e5).toISOString().slice(0, 10);
+
+// The slide is named for the tracker, like a column, and under the name sits a
+// short list, every item at one size with its lead in bold (David,
+// 2026-10-17): how many agencies, how long since ICE last changed its list, and
+// where. The days-since counter is the daily drama: ICE's list can go quiet
+// for weeks while agencies keep signing. It began as a big crimson numeral
+// beside small text ("big number, squinty text, red"), and is a list item now.
+const TRACKER_STATES_SHOWN = 4;
+const TRACKER_COPY = {
+  en: {
+    title: '287(g) Watch',
+    count: (n, a, b) => `<b>${n} new ${n === 1 ? 'agency' : 'agencies'}</b> from ${a} to ${b}`,
+    since: (d) => (d === 0 ? '<b>Updated today</b> by ICE' : `<b>${d} ${d === 1 ? 'day' : 'days'} since</b> last ICE update`),
+    state: (name, n) => `<span class="nb"><b>${name}</b> +${n}</span>`,
+    more: (n) => ` and ${n} more`,
+    fresh: 'New agreement',
+    old: 'Existing agreement',
+    caption: 'ICE’s public 287(g) list as tracked daily by 287(g) Watch. Agencies sit at their county or town. Lower 48 shown.',
+  },
+  es: {
+    title: '287(g) Watch',
+    count: (n, a, b) => `<b>${n} ${n === 1 ? 'agencia nueva' : 'agencias nuevas'}</b> del ${a} al ${b}`,
+    since: (d) =>
+      d === 0 ? '<b>Actualizada hoy</b> por ICE' : `<b>${d} ${d === 1 ? 'día' : 'días'} desde</b> la última actualización de ICE`,
+    state: (name, n) => `<span class="nb"><b>${name}</b> +${n}</span>`,
+    more: (n) => ` y ${n} más`,
+    fresh: 'Acuerdo nuevo',
+    old: 'Acuerdo existente',
+    caption: 'La lista pública de 287(g) de ICE, seguida a diario por 287(g) Watch. Cada agencia aparece en su condado o ciudad. Se muestran los 48 estados contiguos.',
+  },
+};
+
+const MAP_W = 912;
+const MAP_H = 540;
+
+const trackerMap = (tracker) => {
+  const rings = STATE_RINGS ?? [];
+  let [x0, y0, x1, y1] = [Infinity, Infinity, -Infinity, -Infinity];
+  for (const ring of rings) for (const [x, y] of ring) {
+    x0 = Math.min(x0, x); x1 = Math.max(x1, x); y0 = Math.min(y0, y); y1 = Math.max(y1, y);
+  }
+  const pad = 8;
+  const k = Math.min((MAP_W - 2 * pad) / (x1 - x0), (MAP_H - 2 * pad) / (y1 - y0));
+  const ox = (MAP_W - k * (x1 - x0)) / 2;
+  const oy = (MAP_H - k * (y1 - y0)) / 2;
+  const at = ([x, y]) => [ox + k * (x - x0), oy + k * (y - y0)];
+  const path = rings.map((ring) => `M${ring.map((p) => at(p).map((v) => v.toFixed(1)).join(',')).join('L')}Z`).join('');
+  const dots = (points, r) =>
+    points.map((p) => { const [x, y] = at(albers(p)); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}"/>`; }).join('');
+  return `<svg class="map" viewBox="0 0 ${MAP_W} ${MAP_H}" preserveAspectRatio="xMinYMin meet">
+    <path d="${path}" fill="#E6E9ED" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
+    <g fill="#9AA3AD" fill-opacity="0.55">${dots(tracker.old, 2.6)}</g>
+    <g fill="${CRIMSON}" stroke="#fff" stroke-width="2.2">${dots(tracker.fresh, 8)}</g>
+  </svg>`;
+};
+
+const trackerSlide = ({ tracker, lang, date }) => {
+  const copy = TRACKER_COPY[lang] ?? TRACKER_COPY.en;
+  const names = lang === 'es' ? STATE_NAMES_ES : STATE_NAMES;
+  const states = tracker.states ?? tracker.top;
+  const shown = states.slice(0, TRACKER_STATES_SHOWN);
+  const rest = states.length - shown.length;
+  const items = [
+    copy.count(tracker.added, escapeHtml(shortDay(dayAfter(tracker.start), lang)), escapeHtml(shortDay(tracker.last, lang))),
+    copy.since(tracker.since),
+    shown.map(([st, n]) => copy.state(escapeHtml(names[st] ?? st), n)).join(', ') + (rest > 0 ? copy.more(rest) : '') + '.',
+  ];
+  return shell(
+    portraitCss(date) +
+      `
+  /* Fixed sizes, not fitted: the words hold their size and the map gives. A
+     fitted slide shrank everything together, the list to about 34px, to make
+     room for a map that can lose 15% of its height without anyone missing it.
+     The map's box starts at its full 540px and shrinks into whatever height
+     the words leave. */
+  .hed { font-size: 58px; flex-shrink: 0; }
+  /* One size for the whole list, the lead of each item in bold, a hairline
+     between items: the calendar's system, so the two data slides read as a
+     pair. */
+  .facts {
+    flex-shrink: 0;
+    margin-top: 22px;
+    list-style: none;
+    font-family: "Jost", sans-serif;
+    font-size: 40px;
+    font-weight: 400;
+    line-height: 1.3;
+    color: ${GRAY.ink700};
+  }
+  .facts li {
+    padding-block: 16px;
+    text-wrap: pretty;
+  }
+  .facts li + li {
+    border-top: 2px solid ${GRAY.rule};
+  }
+  .facts b {
+    font-weight: 600;
+    color: ${GRAY.ink900};
+  }
+  .figure {
+    flex: 0 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    margin-top: 22px;
+  }
+  .mapbox {
+    flex: 0 1 ${MAP_H}px;
+    min-height: 0;
+    position: relative;
+  }
+  .mapbox svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+  .legend {
+    flex-shrink: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 40px;
+    margin-top: 16px;
+    font-family: "Jost", sans-serif;
+    font-size: 30px;
+    font-weight: 400;
+    color: ${GRAY.ink700};
+  }
+  .legend i {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    margin-right: 12px;
+    border-radius: 50%;
+    vertical-align: -3px;
+  }
+  .legend i.old {
+    width: 13px;
+    height: 13px;
+    margin: 0 17px 0 6px;
+    vertical-align: 2px;
+  }
+  .caption {
+    flex-shrink: 0;
+    margin-top: 12px;
+    font-family: "Jost", sans-serif;
+    font-size: 26px;
+    font-weight: 400;
+    line-height: 1.3;
+    color: ${GRAY.ink500};
+  }`,
+    portraitFrame(
+      `<h2 class="hed">${escapeHtml(copy.title)}</h2>` +
+        `<ul class="facts">${items.map((item) => `<li>${item}</li>`).join('')}</ul>` +
+        `<div class="figure">` +
+        `<div class="mapbox">${trackerMap(tracker)}</div>` +
+        `<div class="legend"><span><i style="background:${CRIMSON}"></i>${escapeHtml(copy.fresh)}</span>` +
+        `<span><i class="old" style="background:#9AA3AD"></i>${escapeHtml(copy.old)}</span></div>` +
+        `<p class="caption">${escapeHtml(copy.caption)}</p>` +
+        `</div>`,
+      { date },
+    ),
+    PORTRAIT,
+  );
+};
 
 // An exhibit slide: the daily deck holding up a document.
 //
@@ -1085,14 +1461,15 @@ const briefsSlide = ({ rubric, items, date }) =>
     portraitCss(date) +
       `
   .stage { gap: ${fitpx(34)}; }
+  /* A headline, like the calendar's (2026-10-17). */
   .rubric {
-    font-family: "Jost", sans-serif;
-    font-size: ${fitpx(38)};
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-family: "Lora", serif;
+    font-size: ${fitcap(54, 54 * HED_GROWTH)};
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
     color: ${GRAY.ink900};
-    margin-bottom: ${fitpx(-8)};
+    margin-bottom: ${fitpx(-6)};
   }
   /* Same rule system as the calendar board: hairlines between items, never
      above the first one. */
@@ -1102,12 +1479,10 @@ const briefsSlide = ({ rubric, items, date }) =>
   }
   .brief .slug {
     font-family: "Jost", sans-serif;
-    font-size: ${fitpx(23)};
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
+    font-size: ${fitpx(26)};
+    font-weight: 500;
     color: ${GRAY.ink700};
-    margin-bottom: ${fitpx(12)};
+    margin-bottom: ${fitpx(10)};
   }
   .brief .text {
     font-family: "Jost", sans-serif;
@@ -1141,20 +1516,39 @@ const briefsSlide = ({ rubric, items, date }) =>
 // has nothing to fill with — six words will not reach the strip at any size a
 // closing plate should be set in. Top-anchored it reads as a slide missing its
 // second half; centred it reads as a plate, which is what it is.
-const closingSlide = ({ call, url, date }) =>
+// The maker's mark under the link: the Recovered Factory factory, set the way
+// the cite row sets a publication's mark beside its name. Committed beside this
+// file at 128px, cut from the site's factory drawing, because the site's own
+// images are gitignored and the deck renders on GitHub from a bare checkout.
+const RF_MARK = `data:image/png;base64,${readFileSync(join(here, 'rf-mark.png')).toString('base64')}`;
+
+const closingSlide = ({ tagline, url, made, date }) =>
   shell(
-    portraitCss(date) + `\n  .stage { justify-content: center; }
-  .hed { font-size: ${fitpx(coverHedSize(call))}; }
+    // Centred on the optical centre, like a story's line: the extra foot
+    // padding lifts the plate about 36px.
+    portraitCss(date) + `\n  .stage { justify-content: center; padding-bottom: 88px; }
+  .hed { font-size: ${fitpx(coverHedSize(tagline))}; }
+  .made {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: ${fitpx(64)};
+    font-family: "Jost", sans-serif;
+    font-size: 34px;
+    font-weight: 500;
+    color: ${GRAY.ink700};
+  }
+  .made img { width: 64px; height: 64px; }
   .url {
     font-family: "Jost", sans-serif;
     font-size: ${fitpx(46)};
-    font-weight: 600;
-    letter-spacing: 0.04em;
+    font-weight: 500;
     color: ${GRAY.ink900};
     margin-top: ${fitpx(34)};
   }`,
     portraitFrame(
-      `<h2 class="hed">${escapeHtml(call)}</h2><p class="url">${escapeHtml(url)}</p>`,
+      `<h2 class="hed">${escapeHtml(tagline)}</h2><p class="url">${escapeHtml(url)}</p>` +
+        `<p class="made"><img src="${RF_MARK}" alt="" /><span>${escapeHtml(made)}</span></p>`,
       // The one slide that drops the domain out of the chrome: it is the whole
       // point of this slide, set at display size, and printing it twice on one
       // card makes the big one look like a caption for the small one.
@@ -1163,16 +1557,21 @@ const closingSlide = ({ call, url, date }) =>
     PORTRAIT,
   );
 
-// The closing plate's copy: the plainest statement of the offer, since this
-// slide exists to be acted on rather than admired.
+// The closing plate's copy: the tagline, the link, and who makes it (David,
+// 2026-10-17: no "free, every weekday morning", "just the link", and under it
+// "(icon) A Recovered Factory project").
+//
+// The tagline is "Making sense of the spectacle." It replaces "We turn the
+// spectacle … into evidence" here and on the site's front page
+// (src/lib/copy.ts). The Spanish is a draft awaiting David's approval.
 //
 // It used to carry the terms off the landing card — "Monday–Friday", "English &
 // Spanish" — along the bottom. The languages came off because a deck is posted
 // per language, to an account that is already in that language, where the fact
 // answers a question nobody in the audience is asking.
 const CLOSING = {
-  en: { call: 'Free, every weekday morning.', url: HOME_URL },
-  es: { call: 'Gratis, cada mañana entre semana.', url: HOME_URL },
+  en: { tagline: 'Making sense of the spectacle.', url: HOME_URL, made: 'A Recovered Factory project' },
+  es: { tagline: 'Para entender el espectáculo.', url: HOME_URL, made: 'Un proyecto de Recovered Factory' },
 };
 
 // Build a language's carousel from the deck JSON that pull.mjs wrote.
@@ -1231,7 +1630,7 @@ const carouselSlides = (lang) => {
     });
 
   const stories = beats.flatMap((beat) => [
-    { name: 'story', html: beatSlide({ ...beat, date }) },
+    { name: 'story', html: beatSlide({ ...beat, nut: beat.line || beat.nut, date }) },
     ...exhibitsFor(beat.headline).map((exhibit) => ({
       name: 'exhibit',
       html: exhibitSlide({ ...exhibit, ...(exhibit[lang] ?? {}), specDir, date }),
@@ -1251,9 +1650,10 @@ const carouselSlides = (lang) => {
       name: 'cover',
       html: coverSlide({
         hed: deck.hed,
-        nut: deck.nut,
-        detail: deck.detail,
+        nut: deck.line || deck.nut,
         sources: deck.sources,
+        links: deck.links,
+        pick: deck.pick,
         date,
         kicker: deck.coverKicker
           ? coverKicker(lang, beats.length, upcoming.reduce((n, slide) => n + slide.entries.length, 0))
@@ -1262,6 +1662,7 @@ const carouselSlides = (lang) => {
     },
     ...stories,
     ...briefs.map((slide) => ({ name: 'roundup', html: briefsSlide({ ...slide, date }) })),
+    ...(deck.tracker && STATE_RINGS ? [{ name: '287g', html: trackerSlide({ tracker: deck.tracker, lang, date }) }] : []),
     ...upcoming.map((slide, i) => ({
       name: 'upcoming',
       html: upcomingSlide({ entries: slide.entries, lang, date, page: i + 1, pages: upcoming.length }),
@@ -1309,6 +1710,22 @@ const CARDS = {
     clean: true,
   },
 };
+
+// Every publication mark the carousel cites, fetched before the first slide is
+// drawn: from here on the slides are built synchronously.
+if (deckPath && cards.includes('carousel')) {
+  const decks = Object.values(JSON.parse(readFileSync(deckPath, 'utf8')));
+  const links = decks.flatMap((deck) => [...(deck.links ?? []), ...(deck.beats ?? []).flatMap((beat) => beat.links ?? [])]);
+  ICONS = await loadIcons(links.map((link) => link.url));
+  // The 287(g) map's state outlines. Without them the slide is left off with a
+  // warning rather than drawn as dots in a void.
+  if (decks.some((deck) => deck.tracker)) {
+    STATE_RINGS = await loadStates().catch((err) => {
+      console.warn(`WARNING: no 287(g) map: state outlines didn't load (${err.message}).`);
+      return null;
+    });
+  }
+}
 
 const workDir = join(here, 'out');
 mkdirSync(workDir, { recursive: true });
