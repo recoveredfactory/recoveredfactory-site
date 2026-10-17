@@ -25,8 +25,6 @@ const en = {
       // TODO(david): say only what is true of how the list is run.
       privacy: 'We never sell or share your email. Unsubscribe any time.',
       success: 'Check your email to confirm. The next edition follows.',
-      guard: 'One security check, then you’re in.',
-      guardLink: 'Complete the security check on Kit',
       error: 'Something went wrong. Please try again.',
     },
     share: {
@@ -160,8 +158,6 @@ const es: Copy = {
       // TODO(david): decir solo lo que es cierto de cómo se maneja la lista.
       privacy: 'Nunca vendemos ni compartimos tu correo. Cancela cuando quieras.',
       success: 'Revisa tu correo para confirmar. La próxima edición viene después.',
-      guard: 'Una verificación de seguridad y listo.',
-      guardLink: 'Completa la verificación en Kit',
       error: 'Algo salió mal. Intenta de nuevo.',
     },
     share: {

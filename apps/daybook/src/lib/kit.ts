@@ -88,6 +88,24 @@ export const tagSubscriber = async (payload: { email: string; tagId: string }) =
   });
 };
 
+/**
+ * `POST /forms/{id}/subscribe` is the API twin of the public web form: it
+ * honors the form's double opt-in setting (the subscription comes back
+ * `inactive` until the reader confirms) and applies `tags` in the same
+ * request, so the signup and its newsletter tag land together or not at all.
+ */
+export const subscribeToForm = async (payload: {
+  formId: string;
+  email: string;
+  fields?: Record<string, string>;
+  tagIds?: string[];
+}) => {
+  const body: Record<string, unknown> = { email: payload.email };
+  if (payload.fields) body.fields = payload.fields;
+  if (payload.tagIds?.length) body.tags = payload.tagIds.map(Number);
+  await postJson(`/forms/${payload.formId}/subscribe`, body);
+};
+
 // Newsletter tags are named, not configured: a page asks for
 // `newsletter:immigration-daybook` and we look the id up (creating it the first
 // time) rather than threading another numeric id through the SST environment.
@@ -129,55 +147,6 @@ export const resolveTagId = async (name: string): Promise<string | null> => {
 
   if (id) tagIdsByName.set(key, id);
   return id;
-};
-
-/**
- * Kit v3 gates subscriber *reads* behind the account secret — the publishable
- * key that authorizes tag writes is rejected on this endpoint — so this asks
- * for the secret directly instead of going through `getAuth()`.
- *
- * `checked: false` (no secret configured) is deliberately distinct from
- * `subscriber: null` (Kit does not know this address). Collapsing the two would
- * make a missing credential look identical to a failed signup.
- */
-export type SubscriberLookup = {
-  checked: boolean;
-  subscriber: { id: string; state: string } | null;
-};
-
-export const findSubscriberByEmail = async (
-  email: string,
-): Promise<SubscriberLookup> => {
-  if (!KIT_API_SECRET) return { checked: false, subscriber: null };
-
-  const response = await fetch(
-    buildUrl('/subscribers', {
-      api_secret: KIT_API_SECRET,
-      email_address: email,
-      // Kit defaults this endpoint to `active`, which hides everyone who has
-      // not answered the double opt-in yet — i.e. precisely the people a guard
-      // confirmation is asking about. Without `all`, a fresh signup reads as
-      // "no such subscriber" seconds after it succeeded.
-      status: 'all',
-    }),
-    { headers: { 'content-type': 'application/json' } },
-  );
-  if (!response.ok) {
-    const text = await response.text().catch(() => '');
-    throw new Error(`Kit API error: ${response.status} ${text}`);
-  }
-
-  const payload = (await response.json().catch(() => ({}))) as {
-    subscribers?: Array<{ id?: number | string; state?: string }>;
-  };
-  const match = payload?.subscribers?.[0];
-  return {
-    checked: true,
-    subscriber:
-      match?.id != null
-        ? { id: String(match.id), state: String(match.state ?? '') }
-        : null,
-  };
 };
 
 export const tagSubscriberByName = async (payload: {
