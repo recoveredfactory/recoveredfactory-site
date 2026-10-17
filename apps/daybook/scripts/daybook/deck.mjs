@@ -4,6 +4,8 @@
 // daybook/1 edition record — without running the pull, which does its work at
 // module top level. Everything below is pull.mjs's, moved as it was.
 
+import { outletFor, outletKey } from './outlets.mjs';
+
 // Standing rubrics ("Upcoming", "Around the system", "Who saw what?",
 // "Próximamente", "¿Quién vio qué?", "Alrededor del sistema") are section
 // furniture, not beats. They are reliably short where a story headline is a
@@ -58,10 +60,11 @@ const LINE_MAX_CHARS = 380;
 const LINE_WHOLE_MAX = 420;
 const LINE_SUPPORT_MIN = 70;
 
-// Publications credited on a story slide. Beyond three the credit line stops
-// reading as attribution and starts reading as a list, and the fourth name is
-// always the one nobody has heard of.
-const CAROUSEL_SOURCES = 3;
+// Publications credited on a story slide: every outlet the section cites, in
+// order, one each (David, 2026-10-17: "we typically want all our sources for a
+// section in the slides"). It was three, from the lead paragraph only. Eight is
+// a guard, not a target: past it the cite row would crowd the line off a card.
+const CAROUSEL_SOURCES = 8;
 
 // When the bolded claim only says the headline again.
 //
@@ -340,7 +343,9 @@ export function readBriefs(sections, limit = BRIEFS) {
  */
 function readStory(section) {
   const headline = stripInlineMd(section.match(/^## (.+)$/m)?.[1] ?? '');
-  const { prose, sources, links } = splitCredits(leadParagraph(section));
+  const { prose } = splitCredits(leadParagraph(section));
+  const links = sectionCites(section);
+  const sources = links.map((link) => link.name);
 
   return {
     headline,
@@ -513,10 +518,18 @@ function leadParagraph(section) {
  * `[Newsweek](…), [Bloomberg Law](…).` — and an anchored match without it read
  * that whole edition as having no sources at all. The period belongs to the
  * citation list rather than to the prose, so it goes out with the credits.
+ *
+ * And the run has to be credits: it follows a finished sentence, and every link
+ * in it reads as a name. The first live edition (2026-10-17) closed a paragraph
+ * on a linked clause, "…prepare claims; [the lawsuit remains unresolved and
+ * filing it did not stop the process](…cnn.com…)", which printed as a
+ * publication beside CNN's mark and cut the line off at "claims;". Prose like
+ * that stays prose, and its outlets come from inlineCites.
  */
 export function splitCredits(paragraph) {
+  const none = { prose: paragraph, sources: [], links: [] };
   const tail = paragraph.match(/((?:\[[^\]]+\]\([^)]*\)(?:\s*,\s*)?)+)\s*\.?\s*$/);
-  if (!tail) return { prose: paragraph, sources: [], links: [] };
+  if (!tail) return none;
 
   // The names are what the credit prints; the links ride along so the carousel
   // can set each publication's own mark beside its name (og.mjs, citeRow).
@@ -524,7 +537,51 @@ export function splitCredits(paragraph) {
     name: stripInlineMd(m[1]),
     url: m[2].trim(),
   }));
-  return { prose: paragraph.slice(0, tail.index).trim(), sources: links.map((l) => l.name), links };
+  const prose = paragraph.slice(0, tail.index).trim();
+  if (!/[.!?"”’)*]$/.test(prose) || !links.every((link) => readsAsName(link.name))) return none;
+  return { prose, sources: links.map((l) => l.name), links };
+}
+
+// A publication's name: short, capitalised, no closing punctuation.
+const readsAsName = (text) =>
+  text.length <= 40 && /^[A-Z0-9¿¡]/.test(text) && text.split(/\s+/).length <= 6 && !/[.;:,]$/.test(text);
+
+/**
+ * Every outlet a section cites, in order, one each: the credits after each
+ * paragraph's last sentence, and the outlets of the links inside its prose.
+ */
+function sectionCites(section) {
+  const seen = new Set();
+  const cites = [];
+  for (const paragraph of section.replace(/^## .+$/m, '').split('\n\n').map((p) => p.trim()).filter(Boolean)) {
+    const { prose, links } = splitCredits(paragraph);
+    for (const cite of [...inlineCites(prose), ...links]) {
+      const key = (cite.url && outletKey(cite.url)) || cite.name.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      cites.push(cite);
+    }
+  }
+  return cites;
+}
+
+/**
+ * The outlets behind a paragraph's inline links, in order, one per outlet, for
+ * a story whose edition credits nothing after the claim but links its phrases:
+ * "CNN reports that [the lawsuit remains unresolved](…)". Names come from
+ * outlets.mjs: the Daybook's own name for the site, else the one the sentence
+ * gives it, else the address.
+ */
+export function inlineCites(paragraph) {
+  const seen = new Set();
+  const cites = [];
+  for (const m of paragraph.matchAll(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g)) {
+    const key = outletKey(m[2]);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    cites.push({ name: outletFor(m[2], stripInlineMd(paragraph.slice(0, m.index)), stripInlineMd(m[1])), url: m[2] });
+  }
+  return cites;
 }
 
 /**

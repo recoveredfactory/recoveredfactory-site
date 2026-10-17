@@ -553,7 +553,8 @@ const SOURCE_NAMES = new Map([
   ['national public radio', 'NPR'],
 ]);
 
-const sourceName = (name) => escapeHtml(SOURCE_NAMES.get(String(name).trim().toLowerCase()) ?? name);
+const sourceLabel = (name) => SOURCE_NAMES.get(String(name).trim().toLowerCase()) ?? String(name);
+const sourceName = (name) => escapeHtml(sourceLabel(name));
 
 // The cite: who reported a story, each by the publication's own mark beside its
 // name (David, 2026-10-16).
@@ -1227,17 +1228,24 @@ const trackerMap = (tracker) => {
   </svg>`;
 };
 
-const trackerSlide = ({ tracker, lang, date }) => {
+// The list's three items, as HTML: the count, the days since ICE's last change,
+// and the states.
+const trackerItems = (tracker, lang) => {
   const copy = TRACKER_COPY[lang] ?? TRACKER_COPY.en;
   const names = lang === 'es' ? STATE_NAMES_ES : STATE_NAMES;
   const states = tracker.states ?? tracker.top;
   const shown = states.slice(0, TRACKER_STATES_SHOWN);
   const rest = states.length - shown.length;
-  const items = [
+  return [
     copy.count(tracker.added, escapeHtml(shortDay(dayAfter(tracker.start), lang)), escapeHtml(shortDay(tracker.last, lang))),
     copy.since(tracker.since),
     shown.map(([st, n]) => copy.state(escapeHtml(names[st] ?? st), n)).join(', ') + (rest > 0 ? copy.more(rest) : '') + '.',
   ];
+};
+
+const trackerSlide = ({ tracker, lang, date }) => {
+  const copy = TRACKER_COPY[lang] ?? TRACKER_COPY.en;
+  const items = trackerItems(tracker, lang);
   return shell(
     portraitCss(date) +
       `
@@ -1578,6 +1586,31 @@ const CLOSING = {
 //
 // Numbered filenames because the only thing standing between a correct deck and
 // a shuffled one is upload order, and every picker sorts by name.
+// The deck's script: what each slide says, as plain text, written beside the
+// images as script.json (deck-sync.mjs puts it in the deck's manifest). The
+// desk shows David this and the images between publish and broadcast, so it
+// never writes a script of its own (David, 2026-10-17: the bot's own "script"
+// had to "mesh better with our action"). It is cut from the same deck the
+// slides are drawn from, so it can't say something the slides don't.
+const plain = (html) =>
+  String(html)
+    .replace(/<[^>]+>/g, '')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\s+/g, ' ')
+    .trim();
+const citeNames = (links, sources) => (links?.length ? links.map((l) => l.name) : sources ?? []).map(sourceLabel);
+const storyScript = (kind, headline, line, links, sources, pick) => ({
+  kind,
+  headline,
+  line: line ?? '',
+  sources: citeNames(links, sources),
+  ...(pick?.src ? { image: pick.caption || 'picked image' } : {}),
+});
+
 const carouselSlides = (lang) => {
   if (!deckPath) return null;
 
@@ -1630,7 +1663,11 @@ const carouselSlides = (lang) => {
     });
 
   const stories = beats.flatMap((beat) => [
-    { name: 'story', html: beatSlide({ ...beat, nut: beat.line || beat.nut, date }) },
+    {
+      name: 'story',
+      html: beatSlide({ ...beat, nut: beat.line || beat.nut, date }),
+      script: storyScript('story', beat.headline, beat.line || beat.nut, beat.links, beat.sources, beat.pick),
+    },
     ...exhibitsFor(beat.headline).map((exhibit) => ({
       name: 'exhibit',
       html: exhibitSlide({ ...exhibit, ...(exhibit[lang] ?? {}), specDir, date }),
@@ -1659,20 +1696,48 @@ const carouselSlides = (lang) => {
           ? coverKicker(lang, beats.length, upcoming.reduce((n, slide) => n + slide.entries.length, 0))
           : null,
       }),
+      script: storyScript('cover', deck.hed, deck.line || deck.nut, deck.links, deck.sources, deck.pick),
     },
     ...stories,
-    ...briefs.map((slide) => ({ name: 'roundup', html: briefsSlide({ ...slide, date }) })),
-    ...(deck.tracker && STATE_RINGS ? [{ name: '287g', html: trackerSlide({ tracker: deck.tracker, lang, date }) }] : []),
+    ...briefs.map((slide) => ({
+      name: 'roundup',
+      html: briefsSlide({ ...slide, date }),
+      script: { kind: 'roundup', headline: slide.rubric, items: (slide.items ?? []).map((item) => item.text) },
+    })),
+    ...(deck.tracker && STATE_RINGS
+      ? [
+          {
+            name: '287g',
+            html: trackerSlide({ tracker: deck.tracker, lang, date }),
+            script: { kind: '287g', headline: (TRACKER_COPY[lang] ?? TRACKER_COPY.en).title, items: trackerItems(deck.tracker, lang).map(plain) },
+          },
+        ]
+      : []),
     ...upcoming.map((slide, i) => ({
       name: 'upcoming',
       html: upcomingSlide({ entries: slide.entries, lang, date, page: i + 1, pages: upcoming.length }),
+      script: {
+        kind: 'calendar',
+        headline: UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en,
+        page: `${i + 1}/${upcoming.length}`,
+        entries: slide.entries.map((entry) => ({
+          date: calendarDate(entry.iso, lang),
+          day: isToday(entry) ? TODAY_WORD[lang] ?? TODAY_WORD.en : weekdayName(entry.iso, lang),
+          text: entry.text,
+        })),
+      },
     })),
-    { name: 'subscribe', html: closingSlide({ ...CLOSING[lang], date }) },
+    {
+      name: 'subscribe',
+      html: closingSlide({ ...CLOSING[lang], date }),
+      script: { kind: 'subscribe', headline: CLOSING[lang].tagline, line: `${CLOSING[lang].url} · ${CLOSING[lang].made}` },
+    },
   ];
 
   return slides.map((slide, i) => ({
     file: `${dir}/${String(i + 1).padStart(2, '0')}-${slide.name}.png`,
     html: slide.html,
+    ...(slide.script ? { script: slide.script } : {}),
   }));
 };
 
@@ -1758,6 +1823,13 @@ for (const cardName of cards) {
 
     for (const slide of slides) {
       renderSlide({ slide, cardName, lang, frame, outSize });
+    }
+
+    // The carousel's script beside its slides (see storyScript).
+    if (slides.some((slide) => slide.script)) {
+      const dir = dirname(join(outDir, slides[0].file));
+      const script = slides.map((slide) => ({ file: slide.file.split('/').at(-1), ...(slide.script ?? {}) }));
+      writeFileSync(join(dir, 'script.json'), `${JSON.stringify(script, null, 2)}\n`);
     }
   }
 }

@@ -38,7 +38,7 @@
 // at a partial deck.
 
 import { spawnSync } from 'node:child_process';
-import { appendFileSync, mkdirSync, mkdtempSync, readdirSync, writeFileSync } from 'node:fs';
+import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -154,18 +154,43 @@ export function postable(planned, rendered, posted, langs, broadcast = {}, optio
  * The deck.json for one language: the slides in deck order, by the name og.mjs
  * gave them (`03-story.png` → `story`) and their public URL.
  */
-export function buildManifest({ base, prefix, date, lang, revision, files, renderedAt }) {
+export function buildManifest({ base, prefix, date, lang, revision, files, renderedAt, script = [] }) {
+  const said = new Map(script.map(({ file, ...text }) => [file, text]));
+  const slides = [...files].sort().map((file) => ({
+    name: file.replace(/^\d+-/, '').replace(/\.png$/, ''),
+    url: `${base.replace(/\/+$/, '')}/${slideKey(prefix, date, lang, revision, file)}`,
+    ...(said.has(file) ? { text: said.get(file) } : {}),
+  }));
   return {
     format: 'daybook-deck/1',
     date,
     lang,
     revision,
     rendered_at: renderedAt,
-    slides: [...files].sort().map((file) => ({
-      name: file.replace(/^\d+-/, '').replace(/\.png$/, ''),
-      url: `${base.replace(/\/+$/, '')}/${slideKey(prefix, date, lang, revision, file)}`,
-    })),
+    slides,
+    ...(said.size ? { script_md: scriptMarkdown(slides) } : {}),
   };
+}
+
+/**
+ * The deck as the desk shows it to David between publish and broadcast: each
+ * slide's words, numbered, with a link to its image. og.mjs writes the words
+ * (script.json) from the same deck it draws, so this is what will post.
+ */
+export function scriptMarkdown(slides) {
+  return slides
+    .map((slide, i) => {
+      const t = slide.text ?? {};
+      const head = `**${i + 1}. ${t.headline ?? slide.name}**${t.page ? ` (${t.page})` : ''} · [image](${slide.url})`;
+      const body = [];
+      if (t.image) body.push(`[picked image: ${t.image}]`);
+      if (t.line) body.push(t.line);
+      for (const item of t.items ?? []) body.push(`- ${item}`);
+      for (const e of t.entries ?? []) body.push(`- ${e.date}, ${e.day}: ${e.text}`);
+      if (t.sources?.length) body.push(`Sources: ${t.sources.join(' · ')}`);
+      return [head, ...body].join('\n');
+    })
+    .join('\n\n');
 }
 
 // ── The run ────────────────────────────────────────────────────────────────
@@ -235,8 +260,8 @@ async function main() {
       // decks the posting step reads, and shadowing it here broke the first
       // real upload (run 38902725604: "rendered.add is not a function").
       const drawn = renderDate({ date, langs, due, records, work });
-      for (const { lang, revision, dir, files } of drawn) {
-        const manifest = buildManifest({ base, prefix, date, lang, revision, files, renderedAt: new Date().toISOString() });
+      for (const { lang, revision, dir, files, script } of drawn) {
+        const manifest = buildManifest({ base, prefix, date, lang, revision, files, script, renderedAt: new Date().toISOString() });
 
         if (dryRun) {
           console.log(`${date} ${lang} r${revision}: would write`);
@@ -326,7 +351,9 @@ function renderDate({ date, langs, due, records, work }) {
     const slides = join(images, 'social', date, l.lang);
     const files = readdirSync(slides).filter((file) => SLIDE_FILE.test(file)).sort();
     if (!files.length) throw new Error(`og.mjs drew no slides for ${date} ${l.lang}`);
-    return { lang: l.lang, revision: l.revision, dir: slides, files };
+    const scriptPath = join(slides, 'script.json');
+    const script = existsSync(scriptPath) ? JSON.parse(readFileSync(scriptPath, 'utf8')) : [];
+    return { lang: l.lang, revision: l.revision, dir: slides, files, script };
   });
 }
 
