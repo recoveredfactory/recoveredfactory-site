@@ -85,6 +85,11 @@ export const slideKey = (prefix, date, lang, revision, file) =>
  * revision, and which of them need a render. `manifests` maps `date/lang` to
  * the deck.json found (null when it answered 403/404).
  */
+// A slide og.mjs draws: `{NN}-{name}.png`. Names can carry digits: the 287(g)
+// slide is `05-287g.png`, which a letters-only pattern dropped from the upload
+// while it still rendered (caught in a dry run, 2026-10-17).
+export const SLIDE_FILE = /^\d+-[a-z0-9]+\.png$/;
+
 // `rerender` redraws decks that are already current, for a design change to
 // reach an edition that's already out. Posting is unaffected: a deck with a
 // posted.json is never offered again.
@@ -319,7 +324,7 @@ function renderDate({ date, langs, due, records, work }) {
 
   return due.map((l) => {
     const slides = join(images, 'social', date, l.lang);
-    const files = readdirSync(slides).filter((file) => /^\d+-[a-z]+\.png$/.test(file)).sort();
+    const files = readdirSync(slides).filter((file) => SLIDE_FILE.test(file)).sort();
     if (!files.length) throw new Error(`og.mjs drew no slides for ${date} ${l.lang}`);
     return { lang: l.lang, revision: l.revision, dir: slides, files };
   });
