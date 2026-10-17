@@ -712,23 +712,29 @@ const portraitCss = (date) => `
     text-wrap: pretty;
   }
   /* See storyBody. margin-block: auto centres the block in whatever room the
-     headline leaves; after a picked image it follows straight on. */
+     headline leaves; after a picked image it follows straight on.
+     The padding sets it at the optical centre rather than the measured one,
+     about 36px high: a block centred exactly reads as sitting low, and the
+     story's slides looked like they had slumped. */
   .body {
     margin-block: auto;
+    padding-bottom: 72px;
   }
   .pick + .body {
-    margin-block: ${fitpx(34)} 0;
+    margin-block: ${fitpx(46)} 0;
+    padding-bottom: 0;
   }
   .body .nut {
     margin-top: 0;
   }
   .pick {
-    margin-top: ${fitpx(36)};
+    margin-top: ${fitpx(38)};
   }
+  /* A sheet of paper, edged by the deck's one rule colour. The hard 2px shadow
+     under it read as a heavier bottom edge, not as depth. */
   .pick .paper {
     background: #fff;
     border: 2px solid ${GRAY.rule};
-    box-shadow: 0 2px 0 ${GRAY.rule};
     padding: 22px 26px;
   }
   .pick .crop {
@@ -752,18 +758,21 @@ const portraitCss = (date) => `
     mix-blend-mode: multiply;
     border-radius: 5px;
   }
+  /* The caption names the document, so it reads with the sheet above it: close
+     under it, and further from the line below (.pick + .body). At 22px it was
+     the squint on the cover. */
   .pick figcaption {
-    margin-top: 14px;
+    margin-top: 12px;
     font-family: "Jost", sans-serif;
-    font-size: 22px;
-    font-weight: 500;
+    font-size: 27px;
+    font-weight: 400;
     line-height: 1.3;
     color: ${GRAY.ink500};
   }
   /* Directly under the line it credits. Fixed sizes, outside the fit, like the
      masthead. */
   .cite {
-    margin-top: 28px;
+    margin-top: 34px;
     display: flex;
     flex-wrap: wrap;
     gap: 14px 30px;
@@ -1147,30 +1156,31 @@ const shortDay = (iso, lang) => {
 };
 const dayAfter = (iso) => new Date(Date.parse(iso) + 864e5).toISOString().slice(0, 10);
 
-// The slide is named for the tracker, like a column (David, 2026-10-17):
-// "287(g) Watch", then the count, then the days since ICE last changed its list.
-// That counter is the daily drama (ICE's list goes quiet for weeks while
-// agencies keep signing), so it stays, but as a line at reading size with the
-// number in bold. It started as a big crimson numeral beside small text, which
-// David found "weird": "big number, squinty text, red". The states line came off
-// too; the map shows where.
-const agencies = (n, lang) =>
-  lang === 'es' ? `${n} ${n === 1 ? 'agencia nueva' : 'agencias nuevas'}` : `${n} new ${n === 1 ? 'agency' : 'agencies'}`;
+// The slide is named for the tracker, like a column, and under the name sits a
+// short list, every item at one size with its lead in bold (David,
+// 2026-10-17): how many agencies, how long since ICE last changed its list, and
+// where. The days-since counter is the daily drama: ICE's list can go quiet
+// for weeks while agencies keep signing. It began as a big crimson numeral
+// beside small text ("big number, squinty text, red"), and is a list item now.
+const TRACKER_STATES_SHOWN = 4;
 const TRACKER_COPY = {
   en: {
     title: '287(g) Watch',
-    line: (n, a, b) => `${agencies(n, 'en')} from ${a} to ${b}`,
-    since: (d) =>
-      d === 0 ? 'ICE changed its list <b>today</b>' : `<b>${d} ${d === 1 ? 'day' : 'days'}</b> since ICE last changed its list`,
+    count: (n, a, b) => `<b>${n} new ${n === 1 ? 'agency' : 'agencies'}</b> from ${a} to ${b}`,
+    since: (d) => (d === 0 ? '<b>Updated today</b> by ICE' : `<b>${d} ${d === 1 ? 'day' : 'days'} since</b> last ICE update`),
+    state: (name, n) => `<span class="nb"><b>${name}</b> +${n}</span>`,
+    more: (n) => ` and ${n} more`,
     fresh: 'New agreement',
     old: 'Existing agreement',
     caption: 'ICE’s public 287(g) list as tracked daily by 287(g) Watch. Agencies sit at their county or town. Lower 48 shown.',
   },
   es: {
     title: '287(g) Watch',
-    line: (n, a, b) => `${agencies(n, 'es')} del ${a} al ${b}`,
+    count: (n, a, b) => `<b>${n} ${n === 1 ? 'agencia nueva' : 'agencias nuevas'}</b> del ${a} al ${b}`,
     since: (d) =>
-      d === 0 ? 'ICE cambió su lista <b>hoy</b>' : `<b>${d} ${d === 1 ? 'día' : 'días'}</b> desde el último cambio de ICE a su lista`,
+      d === 0 ? '<b>Actualizada hoy</b> por ICE' : `<b>${d} ${d === 1 ? 'día' : 'días'} desde</b> la última actualización de ICE`,
+    state: (name, n) => `<span class="nb"><b>${name}</b> +${n}</span>`,
+    more: (n) => ` y ${n} más`,
     fresh: 'Acuerdo nuevo',
     old: 'Acuerdo existente',
     caption: 'La lista pública de 287(g) de ICE, seguida a diario por 287(g) Watch. Cada agencia aparece en su condado o ciudad. Se muestran los 48 estados contiguos.',
@@ -1194,7 +1204,7 @@ const trackerMap = (tracker) => {
   const path = rings.map((ring) => `M${ring.map((p) => at(p).map((v) => v.toFixed(1)).join(',')).join('L')}Z`).join('');
   const dots = (points, r) =>
     points.map((p) => { const [x, y] = at(albers(p)); return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="${r}"/>`; }).join('');
-  return `<svg class="map" viewBox="0 0 ${MAP_W} ${MAP_H}" width="${MAP_W}" height="${MAP_H}">
+  return `<svg class="map" viewBox="0 0 ${MAP_W} ${MAP_H}" preserveAspectRatio="xMinYMin meet">
     <path d="${path}" fill="#E6E9ED" stroke="#fff" stroke-width="1.6" stroke-linejoin="round"/>
     <g fill="#9AA3AD" fill-opacity="0.55">${dots(tracker.old, 2.6)}</g>
     <g fill="${CRIMSON}" stroke="#fff" stroke-width="2.2">${dots(tracker.fresh, 8)}</g>
@@ -1203,70 +1213,103 @@ const trackerMap = (tracker) => {
 
 const trackerSlide = ({ tracker, lang, date }) => {
   const copy = TRACKER_COPY[lang] ?? TRACKER_COPY.en;
-  const line = copy.line(tracker.added, shortDay(dayAfter(tracker.start), lang), shortDay(tracker.last, lang));
+  const names = lang === 'es' ? STATE_NAMES_ES : STATE_NAMES;
+  const states = tracker.states ?? tracker.top;
+  const shown = states.slice(0, TRACKER_STATES_SHOWN);
+  const rest = states.length - shown.length;
+  const items = [
+    copy.count(tracker.added, escapeHtml(shortDay(dayAfter(tracker.start), lang)), escapeHtml(shortDay(tracker.last, lang))),
+    copy.since(tracker.since),
+    shown.map(([st, n]) => copy.state(escapeHtml(names[st] ?? st), n)).join(', ') + (rest > 0 ? copy.more(rest) : '') + '.',
+  ];
   return shell(
     portraitCss(date) +
       `
-  .hed { font-size: ${fitcap(62, 66)}; }
-  .count {
-    margin-top: ${fitpx(18)};
+  /* Fixed sizes, not fitted: the words hold their size and the map gives. A
+     fitted slide shrank everything together, the list to about 34px, to make
+     room for a map that can lose 15% of its height without anyone missing it.
+     The map's box starts at its full 540px and shrinks into whatever height
+     the words leave. */
+  .hed { font-size: 58px; flex-shrink: 0; }
+  /* One size for the whole list, the lead of each item in bold, a hairline
+     between items: the calendar's system, so the two data slides read as a
+     pair. */
+  .facts {
+    flex-shrink: 0;
+    margin-top: 22px;
+    list-style: none;
     font-family: "Jost", sans-serif;
-    font-size: ${fitcap(54, 56)};
-    font-weight: 500;
-    line-height: 1.2;
-    color: ${GRAY.ink900};
-    text-wrap: balance;
-  }
-  .since {
-    margin-top: ${fitpx(12)};
-    font-family: "Jost", sans-serif;
-    font-size: ${fitcap(42, 44)};
+    font-size: 40px;
     font-weight: 400;
     line-height: 1.3;
     color: ${GRAY.ink700};
   }
-  .since b {
+  .facts li {
+    padding-block: 16px;
+    text-wrap: pretty;
+  }
+  .facts li + li {
+    border-top: 2px solid ${GRAY.rule};
+  }
+  .facts b {
     font-weight: 600;
     color: ${GRAY.ink900};
   }
-  .figure { margin-top: ${fitpx(30)}; }
-  .mapbox { line-height: 0; }
+  .figure {
+    flex: 0 1 auto;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    margin-top: 22px;
+  }
+  .mapbox {
+    flex: 0 1 ${MAP_H}px;
+    min-height: 0;
+    position: relative;
+  }
+  .mapbox svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
   .legend {
+    flex-shrink: 0;
     display: flex;
     flex-wrap: wrap;
     gap: 8px 40px;
     margin-top: 16px;
     font-family: "Jost", sans-serif;
-    font-size: 32px;
+    font-size: 30px;
     font-weight: 400;
     color: ${GRAY.ink700};
   }
   .legend i {
     display: inline-block;
-    width: 26px;
-    height: 26px;
+    width: 24px;
+    height: 24px;
     margin-right: 12px;
     border-radius: 50%;
     vertical-align: -3px;
   }
   .legend i.old {
-    width: 14px;
-    height: 14px;
-    margin: 0 18px 0 6px;
+    width: 13px;
+    height: 13px;
+    margin: 0 17px 0 6px;
     vertical-align: 2px;
   }
   .caption {
-    margin-top: 14px;
+    flex-shrink: 0;
+    margin-top: 12px;
     font-family: "Jost", sans-serif;
-    font-size: 27px;
+    font-size: 26px;
     font-weight: 400;
     line-height: 1.3;
     color: ${GRAY.ink500};
   }`,
     portraitFrame(
       `<h2 class="hed">${escapeHtml(copy.title)}</h2>` +
-        `<p class="count">${escapeHtml(line)}</p>` +
-        `<p class="since">${copy.since(tracker.since)}</p>` +
+        `<ul class="facts">${items.map((item) => `<li>${item}</li>`).join('')}</ul>` +
         `<div class="figure">` +
         `<div class="mapbox">${trackerMap(tracker)}</div>` +
         `<div class="legend"><span><i style="background:${CRIMSON}"></i>${escapeHtml(copy.fresh)}</span>` +
@@ -1465,7 +1508,9 @@ const RF_MARK = `data:image/png;base64,${readFileSync(join(here, 'rf-mark.png'))
 
 const closingSlide = ({ tagline, url, made, date }) =>
   shell(
-    portraitCss(date) + `\n  .stage { justify-content: center; }
+    // Centred on the optical centre, like a story's line: the extra foot
+    // padding lifts the plate about 36px.
+    portraitCss(date) + `\n  .stage { justify-content: center; padding-bottom: 88px; }
   .hed { font-size: ${fitpx(coverHedSize(tagline))}; }
   .made {
     display: flex;
