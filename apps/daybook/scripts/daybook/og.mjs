@@ -410,7 +410,7 @@ const PORTRAIT_SIZE = '1080x1350';
 const FIT_MIN = 0.62;
 const FIT_MAX = 1.34;
 const HED_GROWTH = 1.08;
-const LINE_GROWTH = 1.06;
+const LINE_GROWTH = 1.04;
 
 const fitpx = (n) => `calc(var(--fit) * ${n}px)`;
 // Fitted, but never past `cap` px. Still monotonic in --fit, so the search holds.
@@ -493,15 +493,16 @@ const beatHedSize = (text) => {
   return 50;
 };
 
-// The line is about two sentences now (deck.mjs storyLine), set a size under
-// what one sentence got and in the regular weight (David, 2026-10-17: "lower the
-// size and weight of the content font"). 36px is the floor before the fit: about
-// 13px on a phone, the size of the caption under the post.
+// The line is about two sentences now (deck.mjs storyLine), in the regular
+// weight (David, 2026-10-17: "lower the size and weight of the content font").
+// 40-44px: he tried 36-40 and 48 and settled between. On a phone the canvas
+// shows at about a third of its size, so 44px is about 16pt. Readers over 40 at
+// arm's length need about 17pt, and the August ads found that audience.
 const nutSize = (text) => {
   const n = text.length;
-  if (n <= 180) return 40;
-  if (n <= 280) return 38;
-  return 36;
+  if (n <= 240) return 44;
+  if (n <= 340) return 42;
+  return 40;
 };
 const lineFont = (text) => fitcap(nutSize(text), nutSize(text) * LINE_GROWTH);
 
