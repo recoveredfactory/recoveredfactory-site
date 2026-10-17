@@ -69,7 +69,7 @@ const en = {
     metaDescription:
       'A weekday rundown of the immigration system — and a calendar of what’s coming. Effective dates, comment deadlines, court dates. Every edition online, in English and Spanish.',
     // The plate. Deck first, then the terms, then the ask.
-    deck: 'We turn the spectacle of the immigration system into evidence. Every weekday, in English and Spanish.',
+    deck: 'Making sense of the spectacle. Every weekday, in English and Spanish.',
     // The one sentence in colour.
     fire: 'There’s a lot of <em class="db-fire">fire</em> in the immigration system right now. There’s even more <em class="db-smoke">smoke</em>.',
     fireGrafs: [
@@ -201,7 +201,7 @@ const es: Copy = {
   home: {
     metaDescription:
       'Un resumen diario del sistema migratorio y un calendario de lo que viene. Fechas de entrada en vigor, plazos de comentarios, audiencias. Todas las ediciones en línea, en español e inglés.',
-    deck: 'Convertimos el espectáculo del sistema migratorio en evidencia. Cada día hábil, en español e inglés.',
+    deck: 'Para entender el espectáculo. Cada día hábil, en español e inglés.',
     fire: 'Hay mucho <em class="db-fire">fuego</em> en el sistema migratorio ahora mismo. Hay todavía más <em class="db-smoke">humo</em>.',
     fireGrafs: [
       'Miles de artículos, videos, hilos y publicaciones al día, muchas veces sobre acciones que parecen diseñadas para producir confusión, caos y espectáculo.',

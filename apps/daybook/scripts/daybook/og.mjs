@@ -930,9 +930,11 @@ const UPCOMING_LABEL = { en: 'What’s coming', es: 'Lo que viene' };
 // size that serves that is the size that fits four.
 //
 // Up to 40 on 2026-10-16: the boards fitted down to 23-27px, which David found
-// too small on a phone. record-deck.mjs now packs a board by length rather than
-// a flat three, so a board of long entries holds two and the type stays up.
-const ENTRY_TEXT_SIZE = 40;
+// too small on a phone. Then 36-40 (David, 2026-10-17), three short calendar
+// lines to a board (record-deck.mjs). 38 is the step, and the fit may grow it to
+// 40 and no further.
+const ENTRY_TEXT_SIZE = 38;
+const ENTRY_TEXT_MAX = 40;
 
 const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
   shell(
@@ -1035,7 +1037,7 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
   }
   .entry .text {
     font-family: "Jost", sans-serif;
-    font-size: ${fitpx(ENTRY_TEXT_SIZE)};
+    font-size: ${fitcap(ENTRY_TEXT_SIZE, ENTRY_TEXT_MAX)};
     font-weight: 400;
     line-height: 1.34;
     color: ${GRAY.ink900};
@@ -1450,10 +1452,11 @@ const briefsSlide = ({ rubric, items, date }) =>
 // has nothing to fill with — six words will not reach the strip at any size a
 // closing plate should be set in. Top-anchored it reads as a slide missing its
 // second half; centred it reads as a plate, which is what it is.
-const closingSlide = ({ call, url, date }) =>
+const closingSlide = ({ tagline, call, url, date }) =>
   shell(
     portraitCss(date) + `\n  .stage { justify-content: center; }
-  .hed { font-size: ${fitpx(coverHedSize(call))}; }
+  .hed { font-size: ${fitpx(coverHedSize(tagline))}; }
+  .nut { font-size: ${fitpx(44)}; margin-top: ${fitpx(26)}; }
   .url {
     font-family: "Jost", sans-serif;
     font-size: ${fitpx(46)};
@@ -1462,7 +1465,8 @@ const closingSlide = ({ call, url, date }) =>
     margin-top: ${fitpx(34)};
   }`,
     portraitFrame(
-      `<h2 class="hed">${escapeHtml(call)}</h2><p class="url">${escapeHtml(url)}</p>`,
+      `<h2 class="hed">${escapeHtml(tagline)}</h2><p class="nut">${escapeHtml(call)}</p>` +
+        `<p class="url">${escapeHtml(url)}</p>`,
       // The one slide that drops the domain out of the chrome: it is the whole
       // point of this slide, set at display size, and printing it twice on one
       // card makes the big one look like a caption for the small one.
@@ -1471,16 +1475,20 @@ const closingSlide = ({ call, url, date }) =>
     PORTRAIT,
   );
 
-// The closing plate's copy: the plainest statement of the offer, since this
-// slide exists to be acted on rather than admired.
+// The closing plate's copy: the tagline, then the plainest statement of the
+// offer, since this slide exists to be acted on rather than admired.
+//
+// The tagline is "Making sense of the spectacle." (David, 2026-10-17). It
+// replaces "We turn the spectacle … into evidence" here and on the site's front
+// page (src/lib/copy.ts). The Spanish is a draft awaiting David's approval.
 //
 // It used to carry the terms off the landing card — "Monday–Friday", "English &
 // Spanish" — along the bottom. The languages came off because a deck is posted
 // per language, to an account that is already in that language, where the fact
 // answers a question nobody in the audience is asking.
 const CLOSING = {
-  en: { call: 'Free, every weekday morning.', url: HOME_URL },
-  es: { call: 'Gratis, cada mañana entre semana.', url: HOME_URL },
+  en: { tagline: 'Making sense of the spectacle.', call: 'Free, every weekday morning.', url: HOME_URL },
+  es: { tagline: 'Para entender el espectáculo.', call: 'Gratis, cada mañana entre semana.', url: HOME_URL },
 };
 
 // Build a language's carousel from the deck JSON that pull.mjs wrote.

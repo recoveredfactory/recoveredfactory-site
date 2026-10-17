@@ -40,7 +40,7 @@ import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { buildDeck, trimToClause } from './deck.mjs';
+import { buildDeck, packBoards, trimToClause } from './deck.mjs';
 import { tracker287g } from './tracker287g.mjs';
 import { entryFrom } from './upcoming.mjs';
 
@@ -53,17 +53,14 @@ const DECK_STORIES = 3;
 // Instagram's ceiling on a carousel. A deck past it does not post at all.
 const MAX_SLIDES = 20;
 
-// Entries per calendar slide, packed by length (2026-10-16). A flat three to a
-// slide set the boards at 23-27px, which David found too small on a phone. Now
-// a board takes entries in order until their text passes CALENDAR_SLIDE_CHARS,
-// never more than CALENDAR_PER_SLIDE and never fewer than one, so two long
-// summaries share a board and four short ones do. Set against og.mjs's
-// ENTRY_TEXT_SIZE of 40px, which the fitter takes to about 33px on a board of
-// two 400-character entries. Today's summaries run 300-480 characters; a
-// budget set for 40px held one each and made a six-board calendar that
-// Instagram's ten-slide cut would never reach. Short one-liners, when a program
-// writes them, will pack four to a board under the same budget.
-const CALENDAR_PER_SLIDE = 4;
+// Three entries to a board, or four (David, 2026-10-17: "either 3 or 4 items, I
+// think 3 with a 36-40px font and more concise language"). The concise language
+// is the calendar line news-ingester writes for each watch item and attaches at
+// publish (`upcoming[].line`, about 100 characters). An entry without one
+// falls back to its whole plain summary, 300-480 characters. CALENDAR_SLIDE_CHARS
+// still bounds a board, so two of those share one at a readable size, as they
+// did on 2026-10-16. See packBoards in deck.mjs.
+const CALENDAR_PER_SLIDE = 3;
 const CALENDAR_SLIDE_CHARS = 820;
 
 // Enough for a whole plain summary: the 10-14 English ones run 295-368
@@ -196,18 +193,17 @@ if (render) {
 }
 
 /**
- * Every entry the edition ran, in the record's order, packed onto boards by
- * length (see CALENDAR_SLIDE_CHARS). The last board takes whatever is left, one
- * entry included: a deadline left off to make the boards even is a deadline a
- * reader never sees.
+ * Every entry the edition ran, in the record's order, packed onto boards (see
+ * CALENDAR_PER_SLIDE). Every entry gets a board: a deadline left off to make the
+ * boards even is a deadline a reader never sees.
  */
 function calendar(upcoming, lang) {
   const entries = upcoming
-    .filter((item) => item.date && item.text?.trim())
+    .filter((item) => item.date && (item.line?.trim() || item.text?.trim()))
     .map((item) => {
       const label = (item.sources?.[0]?.label ?? '').trim();
       const entry = entryFrom(
-        { iso: item.date, text: item.text.trim(), publisher: CALENDAR_SOURCES.get(label) ?? label },
+        { iso: item.date, text: (item.line?.trim() || item.text).trim(), publisher: CALENDAR_SOURCES.get(label) ?? label },
         lang,
         date,
       );
@@ -218,20 +214,7 @@ function calendar(upcoming, lang) {
       return { ...entry, text };
     });
 
-  const slides = [];
-  let board = [];
-  let chars = 0;
-  for (const entry of entries) {
-    if (board.length && (board.length === CALENDAR_PER_SLIDE || chars + entry.text.length > CALENDAR_SLIDE_CHARS)) {
-      slides.push({ entries: board });
-      board = [];
-      chars = 0;
-    }
-    board.push(entry);
-    chars += entry.text.length;
-  }
-  if (board.length) slides.push({ entries: board });
-  return slides;
+  return packBoards(entries, CALENDAR_PER_SLIDE, CALENDAR_SLIDE_CHARS).map((board) => ({ entries: board }));
 }
 
 /**

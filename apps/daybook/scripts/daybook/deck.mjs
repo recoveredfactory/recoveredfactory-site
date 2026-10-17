@@ -402,6 +402,41 @@ export function storyLine(claim, support) {
 }
 
 /**
+ * Calendar entries onto boards of `per`, in order, never past `chars` of text
+ * on one board. A short tail (fewer than `per`) is spread back over the boards
+ * before it, one entry each, when the whole tail fits that way. That makes a
+ * fourth entry rather than a thin last board: 7 short entries pack 3 + 4, and 8
+ * pack 4 + 4. When the tail can't be spread whole, it keeps its own board, as
+ * five entries do (3 + 2).
+ */
+export function packBoards(entries, per, chars) {
+  const length = (board) => board.reduce((n, entry) => n + entry.text.length, 0);
+  const boards = [];
+  for (const entry of entries) {
+    const last = boards.at(-1);
+    if (last && last.length < per && length(last) + entry.text.length <= chars) last.push(entry);
+    else boards.push([entry]);
+  }
+
+  // The boards are re-cut from the list in order, so the calendar stays in
+  // date order: the tail's entries are the latest, and the boards before it
+  // each give their last place to the next entry along.
+  const tail = boards.at(-1);
+  if (boards.length > 1 && tail.length < per) {
+    const sizes = boards.slice(0, -1).map((board) => board.length);
+    const k = tail.length;
+    if (k <= sizes.length && sizes.slice(-k).every((n) => n === per)) {
+      for (let i = sizes.length - k; i < sizes.length; i++) sizes[i] += 1;
+      const flat = boards.flat();
+      let at = 0;
+      const recut = sizes.map((n) => flat.slice(at, (at += n)));
+      if (recut.every((board) => length(board) <= chars)) return recut;
+    }
+  }
+  return boards;
+}
+
+/**
  * Is this claim just the headline again?
  *
  * Content words on both sides, accents folded and a crude suffix stripped so
