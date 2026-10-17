@@ -42,6 +42,22 @@ const NUT_MAX_CHARS = 320;
 // nobody reads at arm's length.
 const DETAIL_MAX_CHARS = 280;
 
+// The slide's one block of prose (David, 2026-10-17: "~2 sentences in most
+// cases", and only one level of it). The claim, then the first sentence the
+// edition offers in support of it, run together as one paragraph. The detail
+// tier used to sit under the claim in smaller type, which was a third level on a
+// card with room for two.
+//
+// A whole second sentence may run the line to LINE_WHOLE_MAX. Past that the
+// support is cut on a clause within LINE_MAX_CHARS, and never mid-phrase: where
+// it has no clause mark in range, or the room left is too short to say
+// anything, the claim stands alone. A line ending "…or preserve potential
+// vehicle…" reads as a card that broke. The four EN stories of 2026-10-14 ran
+// 284-447 characters as two whole sentences; three of them now run whole.
+const LINE_MAX_CHARS = 380;
+const LINE_WHOLE_MAX = 420;
+const LINE_SUPPORT_MIN = 70;
+
 // Publications credited on a story slide. Beyond three the credit line stops
 // reading as attribution and starts reading as a list, and the fourth name is
 // always the one nobody has heard of.
@@ -212,7 +228,7 @@ export function buildDeck(
   // The lede rides on the cover under the hed and gets no slide of its own —
   // the hed was written off it, so that slide said the same thing twice. The
   // beats are what comes after.
-  const { nut = '', detail = '', sources = [] } = stories[0] ?? {};
+  const { nut = '', detail = '', line = '', sources = [], links = [] } = stories[0] ?? {};
   const beats = stories.slice(1, 1 + maxBeats);
 
   // The calendar is the payoff, so it goes on a whole slide rather than as a
@@ -241,7 +257,9 @@ export function buildDeck(
       hed: headline,
       nut,
       detail,
+      line,
       sources,
+      links,
       beats,
       briefs: readBriefs(sections, maxBriefs),
       upcoming,
@@ -322,13 +340,14 @@ export function readBriefs(sections, limit = BRIEFS) {
  */
 function readStory(section) {
   const headline = stripInlineMd(section.match(/^## (.+)$/m)?.[1] ?? '');
-  const { prose, sources } = splitCredits(leadParagraph(section));
+  const { prose, sources, links } = splitCredits(leadParagraph(section));
 
   return {
     headline,
     claim: stripInlineMd(prose.match(/\*\*(?!\s)([^*]+?)\*\*/)?.[1] ?? ''),
     rest: stripInlineMd(prose.replace(/^[\s\S]*?\*\*(?!\s)[^*]+?\*\*/, '')),
     sources: sources.slice(0, CAROUSEL_SOURCES),
+    links: links.slice(0, CAROUSEL_SOURCES),
   };
 }
 
@@ -340,13 +359,15 @@ function readStory(section) {
  * comes off and everything moves up — the first sentence under it becomes the
  * claim, and the rest becomes the support. See RESTATEMENT_MAX_CHARS.
  */
-function shapeStory({ headline, claim, rest, sources }, promote, date, lang) {
+function shapeStory({ headline, claim, rest, sources, links }, promote, date, lang) {
   if (!promote) {
     return {
       headline,
       nut: trimToClause(claim, NUT_MAX_CHARS),
       detail: trimToClause(rest, DETAIL_MAX_CHARS),
+      line: storyLine(trimToClause(claim, NUT_MAX_CHARS), rest),
       sources,
+      links,
     };
   }
 
@@ -357,8 +378,62 @@ function shapeStory({ headline, claim, rest, sources }, promote, date, lang) {
     headline,
     nut: trimToClause(first, PROMOTED_NUT_MAX),
     detail: trimToClause(others.join(' '), DETAIL_MAX_CHARS),
+    line: storyLine(trimToClause(first, PROMOTED_NUT_MAX), others.join(' ')),
     sources,
+    links,
   };
+}
+
+/**
+ * The claim and its first supporting sentence as one paragraph, within `max`.
+ * See LINE_MAX_CHARS.
+ */
+export function storyLine(claim, support) {
+  const [first = ''] = splitSentences(support ?? '');
+  if (!claim) return trimToClause(first, LINE_MAX_CHARS);
+  if (!first) return claim;
+  if (claim.length + 1 + first.length <= LINE_WHOLE_MAX) return `${claim} ${first}`;
+
+  const room = LINE_MAX_CHARS - claim.length - 1;
+  if (room < LINE_SUPPORT_MIN) return claim;
+  const cut = first.slice(0, room);
+  const at = Math.max(cut.lastIndexOf(', '), cut.lastIndexOf('; '), cut.lastIndexOf(' — '));
+  return at > room * 0.5 ? `${claim} ${cut.slice(0, at)}…` : claim;
+}
+
+/**
+ * Calendar entries onto boards of `per`, in order, never past `chars` of text
+ * on one board. A short tail (fewer than `per`) is spread back over the boards
+ * before it, one entry each, when the whole tail fits that way. That makes a
+ * fourth entry rather than a thin last board: 7 short entries pack 3 + 4, and 8
+ * pack 4 + 4. When the tail can't be spread whole, it keeps its own board, as
+ * five entries do (3 + 2).
+ */
+export function packBoards(entries, per, chars) {
+  const length = (board) => board.reduce((n, entry) => n + entry.text.length, 0);
+  const boards = [];
+  for (const entry of entries) {
+    const last = boards.at(-1);
+    if (last && last.length < per && length(last) + entry.text.length <= chars) last.push(entry);
+    else boards.push([entry]);
+  }
+
+  // The boards are re-cut from the list in order, so the calendar stays in
+  // date order: the tail's entries are the latest, and the boards before it
+  // each give their last place to the next entry along.
+  const tail = boards.at(-1);
+  if (boards.length > 1 && tail.length < per) {
+    const sizes = boards.slice(0, -1).map((board) => board.length);
+    const k = tail.length;
+    if (k <= sizes.length && sizes.slice(-k).every((n) => n === per)) {
+      for (let i = sizes.length - k; i < sizes.length; i++) sizes[i] += 1;
+      const flat = boards.flat();
+      let at = 0;
+      const recut = sizes.map((n) => flat.slice(at, (at += n)));
+      if (recut.every((board) => length(board) <= chars)) return recut;
+    }
+  }
+  return boards;
 }
 
 /**
@@ -449,10 +524,15 @@ function leadParagraph(section) {
  */
 export function splitCredits(paragraph) {
   const tail = paragraph.match(/((?:\[[^\]]+\]\([^)]*\)(?:\s*,\s*)?)+)\s*\.?\s*$/);
-  if (!tail) return { prose: paragraph, sources: [] };
+  if (!tail) return { prose: paragraph, sources: [], links: [] };
 
-  const sources = [...tail[1].matchAll(/\[([^\]]+)\]\([^)]*\)/g)].map((m) => stripInlineMd(m[1]));
-  return { prose: paragraph.slice(0, tail.index).trim(), sources };
+  // The names are what the credit prints; the links ride along so the carousel
+  // can set each publication's own mark beside its name (og.mjs, citeRow).
+  const links = [...tail[1].matchAll(/\[([^\]]+)\]\(([^)]*)\)/g)].map((m) => ({
+    name: stripInlineMd(m[1]),
+    url: m[2].trim(),
+  }));
+  return { prose: paragraph.slice(0, tail.index).trim(), sources: links.map((l) => l.name), links };
 }
 
 /**
