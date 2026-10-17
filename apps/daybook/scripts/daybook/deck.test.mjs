@@ -38,14 +38,15 @@ test('a claim that leaves too little room stands alone', () => {
 const entries = (...lengths) => lengths.map((n, i) => ({ id: i + 1, text: 'x'.repeat(n) }));
 const ids = (boards) => boards.map((board) => board.map((entry) => entry.id));
 
-test('short calendar lines go three to a board, a tail of one or two becoming fourth entries in date order', () => {
-  assert.deepEqual(ids(packBoards(entries(100, 100, 100, 100, 100, 100), 3, 820)), [[1, 2, 3], [4, 5, 6]]);
-  assert.deepEqual(ids(packBoards(entries(100, 100, 100, 100, 100, 100, 100), 3, 820)), [[1, 2, 3], [4, 5, 6, 7]]);
-  assert.deepEqual(ids(packBoards(entries(100, 100, 100, 100, 100, 100, 100, 100), 3, 820)), [[1, 2, 3, 4], [5, 6, 7, 8]]);
-  assert.deepEqual(ids(packBoards(entries(100, 100, 100, 100), 3, 820)), [[1, 2, 3, 4]]);
+test('short calendar lines go up to four to a board, evened out, in date order', () => {
+  const short = (n) => entries(...Array(n).fill(100));
+  assert.deepEqual(ids(packBoards(short(4), 4, 820)), [[1, 2, 3, 4]]);
+  assert.deepEqual(ids(packBoards(short(5), 4, 820)), [[1, 2, 3], [4, 5]]);
+  assert.deepEqual(ids(packBoards(short(6), 4, 820)), [[1, 2, 3], [4, 5, 6]]);
+  assert.deepEqual(ids(packBoards(short(7), 4, 820)), [[1, 2, 3, 4], [5, 6, 7]]);
+  assert.deepEqual(ids(packBoards(short(9), 4, 820)), [[1, 2, 3], [4, 5, 6], [7, 8, 9]]);
 });
 
-test('five entries keep a board of two, and long summaries still share a board by length', () => {
-  assert.deepEqual(ids(packBoards(entries(100, 100, 100, 100, 100), 3, 820)), [[1, 2, 3], [4, 5]]);
-  assert.deepEqual(ids(packBoards(entries(400, 380, 300, 350, 330), 3, 820)), [[1, 2], [3, 4], [5]]);
+test('whole plain summaries pack by length instead', () => {
+  assert.deepEqual(ids(packBoards(entries(400, 380, 300, 350, 330), 4, 820)), [[1, 2], [3, 4], [5]]);
 });

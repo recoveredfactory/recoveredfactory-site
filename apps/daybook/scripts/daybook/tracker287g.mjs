@@ -80,7 +80,9 @@ export function trackerFrom(rows, date, { windowDays = TRACKER_WINDOW_DAYS, maxS
 
   const counts = new Map();
   for (const r of added) counts.set(r.state, (counts.get(r.state) ?? 0) + 1);
-  const top = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 3);
+  // Every state with an addition, most first, ties alphabetical.
+  const states = [...counts].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  const top = states.slice(0, 3);
 
   // Lower 48 only, at the county or town 287(g) Watch places each agency.
   const point = (r) => [Number(Number(r.longitude).toFixed(3)), Number(Number(r.latitude).toFixed(3))];
@@ -91,6 +93,7 @@ export function trackerFrom(rows, date, { windowDays = TRACKER_WINDOW_DAYS, maxS
     since: daysBetween(last, date),
     start,
     added: added.length,
+    states,
     top,
     fresh: added.filter(mappable).map(point),
     old: listed.filter((r) => r.first_seen_date <= start && mappable(r)).map(point),

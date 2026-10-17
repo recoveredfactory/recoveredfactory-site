@@ -53,14 +53,14 @@ const DECK_STORIES = 3;
 // Instagram's ceiling on a carousel. A deck past it does not post at all.
 const MAX_SLIDES = 20;
 
-// Three entries to a board, or four (David, 2026-10-17: "either 3 or 4 items, I
-// think 3 with a 36-40px font and more concise language"). The concise language
-// is the calendar line news-ingester writes for each watch item and attaches at
-// publish (`upcoming[].line`, about 100 characters). An entry without one
-// falls back to its whole plain summary, 300-480 characters. CALENDAR_SLIDE_CHARS
-// still bounds a board, so two of those share one at a readable size, as they
-// did on 2026-10-16. See packBoards in deck.mjs.
-const CALENDAR_PER_SLIDE = 3;
+// Up to four entries to a board, evened out (David, 2026-10-17: "We could do
+// 4x to a slide this way", once the date chip went to one line and the
+// countdown came off). The short entries are the calendar lines news-ingester
+// writes for each watch item and attaches at publish (`upcoming[].line`, about
+// 100 characters). An entry without one falls back to its whole plain summary,
+// 300-480 characters, and CALENDAR_SLIDE_CHARS then packs those two to a
+// board. See packBoards in deck.mjs.
+const CALENDAR_PER_SLIDE = 4;
 const CALENDAR_SLIDE_CHARS = 820;
 
 // Enough for a whole plain summary: the 10-14 English ones run 295-368
