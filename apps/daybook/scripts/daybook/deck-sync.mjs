@@ -85,7 +85,10 @@ export const slideKey = (prefix, date, lang, revision, file) =>
  * revision, and which of them need a render. `manifests` maps `date/lang` to
  * the deck.json found (null when it answered 403/404).
  */
-export function plan(index, dates, manifests) {
+// `rerender` redraws decks that are already current, for a design change to
+// reach an edition that's already out. Posting is unaffected: a deck with a
+// posted.json is never offered again.
+export function plan(index, dates, manifests, { rerender = false } = {}) {
   return dates.map((date) => {
     const published = (index?.editions ?? []).filter((edition) => edition.date === date);
     const langs = published.map((edition) => {
@@ -94,7 +97,7 @@ export function plan(index, dates, manifests) {
         lang: edition.lang,
         revision: edition.revision,
         deckRevision: manifest?.revision ?? null,
-        render: needsRender(edition.revision, manifest),
+        render: rerender || needsRender(edition.revision, manifest),
       };
     });
     return { date, langs };
@@ -171,6 +174,7 @@ async function main() {
   const testPost = argv.includes('--test-post');
   const test = argv.includes('--test') || testPost;
   const dryRun = argv.includes('--dry-run');
+  const rerender = argv.includes('--rerender');
   const base = (value('--base') ?? process.env.DAYBOOK_EDITIONS_URL ?? DEFAULT_BASE).replace(/\/+$/, '');
   const prefix = prefixFor(test);
   const dates = value('--date') ? [value('--date')] : bogotaDates();
@@ -203,7 +207,7 @@ async function main() {
   const rendered = new Set();
   let failed = false;
 
-  for (const { date, langs } of plan(index, dates, manifests)) {
+  for (const { date, langs } of plan(index, dates, manifests, { rerender })) {
     if (!langs.length) {
       console.log(`${date}: nothing published.`);
       rows.push({ date, lang: '—', revision: '—', result: 'nothing published' });

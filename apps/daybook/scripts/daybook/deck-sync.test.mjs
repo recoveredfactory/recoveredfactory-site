@@ -53,6 +53,8 @@ test('the plan renders only what changed, and a rerun renders nothing', () => {
     '2026-10-13/en': { revision: 1 },
   };
   assert.ok(plan(index, ['2026-10-14', '2026-10-13'], done).every(({ langs }) => langs.every((l) => !l.render)));
+  // A redraw after a design change: every published deck is due again.
+  assert.ok(plan(index, ['2026-10-14', '2026-10-13'], done, { rerender: true }).every(({ langs }) => langs.every((l) => l.render)));
 
   // A republish of the English bumps its revision: English is due, Spanish is not.
   const republished = plan(index, ['2026-10-14'], { ...done, '2026-10-14/en': { revision: 1 } });
