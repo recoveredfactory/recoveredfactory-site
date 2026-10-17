@@ -42,6 +42,22 @@ const NUT_MAX_CHARS = 320;
 // nobody reads at arm's length.
 const DETAIL_MAX_CHARS = 280;
 
+// The slide's one block of prose (David, 2026-10-17: "~2 sentences in most
+// cases", and only one level of it). The claim, then the first sentence the
+// edition offers in support of it, run together as one paragraph. The detail
+// tier used to sit under the claim in smaller type, which was a third level on a
+// card with room for two.
+//
+// A whole second sentence may run the line to LINE_WHOLE_MAX. Past that the
+// support is cut on a clause within LINE_MAX_CHARS, and never mid-phrase: where
+// it has no clause mark in range, or the room left is too short to say
+// anything, the claim stands alone. A line ending "…or preserve potential
+// vehicle…" reads as a card that broke. The four EN stories of 2026-10-14 ran
+// 284-447 characters as two whole sentences; three of them now run whole.
+const LINE_MAX_CHARS = 380;
+const LINE_WHOLE_MAX = 420;
+const LINE_SUPPORT_MIN = 70;
+
 // Publications credited on a story slide. Beyond three the credit line stops
 // reading as attribution and starts reading as a list, and the fourth name is
 // always the one nobody has heard of.
@@ -212,7 +228,7 @@ export function buildDeck(
   // The lede rides on the cover under the hed and gets no slide of its own —
   // the hed was written off it, so that slide said the same thing twice. The
   // beats are what comes after.
-  const { nut = '', detail = '', sources = [], links = [] } = stories[0] ?? {};
+  const { nut = '', detail = '', line = '', sources = [], links = [] } = stories[0] ?? {};
   const beats = stories.slice(1, 1 + maxBeats);
 
   // The calendar is the payoff, so it goes on a whole slide rather than as a
@@ -241,6 +257,7 @@ export function buildDeck(
       hed: headline,
       nut,
       detail,
+      line,
       sources,
       links,
       beats,
@@ -348,6 +365,7 @@ function shapeStory({ headline, claim, rest, sources, links }, promote, date, la
       headline,
       nut: trimToClause(claim, NUT_MAX_CHARS),
       detail: trimToClause(rest, DETAIL_MAX_CHARS),
+      line: storyLine(trimToClause(claim, NUT_MAX_CHARS), rest),
       sources,
       links,
     };
@@ -360,9 +378,27 @@ function shapeStory({ headline, claim, rest, sources, links }, promote, date, la
     headline,
     nut: trimToClause(first, PROMOTED_NUT_MAX),
     detail: trimToClause(others.join(' '), DETAIL_MAX_CHARS),
+    line: storyLine(trimToClause(first, PROMOTED_NUT_MAX), others.join(' ')),
     sources,
     links,
   };
+}
+
+/**
+ * The claim and its first supporting sentence as one paragraph, within `max`.
+ * See LINE_MAX_CHARS.
+ */
+export function storyLine(claim, support) {
+  const [first = ''] = splitSentences(support ?? '');
+  if (!claim) return trimToClause(first, LINE_MAX_CHARS);
+  if (!first) return claim;
+  if (claim.length + 1 + first.length <= LINE_WHOLE_MAX) return `${claim} ${first}`;
+
+  const room = LINE_MAX_CHARS - claim.length - 1;
+  if (room < LINE_SUPPORT_MIN) return claim;
+  const cut = first.slice(0, room);
+  const at = Math.max(cut.lastIndexOf(', '), cut.lastIndexOf('; '), cut.lastIndexOf(' — '));
+  return at > room * 0.5 ? `${claim} ${cut.slice(0, at)}…` : claim;
 }
 
 /**

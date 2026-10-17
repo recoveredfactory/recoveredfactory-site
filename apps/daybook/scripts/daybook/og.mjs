@@ -107,8 +107,10 @@ const GRAY = {
   header: '#BFC6CF',
 };
 
+// Jost 400 is for the slide's line. Without it in the request, a weight-400
+// rule silently renders at 500, the nearest weight loaded.
 const FONTS =
-  'https://fonts.googleapis.com/css2?family=Jost:wght@500;600;700&family=Lora:wght@400;500;600&display=swap';
+  'https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=Lora:wght@400;500;600&display=swap';
 
 // The open-graph frame. Portrait cards pass their own — see PORTRAIT.
 const LANDSCAPE = { width: 1200, height: 630, padding: '0 86px' };
@@ -401,9 +403,14 @@ const PORTRAIT_SIZE = '1080x1350';
 // headlines too big. So a headline now has a ceiling of its own (fitcap): the
 // fit still grows the line under it into the room, and the headline stops at
 // HED_GROWTH over its step. What neither can use sits above the cite.
+//
+// The line got a ceiling too (2026-10-17): grown to fill the room, a 44px line
+// came out near 59px, which is the "too big" David meant in the body copy. It
+// stops at LINE_GROWTH over its step, and the block centres in what's left.
 const FIT_MIN = 0.62;
 const FIT_MAX = 1.34;
 const HED_GROWTH = 1.08;
+const LINE_GROWTH = 1.06;
 
 const fitpx = (n) => `calc(var(--fit) * ${n}px)`;
 // Fitted, but never past `cap` px. Still monotonic in --fit, so the search holds.
@@ -486,13 +493,17 @@ const beatHedSize = (text) => {
   return 50;
 };
 
+// The line is about two sentences now (deck.mjs storyLine), set a size under
+// what one sentence got and in the regular weight (David, 2026-10-17: "lower the
+// size and weight of the content font"). 36px is the floor before the fit: about
+// 13px on a phone, the size of the caption under the post.
 const nutSize = (text) => {
   const n = text.length;
-  if (n <= 140) return 44;
-  if (n <= 220) return 41;
-  if (n <= 320) return 38;
-  return 35;
+  if (n <= 180) return 40;
+  if (n <= 280) return 38;
+  return 36;
 };
+const lineFont = (text) => fitcap(nutSize(text), nutSize(text) * LINE_GROWTH);
 
 // Shared chrome: wordmark and date on one line at the top, the domain centred
 // at the foot. Three fixed points, and everything between them is the slide.
@@ -518,21 +529,14 @@ const portraitFrame = (body, { date = '', site = false, tally = '' }) => `
   ${site ? `<footer class="site">${HOME_URL}</footer>` : ''}
 ${FIT_SCRIPT}`;
 
-// Publications whose own mark is mixed case, and which the house all-caps would
-// otherwise misspell. LAist is LAist: the lowercase "ist" is the mark, and
-// LAIST reads as an outlet that does not exist. The uppercase is CSS, not the
-// string, so the exception has to ride in a span that turns it back off.
-//
-// Keyed on what the edition's link text says and matched case-insensitively, so
-// an upstream "LAIST" is corrected here too rather than passed through. Anything
-// not on this list takes the all-caps, which is nearly everything — this is a
-// list of marks, not a list of preferences.
+// Publications whose own mark is mixed case. LAist is LAist: the lowercase "ist"
+// is the mark, and LAIST reads as an outlet that does not exist. The house
+// all-caps that made this list necessary is gone (2026-10-17), but an upstream
+// "LAIST" in the edition's link text is still corrected here, matched
+// case-insensitively. This is a list of marks, not a list of preferences.
 const VERBATIM_SOURCES = new Map([['laist', 'LAist']]);
 
-const sourceName = (name) => {
-  const verbatim = VERBATIM_SOURCES.get(String(name).trim().toLowerCase());
-  return verbatim ? `<span class="asis">${escapeHtml(verbatim)}</span>` : escapeHtml(name);
-};
+const sourceName = (name) => escapeHtml(VERBATIM_SOURCES.get(String(name).trim().toLowerCase()) ?? name);
 
 // The cite: who reported a story, each by the publication's own mark beside its
 // name (David, 2026-10-16).
@@ -640,12 +644,15 @@ const portraitCss = (date) => `
     padding: 40px 84px 34px;
     background: ${GRAY.header};
   }
+  /* No capitals anywhere on the deck since 2026-10-17. Tracked, heavy caps were
+     what made Jost read as Gill Sans and the deck as a cliché (David). Jost is
+     kept for Renner. Set lower case and a weight lighter, it reads like Futura
+     as the Bauhaus used it. The domain is set as it's typed. */
   .lockup {
     font-family: "Jost", sans-serif;
-    font-size: 30px;
-    font-weight: 700;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
+    font-size: 34px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
     white-space: nowrap;
     color: ${GRAY.ink900};
   }
@@ -653,10 +660,8 @@ const portraitCss = (date) => `
      wordmark lead. */
   .date {
     font-family: "Jost", sans-serif;
-    font-size: ${dateSize(date)}px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-size: ${dateSize(date) + 2}px;
+    font-weight: 400;
     white-space: nowrap;
     color: ${GRAY.ink700};
   }
@@ -666,10 +671,8 @@ const portraitCss = (date) => `
     padding-top: 30px;
     text-align: center;
     font-family: "Jost", sans-serif;
-    font-size: 26px;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
+    font-size: 28px;
+    font-weight: 500;
     color: ${GRAY.ink500};
   }
   /* Top-anchored under the masthead, so every slide starts at the same height
@@ -694,14 +697,15 @@ const portraitCss = (date) => `
     text-wrap: balance;
   }
   /* Story slides are two levels since 2026-10-16: the serif headline and the
-     nut under it, in the quieter value. */
+     line under it, in the quieter value. One level of prose, about two sentences,
+     in the regular weight (2026-10-17). */
   /* text-wrap: pretty is for the widow. A nut ending "…orders on Aug. 6."
      breaks after the abbreviation and leaves "6." alone on a line of its own,
      which at this size is a hole in the middle of the card. */
   .nut {
     font-family: "Jost", sans-serif;
-    font-weight: 500;
-    line-height: 1.34;
+    font-weight: 400;
+    line-height: 1.4;
     color: ${GRAY.ink700};
     margin-top: ${fitpx(30)};
     text-wrap: pretty;
@@ -768,23 +772,14 @@ const portraitCss = (date) => `
     align-items: center;
     gap: 12px;
     font-family: "Jost", sans-serif;
-    font-size: 24px;
-    font-weight: 600;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font-size: 30px;
+    font-weight: 500;
     color: ${GRAY.ink700};
   }
   .cite img {
     width: 44px;
     height: 44px;
     border-radius: 10px;
-  }
-  /* The one opt-out of the house all-caps. See VERBATIM_SOURCES.
-     The tracking goes with it: 0.15em is set for capitals, and on mixed case it
-     pulls the word apart into "L A i s t" — which is not the mark either. */
-  .asis {
-    text-transform: none;
-    letter-spacing: 0.02em;
   }`;
 
 // The cover: the lede, cut the same way every other story on the deck is cut.
@@ -807,7 +802,7 @@ const coverSlide = ({ hed, nut, sources, links, pick, date, kicker = null }) =>
   shell(
     portraitCss(date) +
       `\n  .hed { font-size: ${fitcap(coverHedSize(hed), coverHedSize(hed) * HED_GROWTH)}; }` +
-      (nut ? `\n  .nut { font-size: ${fitpx(nutSize(nut))}; }` : '') +
+      (nut ? `\n  .nut { font-size: ${lineFont(nut)}; }` : '') +
       (kicker ? KICKER_CSS : ''),
     portraitFrame(
       (kicker ? `<p class="kicker">${escapeHtml(kicker.label)}</p>` : '') +
@@ -858,20 +853,16 @@ const coverKicker = (lang, stories, dates) => {
 const KICKER_CSS = `
   .kicker {
     font-family: "Jost", sans-serif;
-    font-size: ${fitpx(18)};
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-size: ${fitpx(24)};
+    font-weight: 500;
     color: ${GRAY.ink500};
     margin-bottom: ${fitpx(10)};
   }
   .tally {
     padding-top: 12px;
     font-family: "Jost", sans-serif;
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-size: 24px;
+    font-weight: 500;
     color: ${GRAY.ink700};
   }`;
 
@@ -893,7 +884,7 @@ const beatSlide = ({ headline, nut, sources, links, pick, date }) =>
   shell(
     portraitCss(date) +
       `\n  .hed { font-size: ${fitcap(beatHedSize(headline), beatHedSize(headline) * HED_GROWTH)}; }` +
-      (nut ? `\n  .nut { font-size: ${fitpx(nutSize(nut))}; }` : ''),
+      (nut ? `\n  .nut { font-size: ${lineFont(nut)}; }` : ''),
     portraitFrame(
       `<h2 class="hed">${escapeHtml(headline)}</h2>` +
         pickFigure(pick) +
@@ -951,14 +942,16 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
      read as a footnote to the masthead rather than as the name of what follows.
      Down here at the head of the stage, at the size of a heading, it is doing
      the job it was put there to do. */
+  /* Set as a headline since 2026-10-17, in the serif every other slide leads
+     with, rather than as tracked capitals in the sans. */
   .rubric {
-    font-family: "Jost", sans-serif;
-    font-size: ${fitpx(38)};
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-family: "Lora", serif;
+    font-size: ${fitcap(54, 54 * HED_GROWTH)};
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
     color: ${GRAY.ink900};
-    margin-bottom: ${fitpx(-6)};
+    margin-bottom: ${fitpx(-4)};
   }
   /* A rundown's calendar can run to a second board. The count sits at the end
      of the rubric's line in the quiet value, set like the date in the masthead:
@@ -970,9 +963,10 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
     justify-content: space-between;
   }
   .rubric .page {
-    font-size: ${fitpx(26)};
-    font-weight: 600;
-    letter-spacing: 0.14em;
+    font-family: "Jost", sans-serif;
+    font-size: ${fitpx(28)};
+    font-weight: 400;
+    letter-spacing: 0;
     color: ${GRAY.ink500};
   }
   .entry {
@@ -997,9 +991,8 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
   }
   .chip .month {
     font-family: "Jost", sans-serif;
-    font-size: ${fitpx(26)};
-    font-weight: 700;
-    letter-spacing: 0.14em;
+    font-size: ${fitpx(32)};
+    font-weight: 500;
     color: ${CRIMSON};
   }
   .chip .day {
@@ -1016,9 +1009,8 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
      than as a numeral with a label stuck above it. */
   .chip .dow {
     font-family: "Jost", sans-serif;
-    font-size: ${fitpx(21)};
-    font-weight: 600;
-    letter-spacing: 0.16em;
+    font-size: ${fitpx(28)};
+    font-weight: 400;
     color: ${GRAY.ink500};
     margin-top: ${fitpx(6)};
   }
@@ -1029,10 +1021,9 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
      entry, and on most boards it said FEDERAL REGISTER all the way down. */
   .chip .countdown {
     font-family: "Jost", sans-serif;
-    font-size: ${fitpx(20)};
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
+    font-size: ${fitpx(27)};
+    font-weight: 500;
+    line-height: 1.2;
     color: ${CRIMSON};
     margin-top: ${fitpx(8)};
   }
@@ -1060,15 +1051,20 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
     PORTRAIT,
   );
 
+// upcoming.mjs labels the chip in capitals ("OCT", "WED", "IN 3 DAYS"), and
+// pull.mjs reads them that way. The deck sets them in sentence case: "Oct",
+// "Wed", "In 3 days", "Mañana".
+const chipWord = (label) => escapeHtml(label ? label.charAt(0) + label.slice(1).toLowerCase() : '');
+
 // An entry the countdown cannot place shows its date alone. Nothing here is
 // invented to fill the chip.
 const upcomingEntry = (entry) => `
     <div class="entry">
       <div class="chip">
-        <div class="month">${escapeHtml(entry.month)}</div>
+        <div class="month">${chipWord(entry.month)}</div>
         <div class="day">${escapeHtml(entry.day)}</div>
-        ${entry.weekday ? `<div class="dow">${escapeHtml(entry.weekday)}</div>` : ''}
-        ${entry.countdown ? `<div class="countdown">${escapeHtml(entry.countdown)}</div>` : ''}
+        ${entry.weekday ? `<div class="dow">${chipWord(entry.weekday)}</div>` : ''}
+        ${entry.countdown ? `<div class="countdown">${chipWord(entry.countdown)}</div>` : ''}
       </div>
       <div class="body">
         <p class="text">${escapeHtml(entry.text)}</p>
@@ -1201,7 +1197,7 @@ const trackerSlide = ({ tracker, lang, date }) => {
     portraitCss(date) +
       `
   .hed { font-size: ${fitcap(beatHedSize(hed), beatHedSize(hed) * HED_GROWTH)}; }
-  .nut { font-size: ${fitpx(nutSize(line))}; }
+  .nut { font-size: ${lineFont(line)}; }
   .figure { margin-top: ${fitpx(34)}; }
   .mapbox { position: relative; line-height: 0; }
   .counter {
@@ -1222,11 +1218,9 @@ const trackerSlide = ({ tracker, lang, date }) => {
   }
   .counter .l {
     font-family: "Jost", sans-serif;
-    font-size: 21px;
-    font-weight: 600;
+    font-size: 25px;
+    font-weight: 500;
     line-height: 1.25;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
     color: ${GRAY.ink700};
   }
   .legend {
@@ -1235,8 +1229,8 @@ const trackerSlide = ({ tracker, lang, date }) => {
     gap: 8px 34px;
     margin-top: 14px;
     font-family: "Jost", sans-serif;
-    font-size: 24px;
-    font-weight: 600;
+    font-size: 25px;
+    font-weight: 400;
     color: ${GRAY.ink700};
   }
   .legend i {
@@ -1400,14 +1394,15 @@ const briefsSlide = ({ rubric, items, date }) =>
     portraitCss(date) +
       `
   .stage { gap: ${fitpx(34)}; }
+  /* A headline, like the calendar's (2026-10-17). */
   .rubric {
-    font-family: "Jost", sans-serif;
-    font-size: ${fitpx(38)};
-    font-weight: 700;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
+    font-family: "Lora", serif;
+    font-size: ${fitcap(54, 54 * HED_GROWTH)};
+    font-weight: 600;
+    line-height: 1.12;
+    letter-spacing: -0.02em;
     color: ${GRAY.ink900};
-    margin-bottom: ${fitpx(-8)};
+    margin-bottom: ${fitpx(-6)};
   }
   /* Same rule system as the calendar board: hairlines between items, never
      above the first one. */
@@ -1417,12 +1412,10 @@ const briefsSlide = ({ rubric, items, date }) =>
   }
   .brief .slug {
     font-family: "Jost", sans-serif;
-    font-size: ${fitpx(23)};
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
+    font-size: ${fitpx(26)};
+    font-weight: 500;
     color: ${GRAY.ink700};
-    margin-bottom: ${fitpx(12)};
+    margin-bottom: ${fitpx(10)};
   }
   .brief .text {
     font-family: "Jost", sans-serif;
@@ -1463,8 +1456,7 @@ const closingSlide = ({ call, url, date }) =>
   .url {
     font-family: "Jost", sans-serif;
     font-size: ${fitpx(46)};
-    font-weight: 600;
-    letter-spacing: 0.04em;
+    font-weight: 500;
     color: ${GRAY.ink900};
     margin-top: ${fitpx(34)};
   }`,
@@ -1546,7 +1538,7 @@ const carouselSlides = (lang) => {
     });
 
   const stories = beats.flatMap((beat) => [
-    { name: 'story', html: beatSlide({ ...beat, date }) },
+    { name: 'story', html: beatSlide({ ...beat, nut: beat.line || beat.nut, date }) },
     ...exhibitsFor(beat.headline).map((exhibit) => ({
       name: 'exhibit',
       html: exhibitSlide({ ...exhibit, ...(exhibit[lang] ?? {}), specDir, date }),
@@ -1566,7 +1558,7 @@ const carouselSlides = (lang) => {
       name: 'cover',
       html: coverSlide({
         hed: deck.hed,
-        nut: deck.nut,
+        nut: deck.line || deck.nut,
         sources: deck.sources,
         links: deck.links,
         pick: deck.pick,
