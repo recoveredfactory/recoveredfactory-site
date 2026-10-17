@@ -4,6 +4,8 @@
 // daybook/1 edition record — without running the pull, which does its work at
 // module top level. Everything below is pull.mjs's, moved as it was.
 
+import { outletFor, outletKey } from './outlets.mjs';
+
 // Standing rubrics ("Upcoming", "Around the system", "Who saw what?",
 // "Próximamente", "¿Quién vio qué?", "Alrededor del sistema") are section
 // furniture, not beats. They are reliably short where a story headline is a
@@ -58,10 +60,11 @@ const LINE_MAX_CHARS = 380;
 const LINE_WHOLE_MAX = 420;
 const LINE_SUPPORT_MIN = 70;
 
-// Publications credited on a story slide. Beyond three the credit line stops
-// reading as attribution and starts reading as a list, and the fourth name is
-// always the one nobody has heard of.
-const CAROUSEL_SOURCES = 3;
+// Publications credited on a story slide: every outlet the section cites, in
+// order, one each (David, 2026-10-17: "we typically want all our sources for a
+// section in the slides"). It was three, from the lead paragraph only. Eight is
+// a guard, not a target: past it the cite row would crowd the line off a card.
+const CAROUSEL_SOURCES = 8;
 
 // When the bolded claim only says the headline again.
 //
@@ -340,7 +343,9 @@ export function readBriefs(sections, limit = BRIEFS) {
  */
 function readStory(section) {
   const headline = stripInlineMd(section.match(/^## (.+)$/m)?.[1] ?? '');
-  const { prose, sources, links } = splitCredits(leadParagraph(section));
+  const { prose } = splitCredits(leadParagraph(section));
+  const links = sectionCites(section);
+  const sources = links.map((link) => link.name);
 
   return {
     headline,
@@ -385,11 +390,26 @@ function shapeStory({ headline, claim, rest, sources, links }, promote, date, la
 }
 
 /**
+ * "CNN reports that the plaintiffs say…" → "The plaintiffs say…". The cite row
+ * names the outlet, so on a slide the attribution is said twice (David,
+ * 2026-10-17: "'CNN reports...' in this carousel context is an ixnay"). Only a
+ * sentence that opens on it; the composer's own slide copy is written without.
+ */
+export function dropAttribution(text) {
+  return text.replace(
+    /^((?:[A-Z][\w&’'.-]*\s+){0,5}[A-Z][\w&’'.-]*)\s+(?:reports|reported|says|said|writes|wrote|notes|noted|found)\s+that\s+(\S)/,
+    (_, __, first) => first.toUpperCase(),
+  );
+}
+
+/**
  * The claim and its first supporting sentence as one paragraph, within `max`.
  * See LINE_MAX_CHARS.
  */
-export function storyLine(claim, support) {
-  const [first = ''] = splitSentences(support ?? '');
+export function storyLine(rawClaim, support) {
+  // A promoted sentence (shapeStory) can open on the attribution too.
+  const claim = dropAttribution(rawClaim ?? '');
+  const [first = ''] = splitSentences(dropAttribution(support ?? ''));
   if (!claim) return trimToClause(first, LINE_MAX_CHARS);
   if (!first) return claim;
   if (claim.length + 1 + first.length <= LINE_WHOLE_MAX) return `${claim} ${first}`;
@@ -426,6 +446,40 @@ export function packBoards(entries, per, chars) {
     else boards.push([entry]);
   }
   return boards;
+}
+
+/**
+ * The composer's carousel copy, when the record carries it (David, 2026-10-17:
+ * "polishing tf out of the copy and not too much back and forth"). Compose
+ * writes each slide for the carousel: a headline, a line of about two
+ * sentences, and its outlets by name with a link from the section each, and
+ * David edits it. Copy cut from the edition is the fallback.
+ *
+ *   record.social.slides: [{ story: "cover" | words from a section headline,
+ *                            headline?, line, sources?: [{ name, url? }] }]
+ *
+ * A slide that matches no story on the deck is dropped with a warning.
+ */
+export function applySocialCopy(deck, slides, lang) {
+  for (const slide of slides ?? []) {
+    if (!slide || typeof slide.line !== 'string' || !slide.line.trim()) continue;
+    const want = String(slide.story ?? 'cover').trim().toLowerCase();
+    const target = want === 'cover' ? deck : deck.beats.find((b) => b.headline.toLowerCase().includes(want));
+    if (!target) {
+      console.warn(`WARNING: ${deck.date} ${lang}: social copy for "${slide.story}" matches no story on the deck. Dropped.`);
+      continue;
+    }
+    const headline = typeof slide.headline === 'string' && slide.headline.trim() ? slide.headline.trim() : null;
+    if (headline) target[target === deck ? 'hed' : 'headline'] = headline;
+    target.line = slide.line.trim();
+    if (Array.isArray(slide.sources) && slide.sources.length) {
+      target.links = slide.sources
+        .filter((s) => s && typeof s.name === 'string' && s.name.trim())
+        .map((s) => ({ name: s.name.trim(), ...(typeof s.url === 'string' ? { url: s.url } : {}) }));
+      target.sources = target.links.map((l) => l.name);
+    }
+    target.composed = true;
+  }
 }
 
 /**
@@ -513,10 +567,18 @@ function leadParagraph(section) {
  * `[Newsweek](…), [Bloomberg Law](…).` — and an anchored match without it read
  * that whole edition as having no sources at all. The period belongs to the
  * citation list rather than to the prose, so it goes out with the credits.
+ *
+ * And the run has to be credits: it follows a finished sentence, and every link
+ * in it reads as a name. The first live edition (2026-10-17) closed a paragraph
+ * on a linked clause, "…prepare claims; [the lawsuit remains unresolved and
+ * filing it did not stop the process](…cnn.com…)", which printed as a
+ * publication beside CNN's mark and cut the line off at "claims;". Prose like
+ * that stays prose, and its outlets come from inlineCites.
  */
 export function splitCredits(paragraph) {
+  const none = { prose: paragraph, sources: [], links: [] };
   const tail = paragraph.match(/((?:\[[^\]]+\]\([^)]*\)(?:\s*,\s*)?)+)\s*\.?\s*$/);
-  if (!tail) return { prose: paragraph, sources: [], links: [] };
+  if (!tail) return none;
 
   // The names are what the credit prints; the links ride along so the carousel
   // can set each publication's own mark beside its name (og.mjs, citeRow).
@@ -524,7 +586,57 @@ export function splitCredits(paragraph) {
     name: stripInlineMd(m[1]),
     url: m[2].trim(),
   }));
-  return { prose: paragraph.slice(0, tail.index).trim(), sources: links.map((l) => l.name), links };
+  const prose = paragraph.slice(0, tail.index).trim();
+  if (!/[.!?"”’)*]$/.test(prose) || !links.every((link) => readsAsName(link.name))) return none;
+  return { prose, sources: links.map((l) => l.name), links };
+}
+
+// A publication's name: short, capitalised, no closing punctuation.
+const readsAsName = (text) =>
+  text.length <= 40 && /^[A-Z0-9¿¡]/.test(text) && text.split(/\s+/).length <= 6 && !/[.;:,]$/.test(text);
+
+/**
+ * Every outlet a section cites, in order, one each: the credits after each
+ * paragraph's last sentence, and the outlets of the links inside its prose.
+ */
+function sectionCites(section) {
+  const seen = new Set();
+  const cites = [];
+  for (const paragraph of section.replace(/^## .+$/m, '').split('\n\n').map((p) => p.trim()).filter(Boolean)) {
+    const { prose, links } = splitCredits(paragraph);
+    for (const cite of [...inlineCites(prose), ...links]) {
+      const key = (cite.url && outletKey(cite.url)) || cite.name.toLowerCase();
+      if (seen.has(key)) continue;
+      seen.add(key);
+      cites.push(cite);
+    }
+  }
+  return cites;
+}
+
+/**
+ * The outlets behind a paragraph's inline links, in order, one per outlet, for
+ * a story whose edition credits nothing after the claim but links its phrases:
+ * "CNN reports that [the lawsuit remains unresolved](…)". Each is a guess from
+ * outlets.mjs (the name the sentence gives it, else the address), and the
+ * script flags it for David. The composer's own names (applySocialCopy) are the
+ * real ones.
+ */
+export function inlineCites(paragraph) {
+  const seen = new Set();
+  const cites = [];
+  // A name in the prose belongs to the next link only: "CNN reports [one](…),
+  // then [three](…reason.com…)" must not credit Reason's link to CNN.
+  let from = 0;
+  for (const m of paragraph.matchAll(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g)) {
+    const before = stripInlineMd(paragraph.slice(from, m.index));
+    from = m.index + m[0].length;
+    const key = outletKey(m[2]);
+    if (!key || seen.has(key)) continue;
+    seen.add(key);
+    cites.push(outletFor(m[2], before, stripInlineMd(m[1])));
+  }
+  return cites;
 }
 
 /**

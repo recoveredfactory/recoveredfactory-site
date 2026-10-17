@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { packBoards, storyLine } from './deck.mjs';
+import { applySocialCopy, buildDeck, dropAttribution, inlineCites, packBoards, splitCredits, storyLine } from './deck.mjs';
 
 // n five-character words: n * 5 - 1 characters.
 const filler = (n) => Array(n).fill('word').join(' ');
@@ -49,4 +49,74 @@ test('short calendar lines go up to four to a board, evened out, in date order',
 
 test('whole plain summaries pack by length instead', () => {
   assert.deepEqual(ids(packBoards(entries(400, 380, 300, 350, 330), 4, 820)), [[1, 2], [3, 4], [5]]);
+});
+
+// The first live edition, 2026-10-17: phrases linked inside the prose, no credits after the claim.
+const LIVE = {
+  cnn:
+    '**Six legal-service providers sued to stop accelerated immigration proceedings for unaccompanied children.** CNN reports that the plaintiffs say children have received sharply shortened schedules, sometimes without enough time to find lawyers or prepare claims; [the lawsuit remains unresolved and filing it did not stop the process](https://us.cnn.com/2026/10/15/politics/lawsuit).',
+  reason:
+    '**A federal judge dismissed the Justice Department’s challenge to New York City laws.** [The ruling leaves the city provisions in place](https://reason.com/volokh/2026/10/16/sanctuary/), though the government may appeal.',
+};
+
+test('a linked clause at the end of a paragraph is prose, not a credit', () => {
+  const { prose, links } = splitCredits(LIVE.cnn);
+  assert.equal(links.length, 0);
+  assert.equal(prose, LIVE.cnn);
+});
+
+test('house-style credits after the claim still count', () => {
+  const { prose, sources } = splitCredits('**USCIS cut the period to 10 days.** The rule takes effect Oct. 14. [Associated Press](https://apnews.com/a), [Fragomen](https://fragomen.com/b).');
+  assert.deepEqual(sources, ['Associated Press', 'Fragomen']);
+  assert.equal(prose, '**USCIS cut the period to 10 days.** The rule takes effect Oct. 14.');
+});
+
+test('inline links are credited as guesses: the name the prose gives, else the address', () => {
+  assert.deepEqual(inlineCites(LIVE.cnn).map((c) => [c.name, c.guessed]), [['CNN', true]]);
+  assert.deepEqual(inlineCites(LIVE.reason).map((c) => c.name), ['reason.com']);
+  assert.deepEqual(
+    inlineCites('[Modern Law Group explains that statutory argument](https://lawofficeimmigration.com/blog/x).').map((c) => c.name),
+    ['Modern Law Group'],
+  );
+  // One credit per outlet, in order.
+  assert.deepEqual(
+    inlineCites('CNN reports [one](https://www.cnn.com/a) and [two](https://edition.cnn.com/b), then [three](https://reason.com/c).').map((c) => c.name),
+    ['CNN', 'reason.com'],
+  );
+});
+
+test('a story slide credits every outlet its section cites, once each', () => {
+  const section = [
+    '## Lawsuit challenges accelerated cases for children',
+    LIVE.cnn,
+    'A second paragraph adds detail. [Associated Press](https://apnews.com/x), [CNN](https://www.cnn.com/y).',
+    'The Guardian reports that [more is coming](https://www.theguardian.com/z).',
+  ].join('\n\n');
+  const { deck } = buildDeck({ body: `${section}\n\n## Second story\n\n**A claim.** More.`, headline: 'Hed' }, '2026-10-17', [], null, 'en', { beats: 1 });
+  assert.deepEqual(deck.sources, ['CNN', 'Associated Press', 'The Guardian']);
+});
+
+test('a slide line drops "CNN reports that"; the cite row already says it', () => {
+  assert.equal(dropAttribution('CNN reports that the plaintiffs say children got shortened schedules.'), 'The plaintiffs say children got shortened schedules.');
+  assert.equal(dropAttribution('News From The States reported that DHS had not announced it.'), 'DHS had not announced it.');
+  assert.equal(dropAttribution('The plaintiffs say CNN reports that nothing.'), 'The plaintiffs say CNN reports that nothing.');
+});
+
+test('the composer\'s carousel copy replaces the cut copy, story by story', () => {
+  const deck = { date: '2026-10-17', hed: 'Edition hed', line: 'cut', beats: [{ headline: 'Lawsuit challenges accelerated cases for children', line: 'cut' }] };
+  applySocialCopy(
+    deck,
+    [
+      { story: 'cover', headline: 'TPS for Ukraine and Sudan runs out Monday', line: 'Written for the slide.', sources: [{ name: 'News From The States', url: 'https://newsfromthestates.com/a' }] },
+      { story: 'accelerated cases', line: 'Six providers sued.', sources: [{ name: 'CNN', url: 'https://cnn.com/b' }] },
+      { story: 'not on the deck', line: 'Dropped.' },
+    ],
+    'en',
+  );
+  assert.equal(deck.hed, 'TPS for Ukraine and Sudan runs out Monday');
+  assert.equal(deck.line, 'Written for the slide.');
+  assert.deepEqual(deck.sources, ['News From The States']);
+  assert.equal(deck.beats[0].headline, 'Lawsuit challenges accelerated cases for children');
+  assert.equal(deck.beats[0].line, 'Six providers sued.');
+  assert.deepEqual(deck.beats[0].links, [{ name: 'CNN', url: 'https://cnn.com/b' }]);
 });

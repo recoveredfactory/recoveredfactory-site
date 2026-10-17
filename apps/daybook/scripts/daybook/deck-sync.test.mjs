@@ -144,3 +144,30 @@ test('every slide og.mjs draws is uploaded, the 287(g) map included', () => {
   }
   for (const file of ['deck.json', 'cover.png', '01-cover.html']) assert.ok(!SLIDE_FILE.test(file), file);
 });
+
+test('the manifest carries each slide’s words and a script the desk can post as is', () => {
+  const manifest = buildManifest({
+    base: 'https://b.example',
+    prefix: '',
+    date: '2026-10-17',
+    lang: 'en',
+    revision: 2,
+    files: ['02-story.png', '01-cover.png', '03-upcoming.png'],
+    renderedAt: 't',
+    script: [
+      { file: '01-cover.png', kind: 'cover', headline: 'Refugees get 10 days', line: 'USCIS cut it.', sources: ['Associated Press'], image: 'Interim final rule' },
+      { file: '02-story.png', kind: 'story', headline: 'A lawsuit', line: 'Six providers sued.', sources: ['CNN'] },
+      { file: '03-upcoming.png', kind: 'calendar', headline: 'What’s coming', page: '1/1', entries: [{ date: 'Oct. 19', day: 'Monday', text: 'Extensions end.' }] },
+    ],
+  });
+  assert.equal(manifest.slides[0].text.headline, 'Refugees get 10 days');
+  assert.equal(manifest.slides[1].text.sources[0], 'CNN');
+  assert.equal(
+    manifest.script_md,
+    [
+      '**1. Refugees get 10 days** · [image](https://b.example/social/2026-10-17/en/r2/01-cover.png)\n[picked image: Interim final rule]\nUSCIS cut it.\nSources: Associated Press',
+      '**2. A lawsuit** · [image](https://b.example/social/2026-10-17/en/r2/02-story.png)\nSix providers sued.\nSources: CNN',
+      '**3. What’s coming** (1/1) · [image](https://b.example/social/2026-10-17/en/r2/03-upcoming.png)\n- Oct. 19, Monday: Extensions end.',
+    ].join('\n\n'),
+  );
+});
