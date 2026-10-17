@@ -972,68 +972,93 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
     letter-spacing: 0;
     color: ${GRAY.ink500};
   }
+  /* The entries share the board's height in equal rows, each centred on its
+     own line (2026-10-17). Short calendar lines left the bottom half of the
+     card empty, since the type is capped at 36-40px and nothing else could take
+     the room. */
+  .entries {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+  }
   .entry {
+    flex: 1 0 auto;
     display: flex;
     gap: ${fitpx(32)};
-    align-items: flex-start;
+    align-items: center;
+    padding-block: ${fitpx(24)};
   }
   /* The rule goes between entries and nowhere else. Set on every entry it also
      landed above the first one too, where it separates the entry from nothing.
      A separator that separates nothing is just another line. */
   .entry + .entry {
     border-top: 2px solid ${GRAY.rule};
-    padding-top: ${fitpx(32)};
   }
   /* Fixed width so the prose of every entry starts on the same left edge —
      a ragged text column is the fastest way to make a list look unconsidered.
-     It scales with the type, or a grown numeral outruns its column. */
+     It scales with the type, or a grown numeral outruns its column.
+
+     Wide and short since 2026-10-17: the chip stacked month, day, weekday and
+     countdown in a column 124px wide and about 200 tall, beside a short calendar
+     line that ran three lines across the rest of the card, "skinny and tall"
+     against "wide and short" (David). Now the numeral sits beside the month and
+     weekday, the countdown runs under them, and the line gets a narrower column
+     and more lines. The crimson bar over each chip is gone too: one rule between
+     entries, the gray hairline, is enough. */
   .chip {
-    flex: 0 0 ${fitpx(124)};
-    border-top: 5px solid ${CRIMSON};
-    padding-top: ${fitpx(14)};
+    flex: 0 0 ${fitpx(212)};
   }
-  .chip .month {
-    font-family: "Jost", sans-serif;
-    font-size: ${fitpx(32)};
-    font-weight: 500;
-    color: ${CRIMSON};
+  .chip .date {
+    display: flex;
+    align-items: center;
+    gap: ${fitpx(14)};
   }
   .chip .day {
     font-family: "Lora", serif;
-    font-size: ${fitpx(68)};
+    font-size: ${fitpx(76)};
     font-weight: 600;
-    line-height: 0.98;
+    line-height: 0.9;
     letter-spacing: -0.03em;
     color: ${GRAY.ink900};
   }
+  .chip .md {
+    display: flex;
+    flex-direction: column;
+    gap: ${fitpx(2)};
+    line-height: 1.05;
+  }
+  .chip .month {
+    font-family: "Jost", sans-serif;
+    font-size: ${fitpx(30)};
+    font-weight: 500;
+    color: ${CRIMSON};
+  }
   /* The weekday is the one thing the snapshot knows that a reader has to work
      out for themselves otherwise, and "a week Monday" is how people actually
-     hold a deadline. It closes the chip, so the date reads as a block rather
-     than as a numeral with a label stuck above it. */
+     hold a deadline. */
   .chip .dow {
     font-family: "Jost", sans-serif;
     font-size: ${fitpx(28)};
     font-weight: 400;
     color: ${GRAY.ink500};
-    margin-top: ${fitpx(6)};
   }
-  /* The countdown closes the chip, under the weekday: the date, and how much of
-     it is left, read as one block. It used to sit at the right end of a meta
-     row under the text, with the publisher at the left. The row went with the
-     move to two levels (2026-10-16): the publisher was a third level on every
-     entry, and on most boards it said FEDERAL REGISTER all the way down. */
+  /* The countdown closes the chip: the date, and how much of it is left, read
+     as one block. It used to sit at the right end of a meta row under the text,
+     with the publisher at the left. The row went with the move to two levels
+     (2026-10-16): the publisher was a third level on every entry, and on most
+     boards it said FEDERAL REGISTER all the way down. */
   .chip .countdown {
     font-family: "Jost", sans-serif;
-    font-size: ${fitpx(27)};
+    font-size: ${fitpx(28)};
     font-weight: 500;
     line-height: 1.2;
     color: ${CRIMSON};
-    margin-top: ${fitpx(8)};
+    margin-top: ${fitpx(10)};
   }
   .entry .body {
     flex: 1;
     min-width: 0;
-    padding-top: ${fitpx(12)};
+    padding-top: ${fitpx(2)};
   }
   .entry .text {
     font-family: "Jost", sans-serif;
@@ -1048,7 +1073,7 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
         ? `<p class="rubric paged"><span>${escapeHtml(UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en)}</span>` +
           `<span class="page">${page}/${pages}</span></p>`
         : `<p class="rubric">${escapeHtml(UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en)}</p>`) +
-        entries.map(upcomingEntry).join(''),
+        `<div class="entries">${entries.map(upcomingEntry).join('')}</div>`,
       { date },
     ),
     PORTRAIT,
@@ -1064,9 +1089,13 @@ const chipWord = (label) => escapeHtml(label ? label.charAt(0) + label.slice(1).
 const upcomingEntry = (entry) => `
     <div class="entry">
       <div class="chip">
-        <div class="month">${chipWord(entry.month)}</div>
-        <div class="day">${escapeHtml(entry.day)}</div>
-        ${entry.weekday ? `<div class="dow">${chipWord(entry.weekday)}</div>` : ''}
+        <div class="date">
+          <div class="day">${escapeHtml(entry.day)}</div>
+          <div class="md">
+            <div class="month">${chipWord(entry.month)}</div>
+            ${entry.weekday ? `<div class="dow">${chipWord(entry.weekday)}</div>` : ''}
+          </div>
+        </div>
         ${entry.countdown ? `<div class="countdown">${chipWord(entry.countdown)}</div>` : ''}
       </div>
       <div class="body">
@@ -1452,11 +1481,27 @@ const briefsSlide = ({ rubric, items, date }) =>
 // has nothing to fill with — six words will not reach the strip at any size a
 // closing plate should be set in. Top-anchored it reads as a slide missing its
 // second half; centred it reads as a plate, which is what it is.
-const closingSlide = ({ tagline, call, url, date }) =>
+// The maker's mark under the link: the Recovered Factory factory, set the way
+// the cite row sets a publication's mark beside its name. Committed beside this
+// file at 128px, cut from the site's factory drawing, because the site's own
+// images are gitignored and the deck renders on GitHub from a bare checkout.
+const RF_MARK = `data:image/png;base64,${readFileSync(join(here, 'rf-mark.png')).toString('base64')}`;
+
+const closingSlide = ({ tagline, url, made, date }) =>
   shell(
     portraitCss(date) + `\n  .stage { justify-content: center; }
   .hed { font-size: ${fitpx(coverHedSize(tagline))}; }
-  .nut { font-size: ${fitpx(44)}; margin-top: ${fitpx(26)}; }
+  .made {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-top: ${fitpx(64)};
+    font-family: "Jost", sans-serif;
+    font-size: 34px;
+    font-weight: 500;
+    color: ${GRAY.ink700};
+  }
+  .made img { width: 64px; height: 64px; }
   .url {
     font-family: "Jost", sans-serif;
     font-size: ${fitpx(46)};
@@ -1465,8 +1510,8 @@ const closingSlide = ({ tagline, call, url, date }) =>
     margin-top: ${fitpx(34)};
   }`,
     portraitFrame(
-      `<h2 class="hed">${escapeHtml(tagline)}</h2><p class="nut">${escapeHtml(call)}</p>` +
-        `<p class="url">${escapeHtml(url)}</p>`,
+      `<h2 class="hed">${escapeHtml(tagline)}</h2><p class="url">${escapeHtml(url)}</p>` +
+        `<p class="made"><img src="${RF_MARK}" alt="" /><span>${escapeHtml(made)}</span></p>`,
       // The one slide that drops the domain out of the chrome: it is the whole
       // point of this slide, set at display size, and printing it twice on one
       // card makes the big one look like a caption for the small one.
@@ -1475,20 +1520,21 @@ const closingSlide = ({ tagline, call, url, date }) =>
     PORTRAIT,
   );
 
-// The closing plate's copy: the tagline, then the plainest statement of the
-// offer, since this slide exists to be acted on rather than admired.
+// The closing plate's copy: the tagline, the link, and who makes it (David,
+// 2026-10-17: no "free, every weekday morning", "just the link", and under it
+// "(icon) A Recovered Factory project").
 //
-// The tagline is "Making sense of the spectacle." (David, 2026-10-17). It
-// replaces "We turn the spectacle … into evidence" here and on the site's front
-// page (src/lib/copy.ts). The Spanish is a draft awaiting David's approval.
+// The tagline is "Making sense of the spectacle." It replaces "We turn the
+// spectacle … into evidence" here and on the site's front page
+// (src/lib/copy.ts). The Spanish is a draft awaiting David's approval.
 //
 // It used to carry the terms off the landing card — "Monday–Friday", "English &
 // Spanish" — along the bottom. The languages came off because a deck is posted
 // per language, to an account that is already in that language, where the fact
 // answers a question nobody in the audience is asking.
 const CLOSING = {
-  en: { tagline: 'Making sense of the spectacle.', call: 'Free, every weekday morning.', url: HOME_URL },
-  es: { tagline: 'Para entender el espectáculo.', call: 'Gratis, cada mañana entre semana.', url: HOME_URL },
+  en: { tagline: 'Making sense of the spectacle.', url: HOME_URL, made: 'A Recovered Factory project' },
+  es: { tagline: 'Para entender el espectáculo.', url: HOME_URL, made: 'Un proyecto de Recovered Factory' },
 };
 
 // Build a language's carousel from the deck JSON that pull.mjs wrote.
