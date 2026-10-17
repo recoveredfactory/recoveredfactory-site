@@ -549,6 +549,8 @@ const SOURCE_NAMES = new Map([
   ['lat', 'Los Angeles Times'],
   ['ajc', 'The Atlanta Journal-Constitution'],
   ['laist', 'LAist'],
+  // The other way round: NPR's name is just NPR now, not National Public Radio.
+  ['national public radio', 'NPR'],
 ]);
 
 const sourceName = (name) => escapeHtml(SOURCE_NAMES.get(String(name).trim().toLowerCase()) ?? name);
