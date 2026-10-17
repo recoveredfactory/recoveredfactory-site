@@ -1,5 +1,5 @@
 import { json, redirect } from '@sveltejs/kit';
-import { tagSubscriberByName } from '$lib/kit';
+import { resolveTagId, subscribeToForm } from '$lib/kit';
 import { resolveTag } from '$lib/signup-tags';
 
 const FORM_IDS = {
@@ -21,6 +21,13 @@ const getSafeRedirect = (requestUrl: string, target: string | null) => {
   }
 };
 
+/**
+ * Subscribes through Kit's v3 API rather than the public web-form URL. The
+ * web form is what Kit guards with a recaptcha challenge, and the challenge
+ * ran in a cross-origin iframe that in-app browsers (Instagram, Facebook)
+ * could not be relied on to render. The API path has no guard, so the only
+ * bot check left is ours: the `website` honeypot below.
+ */
 export const POST = async ({ request }) => {
   const formData = await request.formData();
   const email = String(formData.get('email_address') ?? '').trim();
@@ -32,72 +39,48 @@ export const POST = async ({ request }) => {
     request.url,
     String(formData.get('redirect') ?? request.headers.get('referer') ?? ''),
   );
+  const wantsJson = request.headers.get('accept')?.includes('application/json');
 
   if (!email) {
     return json({ ok: false, error: 'Missing email address.' }, { status: 400 });
   }
 
-  const body = new URLSearchParams();
-  body.set('email_address', email);
-  body.set('fields[lang]', lang);
-
-  const response = await fetch(
-    `https://app.kit.com/forms/${FORM_IDS[lang]}/subscriptions`,
-    {
-      method: 'POST',
-      headers: {
-        'content-type': 'application/x-www-form-urlencoded',
-      },
-      body: body.toString(),
-    },
-  );
-
-  const responseText = await response.text();
-  const ok = response.ok || (response.status >= 300 && response.status < 400);
-  const guard =
-    responseText.includes('ck-recaptcha-challenge') ||
-    responseText.includes('guards-show') ||
-    responseText.includes('Please complete this security check');
-  const success =
-    responseText.includes('subscriptions-success') ||
-    responseText.includes('ckjs:guard:confirmed') ||
-    responseText.includes('Success! Now check your email');
-  const guardActionMatch = guard
-    ? responseText.match(/action="([^"]*\/forms\/guards\/[^"]+)"/)
-    : null;
-  const guardUrl = guardActionMatch
-    ? new URL(guardActionMatch[1], 'https://app.kit.com').href
-    : '';
-
-  if (!ok || guard || !success) {
-    return json(
-      {
-        ok: false,
-        guard,
-        error: guard ? 'Security check required.' : 'Sign up failed.',
-        guardUrl,
-      },
-      { status: guard ? 409 : 502 },
-    );
+  // Honeypot: the field is hidden from people, so anything in it came from a
+  // bot. Answer as if it worked so the bot has nothing to learn from.
+  if (String(formData.get('website') ?? '').trim()) {
+    if (wantsJson) return json({ ok: true, tagged: true });
+    throw redirect(303, new URL(redirectTarget, request.url).toString());
   }
 
-  // The form subscription has already landed at this point. A tagging failure
-  // means the reader is on the list but not segmented into this newsletter, so
-  // it is reported rather than thrown — signing up again would not fix it.
+  // The tag rides on the subscribe call itself, so there is no window where
+  // the reader is on the list but not segmented. If the tag id cannot be
+  // resolved, the signup still goes through untagged and says so — signing up
+  // again would not fix a Kit outage on the tag lookup.
+  let tagId: string | null = null;
   let tagged = true;
   if (tag) {
-    try {
-      await tagSubscriberByName({ email, tag });
-    } catch (err) {
-      tagged = false;
-      console.error('[signup] Failed to apply Kit tag', {
-        tag,
-        error: (err as Error)?.message,
-      });
-    }
+    tagId = await resolveTagId(tag).catch((err: Error) => {
+      console.error('[signup] Failed to resolve Kit tag', { tag, error: err?.message });
+      return null;
+    });
+    tagged = Boolean(tagId);
   }
 
-  const wantsJson = request.headers.get('accept')?.includes('application/json');
+  try {
+    await subscribeToForm({
+      formId: FORM_IDS[lang],
+      email,
+      fields: { lang },
+      tagIds: tagId ? [tagId] : [],
+    });
+  } catch (err) {
+    console.error('[signup] Kit form subscribe failed', {
+      lang,
+      error: (err as Error)?.message,
+    });
+    return json({ ok: false, error: 'Sign up failed.' }, { status: 502 });
+  }
+
   if (wantsJson) {
     return json({ ok: true, tagged });
   }
