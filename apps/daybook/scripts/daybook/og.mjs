@@ -621,7 +621,7 @@ const pickFigure = (pick) =>
 // sits centred in the room under the headline (David, 2026-10-16), so a short
 // story doesn't leave a hole between its prose and its sources.
 const storyBody = (nut, links, sources) =>
-  `<div class="body">${nut ? `<p class="nut">${escapeHtml(nut)}</p>` : ''}${citeRow(links, sources)}</div>`;
+  `<div class="body">${nut ? `<p class="nut">${keepForms(escapeHtml(nut))}</p>` : ''}${citeRow(links, sources)}</div>`;
 
 const portraitCss = (date) => `
   :root { --fit: 1; }
@@ -781,6 +781,9 @@ const portraitCss = (date) => `
     width: 44px;
     height: 44px;
     border-radius: 10px;
+  }
+  .nb {
+    white-space: nowrap;
   }`;
 
 // The cover: the lede, cut the same way every other story on the deck is cut.
@@ -972,83 +975,56 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
     letter-spacing: 0;
     color: ${GRAY.ink500};
   }
-  /* The entries share the board's height in equal rows (2026-10-17), each
-     row's content centred in it, so short calendar lines don't leave the bottom
-     of the card empty: the type is capped at 36-40px and nothing else could
-     take the room. */
-  .entries {
-    flex: 1 0 auto;
-    display: flex;
-    flex-direction: column;
-  }
+  /* Set like a printed datebook (2026-10-17, after three rounds of "still
+     weird"). Each entry is two columns on one baseline: the date, then the
+     line. The date is set at the line's size, in the serif, with the weekday
+     written out under it. There is no big numeral over small labels, the same
+     "big number, squinty text, red" that came off the 287(g) slide. Entries on
+     the same day share one date, and a hairline marks each new day. The rhythm
+     runs from the top, not in stretched rows, so the space between a rule and
+     its entry is the same everywhere. What's left at the foot, the fit takes
+     into the spacing. */
   .entry {
-    flex: 1 0 auto;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    padding-block: ${fitpx(22)};
+    display: grid;
+    /* Fixed, not fitted: the dates are capped at 40px, so a column that grew
+       with the fit opened a gutter wider than the dates. 200px holds "Sept. 30",
+       "Wednesday" and "miércoles". */
+    grid-template-columns: 200px 1fr;
+    column-gap: 36px;
+    align-items: baseline;
+    padding-block: ${fitpx(28)};
   }
-  /* The rule goes between entries and nowhere else. Set on every entry it also
-     landed above the first one too, where it separates the entry from nothing.
-     A separator that separates nothing is just another line. One rule: the
-     crimson bar that topped each chip came off (David, 2026-10-17). */
-  .entry + .entry {
+  .entry:first-child {
+    padding-top: ${fitpx(10)};
+  }
+  .entry.same {
+    padding-top: 0;
+  }
+  /* The rule goes between days and nowhere else. One rule: the crimson bar
+     that once topped each date came off (David, 2026-10-17). */
+  .entry + .entry:not(.same) {
     border-top: 2px solid ${GRAY.rule};
   }
-  .entry .row {
-    display: flex;
-    align-items: flex-start;
-    gap: ${fitpx(30)};
-  }
-  /* The date reads left to right as it's said: month and weekday, then the day
-     (David, 2026-10-17: "month + weekday need to go before the number"). Fixed
-     width so the prose of every entry starts on the same left edge — a ragged
-     text column is the fastest way to make a list look unconsidered. It scales
-     with the type, or a grown numeral outruns its column. */
-  .chip {
-    flex: 0 0 ${fitpx(158)};
-    display: flex;
-    align-items: flex-start;
-    gap: ${fitpx(12)};
-  }
-  .chip .md {
-    display: flex;
-    flex-direction: column;
-    gap: ${fitpx(2)};
-    padding-top: ${fitpx(5)};
-    line-height: 1.05;
-  }
-  .chip .month {
-    font-family: "Jost", sans-serif;
-    font-size: ${fitpx(30)};
-    font-weight: 500;
-    color: ${CRIMSON};
+  .when .date {
+    font-family: "Lora", serif;
+    font-size: ${fitcap(ENTRY_TEXT_SIZE, ENTRY_TEXT_MAX)};
+    font-weight: 600;
+    line-height: 1.34;
+    letter-spacing: -0.01em;
+    color: ${GRAY.ink900};
   }
   /* The weekday is the one thing the snapshot knows that a reader has to work
      out for themselves otherwise, and "a week Monday" is how people actually
-     hold a deadline. */
-  .chip .dow {
+     hold a deadline. On the day itself it gives way to "Today", the one
+     countdown kept ("only TODAY matters", David) and the only red on the board. */
+  .when .dow {
     font-family: "Jost", sans-serif;
-    font-size: ${fitpx(28)};
+    font-size: ${fitcap(32, 34)};
     font-weight: 400;
+    line-height: 1.3;
     color: ${GRAY.ink500};
   }
-  .chip .day {
-    font-family: "Lora", serif;
-    font-size: ${fitpx(64)};
-    font-weight: 600;
-    line-height: 0.92;
-    letter-spacing: -0.03em;
-    color: ${GRAY.ink900};
-  }
-  .entry .body {
-    flex: 1;
-    min-width: 0;
-  }
-  /* Only the day itself gets a countdown, and it leads the line ("only TODAY
-     matters", David, 2026-10-17). "In 2 days" under every date was furniture
-     a reader could work out from the weekday. */
-  .entry .today {
+  .when .dow.today {
     font-weight: 500;
     color: ${CRIMSON};
   }
@@ -1065,35 +1041,45 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
         ? `<p class="rubric paged"><span>${escapeHtml(UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en)}</span>` +
           `<span class="page">${page}/${pages}</span></p>`
         : `<p class="rubric">${escapeHtml(UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en)}</p>`) +
-        `<div class="entries">${entries.map(upcomingEntry).join('')}</div>`,
+        `<div class="entries">${entries.map((entry, i) => upcomingEntry(entry, lang, i > 0 && entries[i - 1].iso === entry.iso)).join('')}</div>`,
       { date },
     ),
     PORTRAIT,
   );
 
-// upcoming.mjs labels the chip in capitals ("OCT", "WED", "IN 3 DAYS"), and
-// pull.mjs reads them that way. The deck sets them in sentence case: "Oct",
-// "Wed", "In 3 days", "Mañana".
-const chipWord = (label) => escapeHtml(label ? label.charAt(0) + label.slice(1).toLowerCase() : '');
+// Form and document numbers stay on one line: "EOIR-42A" broke after the hyphen,
+// leaving "42A" to start a line on its own. Applied to escaped text.
+const keepForms = (html) => html.replace(/\b([A-Z]{1,5}-\d[\dA-Z-]*)/g, '<span class="nb">$1</span>');
 
-// upcoming.mjs labels the day of as "TODAY" / "HOY"; that is the one countdown
+// The date as the house writes it (AP: "Oct. 14", "Sept. 30", "March 3"; in
+// Spanish "14 oct."), and the weekday written out. upcoming.mjs's own labels
+// are capital abbreviations for pull.mjs; the deck sets its own from the ISO
+// date.
+const calendarDate = (iso, lang) => {
+  const [, m, d] = iso.split('-').map(Number);
+  return lang === 'es' ? `${d} ${MONTHS_SHORT.es[m - 1]}` : `${MONTHS_SHORT.en[m - 1]} ${d}`;
+};
+const weekdayName = (iso, lang) =>
+  new Date(`${iso}T12:00:00Z`).toLocaleDateString(lang === 'es' ? 'es-ES' : 'en-US', { weekday: 'long', timeZone: 'UTC' });
+const TODAY_WORD = { en: 'Today', es: 'Hoy' };
+
+// upcoming.mjs labels the day of as "TODAY" / "HOY". That's the one countdown
 // the deck keeps.
 const isToday = (entry) => /^(today|hoy)$/i.test(entry.countdown ?? '');
 
-const upcomingEntry = (entry) => `
-    <div class="entry">
-      <div class="row">
-        <div class="chip">
-          <div class="md">
-            <div class="month">${chipWord(entry.month)}</div>
-            ${entry.weekday ? `<div class="dow">${chipWord(entry.weekday)}</div>` : ''}
-          </div>
-          <div class="day">${escapeHtml(entry.day)}</div>
-        </div>
-        <div class="body">
-          <p class="text">${isToday(entry) ? `<span class="today">${chipWord(entry.countdown)}</span> ` : ''}${escapeHtml(entry.text)}</p>
-        </div>
-      </div>
+// `same`: the entry falls on the same day as the one before it on the board,
+// so it carries no date of its own and no rule above it.
+const upcomingEntry = (entry, lang, same) => `
+    <div class="entry${same ? ' same' : ''}">
+      <div class="when">${
+        same
+          ? ''
+          : `<div class="date">${escapeHtml(calendarDate(entry.iso, lang))}</div>` +
+            (isToday(entry)
+              ? `<div class="dow today">${TODAY_WORD[lang] ?? TODAY_WORD.en}</div>`
+              : `<div class="dow">${escapeHtml(weekdayName(entry.iso, lang))}</div>`)
+      }</div>
+      <p class="text">${keepForms(escapeHtml(entry.text))}</p>
     </div>`;
 
 // The 287(g) map: every day, between the stories and the calendar (David,
@@ -1161,35 +1147,30 @@ const shortDay = (iso, lang) => {
 };
 const dayAfter = (iso) => new Date(Date.parse(iso) + 864e5).toISOString().slice(0, 10);
 
-// Past this many days without a change, the line says so: "and none in the 23
-// days since". The silence is the news then.
-const TRACKER_QUIET_DAYS = 7;
-
 // The slide is named for the tracker, like a column (David, 2026-10-17):
-// "287(g) Watch", then the count, then the states in smaller type. The big
-// crimson day counter came off ("Red (1) is weird"); the quiet clause carries the
-// days without a change instead.
-const TRACKER_STATES_SHOWN = 4;
+// "287(g) Watch", then the count, then the days since ICE last changed its list.
+// That counter is the daily drama (ICE's list goes quiet for weeks while
+// agencies keep signing), so it stays, but as a line at reading size with the
+// number in bold. It started as a big crimson numeral beside small text, which
+// David found "weird": "big number, squinty text, red". The states line came off
+// too; the map shows where.
 const agencies = (n, lang) =>
   lang === 'es' ? `${n} ${n === 1 ? 'agencia nueva' : 'agencias nuevas'}` : `${n} new ${n === 1 ? 'agency' : 'agencies'}`;
 const TRACKER_COPY = {
   en: {
     title: '287(g) Watch',
-    line: (n, a, b, quiet) => `${agencies(n, 'en')} from ${a} to ${b}${quiet ? `, and none in the ${quiet} days since` : ''}`,
-    states: (shown, more) =>
-      `States: ${shown.map(([st, c]) => `${STATE_NAMES[st] ?? st} (+${c})`).join(', ')}` +
-      (more ? ` and ${more} more` : ''),
+    line: (n, a, b) => `${agencies(n, 'en')} from ${a} to ${b}`,
+    since: (d) =>
+      d === 0 ? 'ICE changed its list <b>today</b>' : `<b>${d} ${d === 1 ? 'day' : 'days'}</b> since ICE last changed its list`,
     fresh: 'New agreement',
     old: 'Existing agreement',
     caption: 'ICE’s public 287(g) list as tracked daily by 287(g) Watch. Agencies sit at their county or town. Lower 48 shown.',
   },
   es: {
     title: '287(g) Watch',
-    line: (n, a, b, quiet) =>
-      `${agencies(n, 'es')} del ${a} al ${b}${quiet ? `, y ninguna en los ${quiet} días desde entonces` : ''}`,
-    states: (shown, more) =>
-      `Estados: ${shown.map(([st, c]) => `${STATE_NAMES_ES[st] ?? st} (+${c})`).join(', ')}` +
-      (more ? ` y ${more} más` : ''),
+    line: (n, a, b) => `${agencies(n, 'es')} del ${a} al ${b}`,
+    since: (d) =>
+      d === 0 ? 'ICE cambió su lista <b>hoy</b>' : `<b>${d} ${d === 1 ? 'día' : 'días'}</b> desde el último cambio de ICE a su lista`,
     fresh: 'Acuerdo nuevo',
     old: 'Acuerdo existente',
     caption: 'La lista pública de 287(g) de ICE, seguida a diario por 287(g) Watch. Cada agencia aparece en su condado o ciudad. Se muestran los 48 estados contiguos.',
@@ -1222,10 +1203,7 @@ const trackerMap = (tracker) => {
 
 const trackerSlide = ({ tracker, lang, date }) => {
   const copy = TRACKER_COPY[lang] ?? TRACKER_COPY.en;
-  const quiet = tracker.since >= TRACKER_QUIET_DAYS ? tracker.since : 0;
-  const line = copy.line(tracker.added, shortDay(dayAfter(tracker.start), lang), shortDay(tracker.last, lang), quiet);
-  const states = tracker.states ?? tracker.top;
-  const stateLine = copy.states(states.slice(0, TRACKER_STATES_SHOWN), Math.max(0, states.length - TRACKER_STATES_SHOWN));
+  const line = copy.line(tracker.added, shortDay(dayAfter(tracker.start), lang), shortDay(tracker.last, lang));
   return shell(
     portraitCss(date) +
       `
@@ -1239,14 +1217,17 @@ const trackerSlide = ({ tracker, lang, date }) => {
     color: ${GRAY.ink900};
     text-wrap: balance;
   }
-  .states {
-    margin-top: ${fitpx(16)};
+  .since {
+    margin-top: ${fitpx(12)};
     font-family: "Jost", sans-serif;
-    font-size: ${fitcap(40, 42)};
+    font-size: ${fitcap(42, 44)};
     font-weight: 400;
-    line-height: 1.34;
+    line-height: 1.3;
     color: ${GRAY.ink700};
-    text-wrap: pretty;
+  }
+  .since b {
+    font-weight: 600;
+    color: ${GRAY.ink900};
   }
   .figure { margin-top: ${fitpx(30)}; }
   .mapbox { line-height: 0; }
@@ -1285,7 +1266,7 @@ const trackerSlide = ({ tracker, lang, date }) => {
     portraitFrame(
       `<h2 class="hed">${escapeHtml(copy.title)}</h2>` +
         `<p class="count">${escapeHtml(line)}</p>` +
-        `<p class="states">${escapeHtml(stateLine)}</p>` +
+        `<p class="since">${copy.since(tracker.since)}</p>` +
         `<div class="figure">` +
         `<div class="mapbox">${trackerMap(tracker)}</div>` +
         `<div class="legend"><span><i style="background:${CRIMSON}"></i>${escapeHtml(copy.fresh)}</span>` +
