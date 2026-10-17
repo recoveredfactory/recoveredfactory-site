@@ -1602,7 +1602,9 @@ const plain = (html) =>
     .replace(/&#39;/g, "'")
     .replace(/\s+/g, ' ')
     .trim();
-const citeNames = (links, sources) => (links?.length ? links.map((l) => l.name) : sources ?? []).map(sourceLabel);
+// A guessed outlet (outlets.mjs) is marked "?" in the script, for David to fix.
+const citeNames = (links, sources) =>
+  links?.length ? links.map((l) => `${sourceLabel(l.name)}${l.guessed ? ' (?)' : ''}`) : (sources ?? []).map(sourceLabel);
 const storyScript = (kind, headline, line, links, sources, pick) => ({
   kind,
   headline,

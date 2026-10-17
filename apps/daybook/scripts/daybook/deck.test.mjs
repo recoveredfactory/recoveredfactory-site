@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { buildDeck, inlineCites, packBoards, splitCredits, storyLine } from './deck.mjs';
+import { applySocialCopy, buildDeck, dropAttribution, inlineCites, packBoards, splitCredits, storyLine } from './deck.mjs';
 
 // n five-character words: n * 5 - 1 characters.
 const filler = (n) => Array(n).fill('word').join(' ');
@@ -71,18 +71,17 @@ test('house-style credits after the claim still count', () => {
   assert.equal(prose, '**USCIS cut the period to 10 days.** The rule takes effect Oct. 14.');
 });
 
-test('inline links are credited to their outlets: the house name, the prose name, or the address', () => {
-  assert.deepEqual(inlineCites(LIVE.cnn).map((c) => c.name), ['CNN']);
-  assert.deepEqual(inlineCites(LIVE.reason).map((c) => c.name), ['Reason']);
+test('inline links are credited as guesses: the name the prose gives, else the address', () => {
+  assert.deepEqual(inlineCites(LIVE.cnn).map((c) => [c.name, c.guessed]), [['CNN', true]]);
+  assert.deepEqual(inlineCites(LIVE.reason).map((c) => c.name), ['reason.com']);
   assert.deepEqual(
-    inlineCites('Grand Valley Ledger reports that the county [signed on](https://gvledger-unknown.example/a).').map((c) => c.name),
-    ['Grand Valley Ledger'],
+    inlineCites('[Modern Law Group explains that statutory argument](https://lawofficeimmigration.com/blog/x).').map((c) => c.name),
+    ['Modern Law Group'],
   );
-  assert.deepEqual(inlineCites('The county [signed on](https://gvledger-unknown.example/a).').map((c) => c.name), ['gvledger-unknown.example']);
   // One credit per outlet, in order.
   assert.deepEqual(
-    inlineCites('[One](https://www.cnn.com/a) and [two](https://edition.cnn.com/b), then [three](https://reason.com/c).').map((c) => c.name),
-    ['CNN', 'Reason'],
+    inlineCites('CNN reports [one](https://www.cnn.com/a) and [two](https://edition.cnn.com/b), then [three](https://reason.com/c).').map((c) => c.name),
+    ['CNN', 'reason.com'],
   );
 });
 
@@ -97,11 +96,27 @@ test('a story slide credits every outlet its section cites, once each', () => {
   assert.deepEqual(deck.sources, ['CNN', 'Associated Press', 'The Guardian']);
 });
 
-test('a link that names its outlet, and government sites by their institution', () => {
-  assert.deepEqual(
-    inlineCites('[Modern Law Group explains that statutory argument](https://lawofficeimmigration.com/blog/x).').map((c) => c.name),
-    ['Modern Law Group'],
+test('a slide line drops "CNN reports that"; the cite row already says it', () => {
+  assert.equal(dropAttribution('CNN reports that the plaintiffs say children got shortened schedules.'), 'The plaintiffs say children got shortened schedules.');
+  assert.equal(dropAttribution('News From The States reported that DHS had not announced it.'), 'DHS had not announced it.');
+  assert.equal(dropAttribution('The plaintiffs say CNN reports that nothing.'), 'The plaintiffs say CNN reports that nothing.');
+});
+
+test('the composer\'s carousel copy replaces the cut copy, story by story', () => {
+  const deck = { date: '2026-10-17', hed: 'Edition hed', line: 'cut', beats: [{ headline: 'Lawsuit challenges accelerated cases for children', line: 'cut' }] };
+  applySocialCopy(
+    deck,
+    [
+      { story: 'cover', headline: 'TPS for Ukraine and Sudan runs out Monday', line: 'Written for the slide.', sources: [{ name: 'News From The States', url: 'https://newsfromthestates.com/a' }] },
+      { story: 'accelerated cases', line: 'Six providers sued.', sources: [{ name: 'CNN', url: 'https://cnn.com/b' }] },
+      { story: 'not on the deck', line: 'Dropped.' },
+    ],
+    'en',
   );
-  assert.deepEqual(inlineCites('Senators sought [an extension](https://www.cortezmasto.senate.gov/letter.pdf).').map((c) => c.name), ['U.S. Senate']);
-  assert.deepEqual(inlineCites('The [ruling](https://cdn.ca9.uscourts.gov/opinions/x.pdf) stands.').map((c) => c.name), ['Ninth Circuit']);
+  assert.equal(deck.hed, 'TPS for Ukraine and Sudan runs out Monday');
+  assert.equal(deck.line, 'Written for the slide.');
+  assert.deepEqual(deck.sources, ['News From The States']);
+  assert.equal(deck.beats[0].headline, 'Lawsuit challenges accelerated cases for children');
+  assert.equal(deck.beats[0].line, 'Six providers sued.');
+  assert.deepEqual(deck.beats[0].links, [{ name: 'CNN', url: 'https://cnn.com/b' }]);
 });

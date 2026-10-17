@@ -42,7 +42,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { buildDeck, packBoards, trimToClause } from './deck.mjs';
+import { applySocialCopy, buildDeck, packBoards, trimToClause } from './deck.mjs';
 import { loadPick, placePick } from './pick.mjs';
 import { tracker287g } from './tracker287g.mjs';
 import { entryFrom } from './upcoming.mjs';
@@ -156,6 +156,9 @@ for (const record of records) {
   // A lede with no bolded claim leaves the cover a hed alone. The description
   // is the edition's own dek, so it is the next-best line to set under it.
   if (!deck.nut && record.description) deck.nut = record.description;
+
+  // The composer's carousel copy, where the record has it (deck.mjs).
+  applySocialCopy(deck, record.social?.slides, lang);
 
   deck.upcoming = calendar(record.upcoming ?? [], lang);
   if (tracker) deck.tracker = tracker;
