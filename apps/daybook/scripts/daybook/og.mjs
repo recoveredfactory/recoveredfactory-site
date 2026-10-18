@@ -635,10 +635,20 @@ const pickFigure = (pick) =>
 
 // Under the headline, the line and its cite travel as one block. With a picked
 // image the order is headline, image, then this block; without one, the block
-// sits centred in the room under the headline (David, 2026-10-16), so a short
-// story doesn't leave a hole between its prose and its sources.
-const storyBody = (nut, links, sources) =>
-  `<div class="body">${nut ? `<p class="nut">${keepForms(escapeHtml(nut))}</p>` : ''}${citeRow(links, sources)}</div>`;
+// follows the headline directly (David, 2026-10-17: "stop the vertical
+// centering and just put underneath the headline"). It was centred in the room
+// under the headline from 2026-10-16.
+// The line keeps the paragraph breaks it was written with (David, 2026-10-17):
+// a blank line starts a new paragraph, a single newline breaks the line.
+const lineParagraphs = (text) =>
+  String(text)
+    .split(/\n\s*\n/)
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => `<p class="nut">${keepForms(escapeHtml(p)).replace(/\s*\n\s*/g, '<br />')}</p>`)
+    .join('');
+
+const storyBody = (nut, links, sources) => `<div class="body">${nut ? lineParagraphs(nut) : ''}${citeRow(links, sources)}</div>`;
 
 const portraitCss = (date) => `
   :root { --fit: 1; }
@@ -728,21 +738,18 @@ const portraitCss = (date) => `
     margin-top: ${fitpx(30)};
     text-wrap: pretty;
   }
-  /* See storyBody. margin-block: auto centres the block in whatever room the
-     headline leaves; after a picked image it follows straight on.
-     The padding sets it at the optical centre rather than the measured one,
-     about 36px high: a block centred exactly reads as sitting low, and the
-     story's slides looked like they had slumped. */
+  /* See storyBody: straight under the headline, or under the picked image. */
   .body {
-    margin-block: auto;
-    padding-bottom: 72px;
+    margin-top: ${fitpx(34)};
   }
   .pick + .body {
-    margin-block: ${fitpx(46)} 0;
-    padding-bottom: 0;
+    margin-top: ${fitpx(46)};
   }
   .body .nut {
     margin-top: 0;
+  }
+  .body .nut + .nut {
+    margin-top: ${fitpx(20)};
   }
   .pick {
     margin-top: ${fitpx(38)};
