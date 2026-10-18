@@ -18,7 +18,7 @@
 // The contract is news-ingester's docs/EDITIONS.md. In short: the index
 // (editions/index.json) says what is published and at which revision; a deck
 // is rendered from the records and written to
-// social/{date}/{lang}/r{revision}/{NN}-{name}.png, immutable; and LAST,
+// social/{date}/{lang}/r{revision}/{NN}-{name}.jpg, immutable; and LAST,
 // once every slide is up, social/{date}/{lang}/deck.json points at them.
 //
 // A language is rendered only when its deck.json is missing or carries an
@@ -85,10 +85,12 @@ export const slideKey = (prefix, date, lang, revision, file) =>
  * revision, and which of them need a render. `manifests` maps `date/lang` to
  * the deck.json found (null when it answered 403/404).
  */
-// A slide og.mjs draws: `{NN}-{name}.png`. Names can carry digits: the 287(g)
-// slide is `05-287g.png`, which a letters-only pattern dropped from the upload
-// while it still rendered (caught in a dry run, 2026-10-17).
-export const SLIDE_FILE = /^\d+-[a-z0-9]+\.png$/;
+// A slide og.mjs draws: `{NN}-{name}.jpg` (PNG until 2026-10-17, still read).
+// Names can carry digits: the 287(g) slide is `05-287g.jpg`, which a
+// letters-only pattern dropped from the upload while it still rendered (caught
+// in a dry run, 2026-10-17).
+export const SLIDE_FILE = /^\d+-[a-z0-9]+\.(?:png|jpg)$/;
+const slideType = (file) => (file.endsWith('.jpg') ? 'image/jpeg' : 'image/png');
 
 // `rerender` redraws decks that are already current, for a design change to
 // reach an edition that's already out. Posting is unaffected: a deck with a
@@ -157,7 +159,7 @@ export function postable(planned, rendered, posted, langs, broadcast = {}, optio
 export function buildManifest({ base, prefix, date, lang, revision, files, renderedAt, script = [] }) {
   const said = new Map(script.map(({ file, ...text }) => [file, text]));
   const slides = [...files].sort().map((file) => ({
-    name: file.replace(/^\d+-/, '').replace(/\.png$/, ''),
+    name: file.replace(/^\d+-/, '').replace(/\.(?:png|jpg)$/, ''),
     url: `${base.replace(/\/+$/, '')}/${slideKey(prefix, date, lang, revision, file)}`,
     ...(said.has(file) ? { text: said.get(file) } : {}),
   }));
@@ -274,7 +276,7 @@ async function main() {
 
         // Every slide first; the manifest only once they have all landed.
         for (const file of files) {
-          upload(join(dir, file), bucket, slideKey(prefix, date, lang, revision, file), 'image/png', SLIDE_CACHE);
+          upload(join(dir, file), bucket, slideKey(prefix, date, lang, revision, file), slideType(file), SLIDE_CACHE);
         }
         const manifestPath = join(work, `deck-${date}-${lang}.json`);
         writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));

@@ -476,33 +476,39 @@ const FIT_SCRIPT = `
 // Reset 2026-10-16 for two levels: the line under the headline is the only prose
 // on a story slide now, so it is set larger than any nut was, and the headline a
 // little under where the fitter used to take it.
+// A step up all round on 2026-10-17 (David: "given the aspect ratio we also
+// need to bump up the font size a bit all around"). 4:5 is the tallest
+// Instagram's publishing API takes, so the room is fixed and the type has to
+// carry more of the card.
 const coverHedSize = (text) => {
   const n = text.length;
-  if (n <= 40) return 80;
-  if (n <= 70) return 74;
-  if (n <= 100) return 66;
-  if (n <= 140) return 58;
-  return 50;
+  if (n <= 40) return 86;
+  if (n <= 70) return 80;
+  if (n <= 100) return 72;
+  if (n <= 140) return 62;
+  return 54;
 };
 
 const beatHedSize = (text) => {
   const n = text.length;
-  if (n <= 50) return 70;
-  if (n <= 90) return 64;
-  if (n <= 130) return 56;
-  return 50;
+  if (n <= 50) return 76;
+  if (n <= 90) return 70;
+  if (n <= 130) return 60;
+  return 54;
 };
 
 // The line is about two sentences now (deck.mjs storyLine), in the regular
 // weight (David, 2026-10-17: "lower the size and weight of the content font").
-// 40-44px: he tried 36-40 and 48 and settled between. On a phone the canvas
-// shows at about a third of its size, so 44px is about 16pt. Readers over 40 at
-// arm's length need about 17pt, and the August ads found that audience.
+// He tried 36-40 and 48 and settled on 40-44, then a step up with everything
+// else (43-47) once 4:5 was confirmed as the tallest card Instagram's API takes.
+// On a phone the canvas shows at about a third of its size, so 47px is about
+// 17pt: what readers over 40 need at arm's length, and the August ads found
+// that audience.
 const nutSize = (text) => {
   const n = text.length;
-  if (n <= 240) return 44;
-  if (n <= 340) return 42;
-  return 40;
+  if (n <= 240) return 47;
+  if (n <= 340) return 45;
+  return 43;
 };
 const lineFont = (text) => fitcap(nutSize(text), nutSize(text) * LINE_GROWTH);
 
@@ -678,7 +684,7 @@ const portraitCss = (date) => `
      as the Bauhaus used it. The domain is set as it's typed. */
   .lockup {
     font-family: "Jost", sans-serif;
-    font-size: 34px;
+    font-size: 36px;
     font-weight: 500;
     letter-spacing: -0.005em;
     white-space: nowrap;
@@ -688,7 +694,7 @@ const portraitCss = (date) => `
      wordmark lead. */
   .date {
     font-family: "Jost", sans-serif;
-    font-size: ${dateSize(date) + 2}px;
+    font-size: ${dateSize(date) + 4}px;
     font-weight: 400;
     white-space: nowrap;
     color: ${GRAY.ink700};
@@ -788,7 +794,7 @@ const portraitCss = (date) => `
   .pick figcaption {
     margin-top: 12px;
     font-family: "Jost", sans-serif;
-    font-size: 27px;
+    font-size: 29px;
     font-weight: 400;
     line-height: 1.3;
     color: ${GRAY.ink500};
@@ -806,13 +812,13 @@ const portraitCss = (date) => `
     align-items: center;
     gap: 12px;
     font-family: "Jost", sans-serif;
-    font-size: 30px;
+    font-size: 32px;
     font-weight: 500;
     color: ${GRAY.ink700};
   }
   .cite img {
-    width: 44px;
-    height: 44px;
+    width: 48px;
+    height: 48px;
     border-radius: 10px;
   }
   .nb {
@@ -969,8 +975,8 @@ const UPCOMING_LABEL = { en: 'What’s coming', es: 'Lo que viene' };
 // too small on a phone. Then 36-40 (David, 2026-10-17), three short calendar
 // lines to a board (record-deck.mjs). 38 is the step, and the fit may grow it to
 // 40 and no further.
-const ENTRY_TEXT_SIZE = 38;
-const ENTRY_TEXT_MAX = 40;
+const ENTRY_TEXT_SIZE = 41;
+const ENTRY_TEXT_MAX = 43;
 
 const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
   shell(
@@ -985,7 +991,7 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
      with, rather than as tracked capitals in the sans. */
   .rubric {
     font-family: "Lora", serif;
-    font-size: ${fitcap(54, 54 * HED_GROWTH)};
+    font-size: ${fitcap(58, 58 * HED_GROWTH)};
     font-weight: 600;
     line-height: 1.12;
     letter-spacing: -0.02em;
@@ -1020,9 +1026,9 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
   .entry {
     display: grid;
     /* Fixed, not fitted: the dates are capped at 40px, so a column that grew
-       with the fit opened a gutter wider than the dates. 200px holds "Sept. 30",
+       with the fit opened a gutter wider than the dates. 214px holds "Sept. 30",
        "Wednesday" and "miércoles". */
-    grid-template-columns: 200px 1fr;
+    grid-template-columns: 214px 1fr;
     column-gap: 36px;
     align-items: baseline;
     padding-block: ${fitpx(28)};
@@ -1052,7 +1058,7 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
      countdown kept ("only TODAY matters", David) and the only red on the board. */
   .when .dow {
     font-family: "Jost", sans-serif;
-    font-size: ${fitcap(32, 34)};
+    font-size: ${fitcap(34, 36)};
     font-weight: 400;
     line-height: 1.3;
     color: ${GRAY.ink500};
@@ -1261,7 +1267,7 @@ const trackerSlide = ({ tracker, lang, date }) => {
      room for a map that can lose 15% of its height without anyone missing it.
      The map's box starts at its full 540px and shrinks into whatever height
      the words leave. */
-  .hed { font-size: 58px; flex-shrink: 0; }
+  .hed { font-size: 62px; flex-shrink: 0; }
   /* One size for the whole list, the lead of each item in bold, a hairline
      between items: the calendar's system, so the two data slides read as a
      pair. */
@@ -1270,7 +1276,7 @@ const trackerSlide = ({ tracker, lang, date }) => {
     margin-top: 22px;
     list-style: none;
     font-family: "Jost", sans-serif;
-    font-size: 40px;
+    font-size: 43px;
     font-weight: 400;
     line-height: 1.3;
     color: ${GRAY.ink700};
@@ -1311,7 +1317,7 @@ const trackerSlide = ({ tracker, lang, date }) => {
     gap: 8px 40px;
     margin-top: 16px;
     font-family: "Jost", sans-serif;
-    font-size: 30px;
+    font-size: 32px;
     font-weight: 400;
     color: ${GRAY.ink700};
   }
@@ -1333,7 +1339,7 @@ const trackerSlide = ({ tracker, lang, date }) => {
     flex-shrink: 0;
     margin-top: 12px;
     font-family: "Jost", sans-serif;
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 400;
     line-height: 1.3;
     color: ${GRAY.ink500};
@@ -1549,14 +1555,14 @@ const closingSlide = ({ tagline, url, made, date }) =>
     gap: 16px;
     margin-top: ${fitpx(64)};
     font-family: "Jost", sans-serif;
-    font-size: 34px;
+    font-size: 36px;
     font-weight: 500;
     color: ${GRAY.ink700};
   }
-  .made img { width: 64px; height: 64px; }
+  .made img { width: 68px; height: 68px; }
   .url {
     font-family: "Jost", sans-serif;
-    font-size: ${fitpx(46)};
+    font-size: ${fitpx(50)};
     font-weight: 500;
     color: ${GRAY.ink900};
     margin-top: ${fitpx(34)};
@@ -1744,7 +1750,9 @@ const carouselSlides = (lang) => {
   ];
 
   return slides.map((slide, i) => ({
-    file: `${dir}/${String(i + 1).padStart(2, '0')}-${slide.name}.png`,
+    // JPEG, not PNG (2026-10-17): Instagram's publishing API names JPEG as its
+    // image format, and TikTok's photo posts take JPEG or WebP, never PNG.
+    file: `${dir}/${String(i + 1).padStart(2, '0')}-${slide.name}.jpg`,
     html: slide.html,
     ...(slide.script ? { script: slide.script } : {}),
   }));
@@ -1844,7 +1852,7 @@ for (const cardName of cards) {
 }
 
 function renderSlide({ slide, cardName, lang, frame, outSize }) {
-  const stem = `${cardName}-${slide.file.replace(/[/\\]/g, '-').replace(/\.png$/, '')}-${lang}`;
+  const stem = `${cardName}-${slide.file.replace(/[/\\]/g, '-').replace(/\.(png|jpg)$/, '')}-${lang}`;
     const html = join(workDir, `.${stem}.html`);
     const raw = join(workDir, `.${stem}-2x.png`);
   const out = join(outDir, slide.file);
@@ -1870,7 +1878,10 @@ function renderSlide({ slide, cardName, lang, frame, outSize }) {
     { stdio: ['ignore', 'ignore', 'ignore'] },
   );
 
-  execFileSync(convert(), [raw, '-resize', outSize, '-strip', out]);
+  // A .jpg slide keeps full colour resolution (4:4:4): the default 4:2:0
+  // subsampling smears crimson type and the highlighter's edges.
+  const jpeg = out.endsWith('.jpg') ? ['-sampling-factor', '4:4:4', '-quality', '92'] : [];
+  execFileSync(convert(), [raw, '-resize', outSize, '-strip', ...jpeg, out]);
   rmSync(raw, { force: true });
   rmSync(html, { force: true });
 

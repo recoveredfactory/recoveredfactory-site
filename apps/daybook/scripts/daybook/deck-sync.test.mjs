@@ -139,7 +139,7 @@ test('a test post ignores the broadcast mark', () => {
 });
 
 test('every slide og.mjs draws is uploaded, the 287(g) map included', () => {
-  for (const file of ['01-cover.png', '02-story.png', '05-287g.png', '06-upcoming.png', '09-subscribe.png']) {
+  for (const file of ['01-cover.jpg', '02-story.jpg', '05-287g.jpg', '06-upcoming.jpg', '09-subscribe.png']) {
     assert.ok(SLIDE_FILE.test(file), file);
   }
   for (const file of ['deck.json', 'cover.png', '01-cover.html']) assert.ok(!SLIDE_FILE.test(file), file);
