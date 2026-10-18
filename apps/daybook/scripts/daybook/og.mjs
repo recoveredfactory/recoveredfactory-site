@@ -614,10 +614,15 @@ async function loadIcons(urls) {
   return new Map(domains.map((d, i) => [d, icons[i]]));
 }
 
-const citeRow = (links, sources) => {
+// Labelled and ruled off (David, 2026-10-17: "the citations section isn't
+// entirely obvious as citations"): a short rule above, like the one over a
+// footnote, and "Sources" in the quiet value leading the row.
+const SOURCES_LABEL = { en: 'Sources', es: 'Fuentes' };
+
+const citeRow = (links, sources, lang = 'en') => {
   const items = links?.length ? links : (sources ?? []).map((name) => ({ name }));
   if (!items.length) return '';
-  return `<div class="cite">${items
+  return `<div class="cite"><span class="label">${SOURCES_LABEL[lang] ?? SOURCES_LABEL.en}</span>${items
     .map((item) => {
       const icon = item.url ? ICONS.get(iconDomain(item.url)) : null;
       return `<span class="src">${icon ? `<img src="${icon}" alt="" />` : ''}<span>${sourceName(item.name)}</span></span>`;
@@ -654,7 +659,8 @@ const lineParagraphs = (text) =>
     .map((p) => `<p class="nut">${keepForms(escapeHtml(p)).replace(/\s*\n\s*/g, '<br />')}</p>`)
     .join('');
 
-const storyBody = (nut, links, sources) => `<div class="body">${nut ? lineParagraphs(nut) : ''}${citeRow(links, sources)}</div>`;
+const storyBody = (nut, links, sources, lang) =>
+  `<div class="body">${nut ? lineParagraphs(nut) : ''}${citeRow(links, sources, lang)}</div>`;
 
 const portraitCss = (date) => `
   :root { --fit: 1; }
@@ -684,7 +690,7 @@ const portraitCss = (date) => `
      as the Bauhaus used it. The domain is set as it's typed. */
   .lockup {
     font-family: "Jost", sans-serif;
-    font-size: 36px;
+    font-size: 42px;
     font-weight: 500;
     letter-spacing: -0.005em;
     white-space: nowrap;
@@ -694,7 +700,7 @@ const portraitCss = (date) => `
      wordmark lead. */
   .date {
     font-family: "Jost", sans-serif;
-    font-size: ${dateSize(date) + 4}px;
+    font-size: ${dateSize(date) + 8}px;
     font-weight: 400;
     white-space: nowrap;
     color: ${GRAY.ink700};
@@ -802,10 +808,28 @@ const portraitCss = (date) => `
   /* Directly under the line it credits. Fixed sizes, outside the fit, like the
      masthead. */
   .cite {
+    position: relative;
     margin-top: 34px;
+    padding-top: 24px;
     display: flex;
     flex-wrap: wrap;
+    align-items: center;
     gap: 14px 30px;
+  }
+  /* See citeRow: a footnote's rule, short, in the masthead's gray. */
+  .cite::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 88px;
+    border-top: 3px solid ${GRAY.header};
+  }
+  .cite .label {
+    font-family: "Jost", sans-serif;
+    font-size: 32px;
+    font-weight: 400;
+    color: ${GRAY.ink500};
   }
   .cite .src {
     display: flex;
@@ -841,7 +865,7 @@ const portraitCss = (date) => `
 // that answered "feels thin" in August; David, two months on: "three levels when
 // it should be two". The credit is no longer a tier of prose either — it is the
 // cite row, publication marks at the foot.
-const coverSlide = ({ hed, nut, sources, links, pick, date, kicker = null }) =>
+const coverSlide = ({ hed, nut, sources, links, pick, date, lang, kicker = null }) =>
   shell(
     portraitCss(date) +
       `\n  .hed { font-size: ${fitcap(coverHedSize(hed), coverHedSize(hed) * HED_GROWTH)}; }` +
@@ -851,7 +875,7 @@ const coverSlide = ({ hed, nut, sources, links, pick, date, kicker = null }) =>
       (kicker ? `<p class="kicker">${escapeHtml(kicker.label)}</p>` : '') +
         `<h1 class="hed">${escapeHtml(hed)}</h1>` +
         pickFigure(pick) +
-        storyBody(nut, links, sources),
+        storyBody(nut, links, sources, lang),
       { date, tally: kicker?.tally ?? '' },
     ),
     PORTRAIT,
@@ -923,7 +947,7 @@ const KICKER_CSS = `
 // the words here are David's. A slide index is the other obvious candidate and
 // is worse — the deck is not all stories, so "2/2" would count something a
 // reader cannot see the whole of.
-const beatSlide = ({ headline, nut, sources, links, pick, date }) =>
+const beatSlide = ({ headline, nut, sources, links, pick, date, lang }) =>
   shell(
     portraitCss(date) +
       `\n  .hed { font-size: ${fitcap(beatHedSize(headline), beatHedSize(headline) * HED_GROWTH)}; }` +
@@ -931,7 +955,7 @@ const beatSlide = ({ headline, nut, sources, links, pick, date }) =>
     portraitFrame(
       `<h2 class="hed">${escapeHtml(headline)}</h2>` +
         pickFigure(pick) +
-        storyBody(nut, links, sources),
+        storyBody(nut, links, sources, lang),
       { date },
     ),
     PORTRAIT,
@@ -1018,11 +1042,13 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
      weird"). Each entry is two columns on one baseline: the date, then the
      line. The date is set at the line's size, in the serif, with the weekday
      written out under it. There is no big numeral over small labels, the same
-     "big number, squinty text, red" that came off the 287(g) slide. Entries on
-     the same day share one date, and a hairline marks each new day. The rhythm
-     runs from the top, not in stretched rows, so the space between a rule and
-     its entry is the same everywhere. What's left at the foot, the fit takes
-     into the spacing. */
+     "big number, squinty text, red" that came off the 287(g) slide. Every entry
+     carries its own date and a hairline above it, two on the same day
+     included: shared, one date over two lines read as one entry running on
+     (David, 2026-10-17: "confusing as heck when two events fall on the same
+     date"). The rhythm runs from the top, not in stretched rows, so the space
+     between a rule and its entry is the same everywhere. What's left at the
+     foot, the fit takes into the spacing. */
   .entry {
     display: grid;
     /* Fixed, not fitted: the dates are capped at 40px, so a column that grew
@@ -1036,12 +1062,9 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
   .entry:first-child {
     padding-top: ${fitpx(10)};
   }
-  .entry.same {
-    padding-top: 0;
-  }
-  /* The rule goes between days and nowhere else. One rule: the crimson bar
+  /* The rule goes between entries and nowhere else. One rule: the crimson bar
      that once topped each date came off (David, 2026-10-17). */
-  .entry + .entry:not(.same) {
+  .entry + .entry {
     border-top: 2px solid ${GRAY.rule};
   }
   .when .date {
@@ -1080,7 +1103,7 @@ const upcomingSlide = ({ entries, lang, date, page = 1, pages = 1 }) =>
         ? `<p class="rubric paged"><span>${escapeHtml(UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en)}</span>` +
           `<span class="page">${page}/${pages}</span></p>`
         : `<p class="rubric">${escapeHtml(UPCOMING_LABEL[lang] ?? UPCOMING_LABEL.en)}</p>`) +
-        `<div class="entries">${entries.map((entry, i) => upcomingEntry(entry, lang, i > 0 && entries[i - 1].iso === entry.iso)).join('')}</div>`,
+        `<div class="entries">${entries.map((entry) => upcomingEntry(entry, lang)).join('')}</div>`,
       { date },
     ),
     PORTRAIT,
@@ -1106,17 +1129,13 @@ const TODAY_WORD = { en: 'Today', es: 'Hoy' };
 // the deck keeps.
 const isToday = (entry) => /^(today|hoy)$/i.test(entry.countdown ?? '');
 
-// `same`: the entry falls on the same day as the one before it on the board,
-// so it carries no date of its own and no rule above it.
-const upcomingEntry = (entry, lang, same) => `
-    <div class="entry${same ? ' same' : ''}">
+const upcomingEntry = (entry, lang) => `
+    <div class="entry">
       <div class="when">${
-        same
-          ? ''
-          : `<div class="date">${escapeHtml(calendarDate(entry.iso, lang))}</div>` +
-            (isToday(entry)
-              ? `<div class="dow today">${TODAY_WORD[lang] ?? TODAY_WORD.en}</div>`
-              : `<div class="dow">${escapeHtml(weekdayName(entry.iso, lang))}</div>`)
+        `<div class="date">${escapeHtml(calendarDate(entry.iso, lang))}</div>` +
+        (isToday(entry)
+          ? `<div class="dow today">${TODAY_WORD[lang] ?? TODAY_WORD.en}</div>`
+          : `<div class="dow">${escapeHtml(weekdayName(entry.iso, lang))}</div>`)
       }</div>
       <p class="text">${keepForms(escapeHtml(entry.text))}</p>
     </div>`;
@@ -1680,7 +1699,7 @@ const carouselSlides = (lang) => {
   const stories = beats.flatMap((beat) => [
     {
       name: 'story',
-      html: beatSlide({ ...beat, nut: beat.line || beat.nut, date }),
+      html: beatSlide({ ...beat, nut: beat.line || beat.nut, date, lang }),
       script: storyScript('story', beat.headline, beat.line || beat.nut, beat.links, beat.sources, beat.pick),
     },
     ...exhibitsFor(beat.headline).map((exhibit) => ({
@@ -1707,6 +1726,7 @@ const carouselSlides = (lang) => {
         links: deck.links,
         pick: deck.pick,
         date,
+        lang,
         kicker: deck.coverKicker
           ? coverKicker(lang, beats.length, upcoming.reduce((n, slide) => n + slide.entries.length, 0))
           : null,
