@@ -1696,12 +1696,22 @@ const carouselSlides = (lang) => {
       return hit;
     });
 
+  // The slides a story added (record.social.slides, deck.mjs applySocialCopy):
+  // story slides of their own, right behind the one they continue.
+  const added = (story) =>
+    (story.more ?? []).map((more) => ({
+      name: 'story',
+      html: beatSlide({ ...more, nut: more.line, date, lang }),
+      script: storyScript('story', more.headline, more.line, more.links, more.sources, more.pick),
+    }));
+
   const stories = beats.flatMap((beat) => [
     {
       name: 'story',
       html: beatSlide({ ...beat, nut: beat.line || beat.nut, date, lang }),
       script: storyScript('story', beat.headline, beat.line || beat.nut, beat.links, beat.sources, beat.pick),
     },
+    ...added(beat),
     ...exhibitsFor(beat.headline).map((exhibit) => ({
       name: 'exhibit',
       html: exhibitSlide({ ...exhibit, ...(exhibit[lang] ?? {}), specDir, date }),
@@ -1733,6 +1743,7 @@ const carouselSlides = (lang) => {
       }),
       script: storyScript('cover', deck.hed, deck.line || deck.nut, deck.links, deck.sources, deck.pick),
     },
+    ...added(deck),
     ...stories,
     ...briefs.map((slide) => ({
       name: 'roundup',
@@ -1762,11 +1773,15 @@ const carouselSlides = (lang) => {
         })),
       },
     })),
-    {
-      name: 'subscribe',
-      html: closingSlide({ ...CLOSING[lang], date }),
-      script: { kind: 'subscribe', headline: CLOSING[lang].tagline, line: `${CLOSING[lang].url} · ${CLOSING[lang].made}` },
-    },
+    ...(deck.subscribe === false
+      ? []
+      : [
+          {
+            name: 'subscribe',
+            html: closingSlide({ ...CLOSING[lang], date }),
+            script: { kind: 'subscribe', headline: CLOSING[lang].tagline, line: `${CLOSING[lang].url} · ${CLOSING[lang].made}` },
+          },
+        ]),
   ];
 
   return slides.map((slide, i) => ({
@@ -1817,7 +1832,8 @@ const CARDS = {
 // drawn: from here on the slides are built synchronously.
 if (deckPath && cards.includes('carousel')) {
   const decks = Object.values(JSON.parse(readFileSync(deckPath, 'utf8')));
-  const links = decks.flatMap((deck) => [...(deck.links ?? []), ...(deck.beats ?? []).flatMap((beat) => beat.links ?? [])]);
+  const linksOf = (story) => [...(story.links ?? []), ...(story.more ?? []).flatMap((more) => more.links ?? [])];
+  const links = decks.flatMap((deck) => [...linksOf(deck), ...(deck.beats ?? []).flatMap(linksOf)]);
   ICONS = await loadIcons(links.map((link) => link.url));
   // The 287(g) map's state outlines. Without them the slide is left off with a
   // warning rather than drawn as dots in a void.

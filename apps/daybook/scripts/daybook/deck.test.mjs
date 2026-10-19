@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { applySocialCopy, buildDeck, dropAttribution, inlineCites, packBoards, splitCredits, storyLine } from './deck.mjs';
+import { applySocialCopy, buildDeck, deckKnobs, dropAttribution, inlineCites, packBoards, splitCredits, storyLine } from './deck.mjs';
 
 // n five-character words: n * 5 - 1 characters.
 const filler = (n) => Array(n).fill('word').join(' ');
@@ -119,4 +119,86 @@ test('the composer\'s carousel copy replaces the cut copy, story by story', () =
   assert.equal(deck.beats[0].headline, 'Lawsuit challenges accelerated cases for children');
   assert.equal(deck.beats[0].line, 'Six providers sued.');
   assert.deepEqual(deck.beats[0].links, [{ name: 'CNN', url: 'https://cnn.com/b' }]);
+});
+
+// ── More than one slide to a story, and the deck's settings (2026-10-19) ───
+
+const edition = [1, 2, 3, 4, 5]
+  .map((n) => `## Story number ${n} has a long enough headline\n\n**Claim ${n} is bolded here.** Support for ${n}. [CNN](https://cnn.com/${n})`)
+  .join('\n\n');
+const quiet = (fn) => {
+  const warn = console.warn;
+  const said = [];
+  console.warn = (...args) => said.push(args.join(' '));
+  try {
+    return [fn(), said];
+  } finally {
+    console.warn = warn;
+  }
+};
+
+test('a story takes a slide for each entry: the first rewrites it, the rest follow it', () => {
+  const { deck } = buildDeck({ body: edition, headline: 'Hed' }, '2026-10-19', [], null, 'en', { beats: 3 });
+  const [, said] = quiet(() =>
+    applySocialCopy(
+      deck,
+      [
+        { story: 'cover', line: 'The lede, rewritten.' },
+        { story: 1, headline: 'What the law says', line: 'Six months, by statute.', image: { url: 'https://example.org/fr.png', caption: 'Federal Register' } },
+        { story: 3, headline: 'Number three, rewritten', line: 'Three.' },
+        // Still found by its heading in the edition after the rewrite above.
+        { story: 'story number 3', line: 'Three, continued.' },
+        { story: 3, headline: 'Nothing on it' },
+        { story: 5, line: 'Not on the deck.' },
+      ],
+      'en',
+    ),
+  );
+  assert.equal(deck.line, 'The lede, rewritten.');
+  assert.deepEqual(deck.more, [
+    { headline: 'What the law says', line: 'Six months, by statute.', links: [], sources: [], image: { url: 'https://example.org/fr.png', caption: 'Federal Register' }, composed: true },
+  ]);
+  const three = deck.beats.find((beat) => beat.section === 3);
+  assert.equal(three.headline, 'Number three, rewritten');
+  assert.deepEqual(three.more.map((m) => [m.headline, m.line]), [['Number three, rewritten', 'Three, continued.']]);
+  assert.equal(deck.beats.find((beat) => beat.section === 2).more, undefined);
+  assert.equal(said.length, 2);
+  assert.match(said[0], /social\.slides\[4\] adds a slide .* no line and no image/);
+  assert.match(said[1], /social\.slides\[5\] names "5", which matches no story/);
+});
+
+test('a story’s first entry can carry only an image', () => {
+  const { deck } = buildDeck({ body: edition, headline: 'Hed' }, '2026-10-19', [], null, 'en', { beats: 1 });
+  const before = deck.beats[0].line;
+  applySocialCopy(deck, [{ story: 2, image: 'https://example.org/a.png' }], 'en');
+  assert.equal(deck.beats[0].line, before);
+  assert.equal(deck.beats[0].image, 'https://example.org/a.png');
+});
+
+test('the deck can name its stories by section number, in its own order', () => {
+  const pick = (beats) => buildDeck({ body: edition, headline: 'Hed' }, '2026-10-19', [], null, 'en', { beats }).deck.beats.map((b) => b.section);
+  assert.deepEqual(pick(3), [2, 3, 4]);
+  assert.deepEqual(pick(0), []);
+  assert.deepEqual(pick([4, 2]), [4, 2]);
+  const [sections, said] = quiet(() => pick([1, 2, 2, 9]));
+  assert.deepEqual(sections, [2]);
+  assert.match(said[0], /names section 9, but the edition has 5 stories/);
+});
+
+test('the deck’s settings: defaults, each key on its own, and a bad key costs only itself', () => {
+  const defaults = { stories: 3, tracker: true, calendar: true, calendarPerSlide: 4, subscribe: true };
+  assert.deepEqual(deckKnobs(undefined), defaults);
+  assert.deepEqual(deckKnobs({ stories: [2, 5], tracker: false, calendar_per_slide: 2, subscribe: false }), {
+    ...defaults,
+    stories: [2, 5],
+    tracker: false,
+    calendarPerSlide: 2,
+    subscribe: false,
+  });
+  const [knobs, said] = quiet(() => deckKnobs({ stories: 'three', calendar: 'no', calendar_per_slide: 6, tracker: false }, { date: '2026-10-19', lang: 'es' }));
+  assert.deepEqual(knobs, { ...defaults, tracker: false });
+  assert.equal(said.length, 3);
+  assert.match(said[0], /^WARNING: 2026-10-19 es: social\.deck\.stories takes/);
+  const [whole] = quiet(() => deckKnobs(['stories']));
+  assert.deepEqual(whole, defaults);
 });
