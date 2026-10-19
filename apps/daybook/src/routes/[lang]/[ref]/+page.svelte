@@ -1,4 +1,5 @@
 <script lang="ts">
+  import DeckTeaser from '$lib/components/DeckTeaser.svelte';
   import DossierCarousel from '$lib/components/DossierCarousel.svelte';
   import ShareRow from '$lib/components/ShareRow.svelte';
   import SubscribeBox from '$lib/components/SubscribeBox.svelte';
@@ -128,12 +129,7 @@
       {#if data.dossier}
         <DossierCarousel instagramPost={edition.instagramPost} lang={data.lang} slides={data.dossier.slides} />
       {:else if data.deck}
-        <DossierCarousel
-          instagramPost={data.deck.instagramPost}
-          lang={data.lang}
-          placement="edition-deck"
-          slides={data.deck.slides}
-        />
+        <DeckTeaser instagramPost={data.deck.instagramPost} lang={data.lang} slides={data.deck.slides} />
       {/if}
 
       {#if asSent}

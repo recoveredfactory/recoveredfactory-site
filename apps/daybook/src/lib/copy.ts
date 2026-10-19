@@ -56,6 +56,9 @@ const en = {
       next: 'Next',
       slide: (i: number, of: number) => `Slide ${i} of ${of}`,
       goTo: (i: number) => `Go to ${i}`,
+      inSlides: (n: number) => `This edition in ${n} slides`,
+      flip: 'Flip through',
+      fold: 'Close',
     },
     footer: {
       project:
@@ -144,6 +147,9 @@ const es: Copy = {
       next: 'Siguiente',
       slide: (i: number, of: number) => `Diapositiva ${i} de ${of}`,
       goTo: (i: number) => `Ir a ${i}`,
+      inSlides: (n: number) => `Esta edición en ${n} diapositivas`,
+      flip: 'Hojéalas',
+      fold: 'Cerrar',
     },
     footer: {
       project:
