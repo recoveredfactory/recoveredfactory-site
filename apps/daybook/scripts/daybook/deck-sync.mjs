@@ -18,8 +18,8 @@
 // The contract is news-ingester's docs/EDITIONS.md. In short: the index
 // (editions/index.json) says what is published and at which revision; a deck
 // is rendered from the records and written to
-// social/{date}/{lang}/r{revision}/{NN}-{name}.jpg, immutable; and LAST,
-// once every slide is up, social/{date}/{lang}/deck.json points at them.
+// social/{date}/{lang}/r{revision}/{NN}-{name}-{hash}.jpg, immutable; and
+// LAST, once every slide is up, social/{date}/{lang}/deck.json points at them.
 //
 // A language is rendered only when its deck.json is missing or carries an
 // older revision than the index. So a rerun with nothing new reads the index
@@ -38,10 +38,13 @@
 // at a partial deck.
 
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { appendFileSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+
+import { INSTAGRAM_MAX_ITEMS, fitInstagram } from './instagram.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 
@@ -49,7 +52,12 @@ const here = dirname(fileURLToPath(import.meta.url));
 // daybookEditionsUrl; reads are public and anonymous.
 export const DEFAULT_BASE = 'https://news-ingester-production-daybookeditionsbucket-bcneortr.s3.amazonaws.com';
 
-// Slides never change under a key: a new revision gets a new r{n} path.
+// Slides never change under a key. A new revision gets a new r{n} path, and a
+// slide's name carries a hash of its pixels (storedName), because a redraw of the
+// same revision used to write new pixels under the old keys. On 2026-10-19 a
+// rerender for the 287(g) slide moved the calendar's first page into
+// 06-upcoming.jpg, a key that had held its second page an hour before; Meta
+// served its cached copy, and the reposted English carousel carried page 2 twice.
 export const SLIDE_CACHE = 'public, max-age=31536000, immutable';
 // The manifest is the one mutable pointer, cached like the records and index.
 export const MANIFEST_CACHE = 'public, max-age=60';
@@ -79,6 +87,10 @@ export const manifestKey = (prefix, date, lang) => `${prefix}social/${date}/${la
 
 export const slideKey = (prefix, date, lang, revision, file) =>
   `${prefix}social/${date}/${lang}/r${revision}/${file}`;
+
+/** The name a slide is stored under: og.mjs's `03-story.jpg` with its pixels' hash, `03-story-1a2b3c4d5e6f.jpg`. */
+export const storedName = (file, bytes) =>
+  file.replace(/\.(?:png|jpg)$/, (ext) => `-${createHash('sha256').update(bytes).digest('hex').slice(0, 12)}${ext}`);
 
 /**
  * What to do for each date: which languages the index publishes, at which
@@ -154,15 +166,21 @@ export function postable(planned, rendered, posted, langs, broadcast = {}, optio
 
 /**
  * The deck.json for one language: the slides in deck order, by the name og.mjs
- * gave them (`03-story.png` → `story`) and their public URL.
+ * gave them (`03-story.png` → `story`) and their public URL. `stored` maps a
+ * file to the name it was uploaded under (storedName); a file not in it is
+ * stored as drawn. `warnings` are the build's (record-deck.mjs): an image that
+ * didn't load, copy that matched no story. They go in the manifest and at the
+ * top of the script, with the slides Instagram's cut will leave off, because
+ * the desk previews the deck from here and never sees the run's log.
  */
-export function buildManifest({ base, prefix, date, lang, revision, files, renderedAt, script = [] }) {
+export function buildManifest({ base, prefix, date, lang, revision, files, renderedAt, script = [], stored = {}, warnings = [] }) {
   const said = new Map(script.map(({ file, ...text }) => [file, text]));
   const slides = [...files].sort().map((file) => ({
     name: file.replace(/^\d+-/, '').replace(/\.(?:png|jpg)$/, ''),
-    url: `${base.replace(/\/+$/, '')}/${slideKey(prefix, date, lang, revision, file)}`,
+    url: `${base.replace(/\/+$/, '')}/${slideKey(prefix, date, lang, revision, stored[file] ?? file)}`,
     ...(said.has(file) ? { text: said.get(file) } : {}),
   }));
+  const offInstagram = new Set(fitInstagram(slides).dropped);
   return {
     format: 'daybook-deck/1',
     date,
@@ -170,7 +188,9 @@ export function buildManifest({ base, prefix, date, lang, revision, files, rende
     revision,
     rendered_at: renderedAt,
     slides,
-    ...(said.size ? { script_md: scriptMarkdown(slides) } : {}),
+    ...(warnings.length ? { warnings } : {}),
+    ...(offInstagram.size ? { instagram_leaves_off: slides.flatMap((slide, i) => (offInstagram.has(slide) ? [i + 1] : [])) } : {}),
+    ...(said.size ? { script_md: scriptMarkdown(slides, { warnings, offInstagram }) } : {}),
   };
 }
 
@@ -179,11 +199,20 @@ export function buildManifest({ base, prefix, date, lang, revision, files, rende
  * slide's words, numbered, with a link to its image. og.mjs writes the words
  * (script.json) from the same deck it draws, so this is what will post.
  */
-export function scriptMarkdown(slides) {
-  return slides
-    .map((slide, i) => {
+export function scriptMarkdown(slides, { warnings = [], offInstagram = new Set() } = {}) {
+  const notes = [
+    ...warnings,
+    ...(offInstagram.size
+      ? [`${slides.length} slides: Instagram takes ${INSTAGRAM_MAX_ITEMS}, so it leaves off the ${offInstagram.size} marked below. Facebook posts them all.`]
+      : []),
+  ];
+  const top = notes.length ? [`**Check before broadcast:**\n${notes.map((note) => `- ${note}`).join('\n')}`] : [];
+  return [
+    ...top,
+    ...slides.map((slide, i) => {
       const t = slide.text ?? {};
-      const head = `**${i + 1}. ${t.headline ?? slide.name}**${t.page ? ` (${t.page})` : ''} · [image](${slide.url})`;
+      const off = offInstagram.has(slide) ? ' · *not on Instagram*' : '';
+      const head = `**${i + 1}. ${t.headline ?? slide.name}**${t.page ? ` (${t.page})` : ''} · [image](${slide.url})${off}`;
       const body = [];
       if (t.image) body.push(`[picked image: ${t.image}]`);
       if (t.line) body.push(t.line);
@@ -191,8 +220,8 @@ export function scriptMarkdown(slides) {
       for (const e of t.entries ?? []) body.push(`- ${e.date}, ${e.day}: ${e.text}`);
       if (t.sources?.length) body.push(`Sources: ${t.sources.join(' · ')}`);
       return [head, ...body].join('\n');
-    })
-    .join('\n\n');
+    }),
+  ].join('\n\n');
 }
 
 // ── The run ────────────────────────────────────────────────────────────────
@@ -262,12 +291,13 @@ async function main() {
       // decks the posting step reads, and shadowing it here broke the first
       // real upload (run 38902725604: "rendered.add is not a function").
       const drawn = renderDate({ date, langs, due, records, work });
-      for (const { lang, revision, dir, files, script } of drawn) {
-        const manifest = buildManifest({ base, prefix, date, lang, revision, files, script, renderedAt: new Date().toISOString() });
+      for (const { lang, revision, dir, files, script, warnings } of drawn) {
+        const stored = Object.fromEntries(files.map((file) => [file, storedName(file, readFileSync(join(dir, file)))]));
+        const manifest = buildManifest({ base, prefix, date, lang, revision, files, script, stored, warnings, renderedAt: new Date().toISOString() });
 
         if (dryRun) {
           console.log(`${date} ${lang} r${revision}: would write`);
-          for (const file of files) console.log(`  ${slideKey(prefix, date, lang, revision, file)}`);
+          for (const file of files) console.log(`  ${slideKey(prefix, date, lang, revision, stored[file])}`);
           console.log(`  ${manifestKey(prefix, date, lang)} (last)`);
           console.log(JSON.stringify(manifest, null, 2));
           rows.push({ date, lang, revision, result: `dry run: ${files.length} slides rendered, nothing uploaded` });
@@ -276,7 +306,7 @@ async function main() {
 
         // Every slide first; the manifest only once they have all landed.
         for (const file of files) {
-          upload(join(dir, file), bucket, slideKey(prefix, date, lang, revision, file), slideType(file), SLIDE_CACHE);
+          upload(join(dir, file), bucket, slideKey(prefix, date, lang, revision, stored[file]), slideType(file), SLIDE_CACHE);
         }
         const manifestPath = join(work, `deck-${date}-${lang}.json`);
         writeFileSync(manifestPath, JSON.stringify(manifest, null, 2));
@@ -345,6 +375,7 @@ function renderDate({ date, langs, due, records, work }) {
 
   const deckPath = join(dir, 'deck.json');
   run('node', [join(here, 'record-deck.mjs'), ...paths, '--out', deckPath]);
+  const built = JSON.parse(readFileSync(deckPath, 'utf8'));
 
   const images = join(dir, 'images');
   run('node', [join(here, 'og.mjs'), '--card', 'carousel', '--lang', due.map((l) => l.lang).join(','), '--deck', deckPath, '--out', images]);
@@ -355,7 +386,7 @@ function renderDate({ date, langs, due, records, work }) {
     if (!files.length) throw new Error(`og.mjs drew no slides for ${date} ${l.lang}`);
     const scriptPath = join(slides, 'script.json');
     const script = existsSync(scriptPath) ? JSON.parse(readFileSync(scriptPath, 'utf8')) : [];
-    return { lang: l.lang, revision: l.revision, dir: slides, files, script };
+    return { lang: l.lang, revision: l.revision, dir: slides, files, script, warnings: built[l.lang]?.warnings ?? [] };
   });
 }
 

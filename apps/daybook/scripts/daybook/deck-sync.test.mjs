@@ -2,7 +2,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { DEFAULT_BASE, SLIDE_FILE, bogotaDates, bucketFromBase, buildManifest, manifestKey, needsRender, plan, postStatus, postable, prefixFor, slideKey } from './deck-sync.mjs';
+import { DEFAULT_BASE, SLIDE_FILE, bogotaDates, bucketFromBase, buildManifest, manifestKey, needsRender, plan, postStatus, postable, prefixFor, slideKey, storedName } from './deck-sync.mjs';
 
 const index = {
   format: 'daybook-index/1',
@@ -170,4 +170,51 @@ test('the manifest carries each slide’s words and a script the desk can post a
       '**3. What’s coming** (1/1) · [image](https://b.example/social/2026-10-17/en/r2/03-upcoming.png)\n- Oct. 19, Monday: Extensions end.',
     ].join('\n\n'),
   );
+});
+
+test('a slide is stored under a hash of its pixels, so a redraw never reuses a key', () => {
+  const first = storedName('06-upcoming.jpg', Buffer.from('page one'));
+  const again = storedName('06-upcoming.jpg', Buffer.from('page one'));
+  const redrawn = storedName('06-upcoming.jpg', Buffer.from('page two'));
+  assert.match(first, /^06-upcoming-[0-9a-f]{12}\.jpg$/);
+  assert.equal(first, again);
+  assert.notEqual(first, redrawn);
+
+  const manifest = buildManifest({
+    base: 'https://b.example',
+    prefix: '',
+    date: '2026-10-19',
+    lang: 'en',
+    revision: 4,
+    files: ['06-upcoming.jpg'],
+    stored: { '06-upcoming.jpg': redrawn },
+    renderedAt: 't',
+  });
+  assert.deepEqual(manifest.slides, [{ name: 'upcoming', url: `https://b.example/social/2026-10-19/en/r4/${redrawn}` }]);
+});
+
+test('the script names what to check: the build’s warnings and what Instagram leaves off', () => {
+  const names = ['cover', 'story', 'story', 'story', 'story', 'story', '287g', 'upcoming', 'upcoming', 'upcoming', 'subscribe'];
+  const files = names.map((name, i) => `${String(i + 1).padStart(2, '0')}-${name}.jpg`);
+  const manifest = buildManifest({
+    base: 'https://b.example',
+    prefix: '',
+    date: '2026-10-19',
+    lang: 'en',
+    revision: 1,
+    files,
+    renderedAt: 't',
+    script: files.map((file, i) => ({ file, kind: names[i], headline: `Slide ${i + 1}` })),
+    warnings: ['the image for "Slide 2" could not be made (answered 403). Text only.'],
+  });
+  assert.deepEqual(manifest.warnings, ['the image for "Slide 2" could not be made (answered 403). Text only.']);
+  assert.deepEqual(manifest.instagram_leaves_off, [6]);
+  const [top, ...slides] = manifest.script_md.split('\n\n');
+  assert.equal(
+    top,
+    '**Check before broadcast:**\n- the image for "Slide 2" could not be made (answered 403). Text only.\n' +
+      '- 11 slides: Instagram takes 10, so it leaves off the 1 marked below. Facebook posts them all.',
+  );
+  assert.match(slides[5], /^\*\*6\. Slide 6\*\* · \[image\]\([^)]+\) · \*not on Instagram\*$/);
+  assert.doesNotMatch(slides[4], /not on Instagram/);
 });

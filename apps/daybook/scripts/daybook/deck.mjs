@@ -190,7 +190,10 @@ const BRIEF_SOURCES = 1;
  *
  * `beats` and `briefs` are how many story slides and round-up items to take.
  * The pull's deck is the short one, CAROUSEL_BEATS and BRIEFS; the rundown
- * record-deck.mjs builds takes every story and every brief.
+ * record-deck.mjs builds takes every story and every brief. `beats` may instead
+ * list the sections to take by their place in the edition, 1 being the lede
+ * (record.social.deck.stories, e.g. [2, 4, 5]); the lede is always the cover,
+ * and a number past the last story is left off with a warning.
  */
 export function buildDeck(
   { body, headline },
@@ -226,13 +229,16 @@ export function buildDeck(
     );
   }
 
-  const stories = raw.map((story, i) => shapeStory(story, decided[i], date, lang));
+  // Each story knows its place in the edition, 1 for the lede, and its heading
+  // as the edition set it, so carousel copy can name it either way even after
+  // an earlier entry rewrote its headline (applySocialCopy).
+  const stories = raw.map((story, i) => ({ ...shapeStory(story, decided[i], date, lang), section: i + 1, heading: story.headline }));
 
   // The lede rides on the cover under the hed and gets no slide of its own —
   // the hed was written off it, so that slide said the same thing twice. The
   // beats are what comes after.
   const { nut = '', detail = '', line = '', sources = [], links = [] } = stories[0] ?? {};
-  const beats = stories.slice(1, 1 + maxBeats);
+  const beats = Array.isArray(maxBeats) ? chosenBeats(stories, maxBeats, date, lang) : stories.slice(1, 1 + maxBeats);
 
   // The calendar is the payoff, so it goes on a whole slide rather than as a
   // footnote: every deadline the edition published, up to UPCOMING_PER_SLIDE of
@@ -269,6 +275,21 @@ export function buildDeck(
     },
     shape: decided,
   };
+}
+
+/** The stories a deck names by number, in the order named; the lede and numbers past the last story are left off. */
+function chosenBeats(stories, numbers, date, lang) {
+  const beats = [];
+  for (const n of numbers) {
+    const story = stories[n - 1];
+    if (n === 1) continue;
+    if (!story) {
+      console.warn(`WARNING: ${date} ${lang}: social.deck.stories names section ${n}, but the edition has ${stories.length} stories. Left off.`);
+      continue;
+    }
+    if (!beats.includes(story)) beats.push(story);
+  }
+  return beats;
 }
 
 /**
@@ -455,31 +476,108 @@ export function packBoards(entries, per, chars) {
  * sentences, and its outlets by name with a link from the section each, and
  * David edits it. Copy cut from the edition is the fallback.
  *
- *   record.social.slides: [{ story: "cover" | words from a section headline,
- *                            headline?, line, sources?: [{ name, url? }] }]
+ *   record.social.slides: [{ story: "cover" | a section's number (1 is the lede)
+ *                                   | words from a section headline,
+ *                            headline?, line?, sources?: [{ name, url? }], image? }]
  *
- * A slide that matches no story on the deck is dropped with a warning.
+ * A story takes as many slides as it has entries (David, 2026-10-19: "a basic
+ * format and parameters to vary it, not a hard rule 'one slide one story'").
+ * Its first entry rewrites the story's own slide; each one after that adds a
+ * slide right behind it, in the order given, with its own headline (the
+ * story's, if it gives none), line, sources and image. `image` is a spec for
+ * record-deck.mjs to load (pick.mjs), left on the slide as given.
+ *
+ * A slide that matches no story on the deck is dropped with a warning, and so
+ * is an added slide with nothing on it.
  */
 export function applySocialCopy(deck, slides, lang) {
-  for (const slide of slides ?? []) {
-    if (!slide || typeof slide.line !== 'string' || !slide.line.trim()) continue;
-    const want = String(slide.story ?? 'cover').trim().toLowerCase();
-    const target = want === 'cover' ? deck : deck.beats.find((b) => b.headline.toLowerCase().includes(want));
+  const warn = (message) => console.warn(`WARNING: ${deck.date} ${lang}: ${message}`);
+  const written = new Set();
+  for (const [i, slide] of (slides ?? []).entries()) {
+    if (!slide || typeof slide !== 'object') continue;
+    const target = copyTarget(deck, slide.story);
     if (!target) {
-      console.warn(`WARNING: ${deck.date} ${lang}: social copy for "${slide.story}" matches no story on the deck. Dropped.`);
+      warn(`social.slides[${i}] names "${slide.story}", which matches no story on the deck. Dropped.`);
       continue;
     }
     const headline = typeof slide.headline === 'string' && slide.headline.trim() ? slide.headline.trim() : null;
-    if (headline) target[target === deck ? 'hed' : 'headline'] = headline;
-    target.line = slide.line.trim();
-    if (Array.isArray(slide.sources) && slide.sources.length) {
-      target.links = slide.sources
-        .filter((s) => s && typeof s.name === 'string' && s.name.trim())
-        .map((s) => ({ name: s.name.trim(), ...(typeof s.url === 'string' ? { url: s.url } : {}) }));
-      target.sources = target.links.map((l) => l.name);
+    const line = typeof slide.line === 'string' && slide.line.trim() ? slide.line.trim() : null;
+    const links = Array.isArray(slide.sources) && slide.sources.length
+      ? slide.sources
+          .filter((s) => s && typeof s.name === 'string' && s.name.trim())
+          .map((s) => ({ name: s.name.trim(), ...(typeof s.url === 'string' ? { url: s.url } : {}) }))
+      : null;
+    const image = slide.image ?? null;
+
+    if (!written.has(target)) {
+      written.add(target);
+      if (!headline && !line && !links && !image) continue;
+      if (headline) target[target === deck ? 'hed' : 'headline'] = headline;
+      if (line) target.line = line;
+      if (links) {
+        target.links = links;
+        target.sources = links.map((l) => l.name);
+      }
+      if (image) target.image = image;
+      target.composed = true;
+      continue;
     }
-    target.composed = true;
+
+    if (!line && !image) {
+      warn(`social.slides[${i}] adds a slide to "${slide.story}" with no line and no image. Dropped.`);
+      continue;
+    }
+    (target.more ??= []).push({
+      headline: headline ?? (target === deck ? deck.hed : target.headline),
+      line: line ?? '',
+      links: links ?? [],
+      sources: (links ?? []).map((l) => l.name),
+      ...(image ? { image } : {}),
+      composed: true,
+    });
   }
+}
+
+/** The deck's cover or the story a slide entry names: "cover", a section's number, or words from its headline. */
+export function copyTarget(deck, story) {
+  const n = typeof story === 'number' ? story : /^\s*\d+\s*$/.test(String(story ?? '')) ? Number(story) : null;
+  const beats = deck.beats ?? [];
+  if (n !== null) return n === 1 ? deck : beats.find((b) => b.section === n) ?? null;
+  const want = String(story ?? 'cover').trim().toLowerCase();
+  if (want === 'cover') return deck;
+  return beats.find((b) => (b.heading ?? b.headline).toLowerCase().includes(want)) ?? null;
+}
+
+/**
+ * record.social.deck read with its defaults (record-deck.mjs's header has the
+ * keys). A key of the wrong type is ignored with a warning, so a typo costs
+ * that setting and not the deck. `stories` and `perSlide` are the defaults.
+ */
+export function deckKnobs(raw, { date = '', lang = 'en', stories: defaultStories = 3, perSlide: maxPerSlide = 4 } = {}) {
+  const knobs = { stories: defaultStories, tracker: true, calendar: true, calendarPerSlide: maxPerSlide, subscribe: true };
+  if (raw === undefined || raw === null) return knobs;
+  const warn = (key, want) => console.warn(`WARNING: ${date} ${lang}: social.deck.${key} takes ${want}; using the default.`);
+  if (typeof raw !== 'object' || Array.isArray(raw)) {
+    console.warn(`WARNING: ${date} ${lang}: social.deck must be an object; using the default deck.`);
+    return knobs;
+  }
+  const { stories } = raw;
+  if (stories !== undefined) {
+    if (Number.isInteger(stories) && stories >= 0) knobs.stories = stories;
+    else if (Array.isArray(stories) && stories.every((n) => Number.isInteger(n) && n > 0)) knobs.stories = stories;
+    else warn('stories', 'a count, or a list of section numbers');
+  }
+  for (const key of ['tracker', 'calendar', 'subscribe']) {
+    if (raw[key] === undefined) continue;
+    if (typeof raw[key] === 'boolean') knobs[key] = raw[key];
+    else warn(key, 'true or false');
+  }
+  const per = raw.calendar_per_slide;
+  if (per !== undefined) {
+    if (Number.isInteger(per) && per >= 1 && per <= maxPerSlide) knobs.calendarPerSlide = per;
+    else warn('calendar_per_slide', `1 to ${maxPerSlide}`);
+  }
+  return knobs;
 }
 
 /**

@@ -35,6 +35,24 @@
 // The calendar comes off `upcoming[]`, which the composer assembles from the
 // watch-item rows, so there is nothing to parse out of an email and nothing to
 // reconcile between languages.
+//
+// That is the basic format, and `record.social.deck` varies it per edition
+// (David, 2026-10-19: "a basic format and parameters to vary it"). Every key is
+// optional, and an absent one keeps the default:
+//
+//   "social": { "deck": {
+//     "stories": 3,               // story slides after the cover: how many, in the
+//                                 // edition's order, or which, by section number
+//                                 // (1 is the lede): [2, 4, 5]
+//     "tracker": true,            // the 287(g) map
+//     "calendar": true,           // the calendar boards
+//     "calendar_per_slide": 4,    // entries to a board, 1-4
+//     "subscribe": true           // the closing slide
+//   } }
+//
+// A story takes as many slides as social.slides has entries for it, each with
+// its own words and image (deck.mjs applySocialCopy). A Spanish record without
+// a deck of its own takes the English one's.
 
 import { spawnSync } from 'node:child_process';
 import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from 'node:fs';
@@ -42,8 +60,8 @@ import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { applySocialCopy, buildDeck, packBoards, trimToClause } from './deck.mjs';
-import { loadPick, placePick } from './pick.mjs';
+import { applySocialCopy, buildDeck, copyTarget, deckKnobs, packBoards, trimToClause } from './deck.mjs';
+import { asPick, loadPick, placePick, withEnglishImages } from './pick.mjs';
 import { tracker287g } from './tracker287g.mjs';
 import { entryFrom } from './upcoming.mjs';
 
@@ -126,20 +144,33 @@ let shape = null;
 const decks = {};
 const tracker = with287g ? await tracker287g(date) : null;
 
+// Every warning a deck's build prints goes into its deck JSON as well, and from
+// there into deck.json beside the script: the desk previews the deck from
+// deck.json and never sees this log.
+const warned = [];
+const printWarning = console.warn;
+console.warn = (...args) => {
+  warned.push(args.join(' ').replace(/^WARNING: /, ''));
+  printWarning(...args);
+};
+
 // The picked image comes from the record (social.pick, pick.mjs). A Spanish
 // record without one of its own takes the English pick, which crops the same
 // document; its caption is the pick's caption_es if it has one. Made once a
 // run: both languages show the same crop.
-const englishPick = records.find((record) => record.lang === 'en')?.social?.pick;
+const english = records.find((record) => record.lang === 'en');
+const englishPick = english?.social?.pick;
 const picks = new Map();
-const pickFor = (pick) => {
-  const key = JSON.stringify([pick.pdf, pick.image, pick.page, pick.quote, pick.mark]);
-  if (!picks.has(key)) picks.set(key, loadPick(pick, { work: mkdtempSync(join(tmpdir(), 'daybook-pick-')), label: `${date}: ` }));
+const pickFor = (pick, at) => {
+  const key = JSON.stringify([pick.pdf, pick.image, pick.data, pick.page, pick.quote, pick.mark]);
+  if (!picks.has(key)) picks.set(key, loadPick(pick, { work: mkdtempSync(join(tmpdir(), 'daybook-pick-')), label: `${date}: `, at }));
   return picks.get(key);
 };
 
 for (const record of records) {
   const { lang } = record;
+  const from = warned.length;
+  const knobs = deckKnobs(record.social?.deck ?? (lang === 'en' ? undefined : english?.social?.deck), { date, lang, stories: DECK_STORIES, perSlide: CALENDAR_PER_SLIDE });
 
   // From the first `##`. The italic lead above it is the edition's standfirst:
   // the page and the email open on it, but it is not a section, and the deck's
@@ -148,7 +179,7 @@ for (const record of records) {
   const body = start === -1 ? record.body_md : record.body_md.slice(start);
 
   // The stories only: no events, so buildDeck sets no board of its own.
-  const built = buildDeck({ body, headline: record.title }, date, [], shape, lang, { beats: DECK_STORIES });
+  const built = buildDeck({ body, headline: record.title }, date, [], shape, lang, { beats: knobs.stories });
   if (!shape) shape = built.shape;
   const deck = built.deck;
   delete deck.briefs;
@@ -157,40 +188,55 @@ for (const record of records) {
   // is the edition's own dek, so it is the next-best line to set under it.
   if (!deck.nut && record.description) deck.nut = record.description;
 
-  // The composer's carousel copy, where the record has it (deck.mjs).
-  applySocialCopy(deck, record.social?.slides, lang);
+  // The composer's carousel copy, where the record has it (deck.mjs). A
+  // Spanish entry with no image of its own takes the English entry's in the
+  // same place, as the pick does: the same document, its caption translated.
+  const slides = lang === 'en' ? record.social?.slides : withEnglishImages(record.social?.slides, english?.social?.slides, { date, lang });
+  applySocialCopy(deck, slides, lang);
 
-  deck.upcoming = calendar(record.upcoming ?? [], lang);
-  if (tracker) deck.tracker = tracker;
+  deck.upcoming = knobs.calendar ? calendar(record.upcoming ?? [], lang, knobs.calendarPerSlide) : [];
+  if (tracker && knobs.tracker) deck.tracker = tracker;
+  if (!knobs.subscribe) deck.subscribe = false;
+
+  // Each slide's image (social.slides[].image), then the older one-per-edition
+  // pick on the story it names, unless that slide already has an image.
+  for (const target of [deck, ...deck.beats].flatMap((t) => [t, ...(t.more ?? [])])) {
+    if (!target.image) continue;
+    const image = asPick(target.image);
+    delete target.image;
+    const shown = await pickFor(image, `the image for "${target.headline ?? target.hed}"`);
+    if (shown) target.pick = { ...shown, caption: image?.caption ?? '' };
+  }
   const pick = record.social?.pick ?? englishPick;
   if (flag('--pick')) attachPick(deck, flag('--pick'), lang);
-  else if (pick) {
+  else if (pick && !copyTarget(deck, pick.story)?.pick) {
     const shown = await pickFor(pick);
     const caption = (record.social?.pick ? pick.caption : pick[`caption_${lang}`] ?? pick.caption) ?? '';
     if (shown) placePick(deck, { ...shown, caption }, pick.story, lang);
   }
   if (coverKicker) deck.coverKicker = true;
 
-  // Cover, the stories, the calendar, the offer. Past Instagram's ceiling the
-  // stories at the end come off first: they are the edition's own order, so the
-  // last ones are the ones it ranked lowest, and the calendar is the payoff.
-  const fixed = 2 + deck.upcoming.length + (deck.tracker ? 1 : 0);
-  if (fixed + deck.beats.length > MAX_SLIDES) {
-    const keep = Math.max(0, MAX_SLIDES - fixed);
-    const dropped = deck.beats.slice(keep).map((beat) => `"${beat.headline}"`);
-    console.warn(
-      `WARNING: ${date} ${lang}: ${fixed + deck.beats.length} slides is past Instagram's ${MAX_SLIDES}; ` +
-        `dropped ${dropped.length} story slide(s) off the end: ${dropped.join(', ')}.`,
-    );
-    deck.beats = deck.beats.slice(0, keep);
+  // Past the ceiling the stories at the end come off first, each with the
+  // slides it added: they are the edition's own order, so the last ones are the
+  // ones it ranked lowest, and the calendar is the payoff.
+  const storySlides = (beat) => 1 + (beat.more?.length ?? 0);
+  const fixed = 1 + (deck.more?.length ?? 0) + deck.upcoming.length + (deck.tracker ? 1 : 0) + (deck.subscribe === false ? 0 : 1);
+  const count = () => fixed + deck.beats.reduce((n, beat) => n + storySlides(beat), 0);
+  if (count() > MAX_SLIDES) {
+    const dropped = [];
+    while (deck.beats.length && count() > MAX_SLIDES) dropped.unshift(`"${deck.beats.pop().headline}"`);
+    console.warn(`WARNING: ${date} ${lang}: past ${MAX_SLIDES} slides; dropped ${dropped.length} story(ies) off the end: ${dropped.join(', ')}.`);
   }
 
+  deck.warnings = warned.slice(from).map((w) => w.replace(new RegExp(`^${date} ${lang}: `), ''));
   decks[lang] = deck;
+  const added = (deck.more?.length ?? 0) + deck.beats.reduce((n, beat) => n + (beat.more?.length ?? 0), 0);
   console.log(
-    `${date} ${lang}: cover + ${deck.beats.length} stories${deck.tracker ? ' + 287(g)' : ''} + ` +
-      `${deck.upcoming.length} calendar + subscribe = ${fixed + deck.beats.length} slides.`,
+    `${date} ${lang}: cover + ${deck.beats.length} stories${added ? ` + ${added} added` : ''}${deck.tracker ? ' + 287(g)' : ''} + ` +
+      `${deck.upcoming.length} calendar${deck.subscribe === false ? '' : ' + subscribe'} = ${count()} slides.`,
   );
 }
+console.warn = printWarning;
 
 const outPath = resolve(flag('--out') ?? join(here, 'out', `record-deck-${date}.json`));
 mkdirSync(dirname(outPath), { recursive: true });
@@ -221,7 +267,7 @@ if (render) {
  * CALENDAR_PER_SLIDE). Every entry gets a board: a deadline left off to make the
  * boards even is a deadline a reader never sees.
  */
-function calendar(upcoming, lang) {
+function calendar(upcoming, lang, perSlide = CALENDAR_PER_SLIDE) {
   const entries = upcoming
     .filter((item) => item.date && (item.line?.trim() || item.text?.trim()))
     .map((item) => {
@@ -238,7 +284,7 @@ function calendar(upcoming, lang) {
       return { ...entry, text };
     });
 
-  return packBoards(entries, CALENDAR_PER_SLIDE, CALENDAR_SLIDE_CHARS).map((board) => ({ entries: board }));
+  return packBoards(entries, perSlide, CALENDAR_SLIDE_CHARS).map((board) => ({ entries: board }));
 }
 
 /**
