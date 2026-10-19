@@ -1,10 +1,11 @@
 import { error } from '@sveltejs/kit';
-import { getEdition, listEditions, listMonths } from '$lib/daybook/loader';
+import { getEdition, getLatestDeck, getSlateUpcoming, listEditions, listMonths } from '$lib/daybook/loader';
 import { isLang } from '$lib/i18n';
 import { homePath } from '$lib/urls';
 
-// The home page is the archive. It opens on the ask and the newest edition,
-// then lists every edition by month underneath.
+// The home page is the front page, then the archive: the ask, the newest
+// edition beside its slide deck, the calendar of what's coming, then every
+// edition by month underneath.
 export const load = async ({ params }) => {
   const { lang } = params;
   if (!isLang(lang)) {
@@ -30,10 +31,16 @@ export const load = async ({ params }) => {
       ? {
           date: edition.date,
           title: edition.title,
-          description: edition.description,
+          // An archived edition's description is its section heads joined, which
+          // the list under the headline already shows; only a real dek is kept.
+          dek: edition.description.startsWith(edition.title) ? '' : edition.description,
           headings: edition.sections.map((section) => section.heading).filter(Boolean),
         }
       : null,
+    // The newest published deck, usually the latest edition's own, once it has
+    // rendered; and the standing Upcoming slate from today on.
+    deck: await getLatestDeck(lang),
+    upcoming: await getSlateUpcoming(lang),
     months: await listMonths(lang),
   };
 };

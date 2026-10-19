@@ -127,6 +127,13 @@
 
       {#if data.dossier}
         <DossierCarousel instagramPost={edition.instagramPost} lang={data.lang} slides={data.dossier.slides} />
+      {:else if data.deck}
+        <DossierCarousel
+          instagramPost={data.deck.instagramPost}
+          lang={data.lang}
+          placement="edition-deck"
+          slides={data.deck.slides}
+        />
       {/if}
 
       {#if asSent}

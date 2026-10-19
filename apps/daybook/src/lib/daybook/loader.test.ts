@@ -258,3 +258,119 @@ describe('a record as an edition', () => {
     ]);
   });
 });
+
+const deck = (date: string, lang = 'en') => ({
+  format: 'daybook-deck/1',
+  date,
+  lang,
+  revision: 2,
+  slides: [
+    {
+      name: 'cover',
+      url: `https://editions.test/social/${date}/${lang}/r2/01-cover.jpg`,
+      text: { kind: 'cover', headline: 'Judge leaves the city’s laws in place', line: 'The ruling stands.', sources: ['The Guardian', 'The Hill'] },
+    },
+    {
+      name: 'upcoming',
+      url: `https://editions.test/social/${date}/${lang}/r2/06-upcoming.jpg`,
+      text: { kind: 'calendar', headline: 'What’s coming', entries: [{ date: 'Oct. 19', day: 'Monday', text: 'Work permits end' }] },
+    },
+    { name: 'broken', url: 'not a link', text: {} },
+  ],
+});
+
+describe('an edition’s deck', () => {
+  it('shows the rendered slides with their words as alt text, and the Instagram post once there is one', async () => {
+    serve({
+      'editions/index.json': index(entry('2026-10-19')),
+      'social/2026-10-19/en/deck.json': deck('2026-10-19'),
+      'social/2026-10-19/en/posted.json': {
+        instagram: { id: '1', permalink: 'https://www.instagram.com/p/DepmbEIGcrh/' },
+        facebook: { id: '2', permalink: 'https://www.facebook.com/1/posts/2' },
+      },
+    });
+    const { getDeck } = await loader();
+
+    expect(await getDeck('en', '2026-10-19')).toEqual({
+      date: '2026-10-19',
+      instagramPost: 'DepmbEIGcrh',
+      slides: [
+        {
+          src: 'https://editions.test/social/2026-10-19/en/r2/01-cover.jpg',
+          alt: 'Judge leaves the city’s laws in place. The ruling stands. Sources: The Guardian, The Hill.',
+          caption: '',
+        },
+        { src: 'https://editions.test/social/2026-10-19/en/r2/06-upcoming.jpg', alt: 'What’s coming. Oct. 19: Work permits end.', caption: '' },
+      ],
+    });
+  });
+
+  it('has no post link before the broadcast, and no deck before the render or for the wrong edition', async () => {
+    serve({
+      'editions/index.json': index(entry('2026-10-19'), entry('2026-10-20')),
+      'social/2026-10-19/en/deck.json': deck('2026-10-19'),
+      'social/2026-10-20/en/deck.json': deck('2026-10-19'),
+    });
+    const { getDeck } = await loader();
+
+    expect(await getDeck('en', '2026-10-19')).not.toHaveProperty('instagramPost');
+    expect(await getDeck('es', '2026-10-19')).toBeNull();
+    expect(await getDeck('en', '2026-10-20')).toBeNull();
+    // An archived edition's card is its dossier; the bucket isn't asked.
+    expect(await getDeck('en', '2026-10-09')).toBeNull();
+    expect(requested.some((url) => url.includes('social/2026-10-09'))).toBe(false);
+  });
+
+  it('puts the newest published deck on the home page', async () => {
+    serve({
+      'editions/index.json': index(entry('2026-10-19'), entry('2026-10-20')),
+      'social/2026-10-19/en/deck.json': deck('2026-10-19'),
+    });
+    const { getLatestDeck } = await loader();
+
+    expect(await getLatestDeck('en')).toMatchObject({ date: '2026-10-19' });
+    expect(await getLatestDeck('es')).toBeNull();
+  });
+});
+
+describe('the slate on the home page', () => {
+  const slate = {
+    format: 'daybook-slate/1',
+    updated_at: '2026-10-18T23:00:00Z',
+    from: '2026-10-18',
+    to: '2026-11-17',
+    items: [
+      { watch_item_id: 3, date: '2026-11-09', status: 'x', en: { text: 'Fee comments close.', line: null }, es: null, sources: [] },
+      { watch_item_id: 1, date: '2026-10-18', status: 'x', en: { text: 'Passed.', line: 'Passed' }, es: { text: 'Pasó.', line: null }, sources: [] },
+      {
+        watch_item_id: 2,
+        date: '2026-10-19',
+        status: 'x',
+        en: { text: 'The long words.', line: 'Work permits end' },
+        es: { text: 'Las palabras largas.', line: 'Terminan los permisos' },
+        sources: [{ label: 'Federal Register', url: 'https://www.federalregister.gov/d/1' }, { label: 'bad', url: 'javascript:x' }],
+      },
+      { watch_item_id: 4, date: '2026-10-19', status: 'x', en: { text: 'Same day.', line: null }, es: { text: 'El mismo día.', line: null }, sources: [] },
+    ],
+  };
+
+  it('runs from today, in date order, in the short lines where there are any, and prints a shared date once', async () => {
+    serve({ 'upcoming/slate.json': slate });
+    const { getSlateUpcoming } = await loader();
+
+    expect(await getSlateUpcoming('en', '2026-10-19')).toEqual([
+      { date: '2026-10-19', summary: 'Work permits end', sources: [{ label: 'Federal Register', url: 'https://www.federalregister.gov/d/1' }], repeatsDate: false },
+      { date: '2026-10-19', summary: 'Same day.', sources: [], repeatsDate: true },
+      { date: '2026-11-09', summary: 'Fee comments close.', sources: [], repeatsDate: false },
+    ]);
+    // Spanish leaves out what has no Spanish rather than printing the English.
+    expect((await getSlateUpcoming('es', '2026-10-19')).map((e) => e.summary)).toEqual(['Terminan los permisos', 'El mismo día.']);
+  });
+
+  it('shows no calendar when the file is missing or isn’t a slate', async () => {
+    serve({});
+    expect(await (await loader()).getSlateUpcoming('en', '2026-10-19')).toEqual([]);
+    serve({ 'upcoming/slate.json': { format: 'something-else' } });
+    expect(await (await loader()).getSlateUpcoming('en', '2026-10-19')).toEqual([]);
+  });
+});
