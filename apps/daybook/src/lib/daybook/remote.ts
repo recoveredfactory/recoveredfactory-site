@@ -13,6 +13,9 @@ import type { Lang } from '$lib/i18n';
  *
  *   editions/index.json            {format: "daybook-index/1", updated_at, editions: [...]}
  *   editions/{date}/{lang}.json    the daybook/1 record as published
+ *   social/{date}/{lang}/deck.json the edition's slide deck, once this repo's deck Action renders it
+ *   social/{date}/{lang}/posted.json  the posts that deck went out as, once broadcast
+ *   upcoming/slate.json            the standing Upcoming slate's next 30 days
  *
  * Every read here is cached in module memory for a minute per Lambda instance,
  * and concurrent reads of the same object share one request. A failed refresh
@@ -44,6 +47,43 @@ export type EditionRecord = {
   [key: string]: unknown;
 };
 
+/** One slide of an edition's deck: the rendered image and the words baked into it. */
+export type DeckSlide = {
+  name: string;
+  url: string;
+  text: Record<string, unknown>;
+};
+
+/** An edition's social deck (`daybook-deck/1`), as the deck Action wrote it. */
+export type Deck = {
+  date: string;
+  lang: Lang;
+  revision?: number;
+  slides: DeckSlide[];
+};
+
+/** Where a deck went out, by platform: the posts' public links. */
+export type Posted = {
+  instagram?: string;
+  facebook?: string;
+};
+
+/** One dated item on the public slate, in the languages it has. */
+export type SlateItem = {
+  watchItemId: number;
+  date: string;
+  en: { text: string; line: string | null };
+  es: { text: string; line: string | null } | null;
+  sources: Array<{ label: string; url: string }>;
+};
+
+/** The public slate (`daybook-slate/1`): the standing Upcoming items in a 30-day window. */
+export type Slate = {
+  from: string;
+  to: string;
+  items: SlateItem[];
+};
+
 type Log = (message: string) => void;
 
 type RemoteOptions = {
@@ -65,6 +105,12 @@ export type Remote = {
   index(): Promise<IndexEntry[]>;
   /** One record, or null when it is missing, unreachable or malformed. */
   record(date: string, lang: Lang): Promise<EditionRecord | null>;
+  /** An edition's deck, or null until it has rendered. */
+  deck(date: string, lang: Lang): Promise<Deck | null>;
+  /** An edition's posts, or null until it has been broadcast. */
+  posted(date: string, lang: Lang): Promise<Posted | null>;
+  /** The public slate, or null when it is missing or unreadable. */
+  slate(): Promise<Slate | null>;
 };
 
 const DATE = /^\d{4}-\d{2}-\d{2}$/;
@@ -122,7 +168,14 @@ export function createRemote({
   }
 
   if (!base) {
-    return { enabled: false, index: async () => [], record: async () => null };
+    return {
+      enabled: false,
+      index: async () => [],
+      record: async () => null,
+      deck: async () => null,
+      posted: async () => null,
+      slate: async () => null,
+    };
   }
 
   return {
@@ -150,7 +203,95 @@ export function createRemote({
       });
       return record ?? null;
     },
+
+    // The deck and its posts arrive after the record, a minute or two for the
+    // render and only on broadcast for the posts, so a missing one is the
+    // normal state for a while and isn't logged.
+    async deck(date, lang) {
+      if (!DATE.test(date) || !isLang(lang)) return null;
+      const path = `social/${date}/${lang}/deck.json`;
+      const deck = await cached(path, async () => {
+        const raw = await getJson(path);
+        return raw === null ? null : readDeck(raw, date, lang, log);
+      });
+      return deck ?? null;
+    },
+
+    async posted(date, lang) {
+      if (!DATE.test(date) || !isLang(lang)) return null;
+      const path = `social/${date}/${lang}/posted.json`;
+      const posted = await cached(path, async () => {
+        const raw = await getJson(path);
+        return raw === null ? null : readPosted(raw);
+      });
+      return posted ?? null;
+    },
+
+    async slate() {
+      const slate = await cached('upcoming/slate.json', async () => {
+        const raw = await getJson('upcoming/slate.json');
+        return raw === null ? null : readSlate(raw, log);
+      });
+      return slate ?? null;
+    },
   };
+}
+
+const isHttp = (value: unknown): value is string => typeof value === 'string' && /^https?:\/\//.test(value);
+
+/** A deck that belongs to its key and has slides to show, or null. */
+export function readDeck(raw: unknown, date: string, lang: Lang, log: Log): Deck | null {
+  const doc = raw as { format?: unknown; date?: unknown; lang?: unknown; revision?: unknown; slides?: unknown };
+  if (doc?.format !== 'daybook-deck/1' || doc.date !== date || doc.lang !== lang || !Array.isArray(doc.slides)) {
+    log(`social/${date}/${lang}/deck.json: not this edition's daybook-deck/1, skipped`);
+    return null;
+  }
+  const slides = (doc.slides as Record<string, unknown>[])
+    .filter((slide) => slide && isHttp(slide.url))
+    .map((slide) => ({
+      name: typeof slide.name === 'string' ? slide.name : '',
+      url: slide.url as string,
+      text: slide.text && typeof slide.text === 'object' ? (slide.text as Record<string, unknown>) : {},
+    }));
+  if (!slides.length) return null;
+  return { date, lang, revision: typeof doc.revision === 'number' ? doc.revision : undefined, slides };
+}
+
+/** The posts' public links, by platform. */
+export function readPosted(raw: unknown): Posted | null {
+  const doc = (raw ?? {}) as Record<string, { permalink?: unknown } | undefined>;
+  const posted: Posted = {};
+  if (isHttp(doc.instagram?.permalink)) posted.instagram = doc.instagram.permalink;
+  if (isHttp(doc.facebook?.permalink)) posted.facebook = doc.facebook.permalink;
+  return Object.keys(posted).length ? posted : null;
+}
+
+/** The slate's items that can be printed: a date, English words, and only linkable sources. */
+export function readSlate(raw: unknown, log: Log): Slate | null {
+  const doc = raw as { format?: unknown; from?: unknown; to?: unknown; items?: unknown };
+  if (doc?.format !== 'daybook-slate/1' || !DATE.test(String(doc.from)) || !DATE.test(String(doc.to)) || !Array.isArray(doc.items)) {
+    log('upcoming/slate.json: not a daybook-slate/1 document, skipped');
+    return null;
+  }
+  const words = (value: unknown) => {
+    const copy = (value ?? {}) as { text?: unknown; line?: unknown };
+    return isText(copy.text) ? { text: copy.text.trim(), line: isText(copy.line) ? copy.line.trim() : null } : null;
+  };
+  const items: SlateItem[] = [];
+  for (const item of doc.items as Record<string, unknown>[]) {
+    const en = words(item?.en);
+    if (!item || !DATE.test(String(item.date)) || typeof item.watch_item_id !== 'number' || !en) continue;
+    items.push({
+      watchItemId: item.watch_item_id,
+      date: String(item.date),
+      en,
+      es: words(item.es),
+      sources: (Array.isArray(item.sources) ? (item.sources as Record<string, unknown>[]) : [])
+        .filter((source) => source && isHttp(source.url))
+        .map((source) => ({ label: isText(source.label) ? source.label.trim() : String(source.url), url: String(source.url) })),
+    });
+  }
+  return { from: String(doc.from), to: String(doc.to), items };
 }
 
 /**

@@ -16,17 +16,19 @@
     lang: Lang;
     /** Heading level to render at, matching the edition's own sections. */
     level?: 2 | 3;
+    /** Set as a page section of its own (the home page): display heading, no rule above. */
+    display?: boolean;
   };
 
-  let { entries, lang, level = 2 }: UpcomingCalendarProps = $props();
+  let { entries, lang, level = 2, display = false }: UpcomingCalendarProps = $props();
 
   const t = $derived(copy[lang].ui.calendar);
 </script>
 
 {#if entries.length}
-  <section class="border-t-2 border-ink pt-6">
-    <svelte:element this={`h${level}`} class="db-hed">{t.heading}</svelte:element>
-    <p class="mt-1 text-ink-soft">{t.window}</p>
+  <section class={display ? '' : 'border-t-2 border-ink pt-6'}>
+    <svelte:element this={`h${level}`} class={display ? 'db-display' : 'db-hed'}>{t.heading}</svelte:element>
+    <p class={`${display ? 'mt-3' : 'mt-1'} text-ink-soft`}>{t.window}</p>
 
     <dl class="mt-7 flex flex-col gap-6">
       {#each entries as entry}

@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { getDossier } from '$lib/daybook/dossier';
-import { getEdition, getMonth, hasEdition, listEditions } from '$lib/daybook/loader';
+import { getDeck, getEdition, getMonth, hasEdition, listEditions } from '$lib/daybook/loader';
 import { getUpcoming, parseUpcomingIds } from '$lib/daybook/upcoming';
 import { isLang, LANGS } from '$lib/i18n';
 import { editionPath } from '$lib/urls';
@@ -48,6 +48,9 @@ export const load = async ({ params, url }) => {
       edition: asSent ? edition : { ...edition, emailHtml: null },
       asSent,
       dossier: edition.dossier ? getDossier(edition.dossier, lang) : null,
+      // A published edition's own deck, the same card a dossier gets, once the
+      // deck Action has rendered it; it links to the Instagram post once there is one.
+      deck: edition.dossier ? null : await getDeck(lang, ref),
       // The calendar as the edition ran it. Editions before 2026-08-26 carried
       // none in the markdown and get a reconstruction from the pipeline's
       // snapshot, narrowed to what the email carried. An edition that skipped

@@ -3,8 +3,10 @@ import { dev } from '$app/environment';
 import { env as privateEnv } from '$env/dynamic/private';
 import { env } from '$env/dynamic/public';
 
+import { copy } from '$lib/copy';
 import { inDateOrder, liftCalendar, readEmailCalendar } from '$lib/daybook/calendar';
-import { createRemote, type EditionRecord, type IndexEntry, type Remote } from '$lib/daybook/remote';
+import type { DossierSlide } from '$lib/daybook/dossier';
+import { createRemote, type DeckSlide, type EditionRecord, type IndexEntry, type Remote } from '$lib/daybook/remote';
 import { extractEvents, type CalendarEvent } from '$lib/daybook/schema';
 import type { UpcomingEntry } from '$lib/daybook/upcoming';
 import type { Lang } from '$lib/i18n';
@@ -695,4 +697,87 @@ function neutralizeHtml(body: string): string {
 
 function escapeAttr(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;');
+}
+
+// ---------------------------------------------------------------------------
+// The social deck and the slate, both read from the bucket beside the editions.
+
+export type EditionDeck = {
+  /** The edition the deck was cut from. */
+  date: string;
+  slides: DossierSlide[];
+  /** Shortcode of the Instagram post it went out as, once it has. */
+  instagramPost?: string;
+};
+
+/**
+ * A published edition's deck, as the card on the page shows it. Null for an
+ * archived edition (its card, if any, is a dossier) and until the deck Action
+ * has rendered one, a minute or two after the edition is published. The
+ * Instagram link appears once the broadcast has posted it.
+ */
+export async function getDeck(lang: Lang, date: string): Promise<EditionDeck | null> {
+  if (editionsByLang[lang].has(date)) return null;
+  const deck = await remote().deck(date, lang);
+  if (!deck) return null;
+  const posted = await remote().posted(date, lang);
+  const shortcode = posted?.instagram?.match(/instagram\.com\/(?:p|reel)\/([\w-]+)/)?.[1];
+  return {
+    date,
+    // A deck rendered before slides carried their words (the first, 10/14) says
+    // at least where in the deck a slide is.
+    slides: deck.slides.map((slide, i, all) => ({
+      src: slide.url,
+      alt: slideAlt(slide, lang) || copy[lang].ui.dossier.slide(i + 1, all.length),
+      caption: '',
+    })),
+    ...(shortcode ? { instagramPost: shortcode } : {}),
+  };
+}
+
+/**
+ * The words on a slide, for anyone who can't see it: every slide kind carries
+ * the text it was drawn from, so the alt text is that text, in order.
+ */
+function slideAlt(slide: DeckSlide, lang: Lang): string {
+  const text = slide.text;
+  const words = (value: unknown) => (typeof value === 'string' ? value.trim() : '');
+  const list = (value: unknown) => (Array.isArray(value) ? value.map(words).filter(Boolean) : []);
+  const parts = [words(text.headline), words(text.line), ...list(text.items)];
+  for (const entry of Array.isArray(text.entries) ? text.entries : []) {
+    const row = (entry ?? {}) as Record<string, unknown>;
+    parts.push([words(row.date), words(row.text)].filter(Boolean).join(': '));
+  }
+  const sources = list(text.sources);
+  if (sources.length) parts.push(`${copy[lang].ui.dossier.sources}: ${sources.join(', ')}`);
+  return parts
+    .filter(Boolean)
+    .map((part) => (/[.!?…:]$/.test(part) ? part : `${part}.`))
+    .join(' ');
+}
+
+/** Today in Bogota, the day the desk and the slate count from. */
+const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'America/Bogota' }).format(new Date());
+
+/**
+ * The standing Upcoming slate, from today to the end of its window, in its
+ * short calendar lines where it has them. The file is rewritten nightly, so an
+ * item that has passed since is dropped here; one with no words in this
+ * language is left out rather than printed in the other.
+ */
+export async function getSlateUpcoming(lang: Lang, on: string = today()): Promise<UpcomingEntry[]> {
+  const slate = await remote().slate();
+  if (!slate) return [];
+  const entries: UpcomingEntry[] = [];
+  for (const item of [...slate.items].sort((a, b) => a.date.localeCompare(b.date))) {
+    const words = lang === 'en' ? item.en : item.es;
+    if (!words || item.date < on || item.date > slate.to) continue;
+    entries.push({
+      date: item.date,
+      summary: words.line ?? words.text,
+      sources: item.sources,
+      repeatsDate: entries.at(-1)?.date === item.date,
+    });
+  }
+  return entries;
 }

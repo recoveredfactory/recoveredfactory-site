@@ -1,5 +1,7 @@
 <script lang="ts">
+  import DossierCarousel from '$lib/components/DossierCarousel.svelte';
   import SubscribeBox from '$lib/components/SubscribeBox.svelte';
+  import UpcomingCalendar from '$lib/components/UpcomingCalendar.svelte';
   import { SITE_URL } from '$lib/config';
   import { copy } from '$lib/copy';
   import { formatEditionDate, formatMonth } from '$lib/daybook/format';
@@ -15,8 +17,8 @@
   const editions = $derived(data.months.flatMap((month) => month.editions));
   const schema = $derived(archiveSchema(data.lang, editions));
 
-  // The lede's headline is the edition's title, so "also in this edition" is
-  // the section heads after it.
+  // The lede's headline is the edition's title, so where the title runs as the
+  // headline, "also in this edition" is the section heads after it.
   const alsoIn = $derived(data.latest?.headings.slice(1) ?? []);
 </script>
 
@@ -59,34 +61,50 @@
     </div>
   </section>
 
-  <!-- ── Smoke and fire ───────────────────────────────────────────────── -->
-  <section class="mx-auto max-w-5xl px-5 py-14 sm:px-8 sm:py-20">
-    <h2 class="db-display max-w-4xl">{@html t.home.fire}</h2>
-    <div class="mt-8 max-w-3xl">
-      {#each t.home.fireGrafs as graf}
-        <p class="db-graf">{graf}</p>
-      {/each}
-    </div>
+  <!-- ── The front page ─────────────────────────────────────────────────
+       The newest edition. Once its deck has rendered, the deck is the lead
+       art and the column beside it is the rundown, every section head the
+       lede's included, small. Without a deck the headline takes the full
+       width. -->
+  {#if data.latest && data.deck}
+    <section class="bg-paper">
+      <div
+        class="mx-auto grid max-w-5xl gap-x-12 gap-y-8 px-5 py-14 sm:px-8 sm:py-20 md:grid-cols-[minmax(0,1fr)_minmax(0,27rem)] md:grid-rows-[auto_1fr] lg:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] lg:gap-x-16"
+      >
+        <header class="min-w-0 md:col-start-1 md:row-start-1">
+          <h2 class="db-display">{t.home.latest.heading}</h2>
+          <p class="mt-3 font-semibold text-fire">
+            {formatEditionDate(data.latest.date, data.lang, { weekday: true })}
+          </p>
+        </header>
 
-    <!-- Spectacle on the left, evidence on the right. The rows are the
-         argument: the thing that made the news, and the document under it. -->
-    <div class="mt-12 border-t-2 border-ink">
-      <div class="grid grid-cols-2 gap-x-6 border-b border-ink/20 py-4 font-display text-[1.25em] font-semibold sm:gap-x-10">
-        <p class="text-smoke">{t.home.pairs.spectacle}</p>
-        <p class="text-fire">{t.home.pairs.evidence}</p>
-      </div>
-      {#each t.home.pairs.rows as [spectacle, evidence]}
-        <div class="grid grid-cols-2 gap-x-6 border-b border-ink/20 py-5 sm:gap-x-10">
-          <p class="text-smoke">{spectacle}</p>
-          <p class="font-semibold">{evidence}</p>
+        <div class="min-w-0 md:col-start-2 md:row-span-2 md:row-start-1">
+          <DossierCarousel
+            instagramPost={data.deck.instagramPost}
+            lang={data.lang}
+            placement="home"
+            slides={data.deck.slides}
+          />
         </div>
-      {/each}
-    </div>
-  </section>
 
-  <!-- ── The latest edition ───────────────────────────────────────────── -->
-  {#if data.latest}
-    <section class="border-t-2 border-ink bg-paper">
+        <div class="min-w-0 md:col-start-1 md:row-start-2">
+          {#if data.latest.headings.length}
+            <p class="font-semibold">{t.home.latest.inside}</p>
+            <ul class="mt-3">
+              {#each data.latest.headings as heading}
+                <li class="border-t border-ink/20 py-3.5 font-display text-[1.375rem] font-semibold leading-tight">{heading}</li>
+              {/each}
+            </ul>
+          {/if}
+          <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+            <a class="db-button" href={editionPath(data.lang, data.latest.date)}>{t.home.latest.read} →</a>
+            <p class="db-links"><a href="#archive">{t.home.latest.all}</a></p>
+          </div>
+        </div>
+      </div>
+    </section>
+  {:else if data.latest}
+    <section class="bg-paper">
       <div class="mx-auto max-w-5xl px-5 py-14 sm:px-8 sm:py-20">
         <p class="font-semibold text-fire">
           {t.home.latest.heading} · {formatEditionDate(data.latest.date, data.lang, { weekday: true })}
@@ -98,51 +116,32 @@
         </h2>
         {#if alsoIn.length}
           <p class="mt-8 font-semibold">{t.home.latest.also}</p>
-          <ul class="mt-2 max-w-3xl">
+          <ul class="mt-3 max-w-3xl">
             {#each alsoIn as heading}
-              <li class="border-t border-ink/20 py-3">{heading}</li>
+              <li class="border-t border-ink/20 py-3.5 font-display text-[1.375rem] font-semibold leading-tight">{heading}</li>
             {/each}
           </ul>
         {/if}
-        <div class="mt-8 flex flex-wrap gap-3">
+        <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
           <a class="db-button" href={editionPath(data.lang, data.latest.date)}>{t.home.latest.read} →</a>
-          <a class="db-button db-button--ghost" href="#archive">{t.home.latest.all}</a>
+          <p class="db-links"><a href="#archive">{t.home.latest.all}</a></p>
         </div>
       </div>
     </section>
   {/if}
 
-  <!-- ── What's in it ─────────────────────────────────────────────────── -->
-  <section class="border-t-2 border-ink">
-    <div class="mx-auto max-w-5xl px-5 py-14 sm:px-8 sm:py-20">
-      <h2 class="db-display">{t.home.whatsIn.heading}</h2>
-      <div class="mt-10 grid gap-10 md:grid-cols-3 md:gap-8">
-        {#each t.home.whatsIn.items as item}
-          <div>
-            <h3 class="db-hed">{@html item.hed}</h3>
-            <p class="db-graf mt-4 text-[0.95em]">{@html item.body}</p>
-          </div>
-        {/each}
+  <!-- ── What's coming ────────────────────────────────────────────────
+       The standing Upcoming slate, the next four weeks of it: the calendar
+       every edition runs, kept current between editions. -->
+  {#if data.upcoming.length}
+    <section class="border-t-2 border-ink" id="upcoming">
+      <div class="mx-auto max-w-5xl px-5 py-14 sm:px-8 sm:py-20">
+        <div class="max-w-3xl">
+          <UpcomingCalendar display entries={data.upcoming} lang={data.lang} />
+        </div>
       </div>
-
-      <!-- Two shots of a real edition. Screenshots of the thing itself, not
-           an illustration of it. -->
-      <div class="mt-14 grid gap-8 md:grid-cols-2">
-        {#each t.home.whatsIn.shots as shot}
-          <figure>
-            <img
-              alt={shot.alt}
-              class="w-full border-2 border-ink bg-paper"
-              decoding="async"
-              loading="lazy"
-              src={shot.src}
-            />
-            <figcaption class="mt-3 text-[1rem] text-ink-soft">{shot.caption}</figcaption>
-          </figure>
-        {/each}
-      </div>
-    </div>
-  </section>
+    </section>
+  {/if}
 
   <!-- ── Every edition ────────────────────────────────────────────────── -->
   <section class="border-t-2 border-ink bg-paper" id="archive">

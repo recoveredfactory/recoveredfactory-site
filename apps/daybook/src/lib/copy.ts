@@ -50,11 +50,15 @@ const en = {
     dossier: {
       follow: 'Follow @recoveredfactory on Instagram',
       seePost: 'See the post',
+      sources: 'Sources',
       swipe: 'Swipe for more',
       previous: 'Previous',
       next: 'Next',
       slide: (i: number, of: number) => `Slide ${i} of ${of}`,
       goTo: (i: number) => `Go to ${i}`,
+      inSlides: (n: number) => `This edition in ${n} slides`,
+      flip: 'Flip through',
+      fold: 'Close',
     },
     footer: {
       project:
@@ -70,58 +74,12 @@ const en = {
       'A weekday rundown of the immigration system — and a calendar of what’s coming. Effective dates, comment deadlines, court dates. Every edition online, in English and Spanish.',
     // The plate. Deck first, then the terms, then the ask.
     deck: 'Making sense of the spectacle. Every weekday, in English and Spanish.',
-    // The one sentence in colour.
-    fire: 'There’s a lot of <em class="db-fire">fire</em> in the immigration system right now. There’s even more <em class="db-smoke">smoke</em>.',
-    fireGrafs: [
-      'Thousands of articles, videos, threads, and posts a day, often covering actions that seem designed to create confusion, chaos, and spectacle.',
-      'We use algorithms to show where the smoke is thickest, and judgment and expertise to reveal what really matters.',
-    ],
-    // Spectacle on the left, evidence on the right. Same rows in both languages.
-    // TODO(david): draft pairs — the shape is the point, swap the examples.
-    pairs: {
-      spectacle: 'Spectacle',
-      evidence: 'Evidence',
-      rows: [
-        ['A raid on video.', 'The agreement that put local police in it.'],
-        ['A press conference.', 'The Federal Register notice, and its comment deadline.'],
-        ['A threat on social media.', 'The docket number, and the hearing date.'],
-        ['A number shouted on TV.', 'The same number, checked against the Deportation Data Project.'],
-      ],
-    },
     latest: {
-      heading: 'The latest edition',
+      heading: 'The latest',
+      inside: 'In this edition',
       also: 'Also in this edition',
       read: 'Read the edition',
       all: 'Every edition',
-    },
-    whatsIn: {
-      heading: 'What’s in it',
-      items: [
-        {
-          hed: 'A calendar of what’s coming.',
-          body: 'Effective dates, comment deadlines, court dates — all backed by primary sources and links to expert analysis. The rules that quietly take force while everyone’s arguing about the outrage of the day.',
-        },
-        {
-          hed: 'The day’s rundown, grounded in reporting and evidence.',
-          body: 'When we cite links about deportation, we check them against the <a href="https://deportationdata.org">Deportation Data Project</a>. A reported rule change is checked against the <a href="https://www.federalregister.gov">Federal Register</a> and the <a href="https://www.uscis.gov/policy-manual">USCIS Policy Manual</a>.',
-        },
-        {
-          hed: 'The headlines, from English <em>and</em> Spanish media.',
-          body: 'Spanish-language TV news, deeply technical policy blogs, Substack newsletters, social video — from nerdy law blogs to YouTube coverage of ICE raids, we’re watching and bringing you what’s relevant.',
-        },
-      ],
-      shots: [
-        {
-          src: '/images/immigration-daybook-edition-en.png',
-          alt: 'The top of an Immigration Daybook edition dated August 3, 2026. The lead story reports that a federal contract funding legal aid for unaccompanied migrant children has expired, leaving tens of thousands of minors facing immigration court without attorneys. Two bolded follow-up items each end in source links.',
-          caption: 'The rundown: what happened, what it means, and who reported it.',
-        },
-        {
-          src: '/images/immigration-daybook-upcoming-en.png',
-          alt: 'The Upcoming section of the same edition, a dated calendar split into Today and This Week, each entry carrying a source link to the Federal Register or WR Immigration.',
-          caption: 'The calendar: what’s coming, with the primary source or expert citation for each date.',
-        },
-      ],
     },
     made: {
       heading: 'How it’s made',
@@ -183,11 +141,15 @@ const es: Copy = {
     dossier: {
       follow: 'Sigue a @recoveredfactory en Instagram',
       seePost: 'Ver la publicación',
+      sources: 'Fuentes',
       swipe: 'Desliza para ver más',
       previous: 'Anterior',
       next: 'Siguiente',
       slide: (i: number, of: number) => `Diapositiva ${i} de ${of}`,
       goTo: (i: number) => `Ir a ${i}`,
+      inSlides: (n: number) => `Esta edición en ${n} diapositivas`,
+      flip: 'Hojéalas',
+      fold: 'Cerrar',
     },
     footer: {
       project:
@@ -202,56 +164,12 @@ const es: Copy = {
     metaDescription:
       'Un resumen diario del sistema migratorio y un calendario de lo que viene. Fechas de entrada en vigor, plazos de comentarios, audiencias. Todas las ediciones en línea, en español e inglés.',
     deck: 'Para entender el espectáculo. Cada día hábil, en español e inglés.',
-    fire: 'Hay mucho <em class="db-fire">fuego</em> en el sistema migratorio ahora mismo. Hay todavía más <em class="db-smoke">humo</em>.',
-    fireGrafs: [
-      'Miles de artículos, videos, hilos y publicaciones al día, muchas veces sobre acciones que parecen diseñadas para producir confusión, caos y espectáculo.',
-      'Usamos algoritmos para mostrar dónde está más espeso el humo, y criterio y experiencia para revelar lo que de verdad importa.',
-    ],
-    // TODO(david): borrador — la forma es lo que importa; cambia los ejemplos.
-    pairs: {
-      spectacle: 'Espectáculo',
-      evidence: 'Evidencia',
-      rows: [
-        ['Una redada en video.', 'El acuerdo que metió a la policía local en ella.'],
-        ['Una rueda de prensa.', 'El aviso en el Federal Register, y su plazo de comentarios.'],
-        ['Una amenaza en redes.', 'El número de expediente, y la fecha de la audiencia.'],
-        ['Una cifra gritada en la tele.', 'La misma cifra, contrastada con el Deportation Data Project.'],
-      ],
-    },
     latest: {
-      heading: 'La última edición',
+      heading: 'Lo último',
+      inside: 'En esta edición',
       also: 'También en esta edición',
       read: 'Leer la edición',
       all: 'Todas las ediciones',
-    },
-    whatsIn: {
-      heading: 'Qué vas a recibir',
-      items: [
-        {
-          hed: 'Un calendario de lo que viene.',
-          body: 'Fechas de entrada en vigor, plazos para enviar comentarios, audiencias: todo respaldado por fuentes primarias y con enlaces al análisis de quienes saben. Las normas que entran en vigor en voz baja mientras todo el mundo discute la indignación del día.',
-        },
-        {
-          hed: 'El resumen del día, con reporteo y evidencia detrás.',
-          body: 'Cuando citamos enlaces sobre deportación, los contrastamos con el <a href="https://deportationdata.org">Deportation Data Project</a>. Un cambio de norma que se reporta se contrasta con el <a href="https://www.federalregister.gov">Federal Register</a> y el <a href="https://www.uscis.gov/policy-manual">Manual de Políticas de USCIS</a>.',
-        },
-        {
-          hed: 'Los titulares, de medios en inglés <em>y</em> en español.',
-          body: 'Noticieros de televisión en español, blogs de política migratoria muy técnicos, boletines de Substack, video social: desde blogs jurídicos especializados hasta cobertura de redadas de ICE en YouTube, estamos mirando y te traemos lo relevante.',
-        },
-      ],
-      shots: [
-        {
-          src: '/images/immigration-daybook-edition-en.png',
-          alt: 'La parte superior de una edición de Immigration Daybook del 3 de agosto de 2026, en inglés. La nota principal informa que venció un contrato federal que financiaba asistencia legal para menores migrantes no acompañados.',
-          caption: 'El resumen: qué pasó, qué significa y quién lo reportó. (Edición en inglés.)',
-        },
-        {
-          src: '/images/immigration-daybook-upcoming-en.png',
-          alt: 'La sección Próximamente de la misma edición: un calendario con fechas, cada entrada con su enlace al Federal Register o a WR Immigration.',
-          caption: 'El calendario: lo que viene, con la fuente primaria o la cita experta de cada fecha.',
-        },
-      ],
     },
     made: {
       heading: 'Cómo se hace',
