@@ -735,18 +735,6 @@ export async function getDeck(lang: Lang, date: string): Promise<EditionDeck | n
   };
 }
 
-/** The newest published edition's deck: what the home page shows off. */
-export async function getLatestDeck(lang: Lang): Promise<EditionDeck | null> {
-  const published = (await remote().index())
-    .filter((entry) => entry.lang === lang && !editionsByLang[lang].has(entry.date))
-    .sort((a, b) => b.date.localeCompare(a.date));
-  for (const entry of published.slice(0, 3)) {
-    const deck = await getDeck(lang, entry.date);
-    if (deck) return deck;
-  }
-  return null;
-}
-
 /**
  * The words on a slide, for anyone who can't see it: every slide kind carries
  * the text it was drawn from, so the alt text is that text, in order.

@@ -320,17 +320,6 @@ describe('an edition’s deck', () => {
     expect(await getDeck('en', '2026-10-09')).toBeNull();
     expect(requested.some((url) => url.includes('social/2026-10-09'))).toBe(false);
   });
-
-  it('puts the newest published deck on the home page', async () => {
-    serve({
-      'editions/index.json': index(entry('2026-10-19'), entry('2026-10-20')),
-      'social/2026-10-19/en/deck.json': deck('2026-10-19'),
-    });
-    const { getLatestDeck } = await loader();
-
-    expect(await getLatestDeck('en')).toMatchObject({ date: '2026-10-19' });
-    expect(await getLatestDeck('es')).toBeNull();
-  });
 });
 
 describe('the slate on the home page', () => {

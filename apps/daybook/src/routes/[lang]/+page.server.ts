@@ -1,11 +1,11 @@
 import { error } from '@sveltejs/kit';
-import { getEdition, getLatestDeck, getSlateUpcoming, listEditions, listMonths } from '$lib/daybook/loader';
+import { getDeck, getEdition, getSlateUpcoming, listEditions, listMonths } from '$lib/daybook/loader';
 import { isLang } from '$lib/i18n';
 import { homePath } from '$lib/urls';
 
 // The home page is the front page, then the archive: the ask, the newest
-// edition beside its slide deck, the calendar of what's coming, then every
-// edition by month underneath.
+// edition as its slide deck, the calendar of what's coming, then every edition
+// by month underneath.
 export const load = async ({ params }) => {
   const { lang } = params;
   if (!isLang(lang)) {
@@ -26,20 +26,20 @@ export const load = async ({ params }) => {
     lang,
     switchTo: homePath(lang === 'en' ? 'es' : 'en'),
     // Finished strings only: the loader stays on the server, and the page
-    // wants the headline and the other section heads, nothing more.
+    // wants the headline and the other section heads, nothing more. The dek is
+    // left out: it is those same heads run together as a sentence.
     latest: edition
       ? {
           date: edition.date,
           title: edition.title,
-          // An archived edition's description is its section heads joined, which
-          // the list under the headline already shows; only a real dek is kept.
-          dek: edition.description.startsWith(edition.title) ? '' : edition.description,
           headings: edition.sections.map((section) => section.heading).filter(Boolean),
         }
       : null,
-    // The newest published deck, usually the latest edition's own, once it has
-    // rendered; and the standing Upcoming slate from today on.
-    deck: await getLatestDeck(lang),
+    // The latest edition's own deck, once the deck Action has rendered it. An
+    // older edition's deck beside the newest headline would show two days' news
+    // as one, so until then the headline runs alone.
+    deck: edition ? await getDeck(lang, edition.date) : null,
+    // The standing Upcoming slate, from today on.
     upcoming: await getSlateUpcoming(lang),
     months: await listMonths(lang),
   };

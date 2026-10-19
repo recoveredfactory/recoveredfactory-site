@@ -7,7 +7,9 @@
    * surveillance means asking readers to accept being tracked to look at our
    * reporting about tracking. The slides are on our own origin, so the card is
    * built here. Without JavaScript it is a horizontally scrollable strip of
-   * images with captions; JavaScript adds the paddles and the dots.
+   * images with captions; JavaScript adds the paddles and the dots. The paddles
+   * sit in the bar under the slide, beside the dots, not on it: the slides are
+   * mostly words, and a button over the image covers the end of a line.
    */
   import { onMount } from 'svelte';
   import { trackEvent } from '$lib/analytics';
@@ -67,11 +69,10 @@
     }
   };
 
-  // Centred on the slide, not the scroller: the slides are 4:5, so half an
-  // image is 62.5% of the card's width, read off the card with a container query.
+  // At either end the paddle fades rather than goes, so the dots never shift.
   const paddleClass =
-    'absolute top-[62.5cqw] flex size-10 -translate-y-1/2 items-center justify-center ' +
-    'bg-cream/85 text-ink ring-1 ring-ink/10 transition hover:bg-cream disabled:pointer-events-none disabled:opacity-0';
+    'flex size-9 shrink-0 items-center justify-center border border-ink/25 text-ink transition ' +
+    'hover:border-ink hover:bg-cream disabled:pointer-events-none disabled:opacity-25';
 </script>
 
 {#if slides.length}
@@ -96,74 +97,58 @@
         <span>{t.follow}</span>
       </a>
 
-      <div class="@container relative">
-        <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-        <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-        <div
-          aria-label={t.follow}
-          aria-roledescription="carousel"
-          bind:this={track}
-          class="db-dossier-track flex snap-x snap-mandatory overflow-x-auto scroll-smooth"
-          onkeydown={onKeydown}
-          onscroll={onScroll}
-          role="group"
-          tabindex="0"
-        >
-          {#each slides as slide, i}
-            <figure
-              aria-label={t.slide(i + 1, slides.length)}
-              aria-roledescription="slide"
-              class="w-full shrink-0 snap-center"
-              role="group"
-            >
-              <img
-                alt={slide.alt}
-                class="aspect-4/5 w-full bg-cream object-cover"
-                decoding="async"
-                height="1350"
-                loading={i === 0 ? 'eager' : 'lazy'}
-                src={slide.src}
-                width="1080"
-              />
-              {#if slide.caption}
-                <figcaption class="min-h-[3.5rem] border-t border-ink/15 px-4 py-3 text-[1rem] leading-snug text-ink-soft">
-                  {slide.caption}
-                </figcaption>
-              {/if}
-            </figure>
-          {/each}
-        </div>
-
-        {#if enhanced && slides.length > 1}
-          <button
-            aria-label={t.previous}
-            class={`${paddleClass} left-2`}
-            disabled={index === 0}
-            onclick={() => goTo(index - 1, 'paddle')}
-            type="button"
+      <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+      <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+      <div
+        aria-label={t.follow}
+        aria-roledescription="carousel"
+        bind:this={track}
+        class="db-dossier-track flex snap-x snap-mandatory overflow-x-auto scroll-smooth"
+        onkeydown={onKeydown}
+        onscroll={onScroll}
+        role="group"
+        tabindex="0"
+      >
+        {#each slides as slide, i}
+          <figure
+            aria-label={t.slide(i + 1, slides.length)}
+            aria-roledescription="slide"
+            class="w-full shrink-0 snap-center"
+            role="group"
           >
-            <svg aria-hidden="true" class="size-4" fill="none" viewBox="0 0 16 16">
-              <path d="M10 3 5 8l5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-            </svg>
-          </button>
-          <button
-            aria-label={t.next}
-            class={`${paddleClass} right-2`}
-            disabled={index === slides.length - 1}
-            onclick={() => goTo(index + 1, 'paddle')}
-            type="button"
-          >
-            <svg aria-hidden="true" class="size-4" fill="none" viewBox="0 0 16 16">
-              <path d="m6 3 5 5-5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
-            </svg>
-          </button>
-        {/if}
+            <img
+              alt={slide.alt}
+              class="aspect-4/5 w-full bg-cream object-cover"
+              decoding="async"
+              height="1350"
+              loading={i === 0 ? 'eager' : 'lazy'}
+              src={slide.src}
+              width="1080"
+            />
+            {#if slide.caption}
+              <figcaption class="min-h-[3.5rem] border-t border-ink/15 px-4 py-3 text-[1rem] leading-snug text-ink-soft">
+                {slide.caption}
+              </figcaption>
+            {/if}
+          </figure>
+        {/each}
       </div>
 
       {#if slides.length > 1}
-        <div class="flex items-center justify-center border-t border-ink/15 px-4 py-3">
+        <div class="flex items-center justify-between gap-3 border-t border-ink/15 px-3 py-2.5">
           {#if enhanced}
-            <div class="flex items-center gap-2.5">
+            <button
+              aria-label={t.previous}
+              class={paddleClass}
+              disabled={index === 0}
+              onclick={() => goTo(index - 1, 'paddle')}
+              type="button"
+            >
+              <svg aria-hidden="true" class="size-4" fill="none" viewBox="0 0 16 16">
+                <path d="M10 3 5 8l5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+              </svg>
+            </button>
+            <div class="flex flex-wrap items-center justify-center gap-2.5">
               {#each slides as _slide, i}
                 <button
                   aria-current={i === index}
@@ -174,9 +159,20 @@
                 ></button>
               {/each}
             </div>
+            <button
+              aria-label={t.next}
+              class={paddleClass}
+              disabled={index === slides.length - 1}
+              onclick={() => goTo(index + 1, 'paddle')}
+              type="button"
+            >
+              <svg aria-hidden="true" class="size-4" fill="none" viewBox="0 0 16 16">
+                <path d="m6 3 5 5-5 5" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" />
+              </svg>
+            </button>
             <p class="sr-only" aria-live="polite">{t.slide(index + 1, slides.length)}</p>
           {:else}
-            <p class="text-[1rem] text-ink-soft">{t.swipe} →</p>
+            <p class="w-full py-1.5 text-center text-[1rem] text-ink-soft">{t.swipe} →</p>
           {/if}
         </div>
       {/if}

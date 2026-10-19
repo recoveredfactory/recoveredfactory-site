@@ -62,61 +62,70 @@
   </section>
 
   <!-- ── The front page ─────────────────────────────────────────────────
-       The newest edition, and beside it the deck it went out as: the same
-       news as a reader meets it in a feed. Without a deck the lead takes the
-       full width. -->
-  {#if data.latest || data.deck}
+       The newest edition. Once its deck has rendered, the deck is the lead:
+       the cover slide carries the headline, so the column beside it runs the
+       rest of the edition rather than the same headline twice. Without a deck
+       the headline takes the full width. -->
+  {#if data.latest && data.deck}
     <section class="bg-paper">
       <div
-        class={`mx-auto max-w-5xl px-5 py-14 sm:px-8 sm:py-20 ${
-          data.deck ? 'grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,24rem)] md:items-start md:gap-10' : ''
-        }`}
+        class="mx-auto grid max-w-5xl gap-x-12 gap-y-8 px-5 py-14 sm:px-8 sm:py-20 md:grid-cols-[minmax(0,1fr)_minmax(0,27rem)] md:grid-rows-[auto_1fr] lg:grid-cols-[minmax(0,1fr)_minmax(0,31rem)] lg:gap-x-16"
       >
-        {#if data.latest}
-          <div class="min-w-0">
-            <p class="font-semibold text-fire">
-              {t.home.latest.heading} · {formatEditionDate(data.latest.date, data.lang, { weekday: true })}
-            </p>
-            <h2 class="db-display mt-4 max-w-4xl">
-              <a class="transition hover:text-fire-deep" href={editionPath(data.lang, data.latest.date)}>
-                {data.latest.title}
-              </a>
-            </h2>
-            {#if data.latest.dek}
-              <p class="db-graf mt-6 max-w-3xl text-ink-soft">{data.latest.dek}</p>
-            {/if}
-            {#if alsoIn.length}
-              <p class="mt-8 font-semibold">{t.home.latest.also}</p>
-              <ul class="mt-2 max-w-3xl">
-                {#each alsoIn as heading}
-                  <li class="border-t border-ink/20 py-3">{heading}</li>
-                {/each}
-              </ul>
-            {/if}
-            <div class="mt-8 flex flex-wrap gap-3">
-              <a class="db-button" href={editionPath(data.lang, data.latest.date)}>{t.home.latest.read} →</a>
-              <a class="db-button db-button--ghost" href="#archive">{t.home.latest.all}</a>
-            </div>
-          </div>
-        {/if}
+        <header class="min-w-0 md:col-start-1 md:row-start-1">
+          <h2 class="db-display">{t.home.latest.heading}</h2>
+          <p class="mt-3 font-semibold text-fire">
+            {formatEditionDate(data.latest.date, data.lang, { weekday: true })}
+          </p>
+        </header>
 
-        {#if data.deck}
-          <div class="min-w-0">
-            <DossierCarousel
-              instagramPost={data.deck.instagramPost}
-              lang={data.lang}
-              placement="home"
-              slides={data.deck.slides}
-            />
-            {#if data.deck.date !== data.latest?.date}
-              <p class="db-links mt-3 text-center text-[1rem]">
-                <a href={editionPath(data.lang, data.deck.date)}>
-                  {formatEditionDate(data.deck.date, data.lang, { weekday: true })} →
-                </a>
-              </p>
-            {/if}
+        <div class="min-w-0 md:col-start-2 md:row-span-2 md:row-start-1">
+          <DossierCarousel
+            instagramPost={data.deck.instagramPost}
+            lang={data.lang}
+            placement="home"
+            slides={data.deck.slides}
+          />
+        </div>
+
+        <div class="min-w-0 md:col-start-1 md:row-start-2">
+          {#if alsoIn.length}
+            <p class="font-semibold">{t.home.latest.also}</p>
+            <ul class="mt-3">
+              {#each alsoIn as heading}
+                <li class="border-t border-ink/20 py-3.5 font-display text-[1.375rem] font-semibold leading-tight">{heading}</li>
+              {/each}
+            </ul>
+          {/if}
+          <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+            <a class="db-button" href={editionPath(data.lang, data.latest.date)}>{t.home.latest.read} →</a>
+            <p class="db-links"><a href="#archive">{t.home.latest.all}</a></p>
           </div>
+        </div>
+      </div>
+    </section>
+  {:else if data.latest}
+    <section class="bg-paper">
+      <div class="mx-auto max-w-5xl px-5 py-14 sm:px-8 sm:py-20">
+        <p class="font-semibold text-fire">
+          {t.home.latest.heading} · {formatEditionDate(data.latest.date, data.lang, { weekday: true })}
+        </p>
+        <h2 class="db-display mt-4 max-w-4xl">
+          <a class="transition hover:text-fire-deep" href={editionPath(data.lang, data.latest.date)}>
+            {data.latest.title}
+          </a>
+        </h2>
+        {#if alsoIn.length}
+          <p class="mt-8 font-semibold">{t.home.latest.also}</p>
+          <ul class="mt-3 max-w-3xl">
+            {#each alsoIn as heading}
+              <li class="border-t border-ink/20 py-3.5 font-display text-[1.375rem] font-semibold leading-tight">{heading}</li>
+            {/each}
+          </ul>
         {/if}
+        <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+          <a class="db-button" href={editionPath(data.lang, data.latest.date)}>{t.home.latest.read} →</a>
+          <p class="db-links"><a href="#archive">{t.home.latest.all}</a></p>
+        </div>
       </div>
     </section>
   {/if}
