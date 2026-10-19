@@ -17,14 +17,27 @@ const AGENCIES_CSV = 'https://287g.recoveredfactory.net/data/dist/downloads/287g
 const TRACKER_WINDOW_DAYS = 14;
 
 // An outage in our own tracker would look exactly like ICE going quiet. So the
-// counter only runs when the tracker itself is current: a snapshot older than
-// this, measured back from the edition, leaves the slide off with a warning.
-const TRACKER_SNAPSHOT_MAX_AGE = 2;
+// counter only runs when the tracker itself is current: a snapshot that has
+// missed more weekdays than this before the edition leaves the slide off with a
+// warning. Weekdays, because ICE posts its list on weekdays only: counted in
+// calendar days, every Monday's Friday file read as three days stale and the
+// Monday deck went out without its map (2026-10-19). One missed weekday is
+// allowed, for a late file or a federal holiday.
+const TRACKER_MAX_MISSED_WEEKDAYS = 1;
 
 const OUTSIDE_LOWER_48 = new Set(['AK', 'HI', 'PR', 'GU', 'VI', 'AS', 'MP']);
 const DAY_MS = 864e5;
 const daysBetween = (a, b) => Math.round((Date.parse(b) - Date.parse(a)) / DAY_MS);
 const isoMinus = (iso, days) => new Date(Date.parse(iso) - days * DAY_MS).toISOString().slice(0, 10);
+/** Weekdays strictly after `from` and before `to`: the files ICE would have posted in between. */
+export function missedWeekdays(from, to) {
+  let count = 0;
+  for (let t = Date.parse(from) + DAY_MS; t < Date.parse(to); t += DAY_MS) {
+    const day = new Date(t).getUTCDay();
+    if (day !== 0 && day !== 6) count += 1;
+  }
+  return count;
+}
 
 /** RFC 4180 enough for this file: quoted fields, doubled quotes, CRLF. */
 export function parseCsv(text) {
@@ -64,10 +77,14 @@ export function parseCsv(text) {
  * The map's numbers for one edition date, from the agency rows. Pure, so the
  * window and the counter can be tested without the network.
  */
-export function trackerFrom(rows, date, { windowDays = TRACKER_WINDOW_DAYS, maxSnapshotAge = TRACKER_SNAPSHOT_MAX_AGE } = {}) {
+export function trackerFrom(
+  rows,
+  date,
+  { windowDays = TRACKER_WINDOW_DAYS, maxMissedWeekdays = TRACKER_MAX_MISSED_WEEKDAYS } = {},
+) {
   const snapshot = rows.reduce((max, r) => (r.snapshot_date > max ? r.snapshot_date : max), '');
   if (!snapshot) return { skip: 'the agency file has no snapshot_date' };
-  if (daysBetween(snapshot, date) > maxSnapshotAge) {
+  if (missedWeekdays(snapshot, date) > maxMissedWeekdays) {
     return { skip: `287(g) Watch's snapshot is from ${snapshot}; a stale tracker would read as ICE going quiet` };
   }
 
