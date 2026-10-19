@@ -41,16 +41,18 @@ test('the window is the two weeks up to the last change on or before the edition
 test('a quiet list keeps its last batch on the map and counts the days since', () => {
   // The summer of 2026: nothing new for 24 days.
   const rows = [row({ first_seen_date: '2026-07-21' }), row({ first_seen_date: '2026-07-10' })];
-  const t = trackerFrom(rows, '2026-08-13', { maxSnapshotAge: 400 });
+  const t = trackerFrom(rows, '2026-08-13');
   assert.equal(t.last, '2026-07-21');
   assert.equal(t.since, 23);
   assert.equal(t.added, 2);
 });
 
-test('a stale tracker leaves the map off instead of blaming ICE', () => {
-  const rows = [row({ snapshot_date: '2026-10-10' })];
-  assert.match(trackerFrom(rows, '2026-10-14').skip, /snapshot is from 2026-10-10/);
-  assert.equal(trackerFrom(rows, '2026-10-12').skip, undefined);
+test("the map runs every day, whatever the file's date", () => {
+  // 2026-10-19: the Monday deck went out without its map on Friday's file.
+  const friday = [row({ snapshot_date: '2026-10-16', first_seen_date: '2026-10-16' })];
+  assert.equal(trackerFrom(friday, '2026-10-19').skip, undefined);
+  assert.equal(trackerFrom(friday, '2026-10-19').since, 3);
+  assert.equal(trackerFrom([row({ snapshot_date: '2026-10-01' })], '2026-10-19').skip, undefined);
 });
 
 test('terminated agencies and agencies outside the lower 48 stay off the map', () => {

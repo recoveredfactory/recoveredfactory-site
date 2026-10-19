@@ -16,10 +16,12 @@ const AGENCIES_CSV = 'https://287g.recoveredfactory.net/data/dist/downloads/287g
 // pile up (David: "a little data drama").
 const TRACKER_WINDOW_DAYS = 14;
 
-// An outage in our own tracker would look exactly like ICE going quiet. So the
-// counter only runs when the tracker itself is current: a snapshot older than
-// this, measured back from the edition, leaves the slide off with a warning.
-const TRACKER_SNAPSHOT_MAX_AGE = 2;
+// The map runs every day (David, 2026-10-19: "we want 287(g) every day!
+// they're updating it often enough"). It used to be left off when the file was
+// over two days old, so that an outage in our tracker couldn't read as ICE
+// going quiet; but the file is dated by ICE, which posts on weekdays only, so
+// that dropped it from every Monday deck. The file's date goes in the log
+// instead, where an outage still shows.
 
 const OUTSIDE_LOWER_48 = new Set(['AK', 'HI', 'PR', 'GU', 'VI', 'AS', 'MP']);
 const DAY_MS = 864e5;
@@ -64,12 +66,8 @@ export function parseCsv(text) {
  * The map's numbers for one edition date, from the agency rows. Pure, so the
  * window and the counter can be tested without the network.
  */
-export function trackerFrom(rows, date, { windowDays = TRACKER_WINDOW_DAYS, maxSnapshotAge = TRACKER_SNAPSHOT_MAX_AGE } = {}) {
+export function trackerFrom(rows, date, { windowDays = TRACKER_WINDOW_DAYS } = {}) {
   const snapshot = rows.reduce((max, r) => (r.snapshot_date > max ? r.snapshot_date : max), '');
-  if (!snapshot) return { skip: 'the agency file has no snapshot_date' };
-  if (daysBetween(snapshot, date) > maxSnapshotAge) {
-    return { skip: `287(g) Watch's snapshot is from ${snapshot}; a stale tracker would read as ICE going quiet` };
-  }
 
   // As of the edition: an agency first seen after it was not on the list yet.
   const listed = rows.filter((r) => r.status !== 'terminated' && r.first_seen_date && r.first_seen_date <= date);
@@ -112,7 +110,7 @@ export async function tracker287g(date) {
     }
     console.log(
       `${date}: 287(g) map — ${result.added} added ${result.start}..${result.last}, ` +
-        `${result.since} day(s) since ICE's last change.`,
+        `${result.since} day(s) since ICE's last change; ICE's file: ${result.snapshot || 'no date'}.`,
     );
     return result;
   } catch (err) {
