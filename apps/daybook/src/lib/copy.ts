@@ -72,7 +72,8 @@ const en = {
     // The plate. Deck first, then the terms, then the ask.
     deck: 'Making sense of the spectacle. Every weekday, in English and Spanish.',
     latest: {
-      heading: 'The latest edition',
+      heading: 'The latest',
+      inside: 'In this edition',
       also: 'Also in this edition',
       read: 'Read the edition',
       all: 'Every edition',
@@ -158,7 +159,8 @@ const es: Copy = {
       'Un resumen diario del sistema migratorio y un calendario de lo que viene. Fechas de entrada en vigor, plazos de comentarios, audiencias. Todas las ediciones en línea, en español e inglés.',
     deck: 'Para entender el espectáculo. Cada día hábil, en español e inglés.',
     latest: {
-      heading: 'La última edición',
+      heading: 'Lo último',
+      inside: 'En esta edición',
       also: 'También en esta edición',
       read: 'Leer la edición',
       all: 'Todas las ediciones',

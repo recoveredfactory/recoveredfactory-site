@@ -17,8 +17,8 @@
   const editions = $derived(data.months.flatMap((month) => month.editions));
   const schema = $derived(archiveSchema(data.lang, editions));
 
-  // The lede's headline is the edition's title, so "also in this edition" is
-  // the section heads after it.
+  // The lede's headline is the edition's title, so where the title runs as the
+  // headline, "also in this edition" is the section heads after it.
   const alsoIn = $derived(data.latest?.headings.slice(1) ?? []);
 </script>
 
@@ -62,10 +62,10 @@
   </section>
 
   <!-- ── The front page ─────────────────────────────────────────────────
-       The newest edition. Once its deck has rendered, the deck is the lead:
-       the cover slide carries the headline, so the column beside it runs the
-       rest of the edition rather than the same headline twice. Without a deck
-       the headline takes the full width. -->
+       The newest edition. Once its deck has rendered, the deck is the lead
+       art and the column beside it is the rundown, every section head the
+       lede's included, small. Without a deck the headline takes the full
+       width. -->
   {#if data.latest && data.deck}
     <section class="bg-paper">
       <div
@@ -88,10 +88,10 @@
         </div>
 
         <div class="min-w-0 md:col-start-1 md:row-start-2">
-          {#if alsoIn.length}
-            <p class="font-semibold">{t.home.latest.also}</p>
+          {#if data.latest.headings.length}
+            <p class="font-semibold">{t.home.latest.inside}</p>
             <ul class="mt-3">
-              {#each alsoIn as heading}
+              {#each data.latest.headings as heading}
                 <li class="border-t border-ink/20 py-3.5 font-display text-[1.375rem] font-semibold leading-tight">{heading}</li>
               {/each}
             </ul>
