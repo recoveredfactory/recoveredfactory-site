@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { asPick, loadPick, pickError, placePick, sniffImage, withEnglishImages } from './pick.mjs';
+import { asPick, loadPick, pickError, placement, placePick, sniffImage, withEnglishImages } from './pick.mjs';
 
 const pdfPick = {
   story: 'cover',
@@ -105,4 +105,14 @@ test('a pick can name its story by section number', () => {
   const shown = { src: 'data:image/png;base64,', marks: [], dims: [], caption: '' };
   assert.ok(placePick(deck, shown, 3, 'en'));
   assert.equal(deck.beats[0].pick, shown);
+});
+
+test('a photo is cropped to fit, around its focus; a document crop, or an image asked whole, is not', () => {
+  const plain = { src: 'data:', marks: [], dims: [] };
+  assert.deepEqual(placement({ image: 'https://x.org/a.jpg' }, plain), { photo: true, focus: 'center' });
+  assert.deepEqual(placement({ data: 'x', focus: 'Top' }, plain), { photo: true, focus: 'center top' });
+  assert.deepEqual(placement({ image: 'https://x.org/a.jpg', focus: '40% 25%' }, plain), { photo: true, focus: '40% 25%' });
+  assert.deepEqual(placement({ image: 'https://x.org/a.jpg', focus: 'url(evil)' }, plain), { photo: true, focus: 'center' });
+  assert.deepEqual(placement({ image: 'https://x.org/chart.png', fit: 'whole' }, plain), {});
+  assert.deepEqual(placement({ pdf: 'https://x.org/a.pdf', quote: 'q' }, { ...plain, marks: [{ l: 0, t: 0, w: 1, h: 1 }] }), {});
 });

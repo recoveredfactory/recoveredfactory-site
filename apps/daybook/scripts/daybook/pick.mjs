@@ -69,6 +69,24 @@ export function asPick(image) {
   return url !== undefined && rest.image === undefined ? { ...rest, image: url } : rest;
 }
 
+// Where a photo's crop is centred: a side, or "x% y%" as CSS takes it.
+const FOCUS = { center: 'center', top: 'center top', bottom: 'center bottom', left: 'left center', right: 'right center' };
+
+/**
+ * How a loaded image sits on its slide (og.mjs pickFigure). A photo, `{photo:
+ * true, focus}`, is cropped to the room the slide's words leave it, around
+ * `focus` (David, 2026-10-20: "crop the image shorter and make the body text
+ * bigger"). A document crop is shown whole, because its marks are placed on the
+ * whole crop, and so is an image whose spec says `"fit": "whole"`: a chart, a
+ * map or a screenshot of words, where a crop would cut what it shows.
+ */
+export function placement(image, shown) {
+  if (image?.pdf || shown?.marks?.length || shown?.dims?.length || image?.fit === 'whole') return {};
+  const want = typeof image?.focus === 'string' ? image.focus.trim().toLowerCase() : 'center';
+  const focus = FOCUS[want] ?? (/^\d{1,3}% \d{1,3}%$/.test(want) ? want : 'center');
+  return { photo: true, focus };
+}
+
 /** Why a pick can't be used, if it can't. Checks shape only. */
 export function pickError(pick, at = 'social.pick') {
   if (!pick || typeof pick !== 'object' || Array.isArray(pick)) return `${at} must be an object`;
