@@ -16,7 +16,9 @@
 //   --check       read-only: the Page, its Instagram account, the token's scopes, and whether
 //                 each platform can post. Never posts; always exits 0.
 //   --confirm     post. Without it, print exactly what would be posted and make no Graph call.
-//   --force       post to a platform even when posted.json says it already has this deck
+//   --force       post to a platform even when posted.json says it already has this deck. The
+//                 post it replaces is kept in posted.json's `replaced` list, and the log names
+//                 it: Meta's API can't delete an Instagram post, so the old one comes down by hand.
 //   --record-dir  where each updated posted.json is written (see below); default: not written
 //   --base        the bucket's base URL; default $DAYBOOK_EDITIONS_URL, then the production bucket
 //   --pause-seconds  the wait between a date's English post and its Spanish one; default 180
@@ -359,6 +361,11 @@ export async function postDeck({ deck, record, posted, env, creds, confirm, forc
     try {
       const api = graphClient({ token: choice.account.token, appSecret: choice.account.appSecret, fetch });
       const done = await platform.post({ api, account: choice.account, caption, slides, ...(sleep ? { sleep } : {}) });
+      const old = posted?.[choice.name];
+      if (old) {
+        merged.replaced = [...(merged.replaced ?? []), { platform: choice.name, ...old, replaced_at: now().toISOString() }];
+        log(`${deck.date} ${deck.lang} ${choice.name}: replaces ${old.permalink ?? old.id} (r${old.revision}); delete it by hand if it's still up.`);
+      }
       merged[choice.name] = { id: done.id, permalink: done.permalink, posted_at: now().toISOString(), revision: deck.revision };
       log(`${deck.date} ${deck.lang} ${choice.name}: posted ${done.id} ${done.permalink ?? ''}`);
       if (test) log(`  TEST POST — delete by hand: ${done.permalink ?? `${choice.name} post ${done.id}`}`);

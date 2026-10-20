@@ -220,6 +220,20 @@ test('a deck already posted to a platform is skipped, unless forced', async () =
   assert.equal(forced.posted.facebook.id, '111_555');
 });
 
+test('a forced repost keeps the post it replaced, and says to delete it by hand', async () => {
+  const old = { id: '111_1', permalink: 'https://www.facebook.com/111/posts/1', posted_at: '2026-10-20T12:17:49Z', revision: 8 };
+  const said = [];
+  const now = () => new Date('2026-10-20T12:40:00Z');
+  const first = await postDeck({ deck, record, posted: { facebook: old }, env, confirm: true, force: true, fetch: fakeGraph().fetch, log: (l) => said.push(l), now });
+  assert.equal(first.posted.facebook.id, '111_555');
+  assert.deepEqual(first.posted.replaced, [{ platform: 'facebook', ...old, replaced_at: '2026-10-20T12:40:00.000Z' }]);
+  assert.ok(said.some((l) => /replaces https:\/\/www\.facebook\.com\/111\/posts\/1 \(r8\); delete it by hand/.test(l)));
+
+  // A second repost adds to the trail; it never loses the first.
+  const second = await postDeck({ deck, record, posted: first.posted, env, confirm: true, force: true, fetch: fakeGraph().fetch, log: quiet, now });
+  assert.deepEqual(second.posted.replaced.map((r) => r.id), ['111_1', '111_555']);
+});
+
 test('a dry run makes no Graph call at all, and prints the post per platform', async () => {
   let calls = 0;
   const lines = [];
