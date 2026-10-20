@@ -107,12 +107,12 @@ test('a pick can name its story by section number', () => {
   assert.equal(deck.beats[0].pick, shown);
 });
 
-test('a photo is cropped to fit, around its focus; a document crop, or an image asked whole, is not', () => {
+test('a photo is cropped to fit, around its focus; one asked whole is scaled into the room; a document crop keeps its layout', () => {
   const plain = { src: 'data:', marks: [], dims: [] };
   assert.deepEqual(placement({ image: 'https://x.org/a.jpg' }, plain), { photo: true, focus: 'center' });
   assert.deepEqual(placement({ data: 'x', focus: 'Top' }, plain), { photo: true, focus: 'center top' });
   assert.deepEqual(placement({ image: 'https://x.org/a.jpg', focus: '40% 25%' }, plain), { photo: true, focus: '40% 25%' });
   assert.deepEqual(placement({ image: 'https://x.org/a.jpg', focus: 'url(evil)' }, plain), { photo: true, focus: 'center' });
-  assert.deepEqual(placement({ image: 'https://x.org/chart.png', fit: 'whole' }, plain), {});
+  assert.deepEqual(placement({ image: 'https://x.org/chart.png', fit: 'whole' }, plain), { photo: true, whole: true });
   assert.deepEqual(placement({ pdf: 'https://x.org/a.pdf', quote: 'q' }, { ...plain, marks: [{ l: 0, t: 0, w: 1, h: 1 }] }), {});
 });

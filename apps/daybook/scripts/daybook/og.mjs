@@ -410,8 +410,10 @@ const PORTRAIT_SIZE = '1080x1350';
 const FIT_MIN = 0.62;
 const FIT_MAX = 1.34;
 
-// A photo on a slide (David, 2026-10-20, the Akron cover) is cropped to fit,
-// never the words. Set at its full height, Paul Goyette's camera photo took the
+// A photo on a slide (David, 2026-10-20, the Akron cover) gives way to the
+// words, never the other way round: cropped to fit, or asked whole, scaled down
+// inside its frame ("keep the image inside a fixed, shallow frame without
+// shrinking the text ... let any extra space remain around the image"). Set at its full height, Paul Goyette's camera photo took the
 // room the cover's line needed, and the fitter brought the line down to 28px;
 // David's mock-up cropped the photo a quarter shorter and set the line at 40px,
 // which is the legibility he wanted. So on a photo slide the words are set at
@@ -684,11 +686,12 @@ const citeRow = (links, sources, lang = 'en') => {
 // record-deck.mjs --pick). Words outside the quote are dimmed, never hidden, so
 // the crop still shows the document as printed.
 const pickBox = (m) => `left:${m.l * 100}%;top:${m.t * 100}%;width:${m.w * 100}%;height:${m.h * 100}%`;
-// A photo (pick.photo, record-deck.mjs) is cropped to the room the words leave
-// it, keeping `focus`; see PHOTO_MIN and the fit script.
+// A photo (pick.photo, record-deck.mjs) gets the room the words leave it (see
+// PHOTO_MIN and the fit script): cropped to it around `focus`, or, asked whole
+// (pick.whole), scaled down inside it with the frame's white around it.
 const pickFigure = (pick) =>
   pick?.src && pick.photo
-    ? `<figure class="pick photo"><div class="paper"><div class="crop"><img src="${pick.src}" alt="" style="object-position: ${escapeHtml(pick.focus ?? 'center')}" /></div></div>` +
+    ? `<figure class="pick photo${pick.whole ? ' whole' : ''}"><div class="paper"><div class="crop"><img src="${pick.src}" alt=""${pick.whole ? '' : ` style="object-position: ${escapeHtml(pick.focus ?? 'center')}"`} /></div></div>` +
       `${pick.caption ? `<figcaption>${escapeHtml(pick.caption)}</figcaption>` : ''}</figure>`
     : pick?.src
     ? `<figure class="pick"><div class="paper"><div class="crop"><img src="${pick.src}" alt="" />` +
@@ -840,6 +843,9 @@ const portraitCss = (date) => `
   .pick.photo img {
     height: 100%;
     object-fit: cover;
+  }
+  .pick.photo.whole img {
+    object-fit: contain;
   }
   /* On a photo slide what the photo can't use goes above the sources, and they
      ride the bottom edge (David, 2026-10-20: "carousels are shortish anyway"):
