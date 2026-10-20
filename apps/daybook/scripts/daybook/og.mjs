@@ -409,6 +409,16 @@ const PORTRAIT_SIZE = '1080x1350';
 // stops at LINE_GROWTH over its step, and the block centres in what's left.
 const FIT_MIN = 0.62;
 const FIT_MAX = 1.34;
+
+// A photo on a slide (David, 2026-10-20, the Akron cover) is cropped to fit,
+// never the words. Set at its full height, Paul Goyette's camera photo took the
+// room the cover's line needed, and the fitter brought the line down to 28px;
+// David's mock-up cropped the photo a quarter shorter and set the line at 40px,
+// which is the legibility he wanted. So on a photo slide the words are set at
+// their own size (--fit 1), the photo takes the height they leave, down to this,
+// and the sources ride the bottom edge. A document crop is never cropped
+// further: its marks are placed on the whole crop (see pickFigure).
+const PHOTO_MIN = 300;
 const HED_GROWTH = 1.08;
 const LINE_GROWTH = 1.04;
 
@@ -451,6 +461,33 @@ const FIT_SCRIPT = `
       return used() <= room();
     };
 
+    // A photo gives way before the words do (see PHOTO_MIN): the words are set
+    // at their own size, the photo is cropped to the height they leave it, and
+    // only when it is down to PHOTO_MIN do the words come down too.
+    const photo = stage.querySelector('.pick.photo .crop');
+    if (photo) {
+      const img = photo.querySelector('img');
+      try { await img.decode(); } catch (err) {}
+      const ratio = img.naturalWidth && img.naturalHeight ? img.naturalHeight / img.naturalWidth : 2 / 3;
+      const natural = Math.round(photo.clientWidth * ratio);
+      const crop = (h) => { photo.style.height = Math.round(h) + 'px'; };
+      root.style.setProperty('--fit', '1');
+      crop(natural);
+      crop(Math.max(${PHOTO_MIN}, Math.min(natural, natural - (used() - room()))));
+      if (fits(1)) return;
+      crop(${PHOTO_MIN});
+      let lo = ${FIT_MIN};
+      let hi = 1;
+      if (!fits(lo)) return;
+      for (let i = 0; i < 16; i += 1) {
+        const mid = (lo + hi) / 2;
+        if (fits(mid)) lo = mid;
+        else hi = mid;
+      }
+      fits(lo);
+      return;
+    }
+
     if (!fits(${FIT_MIN})) return;
     if (fits(${FIT_MAX})) return;
 
@@ -487,6 +524,17 @@ const coverHedSize = (text) => {
   if (n <= 100) return 72;
   if (n <= 140) return 62;
   return 54;
+};
+
+// A photo slide's headline is set smaller: the photo is the slide's display
+// element, and a headline at cover size beside it would leave the photo a strip.
+// Set against the Akron mock-up, 66 characters at 54px.
+const photoHedSize = (text) => {
+  const n = text.length;
+  if (n <= 40) return 60;
+  if (n <= 70) return 54;
+  if (n <= 100) return 50;
+  return 46;
 };
 
 const beatHedSize = (text) => {
@@ -636,8 +684,13 @@ const citeRow = (links, sources, lang = 'en') => {
 // record-deck.mjs --pick). Words outside the quote are dimmed, never hidden, so
 // the crop still shows the document as printed.
 const pickBox = (m) => `left:${m.l * 100}%;top:${m.t * 100}%;width:${m.w * 100}%;height:${m.h * 100}%`;
+// A photo (pick.photo, record-deck.mjs) is cropped to the room the words leave
+// it, keeping `focus`; see PHOTO_MIN and the fit script.
 const pickFigure = (pick) =>
-  pick?.src
+  pick?.src && pick.photo
+    ? `<figure class="pick photo"><div class="paper"><div class="crop"><img src="${pick.src}" alt="" style="object-position: ${escapeHtml(pick.focus ?? 'center')}" /></div></div>` +
+      `${pick.caption ? `<figcaption>${escapeHtml(pick.caption)}</figcaption>` : ''}</figure>`
+    : pick?.src
     ? `<figure class="pick"><div class="paper"><div class="crop"><img src="${pick.src}" alt="" />` +
       (pick.dims ?? []).map((m) => `<i class="dim" style="${pickBox(m)}"></i>`).join('') +
       (pick.marks ?? []).map((m) => `<i class="mark" style="${pickBox(m)}"></i>`).join('') +
@@ -781,6 +834,28 @@ const portraitCss = (date) => `
     width: 100%;
     display: block;
   }
+  .pick.photo .crop {
+    overflow: hidden;
+  }
+  .pick.photo img {
+    height: 100%;
+    object-fit: cover;
+  }
+  /* On a photo slide what the photo can't use goes above the sources, and they
+     ride the bottom edge (David, 2026-10-20: "carousels are shortish anyway"):
+     the stage reaches into the card's bottom margin, which gives the photo the
+     room back. */
+  .stage:has(> .pick.photo) {
+    margin-bottom: -60px;
+  }
+  .stage:has(> .pick.photo) > .body {
+    flex: 1 0 auto;
+    display: flex;
+    flex-direction: column;
+  }
+  .stage:has(> .pick.photo) > .body > .nut:last-of-type {
+    margin-bottom: auto;
+  }
   .pick .dim {
     position: absolute;
     background: #fff;
@@ -865,10 +940,12 @@ const portraitCss = (date) => `
 // that answered "feels thin" in August; David, two months on: "three levels when
 // it should be two". The credit is no longer a tier of prose either — it is the
 // cite row, publication marks at the foot.
+const hedStep = (text, pick, step) => (pick?.photo ? photoHedSize(text) : step(text));
+
 const coverSlide = ({ hed, nut, sources, links, pick, date, lang, kicker = null }) =>
   shell(
     portraitCss(date) +
-      `\n  .hed { font-size: ${fitcap(coverHedSize(hed), coverHedSize(hed) * HED_GROWTH)}; }` +
+      `\n  .hed { font-size: ${fitcap(hedStep(hed, pick, coverHedSize), hedStep(hed, pick, coverHedSize) * HED_GROWTH)}; }` +
       (nut ? `\n  .nut { font-size: ${lineFont(nut)}; }` : '') +
       (kicker ? KICKER_CSS : ''),
     portraitFrame(
@@ -950,7 +1027,7 @@ const KICKER_CSS = `
 const beatSlide = ({ headline, nut, sources, links, pick, date, lang }) =>
   shell(
     portraitCss(date) +
-      `\n  .hed { font-size: ${fitcap(beatHedSize(headline), beatHedSize(headline) * HED_GROWTH)}; }` +
+      `\n  .hed { font-size: ${fitcap(hedStep(headline, pick, beatHedSize), hedStep(headline, pick, beatHedSize) * HED_GROWTH)}; }` +
       (nut ? `\n  .nut { font-size: ${lineFont(nut)}; }` : ''),
     portraitFrame(
       `<h2 class="hed">${escapeHtml(headline)}</h2>` +

@@ -61,7 +61,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { applySocialCopy, buildDeck, copyTarget, deckKnobs, packBoards, trimToClause } from './deck.mjs';
-import { asPick, loadPick, placePick, withEnglishImages } from './pick.mjs';
+import { asPick, loadPick, placement, placePick, withEnglishImages } from './pick.mjs';
 import { tracker287g } from './tracker287g.mjs';
 import { entryFrom } from './upcoming.mjs';
 
@@ -205,14 +205,14 @@ for (const record of records) {
     const image = asPick(target.image);
     delete target.image;
     const shown = await pickFor(image, `the image for "${target.headline ?? target.hed}"`);
-    if (shown) target.pick = { ...shown, caption: image?.caption ?? '' };
+    if (shown) target.pick = { ...shown, ...placement(image, shown), caption: image?.caption ?? '' };
   }
   const pick = record.social?.pick ?? englishPick;
   if (flag('--pick')) attachPick(deck, flag('--pick'), lang);
   else if (pick && !copyTarget(deck, pick.story)?.pick) {
     const shown = await pickFor(pick);
     const caption = (record.social?.pick ? pick.caption : pick[`caption_${lang}`] ?? pick.caption) ?? '';
-    if (shown) placePick(deck, { ...shown, caption }, pick.story, lang);
+    if (shown) placePick(deck, { ...shown, ...placement(pick, shown), caption }, pick.story, lang);
   }
   if (coverKicker) deck.coverKicker = true;
 
