@@ -31,6 +31,13 @@
 # it can at most log what would. The AWS role trusts only refs/heads/main of this repo,
 # so a run from any other branch must be a dry run.
 #
+# `repost` replaces posts (David, 2026-10-20: "it's gonna be common in early
+# days. Esp because AIs sometimes fix one thing while reverting another"). It
+# posts `date`'s broadcast decks in `langs` again though they have a
+# posted.json, after the old posts have been deleted by hand: Meta's API can't
+# delete an Instagram post. The new posted.json keeps the old posts under
+# `replaced`. news-ingester's broadcast_edition starts it with `repost: true`.
+#
 # Two manual runs for the first real post:
 #   check      read-only: the Page, its Instagram account, the token's scopes, and
 #              whether each platform can post. Runs alone, in the `social`
@@ -63,6 +70,11 @@ on:
         default: false
       rerender:
         description: 'Redraw decks that are already current (after a design change). Never posts anything twice.'
+        required: false
+        type: boolean
+        default: false
+      repost:
+        description: "Post date's broadcast decks again though they have posted, after deleting the old posts by hand. Needs date; langs picks which."
         required: false
         type: boolean
         default: false
@@ -135,9 +147,13 @@ jobs:
       postable: ${{ steps.sync.outputs.postable }}
     steps:
       - name: Inputs
-        if: ${{ inputs.test_post == true && inputs.date == '' }}
+        if: ${{ (inputs.test_post == true && inputs.date == '') || (inputs.repost == true && (inputs.date == '' || inputs.test == true || inputs.test_post == true)) }}
         run: |
-          echo "::error::test_post needs a date: the test edition to post."
+          if [ "${{ inputs.repost }}" = "true" ]; then
+            echo "::error::repost needs a date, and is for live decks: not with test or test_post."
+          else
+            echo "::error::test_post needs a date: the test edition to post."
+          fi
           exit 1
 
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -182,6 +198,7 @@ jobs:
           TEST_POST: ${{ inputs.test_post }}
           DRY_RUN: ${{ inputs.dry_run }}
           RERENDER: ${{ inputs.rerender }}
+          REPOST: ${{ inputs.repost }}
           LANGS: ${{ inputs.langs || (inputs.test_post && 'en' || 'en,es') }}
         run: |
           args=(--post-langs "$LANGS")
@@ -190,6 +207,7 @@ jobs:
           if [ "$TEST_POST" = "true" ]; then args+=(--test-post); fi
           if [ "$DRY_RUN" = "true" ]; then args+=(--dry-run); fi
           if [ "$RERENDER" = "true" ]; then args+=(--rerender); fi
+          if [ "$REPOST" = "true" ]; then args+=(--repost); fi
           node scripts/daybook/deck-sync.mjs "${args[@]}"
 
       # A log of what will post: from the public bucket, with no credentials and
@@ -202,9 +220,11 @@ jobs:
           POSTABLE: ${{ steps.sync.outputs.postable }}
           TEST: ${{ inputs.test }}
           TEST_POST: ${{ inputs.test_post }}
+          REPOST: ${{ inputs.repost }}
         run: |
           args=(--postable "$POSTABLE")
           if [ "$TEST_POST" = "true" ]; then args+=(--test-post); elif [ "$TEST" = "true" ]; then args+=(--test); fi
+          if [ "$REPOST" = "true" ]; then args+=(--force); fi
           node scripts/daybook/deck-post.mjs "${args[@]}"
 
   post:
@@ -239,6 +259,7 @@ jobs:
         env:
           POSTABLE: ${{ needs.render.outputs.postable }}
           TEST_POST: ${{ inputs.test_post }}
+          REPOST: ${{ inputs.repost }}
           # A Business Settings system user token, when set, wins over the Page
           # token: the Page token is derived from it at run time, and Instagram
           # publishes with it. Facebook Login for Business can't grant posting
@@ -253,6 +274,7 @@ jobs:
         run: |
           args=(--postable "$POSTABLE" --confirm --record-dir posted)
           if [ "$TEST_POST" = "true" ]; then args+=(--test-post); fi
+          if [ "$REPOST" = "true" ]; then args+=(--force); fi
           node scripts/daybook/deck-post.mjs "${args[@]}"
 
       # Whatever posted, even if a later platform failed, goes to the record job

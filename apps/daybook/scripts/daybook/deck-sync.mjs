@@ -14,6 +14,8 @@
 //   --post-langs  which languages' decks to offer for posting; default en,es (see below)
 //   --test-post   a manual test post: the test area (implies --test), and the broadcast
 //                 mark does not gate what is offered for posting
+//   --repost      post --date's broadcast decks again, in --post-langs, though they have
+//                 a posted.json: the posts it names were deleted by hand to be replaced
 //
 // The contract is news-ingester's docs/EDITIONS.md. In short: the index
 // (editions/index.json) says what is published and at which revision; a deck
@@ -234,6 +236,12 @@ async function main() {
   };
   const testPost = argv.includes('--test-post');
   const test = argv.includes('--test') || testPost;
+  // A repost (David, 2026-10-20: "I deleted the damn posts, I need new ones"):
+  // one date's broadcast decks are offered again, posted.json or not, and the
+  // posting step replaces the posts it names, keeping them under `replaced`.
+  const repost = argv.includes('--repost');
+  if (repost && !value('--date')) throw new Error('--repost needs --date: the edition whose posts are being replaced.');
+  if (repost && test) throw new Error('--repost is for live decks; a test deck is never posted, and a test post is never recorded live.');
   const dryRun = argv.includes('--dry-run');
   const rerender = argv.includes('--rerender');
   const base = (value('--base') ?? process.env.DAYBOOK_EDITIONS_URL ?? DEFAULT_BASE).replace(/\/+$/, '');
@@ -334,7 +342,11 @@ async function main() {
   const broadcast = {};
   for (const { date, langs } of planned) {
     const offered = langs.filter((l) => postLangs.includes(l.lang));
-    for (const l of offered) posted[`${date}/${l.lang}`] = await getJson(`${base}/${prefix}social/${date}/${l.lang}/posted.json`);
+    for (const l of offered) {
+      const found = await getJson(`${base}/${prefix}social/${date}/${l.lang}/posted.json`);
+      if (repost && found) console.log(`${date} ${l.lang}: repost — offered again over its posted.json.`);
+      posted[`${date}/${l.lang}`] = repost ? null : found;
+    }
     // The second lock: a missing mark answers 403, which getJson reads as null.
     if (offered.length && !testPost) broadcast[date] = await getJson(`${base}/${prefix}editions/${date}/broadcast.json`);
   }
