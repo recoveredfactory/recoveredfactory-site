@@ -76,12 +76,16 @@ const FOCUS = { center: 'center', top: 'center top', bottom: 'center bottom', le
  * How a loaded image sits on its slide (og.mjs pickFigure). A photo, `{photo:
  * true, focus}`, is cropped to the room the slide's words leave it, around
  * `focus` (David, 2026-10-20: "crop the image shorter and make the body text
- * bigger"). A document crop is shown whole, because its marks are placed on the
- * whole crop, and so is an image whose spec says `"fit": "whole"`: a chart, a
- * map or a screenshot of words, where a crop would cut what it shows.
+ * bigger"). An image whose spec says `"fit": "whole"`, `{photo: true, whole:
+ * true}`, gets the same room but is never cropped: it is scaled down inside it,
+ * with the frame's white around it. That's for one the desk has already
+ * cropped, or a chart, a map or a screenshot of words, where a crop would cut
+ * what it shows. A document crop keeps the old layout, because its marks are
+ * placed on the whole crop.
  */
 export function placement(image, shown) {
-  if (image?.pdf || shown?.marks?.length || shown?.dims?.length || image?.fit === 'whole') return {};
+  if (image?.pdf || shown?.marks?.length || shown?.dims?.length) return {};
+  if (image?.fit === 'whole') return { photo: true, whole: true };
   const want = typeof image?.focus === 'string' ? image.focus.trim().toLowerCase() : 'center';
   const focus = FOCUS[want] ?? (/^\d{1,3}% \d{1,3}%$/.test(want) ? want : 'center');
   return { photo: true, focus };
