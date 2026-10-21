@@ -38,8 +38,8 @@ ICE's list of 287(g) agreements tells you who signed, for which program and when
 Start with the search box at the top of any page and type an agency or a town. Say you live near Cheyenne, Wyoming. Search "Laramie" and open the [Laramie County Sheriff's Office](https://www.laramiecountywy.gov/County-Government/Elected-Officials/Laramie-County-Sheriffs-Office). Or just search for [Wyoming.](https://287g.recoveredfactory.net/en/state/wy)
 
 <LoopVideo
-  src="/videos/287g-redesign-search-laramie.mp4"
-  poster="/videos/287g-redesign-search-laramie.jpg"
+  src="/videos/287g-redesign-search-laramie-zoom.mp4"
+  poster="/videos/287g-redesign-search-laramie-zoom.jpg"
   label="On the 287(g) Watch home page, typing “Laramie” into the search box narrows the results to the Laramie County Sheriff’s Office, the Pine Bluffs Police Department and the Wyoming State Highway Patrol."
   figureClass="my-6 max-w-2xl"
   class="rounded-lg shadow-xl"
@@ -125,8 +125,16 @@ All of it is free to use, including in your own reporting, as long as you credit
 After November 3, we'll add the winners from preliminary and certified results when they are available.
 
 <div class="my-6 border border-dashed border-slate-400 p-4 text-sm text-slate-500">
-  <strong>Unplaced</strong> (shot for the state section; place or drop):
+  <strong>Unplaced</strong>: the search loop without the zoom (pick one), then two shots for the state section (place or drop).
 </div>
+
+<LoopVideo
+  src="/videos/287g-redesign-search-laramie.mp4"
+  poster="/videos/287g-redesign-search-laramie.jpg"
+  label="On the 287(g) Watch home page, typing “Laramie” into the search box narrows the results to the Laramie County Sheriff’s Office, the Pine Bluffs Police Department and the Wyoming State Highway Patrol."
+  figureClass="my-6 max-w-2xl"
+  class="rounded-lg shadow-xl"
+/>
 
 <ResizedImage
   src="/images/287g-redesign-nc-chart.png"
