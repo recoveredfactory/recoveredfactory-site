@@ -78,7 +78,7 @@ Some questions worth asking any candidate, whether while reporting or at a town 
 
 Some of the most consequential decisions about 287(g) are happening at the [state level](https://287g.recoveredfactory.net/en/states). States like [Florida](https://287g.recoveredfactory.net/en/state/fl) and [Texas](https://287g.recoveredfactory.net/en/state/tx) make participation mandatory via legislation, while states like [Illinois](https://287g.recoveredfactory.net/en/state/il) have prohibited it.
 
-A single state law can put a state's sheriffs into the program, or keep them all out. That's why each state gets its own page.
+Each state gets its own page because a single law can put all a state's sheriffs into the program or keep them out.
 
 For example, [North Carolina](https://287g.recoveredfactory.net/en/state/nc) opens with a map of the state's 32 agencies and a chart of how participation has grown. Next come the 2026 races: 28 of those 32 agencies are in counties that elect a sheriff this year, and we have the official candidate list for every one of them, from the [State Board of Elections](https://www.ncsbe.gov/).
 
