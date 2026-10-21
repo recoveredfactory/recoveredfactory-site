@@ -9,7 +9,6 @@ tags:
   - "field-notes"
 lang: "en"
 previewImage: "/images/287g-redesign-laramie-election-v2.png"
-draft: true
 ---
 
 <script>
