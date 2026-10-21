@@ -40,7 +40,7 @@ Start with the search box at the top of any page and type an agency or a town. S
 <LoopVideo
   src="/videos/287g-redesign-search-laramie.mp4"
   poster="/videos/287g-redesign-search-laramie.jpg"
-  label="Typing “Laramie” into the 287(g) Watch search box narrows the results to the Laramie County Sheriff’s Office, the Pine Bluffs Police Department and the Wyoming State Highway Patrol."
+  label="On the 287(g) Watch home page, typing “Laramie” into the search box narrows the results to the Laramie County Sheriff’s Office, the Pine Bluffs Police Department and the Wyoming State Highway Patrol."
   figureClass="my-6 max-w-2xl"
   class="rounded-lg shadow-xl"
 />
