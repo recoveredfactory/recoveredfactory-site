@@ -19,7 +19,8 @@ draft: true
 
 <!--
   Stills shot from the live 287(g) Watch site on Oct. 21 (headless Chrome, 2x; phone at 390px, 3x),
-  padded in the site's surface color. The search loop has an email GIF beside it (same name, .gif).
+  padded in the site's surface color. The search loop has an email GIF beside it (same name, .gif). Unused on disk: the flat search loop
+  (287g-redesign-search-laramie.*) and the phone shot (287g-redesign-laramie-phone.png).
   The Tella walkthrough clips (287g-redesign-0N-*) are still in static/videos, unused.
 -->
 
@@ -40,20 +41,12 @@ Start with the search box at the top of any page and type an agency or a town. S
 <LoopVideo
   src="/videos/287g-redesign-search-laramie-zoom.mp4"
   poster="/videos/287g-redesign-search-laramie-zoom.jpg"
-  label="On the 287(g) Watch home page, typing “Laramie” into the search box narrows the results to the Laramie County Sheriff’s Office, the Pine Bluffs Police Department and the Wyoming State Highway Patrol."
+  label="On the 287(g) Watch home page, typing “Laramie” into the search box narrows the results to the Laramie County Sheriff’s Office, the Pine Bluffs Police Department and the Wyoming State Highway Patrol; choosing the sheriff’s office opens its page."
   figureClass="my-6 max-w-2xl"
   class="rounded-lg shadow-xl"
 />
 
 We found while using the tool for our own research that there were issues with findability — you often want to quickly look up an agency, and in the previous design it took a few steps to do that. Now you just start typing.
-
-<ResizedImage
-  src="/images/287g-redesign-laramie-phone.png"
-  alt="The Laramie County Sheriff's Office page on 287(g) Watch at phone width, with a map of Wyoming marking the county and the date it signed."
-  width={600}
-  figureClass="my-6 max-w-[280px]"
-  class="rounded-lg shadow-xl"
-/>
 
 ## "Who's running for sheriff, and did they sign?"
 
@@ -125,16 +118,8 @@ All of it is free to use, including in your own reporting, as long as you credit
 After November 3, we'll add the winners from preliminary and certified results when they are available.
 
 <div class="my-6 border border-dashed border-slate-400 p-4 text-sm text-slate-500">
-  <strong>Unplaced</strong>: the search loop without the zoom (pick one), then two shots for the state section (place or drop).
+  <strong>Unplaced</strong> (shot for the state section; place or drop):
 </div>
-
-<LoopVideo
-  src="/videos/287g-redesign-search-laramie.mp4"
-  poster="/videos/287g-redesign-search-laramie.jpg"
-  label="On the 287(g) Watch home page, typing “Laramie” into the search box narrows the results to the Laramie County Sheriff’s Office, the Pine Bluffs Police Department and the Wyoming State Highway Patrol."
-  figureClass="my-6 max-w-2xl"
-  class="rounded-lg shadow-xl"
-/>
 
 <ResizedImage
   src="/images/287g-redesign-nc-chart.png"
