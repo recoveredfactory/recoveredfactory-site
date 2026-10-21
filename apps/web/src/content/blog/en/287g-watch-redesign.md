@@ -20,7 +20,8 @@ draft: true
 <!--
   Stills shot from the live 287(g) Watch site on Oct. 21 (headless Chrome, 2x; phone at 390px, 3x),
   padded in the site's surface color. The search loop has an email GIF beside it (same name, .gif). Unused on disk: the flat search loop
-  (287g-redesign-search-laramie.*) and the phone shot (287g-redesign-laramie-phone.png).
+  (287g-redesign-search-laramie.*), the phone shot (287g-redesign-laramie-phone.png) and the NC chart
+  and news shots (287g-redesign-nc-chart.png, -nc-news.png).
   The Tella walkthrough clips (287g-redesign-0N-*) are still in static/videos, unused.
 -->
 
@@ -116,23 +117,3 @@ All of it is free to use, including in your own reporting, as long as you credit
 />
 
 After November 3, we'll add the winners from preliminary and certified results when they are available.
-
-<div class="my-6 border border-dashed border-slate-400 p-4 text-sm text-slate-500">
-  <strong>Unplaced</strong> (shot for the state section; place or drop):
-</div>
-
-<ResizedImage
-  src="/images/287g-redesign-nc-chart.png"
-  alt="How 287(g) participation has grown in North Carolina since December 2024, by program."
-  width={1000}
-  figureClass="my-6 max-w-2xl"
-  class="rounded-lg shadow-xl"
-/>
-
-<ResizedImage
-  src="/images/287g-redesign-nc-news.png"
-  alt="The summary of news coverage of ICE's 287(g) program in North Carolina, written by PromptQL."
-  width={1000}
-  figureClass="my-6 max-w-2xl"
-  class="rounded-lg shadow-xl"
-/>
