@@ -27,17 +27,17 @@ draft: true
 
 Election Day is two weeks away, and we have found 242 sheriff's offices with 287(g) agreements that have a sheriff's race on the ballot.
 
-The [287(g) program](https://www.ice.gov/identify-and-arrest/287g), named for a section of federal immigration law, lets [ICE](https://www.ice.gov/287g) deputize local police and sheriff's deputies to carry out immigration enforcement. In most states, sheriffs are elected, and it's usually the sheriff who ultimately decides whether a county signs on. That makes the vote for sheriff one of the few direct ways voters can weigh in on the program.
+The [287(g) program](https://www.ice.gov/identify-and-arrest/287g), named for a section of federal immigration law, lets ICE deputize local police and sheriff's deputies to carry out immigration enforcement. In nearly every state, sheriffs are elected, and it's usually the sheriff who ultimately decides whether a county signs on. That makes the vote for sheriff one of the few direct ways voters can weigh in on the program.
 
-Now, [287(g) Watch](https://287g.recoveredfactory.net/en) shows those races. Every agency page lists its county's 2026 sheriff's race: who's running, their party, and whether a candidate signed one or more agreements. Whether you support the program or oppose it, you should be able to see if someone running for office signed your local agreement.
+Now, [287(g) Watch](https://287g.recoveredfactory.net/en) shows those races. Every agency page in a county that elects its sheriff this year shows the race: who's running, their party, and whether a candidate signed one or more agreements. Whether you support the program or oppose it, you should be able to see if someone running for office signed your local agreement.
 
-That's the timely part. The bigger news is that we rebuilt the whole site. It's faster, more searchable, easier to read on a phone, and goes deeper on every agency, every state and the program's history. As of \[October 13\], it tracks 2,250+ agencies in 40 states.
+That's the timely part. The bigger news is that we rebuilt the whole site. It's faster, more searchable, easier to read on a phone, and goes deeper on every agency, every state and the program's history. As of October 16, it tracks 2,231 participating agencies in 40 states.
 
 ICE's list of 287(g) agreements tells you who signed, for which program and when. It doesn't tell you why, what it costs or what it changes on the ground. We've added election data, and more joined data is coming, but the rest takes groundwork: observing law enforcement, requesting records, making calls, and asking questions in public, at county meetings and candidate forums. Here's where to start.
 
-## Search for states and agencies
+## "Is my local department in the program?"
 
-Start with the search box at the top of any page and type an agency or a town. Say you live near Cheyenne, Wyoming. Search "Laramie" and open the [Laramie County Sheriff's Office](https://www.laramiecountywy.gov/County-Government/Elected-Officials/Laramie-County-Sheriffs-Office). Or just search for [Wyoming.](https://287g.recoveredfactory.net/en/state/wy)
+Start with the search box at the top of any page and type an agency, a county or a state. Say you live in Cheyenne, Wyoming, which is in Laramie County. Search "Laramie" and open the [Laramie County Sheriff's Office](https://287g.recoveredfactory.net/en/agency/laramie-county-sheriffs-office-wy). Or just search for [Wyoming](https://287g.recoveredfactory.net/en/state/wy).
 
 <LoopVideo
   src="/videos/287g-redesign-search-laramie-zoom.mp4"
@@ -47,7 +47,7 @@ Start with the search box at the top of any page and type an agency or a town. S
   class="rounded-lg shadow-xl"
 />
 
-We found while using the tool for our own research that there were issues with findability — you often want to quickly look up an agency, and in the previous design it took a few steps to do that. Now you just start typing.
+Using the old site for our own research, we found that looking up a single agency took several steps. Now you just start typing.
 
 ## "Who's running for sheriff, and did they sign?"
 
@@ -61,24 +61,24 @@ Until Election Day, the election card lists each candidate and their party, and 
   class="rounded-lg shadow-xl"
 />
 
-In Laramie County, [Brian Kozak](https://ballotpedia.org/Brian_Kozak_%28Laramie_County_Sheriff,_Wyoming,_candidate_2026%29), the Republican who signed the agreement, faces Democrat [Robin Cozad](https://ballotpedia.org/Robin_Cozad_%28Laramie_County_Sheriff,_Wyoming,_candidate_2026%29). In [Hale County, Alabama,](https://287g.recoveredfactory.net/en/agency/hale-county-sheriffs-office-al) the signer is the Democrat: [Michael Hamilton](https://www.alabamasheriffs.com/sheriffmap) faces Republican [Kevin McDaniel.](https://goodparty.org/people/kevin-mcdaniel-73c70a66)
+In Laramie County, [Brian Kozak](https://ballotpedia.org/Brian_Kozak_%28Laramie_County_Sheriff,_Wyoming,_candidate_2026%29), the Republican who signed the agreement, faces Democrat [Robin Cozad](https://ballotpedia.org/Robin_Cozad_%28Laramie_County_Sheriff,_Wyoming,_candidate_2026%29). In [Hale County, Alabama](https://287g.recoveredfactory.net/en/agency/hale-county-sheriffs-office-al), the signer is the Democrat: [Michael Hamilton](https://www.alabamasheriffs.com/sheriffmap) faces Republican [Kevin McDaniel](https://goodparty.org/people/kevin-mcdaniel-73c70a66).
 
-But most signers don't face anyone at all. In the 146 counties where we have official candidate lists, we found 22 sheriffs who signed their office's agreement on the November ballot. Eighteen of them are unopposed.
+But most signers don't face anyone at all. In the 146 counties where we have official candidate lists, we found 22 sheriffs on the November ballot who signed their office's agreement. Eighteen of them are unopposed.
 
 We show the sheriff's race on the pages for every agency in a county, because residents of the cities and towns those departments serve vote for the sheriff too. The [Pine Bluffs Police Department](https://287g.recoveredfactory.net/en/agency/pine-bluffs-police-department-wy) page, for example, shows the Laramie County race.
 
-Some questions worth asking any candidate whether during reporting or at a town hall:
+Some questions worth asking any candidate, whether while reporting or at a town hall:
 
 - Will you keep the agreement, change it or end it?
 - How many of your officers are trained under it, and what have they done with that authority?
 - How many people has your office turned over to ICE, and will you publish that number?
-- How much funding has your department received from the federal government, and how did you use it?
+- How much funding has your office received from the federal government, and how did you use it?
 
 ## "What's happening in my state?"
 
 Some of the most consequential decisions about 287(g) are happening at the [state level](https://287g.recoveredfactory.net/en/states). States like [Florida](https://287g.recoveredfactory.net/en/state/fl) and [Texas](https://287g.recoveredfactory.net/en/state/tx) make participation mandatory via legislation, while states like [Illinois](https://287g.recoveredfactory.net/en/state/il) have prohibited it.
 
-Our state pages show you what’s happening at the level with the most opportunities for impact and meaningful discourse.
+A single state law can put a state's sheriffs into the program, or keep them all out. That's why each state gets its own page.
 
 For example, [North Carolina](https://287g.recoveredfactory.net/en/state/nc) opens with a map of the state's 32 agencies and a chart of how participation has grown. Next come the 2026 races: 28 of those 32 agencies are in counties that elect a sheriff this year, and we have the official candidate list for every one of them, from the [State Board of Elections](https://www.ncsbe.gov/).
 
@@ -90,7 +90,7 @@ For example, [North Carolina](https://287g.recoveredfactory.net/en/state/nc) ope
   class="rounded-lg shadow-xl"
 />
 
-Below that is a summary of recent news coverage in English and Spanish, with links to verified reporting from news outlets. Last comes a table of every agency, which you can filter to the ones with a sheriff's race this year. Each row links to its signed agreement.
+Below that is an AI-written summary of recent news coverage, in English and Spanish, with links to the original reporting. Last comes a table of every agency, which you can filter to the ones with a sheriff's race this year. Each row links to its signed agreement.
 
 The newest North Carolina agreement, for the [Sampson County Sheriff's Office](https://287g.recoveredfactory.net/en/agency/sampson-county-sheriffs-office-nc), was signed October 9, three and a half weeks before the county votes for sheriff.
 
@@ -106,7 +106,7 @@ The newest North Carolina agreement, for the [Sampson County Sheriff's Office](h
 
 The [downloads](https://287g.recoveredfactory.net/en/downloads) page has every agency in the program, plus the 111 that have left it, as one CSV with a data dictionary that explains each column. The same page has our maps, videos and images, in English and Spanish, refreshed as the data changes.
 
-All of it is free to use, including in your own reporting, as long as you credit [287(g) Watch.](https://287g.recoveredfactory.net/en)
+All of it is free to use, including in your own reporting, as long as you credit [287(g) Watch](https://287g.recoveredfactory.net/en).
 
 <ResizedImage
   src="/images/287g-redesign-downloads.png"
