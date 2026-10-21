@@ -8,7 +8,7 @@ byline: "Tory Lysik"
 tags:
   - "field-notes"
 lang: "en"
-previewImage: "/images/287g-redesign-laramie-election.png"
+previewImage: "/images/287g-redesign-laramie-election-v2.png"
 draft: true
 ---
 
@@ -18,10 +18,13 @@ draft: true
 </script>
 
 <!--
-  Stills shot from the live 287(g) Watch site on Oct. 21 (headless Chrome, 2x; phone at 390px, 3x),
-  padded in the site's surface color. The search loop has an email GIF beside it (same name, .gif). Unused on disk: the flat search loop
-  (287g-redesign-search-laramie.*), the phone shot (287g-redesign-laramie-phone.png) and the NC chart
-  and news shots (287g-redesign-nc-chart.png, -nc-news.png).
+  Stills (-v2) shot from the live 287(g) Watch site on Oct. 21 at a 768px window (the "ctrl-+" pass:
+  the site caps content at 896px, so a narrower window makes text bigger relative to the shot), 2x,
+  clipped to the content column and padded 40/36px in the site's surface color. The NC loop scrolls a
+  full-page 3x capture of the state page. Both loops have an email GIF beside them (same name, .gif).
+  Unused on disk: the first-pass stills (same names without -v2, 1100px window, 96px padding), the flat
+  search loop (287g-redesign-search-laramie.*), the phone shot (287g-redesign-laramie-phone.png) and
+  the NC chart and news shots (287g-redesign-nc-chart.png, -nc-news.png).
   The Tella walkthrough clips (287g-redesign-0N-*) are still in static/videos, unused.
 -->
 
@@ -54,9 +57,9 @@ Using the old site for our own research, we found that looking up a single agenc
 Until Election Day, the election card lists each candidate and their party, and notes any candidate who signed the agreement. Buttons take you to register to vote and, for most states, to your state's voter information. It also includes how people in that county voted in the 2024 presidential election to give you a better idea of the local politics.
 
 <ResizedImage
-  src="/images/287g-redesign-laramie-election.png"
+  src="/images/287g-redesign-laramie-election-v2.png"
   alt="The 2026 sheriff's race card for Laramie County, Wyoming, listing two candidates, with buttons to register to vote and find voter information, above how the county voted for president in 2024."
-  width={1000}
+  width={1400}
   figureClass="my-6 max-w-2xl"
   class="rounded-lg shadow-xl"
 />
@@ -82,22 +85,22 @@ Each state gets its own page because a single law can put all a state's sheriffs
 
 For example, [North Carolina](https://287g.recoveredfactory.net/en/state/nc) opens with a map of the state's 32 agencies and a chart of how participation has grown. Next come the 2026 races: 28 of those 32 agencies are in counties that elect a sheriff this year, and we have the official candidate list for every one of them, from the [State Board of Elections](https://www.ncsbe.gov/).
 
-<ResizedImage
-  src="/images/287g-redesign-nc-map.png"
-  alt="The North Carolina page on 287(g) Watch: 32 agencies, their programs, and a map of agency locations."
-  width={1000}
+Below that is an AI-written summary of recent news coverage, in English and Spanish, with links to the original reporting. Last comes a table of every agency, which you can filter to the ones with a sheriff's race this year. Each row links to its signed agreement.
+
+<LoopVideo
+  src="/videos/287g-redesign-nc-scroll.mp4"
+  poster="/videos/287g-redesign-nc-scroll.jpg"
+  label="Scrolling down the North Carolina page on 287(g) Watch: a map of the state's agencies, a chart of how participation has grown, the 2026 sheriff's races, an AI-written summary of news coverage and the table of agencies."
   figureClass="my-6 max-w-2xl"
   class="rounded-lg shadow-xl"
 />
 
-Below that is an AI-written summary of recent news coverage, in English and Spanish, with links to the original reporting. Last comes a table of every agency, which you can filter to the ones with a sheriff's race this year. Each row links to its signed agreement.
-
 The newest North Carolina agreement, for the [Sampson County Sheriff's Office](https://287g.recoveredfactory.net/en/agency/sampson-county-sheriffs-office-nc), was signed October 9, three and a half weeks before the county votes for sheriff.
 
 <ResizedImage
-  src="/images/287g-redesign-nc-table-2026.png"
+  src="/images/287g-redesign-nc-table-2026-v2.png"
   alt="The North Carolina page on 287(g) Watch, with a table of agencies filtered to counties with a 2026 sheriff's race, newest agreement first."
-  width={1000}
+  width={1400}
   figureClass="my-6 max-w-2xl"
   class="rounded-lg shadow-xl"
 />
@@ -109,9 +112,9 @@ The [downloads](https://287g.recoveredfactory.net/en/downloads) page has every a
 All of it is free to use, including in your own reporting, as long as you credit [287(g) Watch](https://287g.recoveredfactory.net/en).
 
 <ResizedImage
-  src="/images/287g-redesign-downloads.png"
+  src="/images/287g-redesign-downloads-v2.png"
   alt="The 287(g) Watch downloads page, with a button to download the data as a CSV and a gallery of free videos and images."
-  width={1000}
+  width={1400}
   figureClass="my-6 max-w-xl"
   class="rounded-lg shadow-xl"
 />
