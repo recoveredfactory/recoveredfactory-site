@@ -114,6 +114,14 @@ export default $config({
       },
     });
 
+    // CloudFront in front of the resizer, so each size of each image is made once per edge location
+    // instead of on every page view (1.5-2s a hit straight from the function URL, 10/30). The router's
+    // default cache policy keys on the full query string and honors the resizer's year-long
+    // Cache-Control.
+    const imageCdn = new sst.aws.Router("ImageCdn", {
+      routes: { "/*": resizer.url },
+    });
+
     const site = new sst.aws.SvelteKit("Web", {
       path: "apps/web",
       ...(siteDomain
@@ -135,7 +143,7 @@ export default $config({
         PUBLIC_SITE_URL: siteDomain
           ? `https://${siteDomain}`
           : process.env.PUBLIC_SITE_URL ?? "",
-        PUBLIC_IMAGE_RESIZER_URL: resizer.url,
+        PUBLIC_IMAGE_RESIZER_URL: imageCdn.url,
         PUBLIC_SUPPORT_LINK_MONTHLY_12:
           stage === "prod"
             ? "https://buy.stripe.com/bJe14oblegwncEAcn2fAc02"
