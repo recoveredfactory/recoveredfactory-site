@@ -143,9 +143,7 @@ export default $config({
         PUBLIC_SITE_URL: siteDomain
           ? `https://${siteDomain}`
           : process.env.PUBLIC_SITE_URL ?? "",
-        // Step 2 points this at imageCdn.url, once the router exists (a preview can't plan the site
-        // against a URL that doesn't exist yet, and shows its resources as deleted).
-        PUBLIC_IMAGE_RESIZER_URL: resizer.url,
+        PUBLIC_IMAGE_RESIZER_URL: imageCdn.url,
         PUBLIC_SUPPORT_LINK_MONTHLY_12:
           stage === "prod"
             ? "https://buy.stripe.com/bJe14oblegwncEAcn2fAc02"
