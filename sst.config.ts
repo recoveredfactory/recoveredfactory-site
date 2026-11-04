@@ -118,9 +118,14 @@ export default $config({
     // instead of on every page view (1.5-2s a hit straight from the function URL, 10/30). The router's
     // default cache policy keys on the full query string and honors the resizer's year-long
     // Cache-Control.
-    const imageCdn = new sst.aws.Router("ImageCdn", {
-      routes: { "/*": resizer.url },
-    });
+    // Prod only: staging deploys with `--target Web`, which can't create a resource that isn't there yet,
+    // so a router on staging would fail every staging deploy (11/4). Staging calls the function URL directly.
+    const imageCdn =
+      stage === "prod"
+        ? new sst.aws.Router("ImageCdn", {
+            routes: { "/*": resizer.url },
+          })
+        : undefined;
 
     const site = new sst.aws.SvelteKit("Web", {
       path: "apps/web",
@@ -143,7 +148,7 @@ export default $config({
         PUBLIC_SITE_URL: siteDomain
           ? `https://${siteDomain}`
           : process.env.PUBLIC_SITE_URL ?? "",
-        PUBLIC_IMAGE_RESIZER_URL: imageCdn.url,
+        PUBLIC_IMAGE_RESIZER_URL: imageCdn ? imageCdn.url : resizer.url,
         PUBLIC_SUPPORT_LINK_MONTHLY_12:
           stage === "prod"
             ? "https://buy.stripe.com/bJe14oblegwncEAcn2fAc02"
