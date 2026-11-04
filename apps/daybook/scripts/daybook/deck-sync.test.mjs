@@ -172,6 +172,25 @@ test('the manifest carries each slide’s words and a script the desk can post a
   );
 });
 
+test('the manifest carries Instagram’s caption, and the script ends on it', () => {
+  const manifest = buildManifest({
+    base: 'https://b.example',
+    prefix: '',
+    date: '2026-11-04',
+    lang: 'en',
+    revision: 2,
+    files: ['01-cover.jpg'],
+    renderedAt: 't',
+    script: [{ file: '01-cover.jpg', kind: 'cover', headline: 'Two sheriffs lose' }],
+    caption: 'Two 287(g) sheriffs lost last night.\n\n#immigration #287g',
+  });
+  assert.equal(manifest.caption, 'Two 287(g) sheriffs lost last night.\n\n#immigration #287g');
+  assert.ok(
+    manifest.script_md.endsWith('\n\n**Caption** (Facebook adds the edition’s link):\nTwo 287(g) sheriffs lost last night.\n\n#immigration #287g'),
+    manifest.script_md,
+  );
+});
+
 test('a slide is stored under a hash of its pixels, so a redraw never reuses a key', () => {
   const first = storedName('06-upcoming.jpg', Buffer.from('page one'));
   const again = storedName('06-upcoming.jpg', Buffer.from('page one'));
