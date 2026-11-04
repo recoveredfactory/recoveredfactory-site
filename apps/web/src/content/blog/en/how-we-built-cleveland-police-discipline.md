@@ -30,8 +30,8 @@ previewImage: "/images/how-we-built-og.jpg"
   how-we-built-cpd-notice-simko.png (the essay's example case). Preview image: the same page's letterhead.
   Headers: phone pair, Signal from David's own Pixel 10 screenshot (signalcleveland.org blocks headless
   browsers), the discipline site shot minutes later on the same device size, so both Trending rows match;
-  each cut a little below the header and faded (Nov. 4; a dimmed version looked off). Signal's display ad,
-  which sat between its header and lead photo, is cut out of its shot (David's call), so the photo moves up. Desktop pair on disk, unused: how-we-built-cpd-header.png.
+  each cut a little below the header and faded (Nov. 4; a dimmed version looked off). David removed Signal's
+  display ad in DevTools before his second shot (13:04); the discipline site was re-shot a minute later. Desktop pair on disk, unused: how-we-built-cpd-header.png.
   Glossary shots: live site at a 768px window, 2x, padded in its gray like the essay's (Nov. 4).
 -->
 
