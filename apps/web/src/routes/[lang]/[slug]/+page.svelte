@@ -34,7 +34,7 @@
   );
   const previewImageUrl = $derived(
     entry?.meta.previewImage
-      ? toAbsoluteUrl(getSocialImageUrl(entry.meta.previewImage, 1600))
+      ? toAbsoluteUrl(getSocialImageUrl(entry.meta.previewImage))
       : null,
   );
   const canonical = $derived(new URL(`/${data.lang}/${data.slug}`, SITE_URL).href);

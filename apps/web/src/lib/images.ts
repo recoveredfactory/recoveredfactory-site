@@ -47,6 +47,9 @@ export const getResizedImageUrl = (source: string, options: ResizeOptions = {}) 
  * Still goes through the resizer rather than linking the raw file, so an
  * oversized source (some previewImages are multi-megabyte photos) can't push a
  * card past the platforms' file-size limits.
+ *
+ * 1200px at quality 85 keeps a detailed photo under WhatsApp's ~300 KB limit, past which it shows
+ * the link with no image (10/30: the Humans report card was 340 KB at 1600px / q90; 202 KB here).
  */
 export const getSocialImageUrl = (source: string, width = 1200) =>
-  getResizedImageUrl(source, { width, format: 'jpeg', quality: 90 });
+  getResizedImageUrl(source, { width, format: 'jpeg', quality: 85 });
