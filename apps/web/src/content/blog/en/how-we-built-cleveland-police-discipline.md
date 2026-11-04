@@ -22,14 +22,16 @@ previewImage: "/images/how-we-built-og.jpg"
   Source: Google Doc "Police discipline site: Notes for a post", tab "reorganized draft - how we did it" (Nov. 4),
   then a tightening and fact-check pass here (Nov. 4) that David backports to the doc. Fact checks against the
   cle-hearings-search code: /var/tmp/claude-1000/-home-eads-projects-cle-hearings-search/87f8c13c-5801-48ba-a936-28727b5a69ac/scratchpad/howto-handoff.md
-  Two claims depend on cle-hearings-search fixes David ordered Nov. 4; both must be live before this publishes:
-  pages cached at the edge, and the CSV's action type column (blank in every row as of Nov. 4).
+  Two claims depend on cle-hearings-search fixes David ordered Nov. 4: pages cached at the edge (LIVE Nov. 4,
+  cle-hearings-search #142/#144: s-maxage=86400, cleared on each deploy) and the CSV's action type column
+  (cle-hearings-search #143, blank in every row until its data refresh ships). Don't publish before #143 is live.
   Notice: CPD Divisional Notice 21-079, a 300 dpi scan the discipline site links as a source document; the 45
   cases are the ones its officerData.json links to that file. Alternative crop on disk, unused:
   how-we-built-cpd-notice-simko.png (the essay's example case). Preview image: the same page's letterhead.
-  Headers: Signal's homepage from David's own screenshot (signalcleveland.org blocks headless browsers),
-  the discipline site shot minutes later at the same window width, so both Trending rows match (Nov. 4).
-  Phone version on disk, unused: how-we-built-cpd-header-mobile.png.
+  Headers: phone pair, Signal from David's own Pixel 10 screenshot (signalcleveland.org blocks headless
+  browsers), the discipline site shot minutes later on the same device size, so both Trending rows match;
+  everything below the headers dimmed (Nov. 4). Desktop pair on disk, unused: how-we-built-cpd-header.png.
+  Glossary shots: live site at a 768px window, 2x, padded in its gray like the essay's (Nov. 4).
 -->
 
 Our recent essay, "[Humans report, AI remixes](https://recoveredfactory.net/en/humans-report-ai-remixes)," covers the thinking behind our Cleveland Police Discipline lookup tool. This companion covers how it works: data entry, the AI pipeline, the frontend and the pieces that make it feel like part of Signal Cleveland's website, even though it runs entirely outside Signal's content management system.
@@ -43,7 +45,7 @@ Our recent essay, "[Humans report, AI remixes](https://recoveredfactory.net/en/h
   alt="The top of Cleveland Division of Police Divisional Notice 21-079, dated March 26, 2021, subject Discipline, page 1 of 8, signed by the chief. Below the letterhead are the first three hearing results: a dispatcher's sick-leave case dismissed, a sergeant's two-day suspension for unprofessional comments and a detective's case dismissed."
   width={1400}
   caption="The first page of [Divisional Notice 21-079](https://drive.google.com/file/d/1hBqmwVJ9q-zDClY1iJ5TkttoBniEt9qC/view), one of the PDFs Documenters read. It runs eight pages and covers 45 cases."
-  figureClass="my-6 max-w-2xl"
+  figureClass="my-6 max-w-lg"
   class="rounded-lg"
 />
 
@@ -103,10 +105,10 @@ The site lives on a Signal Cleveland subdomain and is designed to feel like part
 The homepage endpoint does most of the work of making the site feel like Signal's. It's effectively a tiny, aggressively cached scraper: it pulls key elements from the parent site, turns them into proper data structures and hands them to templates that match the parent site's look and feel without being identical.
 
 <ResizedImage
-  src="/images/how-we-built-cpd-header.png"
-  alt="Two website headers, stacked. Top: Signal Cleveland's homepage, with a row of trending story links and social icons above the Signal Cleveland logo and Newsletters and Donate buttons. Bottom: the Cleveland Police Discipline Search site, with the same trending links, icons, logo and buttons around the site's own title."
+  src="/images/how-we-built-cpd-header-mobile.png"
+  alt="Two phone screens side by side, with everything below the headers dimmed. Left: Signal Cleveland's homepage header, with a trending row above a Menu button, the Signal Cleveland logo and a Donate button. Right: the Cleveland Police Discipline Search header, with the same trending links above the Signal Cleveland logo, the site's title and a menu button."
   width={1400}
-  caption="Signal Cleveland's homepage (top) and the discipline site's header (bottom). The trending links come from Signal's homepage; the rest copies its look."
+  caption="Signal Cleveland's homepage (left) and the discipline site (right) on a phone. The discipline site pulls the trending links, and the menus behind its menu button, from Signal's homepage."
   figureClass="my-6 max-w-2xl"
   class="rounded-lg"
 />
@@ -123,9 +125,27 @@ Disciplinary notices are full of jargon: "Group I violation," "letter of re-inst
 - Longer patterns are tried first, so a specific term wins over a shorter one that overlaps it.
 - Matched terms become links to their glossary definitions, and each match is recorded by officer and case.
 
+<ResizedImage
+  src="/images/how-we-built-cpd-glossary-tooltip.png"
+  alt="A case card from the discipline site titled “2020 — Non-Disciplinary Letter of Re-instruction for Unprofessional Comments.” Glossary terms in the summary, such as Disposition, Specification and Mitigating Factors, are underlined links. A dark pop-up over “letter of re-instruction” shows its definition and a Learn more link."
+  width={1400}
+  caption="Glossary terms in a case summary are links. Hovering over one shows its definition."
+  figureClass="my-6 max-w-xl"
+  class="rounded-lg"
+/>
+
 This keeps the reading experience approachable and gives reporters a quick way to see where key terms appear across the dataset. Because matches are recorded per case, you can ask questions like "how often do body camera issues come up?" without re-reading every PDF. (The wearable camera system shows up in the records of more than 300 employees.)
 
 It also lets readers do some investigating of their own. Many people come to the tool to look up an officer, but each glossary entry links to every officer whose cases mention that term, so readers can follow an issue that matters to them across the whole dataset.
+
+<ResizedImage
+  src="/images/how-we-built-cpd-glossary-entry.png"
+  alt="The glossary entry for Letter of Re-Instruction: its definition, a list of officers with an action referring to the term and a link to show all 325 matches."
+  width={1400}
+  caption="Each glossary entry links to every officer whose cases use the term."
+  figureClass="my-6 max-w-2xl"
+  class="rounded-lg"
+/>
 
 ## Structured data for further investigation
 

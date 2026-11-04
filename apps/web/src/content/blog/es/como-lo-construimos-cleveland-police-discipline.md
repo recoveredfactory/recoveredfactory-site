@@ -35,7 +35,7 @@ Los [Cleveland Documenters](https://cleveland.documenters.org) leen los avisos d
   alt="La parte superior del Aviso Divisional 21-079 de la División de Policía de Cleveland, fechado el 26 de marzo de 2021, con el asunto Disciplina, página 1 de 8, firmado por el jefe. Debajo del membrete aparecen los tres primeros resultados de audiencias: el caso de un despachador por abuso de licencia por enfermedad, desestimado; una suspensión de dos días a un sargento por comentarios poco profesionales, y el caso de un detective, desestimado."
   width={1400}
   caption="La primera página del [Aviso Divisional 21-079](https://drive.google.com/file/d/1hBqmwVJ9q-zDClY1iJ5TkttoBniEt9qC/view), uno de los PDF que leen los Documenters. Tiene ocho páginas y abarca 45 casos."
-  figureClass="my-6 max-w-2xl"
+  figureClass="my-6 max-w-lg"
   class="rounded-lg"
 />
 
@@ -95,10 +95,10 @@ El sitio vive en un subdominio de Signal Cleveland y está diseñado para sentir
 El endpoint de la portada hace casi todo el trabajo de que el sitio se sienta como el de Signal. En la práctica es un scraper diminuto y con caché agresiva: toma elementos clave del sitio principal, los convierte en estructuras de datos ordenadas y se los pasa a plantillas que imitan el aspecto del sitio principal sin ser idénticas.
 
 <ResizedImage
-  src="/images/how-we-built-cpd-header.png"
-  alt="Dos encabezados de sitios web, uno encima del otro. Arriba: la portada de Signal Cleveland, con una fila de enlaces a historias en tendencia e íconos de redes sociales sobre el logo de Signal Cleveland y los botones de boletines y donaciones. Abajo: el sitio Cleveland Police Discipline Search, con los mismos enlaces en tendencia, íconos, logo y botones alrededor del título propio del sitio."
+  src="/images/how-we-built-cpd-header-mobile.png"
+  alt="Dos pantallas de teléfono lado a lado, con todo lo que está debajo de los encabezados oscurecido. A la izquierda, el encabezado de la portada de Signal Cleveland: una fila de enlaces en tendencia sobre un botón de menú, el logo de Signal Cleveland y un botón de donaciones. A la derecha, el encabezado de Cleveland Police Discipline Search: los mismos enlaces en tendencia sobre el logo de Signal Cleveland, el título del sitio y un botón de menú."
   width={1400}
-  caption="La portada de Signal Cleveland (arriba) y el encabezado del sitio de disciplina (abajo). Los enlaces en tendencia vienen de la portada de Signal; el resto imita su aspecto."
+  caption="La portada de Signal Cleveland (izquierda) y el sitio de disciplina (derecha) en un teléfono. El sitio de disciplina toma de la portada de Signal los enlaces en tendencia y los menús que quedan detrás de su botón de menú."
   figureClass="my-6 max-w-2xl"
   class="rounded-lg"
 />
@@ -115,9 +115,27 @@ Los avisos disciplinarios están llenos de jerga: "Group I violation", "letter o
 - Los patrones más largos se prueban primero, así que un término específico gana sobre uno más corto que se le superpone.
 - Los términos encontrados se convierten en enlaces a sus definiciones en el glosario, y cada coincidencia queda registrada por agente y por caso.
 
+<ResizedImage
+  src="/images/how-we-built-cpd-glossary-tooltip.png"
+  alt="Una tarjeta de caso del sitio de disciplina titulada “2020 — Non-Disciplinary Letter of Re-instruction for Unprofessional Comments”. Los términos del glosario en el resumen, como Disposition, Specification y Mitigating Factors, son enlaces subrayados. Una ventana oscura sobre “letter of re-instruction” muestra su definición y un enlace para leer más."
+  width={1400}
+  caption="Los términos del glosario en el resumen de un caso son enlaces. Al pasar el cursor sobre uno, aparece su definición."
+  figureClass="my-6 max-w-xl"
+  class="rounded-lg"
+/>
+
 Esto hace que la lectura sea más accesible y les da a los reporteros una forma rápida de ver dónde aparecen los términos clave en todo el conjunto de datos. Como las coincidencias se registran por caso, se pueden hacer preguntas como "¿con qué frecuencia aparecen problemas con las cámaras corporales?" sin releer cada PDF. (El sistema de cámaras corporales aparece en los registros de más de 300 empleados).
 
 También permite que los lectores investiguen por su cuenta. Mucha gente llega a la herramienta para buscar a un agente, pero cada entrada del glosario enlaza a todos los agentes cuyos casos mencionan ese término, así que los lectores pueden seguir un tema que les importa a lo largo de todo el conjunto de datos.
+
+<ResizedImage
+  src="/images/how-we-built-cpd-glossary-entry.png"
+  alt="La entrada del glosario para Letter of Re-Instruction: su definición, una lista de agentes con una acción que menciona el término y un enlace para ver las 325 coincidencias."
+  width={1400}
+  caption="Cada entrada del glosario enlaza a todos los agentes cuyos casos usan el término."
+  figureClass="my-6 max-w-2xl"
+  class="rounded-lg"
+/>
 
 ## Datos estructurados para seguir investigando
 
