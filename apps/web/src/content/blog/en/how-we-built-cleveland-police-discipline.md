@@ -30,7 +30,7 @@ previewImage: "/images/how-we-built-og.jpg"
   how-we-built-cpd-notice-simko.png (the essay's example case). Preview image: the same page's letterhead.
   Headers: phone pair, Signal from David's own Pixel 10 screenshot (signalcleveland.org blocks headless
   browsers), the discipline site shot minutes later on the same device size, so both Trending rows match;
-  everything below the headers dimmed (Nov. 4). Desktop pair on disk, unused: how-we-built-cpd-header.png.
+  each cut just below the header and faded (Nov. 4; a dimmed version looked off). Desktop pair on disk, unused: how-we-built-cpd-header.png.
   Glossary shots: live site at a 768px window, 2x, padded in its gray like the essay's (Nov. 4).
 -->
 
@@ -106,7 +106,7 @@ The homepage endpoint does most of the work of making the site feel like Signal'
 
 <ResizedImage
   src="/images/how-we-built-cpd-header-mobile.png"
-  alt="Two phone screens side by side, with everything below the headers dimmed. Left: Signal Cleveland's homepage header, with a trending row above a Menu button, the Signal Cleveland logo and a Donate button. Right: the Cleveland Police Discipline Search header, with the same trending links above the Signal Cleveland logo, the site's title and a menu button."
+  alt="The tops of two phone screens, side by side. Left: Signal Cleveland's homepage header, with a trending row above a Menu button, the Signal Cleveland logo and a Donate button. Right: the Cleveland Police Discipline Search header, with the same trending links above the Signal Cleveland logo, the site's title and a menu button."
   width={1400}
   caption="Signal Cleveland's homepage (left) and the discipline site (right) on a phone. The discipline site pulls the trending links, and the menus behind its menu button, from Signal's homepage."
   figureClass="my-6 max-w-2xl"
