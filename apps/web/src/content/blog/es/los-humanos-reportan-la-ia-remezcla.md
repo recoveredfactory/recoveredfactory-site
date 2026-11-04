@@ -65,7 +65,7 @@ Cleveland Documenters se propuso que esta información le sirviera a la gente de
 Dicho rápido, nuestro modelo se parece mucho al de Quinn: las personas reúnen la información y un modelo hace la escritura. También usamos el mismo argumento de los recursos. Ninguna redacción en 2026 va a pagarle a alguien para reescribir 1,700 notificaciones disciplinarias en lenguaje sencillo. La diferencia está en cómo se organiza el resto de la fábrica:
 
 - **Los residentes hacen la lectura.** Los Documenters de Cleveland leyeron las notificaciones e ingresaron cada caso en Airtable: el agente, la fecha de la audiencia, los cargos, el resultado y un enlace al documento original.
-- **Los periodistas aportan el criterio.** April Hirsh Urban, Rachel Dissell y Emma Sedlak pasaron años reuniendo estos registros e informando sobre ellos, y los reporteros siguen sacando las conclusiones y [presentando los hallazgos](https://signalcleveland.org/how-cleveland-police-discipline-works/). El equipo escribió un glosario de casi 400 términos para descifrar la jerga.
+- **Los periodistas aportan el criterio.** April Hirsh Urban, Rachel Dissell y Emma Sedlak pasaron años reuniendo estos registros e informando sobre ellos, y los reporteros siguen sacando las conclusiones y [presentando los hallazgos](https://signalcleveland.org/how-cleveland-police-discipline-works/). El equipo escribió un glosario de unos 80 términos para descifrar la jerga.
 - **El modelo hace el trabajo pesado de redacción.** Para cada caso, escribe un titular y un resumen en lenguaje sencillo y clasifica el resultado y la gravedad.
 - **Las personas revisan al modelo.** Una persona ha validado casi todos los resúmenes contra los registros originales.
 - **Los lectores reciben una herramienta duradera, no solo una noticia.** Pueden buscar a un agente, seguir un término como "wearable camera system" (el sistema de cámara corporal) en los registros de más de 300 empleados, ver cuándo un despido fue revocado después y compartir un enlace a cualquier búsqueda.
@@ -144,3 +144,7 @@ Nada de esto es exclusivo de la disciplina policial. El mismo informe de Cronkit
 Una vez que el reporteo es sólido, la escritura se vuelve arcilla. Hoy es un resumen en inglés sencillo. Mañana podrían ser traducciones, una interfaz de chat o de voz, o una app nativa. Los humanos reportan, la IA remezcla, y queda mucho por remezclar.
 
 No hay firma en la escritura. Estas son las personas que lo construyeron: April Hirsh Urban, Rachel Dissell, Emma Sedlak, Cid Standifer, Hails Hoyat, Dan McLaughlin, Rosie Palfy, Mary Ellen Crowley Huesken, Frank W. Lewis y David Eads, con ilustraciones de John G.
+
+*Para los detalles técnicos, de los prompts al sitio que funciona sin conexión, lea el texto que acompaña a este ensayo: "[Cómo lo construimos: Cleveland Police Discipline](https://recoveredfactory.net/es/como-lo-construimos-cleveland-police-discipline)".*
+
+*Aclaración, 4 de noviembre de 2026: Una versión anterior de este texto decía que el glosario tenía casi 400 términos. Esa cifra incluía entradas que todavía no están publicadas; unas 80 están en el sitio.*
