@@ -35,7 +35,7 @@ previewImage: "/images/how-we-built-og.jpg"
   Glossary shots: live site at a 768px window, 2x, padded in its gray like the essay's (Nov. 4).
 -->
 
-Our recent essay, "[Humans report, AI remixes](https://recoveredfactory.net/en/humans-report-ai-remixes)," covers the thinking behind our Cleveland Police Discipline lookup tool. This companion covers how it works: data entry, the AI pipeline, the frontend and the pieces that make it feel like part of Signal Cleveland's website, even though it runs entirely outside Signal's content management system.
+Our recent essay, "[Humans report, AI remixes](https://recoveredfactory.net/en/humans-report-ai-remixes)," covers the thinking behind our [Cleveland Police Discipline](https://cleveland-police-discipline.signalcleveland.org/) lookup tool. This companion covers how it works: data entry, the AI pipeline, the frontend and the pieces that make it feel like part of the [Signal Cleveland](https://signalcleveland.org/) website, even though it runs entirely outside Signal's content management system.
 
 ## Data entry: people, not scrapers
 
@@ -50,7 +50,7 @@ Our recent essay, "[Humans report, AI remixes](https://recoveredfactory.net/en/h
   class="rounded-lg"
 />
 
-Documenters keep data entry simple. For each case, they pull the key elements into Airtable: the officer, the hearing date, the text describing the charges and the outcome, and the type of action. They link the case to the officer and the source document, broadly categorize it and move on to the next one.
+Documenters keep data entry simple. For each case, they pull the key elements into [Airtable](https://www.airtable.com/): the officer, the hearing date, the text describing the charges and the outcome, and the type of action. They link the case to the officer and the source document, broadly categorize it and move on to the next one.
 
 AI could have done the extraction, too. We could have vibecoded a scraper for the notices' unstructured text, but making it reliable would have taken expensive engineering hours, fussy QA and a lot of tokens. The project started just as LLMs were taking off, so AI wasn't a real option until we were well into it. When we revisited the question earlier this year, the cost came out about the same as paying Documenters.
 
@@ -58,7 +58,7 @@ Scale matters, too. With very large data sets, automation is sometimes the only 
 
 ## The AI pipeline
 
-A data refresh script pulls the cases from Airtable and sends each one to OpenAI's GPT models for three jobs:
+A data refresh script pulls the cases from Airtable and sends each one to OpenAI's [GPT models](https://platform.openai.com/docs/models) for three jobs:
 
 - **A summary.** The model rewrites the notice as a short paragraph about the outcome, followed by lists of the charges and of any mitigating and aggravating factors. The prompt says the summaries are "meant to be read on a website and on small screens without sacrificing accuracy or dumbing down language."
 - **A title.** One line that leads with the discipline imposed, such as "Written Reprimand for Improper Search and Seizure Procedure," with acronyms spelled out.
@@ -84,15 +84,15 @@ Sharp readers will notice we didn't name a model. We switched as newer, more cap
 
 ## A fast, offline-capable frontend
 
-The site is built with SvelteKit. On the first visit, the browser downloads the whole dataset (officers, cases, summaries and the glossary) as a couple of JSON files. After that, everything happens in the browser, and the data never comes from a live database:
+The site is built with [SvelteKit](https://svelte.dev/docs/kit). On the first visit, the browser downloads the whole dataset (officers, cases, summaries and the glossary) as a couple of JSON files. After that, everything happens in the browser, and the data never comes from a live database:
 
-- FlexSearch builds a full-text index in a web worker, so search never freezes the page.
+- [FlexSearch](https://github.com/nextapps-de/flexsearch) builds a full-text index in a [web worker](https://developer.mozilla.org/en-US/docs/Web/API/Web_Workers_API), so search never freezes the page.
 - Navigation and search are instant.
-- A service worker caches the site and its data.
+- A [service worker](https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API) caches the site and its data.
 
 Once it's loaded, the site keeps working without an internet connection. That's useful if service drops during a protest or another big event where police are present, and just as valuable in [one of the least-connected big cities in the country](https://www.the74million.org/article/how-does-remote-learning-work-if-students-cant-even-get-online-census-data-show-major-cities-like-cleveland-miami-and-memphis-lag-behind-in-basic-internet-access/).
 
-Hosting stays simple, too. The site runs on AWS (S3, CloudFront and a small Lambda function, deployed with SST), and pages are cached at the edge. There's no database to scale, and if Airtable has a bad day, the site keeps working. That's a good fit for small newsrooms that can't take on maintenance debt or drop everything for a server crisis.
+Hosting stays simple, too. The site runs on [AWS](https://aws.amazon.com/) (S3, CloudFront and a small Lambda function, deployed with [SST](https://sst.dev/)), and pages are cached at the edge. There's no database to scale, and if Airtable has a bad day, the site keeps working. That's a good fit for small newsrooms that can't take on maintenance debt or drop everything for a server crisis.
 
 ## Integration with the parent site
 
@@ -120,7 +120,7 @@ Because the data is plain files, the parent site could pull the same JSON for SE
 
 ## A glossary system
 
-Disciplinary notices are full of jargon: "Group I violation," "letter of re-instruction," "wearable camera system (WCS)" and "mitigating factors." The glossary, maintained by editors in Airtable, has about 80 published entries. Each entry has a **term matcher**, a regular expression that tells the pipeline how to find the term in case text:
+Disciplinary notices are full of jargon: "Group I violation," "letter of re-instruction," "wearable camera system (WCS)" and "mitigating factors." The [glossary](https://cleveland-police-discipline.signalcleveland.org/glossary/), maintained by editors in Airtable, has about 80 published entries. Each entry has a **term matcher**, a regular expression that tells the pipeline how to find the term in case text:
 
 - Matchers are combined into a single case-insensitive pattern.
 - Longer patterns are tried first, so a specific term wins over a shorter one that overlaps it.

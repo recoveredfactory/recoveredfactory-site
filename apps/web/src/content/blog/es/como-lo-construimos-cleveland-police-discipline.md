@@ -23,7 +23,7 @@ previewImage: "/images/how-we-built-og.jpg"
   English version (pages cached at the edge; the CSV's action type column).
 -->
 
-Nuestro ensayo reciente, "[Los humanos reportan, la IA remezcla](https://recoveredfactory.net/es/los-humanos-reportan-la-ia-remezcla)", explica la idea detrás de Cleveland Police Discipline, nuestra herramienta de consulta. Este texto complementario cuenta cómo funciona: el ingreso de datos, el proceso con IA, el frontend y las piezas que hacen que se sienta parte del sitio web de Signal Cleveland, aunque funciona totalmente por fuera del sistema de gestión de contenidos de Signal.
+Nuestro ensayo reciente, "[Los humanos reportan, la IA remezcla](https://recoveredfactory.net/es/los-humanos-reportan-la-ia-remezcla)", explica la idea detrás de [Cleveland Police Discipline](https://cleveland-police-discipline.signalcleveland.org/), nuestra herramienta de consulta. Este texto complementario cuenta cómo funciona: el ingreso de datos, el proceso con IA, el frontend y las piezas que hacen que se sienta parte del sitio web de [Signal Cleveland](https://signalcleveland.org/), aunque funciona totalmente por fuera del sistema de gestión de contenidos de Signal.
 
 ## Ingreso de datos: personas, no scrapers
 
@@ -38,7 +38,7 @@ Los [Cleveland Documenters](https://cleveland.documenters.org) leen los avisos d
   class="rounded-lg"
 />
 
-Los Documenters mantienen simple el ingreso de datos. Para cada caso, pasan a Airtable los elementos clave: el agente, la fecha de la audiencia, el texto que describe los cargos y el resultado, y el tipo de acción. Vinculan el caso con el agente y con el documento original, lo clasifican a grandes rasgos y pasan al siguiente.
+Los Documenters mantienen simple el ingreso de datos. Para cada caso, pasan a [Airtable](https://www.airtable.com/) los elementos clave: el agente, la fecha de la audiencia, el texto que describe los cargos y el resultado, y el tipo de acción. Vinculan el caso con el agente y con el documento original, lo clasifican a grandes rasgos y pasan al siguiente.
 
 La IA también podría haber hecho la extracción. Podríamos haber armado a punta de prompts un scraper para el texto no estructurado de los avisos, pero hacerlo confiable habría costado horas caras de ingeniería, un control de calidad engorroso y muchos tokens. El proyecto empezó justo cuando los LLM empezaban a despegar, así que la IA no fue una opción real hasta que ya íbamos muy avanzados. Cuando volvimos a revisar la pregunta a principios de este año, el costo salió más o menos igual que pagarles a los Documenters.
 
@@ -46,7 +46,7 @@ La escala también importa. Con conjuntos de datos muy grandes, a veces automati
 
 ## El proceso con IA
 
-Un script de actualización de datos toma los casos de Airtable y envía cada uno a los modelos GPT de OpenAI para tres tareas:
+Un script de actualización de datos toma los casos de Airtable y envía cada uno a los [modelos GPT](https://platform.openai.com/docs/models) de OpenAI para tres tareas:
 
 - **Un resumen.** El modelo reescribe el aviso como un párrafo corto sobre el resultado, seguido de listas de los cargos y de los factores atenuantes y agravantes, si los hay. El prompt dice que los resúmenes están "pensados para leerse en un sitio web y en pantallas pequeñas sin sacrificar la precisión ni simplificar de más el lenguaje".
 - **Un título.** Una línea que empieza por la sanción impuesta, como "Amonestación escrita por procedimiento indebido de registro e incautación", con las siglas escritas completas.
@@ -72,15 +72,15 @@ Los lectores atentos notarán que no nombramos un modelo. Fuimos cambiando a med
 
 ## Un frontend rápido que funciona sin conexión
 
-El sitio está hecho con SvelteKit. En la primera visita, el navegador descarga todo el conjunto de datos (agentes, casos, resúmenes y el glosario) en un par de archivos JSON. A partir de ahí, todo pasa en el navegador, y los datos nunca vienen de una base de datos en vivo:
+El sitio está hecho con [SvelteKit](https://svelte.dev/docs/kit). En la primera visita, el navegador descarga todo el conjunto de datos (agentes, casos, resúmenes y el glosario) en un par de archivos JSON. A partir de ahí, todo pasa en el navegador, y los datos nunca vienen de una base de datos en vivo:
 
-- FlexSearch construye un índice de texto completo en un web worker, así que la búsqueda nunca congela la página.
+- [FlexSearch](https://github.com/nextapps-de/flexsearch) construye un índice de texto completo en un [web worker](https://developer.mozilla.org/es/docs/Web/API/Web_Workers_API), así que la búsqueda nunca congela la página.
 - La navegación y la búsqueda son instantáneas.
-- Un service worker guarda en caché el sitio y sus datos.
+- Un [service worker](https://developer.mozilla.org/es/docs/Web/API/Service_Worker_API) guarda en caché el sitio y sus datos.
 
 Una vez cargado, el sitio sigue funcionando sin conexión a internet. Eso sirve si se cae la señal durante una protesta u otro evento grande con presencia policial, y vale igual en [una de las grandes ciudades menos conectadas del país](https://www.the74million.org/article/how-does-remote-learning-work-if-students-cant-even-get-online-census-data-show-major-cities-like-cleveland-miami-and-memphis-lag-behind-in-basic-internet-access/).
 
-El alojamiento también es sencillo. El sitio corre en AWS (S3, CloudFront y una pequeña función Lambda, desplegados con SST), y las páginas se guardan en caché en el borde de la red. No hay una base de datos que escalar, y si Airtable tiene un mal día, el sitio sigue funcionando. Eso le va bien a una redacción pequeña que no puede cargar con deuda de mantenimiento ni dejarlo todo por una crisis de servidores.
+El alojamiento también es sencillo. El sitio corre en [AWS](https://aws.amazon.com/) (S3, CloudFront y una pequeña función Lambda, desplegados con [SST](https://sst.dev/)), y las páginas se guardan en caché en el borde de la red. No hay una base de datos que escalar, y si Airtable tiene un mal día, el sitio sigue funcionando. Eso le va bien a una redacción pequeña que no puede cargar con deuda de mantenimiento ni dejarlo todo por una crisis de servidores.
 
 ## Integración con el sitio principal
 
@@ -108,7 +108,7 @@ Como los datos son archivos simples, el sitio principal podría usar el mismo JS
 
 ## Un sistema de glosario
 
-Los avisos disciplinarios están llenos de jerga: "Group I violation", "letter of re-instruction", "wearable camera system (WCS)" y "mitigating factors". El glosario, que los editores mantienen en Airtable, tiene unas 80 entradas publicadas. Cada entrada tiene un **buscador de términos**, una expresión regular que le dice al proceso cómo encontrar el término en el texto de los casos:
+Los avisos disciplinarios están llenos de jerga: "Group I violation", "letter of re-instruction", "wearable camera system (WCS)" y "mitigating factors". El [glosario](https://cleveland-police-discipline.signalcleveland.org/glossary/), que los editores mantienen en Airtable, tiene unas 80 entradas publicadas. Cada entrada tiene un **buscador de términos**, una expresión regular que le dice al proceso cómo encontrar el término en el texto de los casos:
 
 - Los buscadores se combinan en un solo patrón que no distingue mayúsculas de minúsculas.
 - Los patrones más largos se prueban primero, así que un término específico gana sobre uno más corto que se le superpone.
