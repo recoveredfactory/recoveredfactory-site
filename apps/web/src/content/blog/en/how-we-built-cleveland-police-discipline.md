@@ -31,7 +31,8 @@ previewImage: "/images/how-we-built-og.jpg"
   Headers: phone pair, Signal from David's own Pixel 10 screenshot (signalcleveland.org blocks headless
   browsers), the discipline site shot minutes later on the same device size, so both Trending rows match;
   each cut a little below the header and faded (Nov. 4; a dimmed version looked off). David removed Signal's
-  display ad in DevTools before his second shot (13:04); the discipline site was re-shot a minute later. Desktop pair on disk, unused: how-we-built-cpd-header.png.
+  display ad in DevTools before his second shot (13:04); the discipline site was re-shot a minute later.
+  Crops run through Signal's lead headline; plain red boxes mark the headers (David: "simple old school"). Desktop pair on disk, unused: how-we-built-cpd-header.png.
   Glossary shots: live site at a 768px window, 2x, padded in its gray like the essay's (Nov. 4).
 -->
 
@@ -107,7 +108,7 @@ The homepage endpoint does most of the work of making the site feel like Signal'
 
 <ResizedImage
   src="/images/how-we-built-cpd-header-mobile.png"
-  alt="The tops of two phone screens, side by side. Left: Signal Cleveland's homepage header, with a trending row above a Menu button, the Signal Cleveland logo and a Donate button. Right: the Cleveland Police Discipline Search header, with the same trending links above the Signal Cleveland logo, the site's title and a menu button."
+  alt="The tops of two phone screens, side by side, with a red box around each header. Left: Signal Cleveland's homepage, with a trending row above a Menu button, the Signal Cleveland logo and a Donate button, then a photo and the headline “Issues 10 and 11 pass, delivering more aid for Cuyahoga County’s safety net through property tax increase.” Right: the Cleveland Police Discipline Search site, with the same trending links above the Signal Cleveland logo, the site's title and a menu button, then a search box and the first officer cards."
   width={1400}
   caption="Signal Cleveland's homepage (left) and the discipline site (right) on a phone. The discipline site pulls the trending links, and the menus behind its menu button, from Signal's homepage."
   figureClass="my-6 max-w-2xl"

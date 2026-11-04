@@ -96,7 +96,7 @@ El endpoint de la portada hace casi todo el trabajo de que el sitio se sienta co
 
 <ResizedImage
   src="/images/how-we-built-cpd-header-mobile.png"
-  alt="La parte superior de dos pantallas de teléfono, lado a lado. A la izquierda, el encabezado de la portada de Signal Cleveland: una fila de enlaces en tendencia sobre un botón de menú, el logo de Signal Cleveland y un botón de donaciones. A la derecha, el encabezado de Cleveland Police Discipline Search: los mismos enlaces en tendencia sobre el logo de Signal Cleveland, el título del sitio y un botón de menú."
+  alt="La parte superior de dos pantallas de teléfono, lado a lado, con un recuadro rojo alrededor de cada encabezado. A la izquierda, la portada de Signal Cleveland: una fila de enlaces en tendencia sobre un botón de menú, el logo de Signal Cleveland y un botón de donaciones, y debajo una foto y el titular “Issues 10 and 11 pass, delivering more aid for Cuyahoga County’s safety net through property tax increase”. A la derecha, el sitio Cleveland Police Discipline Search: los mismos enlaces en tendencia sobre el logo de Signal Cleveland, el título del sitio y un botón de menú, y debajo un buscador y las primeras tarjetas de agentes."
   width={1400}
   caption="La portada de Signal Cleveland (izquierda) y el sitio de disciplina (derecha) en un teléfono. El sitio de disciplina toma de la portada de Signal los enlaces en tendencia y los menús que quedan detrás de su botón de menú."
   figureClass="my-6 max-w-2xl"
