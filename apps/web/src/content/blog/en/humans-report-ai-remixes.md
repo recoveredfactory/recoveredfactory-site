@@ -19,7 +19,7 @@ previewImage: "/images/humans-report-og.jpg"
 
 <!--
   Source: Google Doc "Police discipline site: Notes for a post", tab "reorganized draft - essay" (Oct. 30).
-  The companion "How we built Cleveland Police Discipline" runs Monday; link it from here once it's up.
+  The companion, "How we built it: Cleveland Police Discipline" (Nov. 4), links back here; the closing line links to it.
   Art: NARA 165-WW-23A-103 (NAID 17342476), War Department, 1917-18, public domain. Hero is the Commons
   crop at 2400w; the preview image is a 1.91:1 crop of it (humans-report-og.jpg). Tried and dropped (Oct. 30):
   a closing photo of the empty Glenn L. Martin Co. plant in Cleveland, 1918 (humans-report-martin-cleveland.jpg).
@@ -68,7 +68,7 @@ Cleveland Documenters set out to make this information useful to Clevelanders. A
 When you say it fast, our model sounds a lot like Quinn's: People gather the information, and a model does the writing. We make the same resource argument, too. No newsroom in 2026 is going to pay someone to rewrite 1,700 disciplinary notices in plain English. The difference is how the rest of the factory is arranged:
 
 - **Residents do the reading.** Cleveland Documenters read the notices and entered each case into Airtable: the officer, the hearing date, the charges, the outcome and a link to the source document.
-- **Journalists bring the judgment.** April Hirsh Urban, Rachel Dissell and Emma Sedlak spent years gathering and reporting on these records, and reporters continue to draw the conclusions and [present the findings](https://signalcleveland.org/how-cleveland-police-discipline-works/). The team wrote a glossary of almost 400 terms to decode the jargon.
+- **Journalists bring the judgment.** April Hirsh Urban, Rachel Dissell and Emma Sedlak spent years gathering and reporting on these records, and reporters continue to draw the conclusions and [present the findings](https://signalcleveland.org/how-cleveland-police-discipline-works/). The team wrote a glossary of about 80 terms to decode the jargon.
 - **The model does the grunt-work writing.** For every case, it writes a headline and a plain-language summary and classifies the outcome and severity.
 - **People check the model.** A person has validated nearly every summary against the original records.
 - **Readers get a durable tool, not just a story.** They can look up an officer, follow a term like "wearable camera system" across the records of more than 300 employees, see when a firing was later overturned and share a link to any search.
@@ -147,3 +147,7 @@ None of this is specific to police discipline. The same Cronkite report describe
 Once the reporting is solid, the writing becomes clay. Today it's a plain-English summary. Tomorrow it could be translations, a chat or voice interface, or a native app. Humans report, AI remixes, and there's a lot more remixing to do.
 
 There's no byline on the writing. Here are the people who built it: April Hirsh Urban, Rachel Dissell, Emma Sedlak, Cid Standifer, Hails Hoyat, Dan McLaughlin, Rosie Palfy, Mary Ellen Crowley Huesken, Frank W. Lewis and David Eads, with illustrations by John G.
+
+*For the nuts and bolts, from the prompts to the offline-capable site, see the companion post, "[How we built it: Cleveland Police Discipline](https://recoveredfactory.net/en/how-we-built-cleveland-police-discipline)."*
+
+*Clarification, Nov. 4, 2026: An earlier version of this post said the glossary had almost 400 terms. That count included entries that aren't published yet; about 80 are live on the site.*
