@@ -12,11 +12,14 @@ import { fileURLToPath } from 'node:url';
 
 import {
   CAPTION_MAX,
+  HASHTAG_MAX,
   PAUSE_MS,
   buildCaption,
+  captionNotes,
   checkAccounts,
   fitInstagram,
   formatCheck,
+  hashtagsFor,
   isTestDeck,
   postDeck,
   resolveCredentials,
@@ -76,31 +79,71 @@ function fakeGraph({ statuses = ['IN_PROGRESS', 'FINISHED'] } = {}) {
 const quiet = () => {};
 const noSleep = async () => {};
 
-test('the caption: title, description, and where to read it, in English', () => {
+// What the composer writes for the post (David, 2026-11-04): snappy words and
+// a few hashtags per language.
+const composed = {
+  ...record,
+  social: {
+    caption: 'Refugees now get 10 days to fight a status termination. Miss it, and the case is over.',
+    hashtags: ['#immigration', 'refugees', '#USCIS'],
+  },
+};
+
+test('the Instagram caption: the composed words, then the hashtags, and no link', () => {
   assert.equal(
-    buildCaption(record),
-    'Refugees get 10 days to contest status termination\n' +
-      'A final work-permit rule takes effect, and San Antonio sues over a proposed detention site.\n\n' +
-      'Today’s Immigration Daybook, free every weekday morning: immigrationdaybook.com/en/2026-10-14',
+    buildCaption(composed),
+    'Refugees now get 10 days to fight a status termination. Miss it, and the case is over.\n\n' + '#immigration #refugees #USCIS',
   );
 });
 
-test('the caption in Spanish, and without a description', () => {
-  const es = buildCaption({ ...record, lang: 'es', title: 'Refugiados: 10 días para impugnar', description: undefined });
+test('the Facebook caption adds where to read the edition, before the hashtags', () => {
   assert.equal(
-    es,
-    'Refugiados: 10 días para impugnar\n\n' +
-      'El Immigration Daybook de hoy, gratis cada mañana entre semana: immigrationdaybook.com/es/2026-10-14',
+    buildCaption(composed, { platform: 'facebook' }),
+    'Refugees now get 10 days to fight a status termination. Miss it, and the case is over.\n\n' +
+      'Today’s Immigration Daybook, free every weekday morning: immigrationdaybook.com/en/2026-10-14\n\n' +
+      '#immigration #refugees #USCIS',
+  );
+  const es = { ...record, lang: 'es', social: { caption: 'Diez días para impugnar.', hashtags: ['inmigración', 'refugiados'] } };
+  assert.equal(
+    buildCaption(es, { platform: 'facebook' }),
+    'Diez días para impugnar.\n\n' +
+      'El Immigration Daybook de hoy, gratis cada mañana entre semana: immigrationdaybook.com/es/2026-10-14\n\n' +
+      '#inmigración #refugiados',
   );
 });
 
-test('a caption past 2,200 characters gives up description, never the title or the link', () => {
-  const long = { ...record, description: 'The rule changes the deadline. '.repeat(120).trim() };
-  const caption = buildCaption(long);
-  assert.ok(caption.length <= CAPTION_MAX, `${caption.length}`);
-  assert.ok(caption.startsWith(`${record.title}\nThe rule changes the deadline.`));
-  assert.ok(caption.endsWith('immigrationdaybook.com/en/2026-10-14'));
-  assert.equal(buildCaption(record).length < CAPTION_MAX, true);
+test('without a composed caption the post carries the title alone, never the description', () => {
+  assert.equal(buildCaption(record), record.title);
+  assert.deepEqual(captionNotes(record), [
+    'No caption composed (`social.caption`): the posts carry the edition’s title instead.',
+    'No hashtags composed (`social.hashtags`).',
+  ]);
+  assert.deepEqual(captionNotes(composed), []);
+});
+
+test('hashtags are cleaned, deduplicated and cut to Instagram’s five, the caption’s own counted', () => {
+  const messy = { ...record, social: { hashtags: ['#Inmigración', 'inmigración', 'Temporary Protected Status', '##TPS', '287(g)', '2026', '', 'ICE', 'DACA', 'H-1B'] } };
+  assert.deepEqual(hashtagsFor(messy), {
+    tags: ['#Inmigración', '#TemporaryProtectedStatus', '#TPS', '#287g', '#ICE'],
+    dropped: ['#2026', '#DACA', '#H1B'],
+  });
+  assert.deepEqual(hashtagsFor({ ...record, social: { hashtags: '#ICE #TPS, asylum' } }).tags, ['#ICE', '#TPS', '#asylum']);
+
+  const inline = { ...record, social: { caption: 'Big day for #TPS and #ICE watchers.', hashtags: ['a', 'b', 'c', 'd'] } };
+  assert.deepEqual(hashtagsFor(inline), { tags: ['#a', '#b', '#c'], dropped: ['#d'] });
+  assert.match(captionNotes(inline)[0], /^Hashtags left off .*: #d\.$/);
+  assert.equal(HASHTAG_MAX, 5);
+});
+
+test('a caption past 2,200 characters gives up words, never the link or the hashtags', () => {
+  const long = { ...composed, social: { ...composed.social, caption: 'The rule changes the deadline. '.repeat(120).trim() } };
+  for (const platform of ['instagram', 'facebook']) {
+    const caption = buildCaption(long, { platform });
+    assert.ok(caption.length <= CAPTION_MAX, `${platform}: ${caption.length}`);
+    assert.ok(caption.startsWith('The rule changes the deadline.'));
+    assert.ok(caption.endsWith('\n\n#immigration #refugees #USCIS'));
+  }
+  assert.match(buildCaption(long, { platform: 'facebook' }), /immigrationdaybook\.com\/en\/2026-10-14\n\n#immigration/);
 });
 
 test('Instagram takes ten: stories come off the end first, the calendar stays', () => {
@@ -130,7 +173,7 @@ test('Facebook: every slide uploaded unpublished, then one feed post carrying th
   assert.ok(uploads.every((c) => c.params.published === 'false'));
 
   const feed = graph.calls.find((c) => c.path === '111/feed').params;
-  assert.equal(feed.message, buildCaption(record));
+  assert.equal(feed.message, buildCaption(record, { platform: 'facebook' }));
   assert.deepEqual(
     deck.slides.map((s, i) => JSON.parse(feed[`attached_media[${i}]`])),
     deck.slides.map((s, i) => ({ media_fbid: `photo${i + 1}` })),
@@ -488,17 +531,15 @@ const testDeck = {
 
 test('a test post says so, and links to the site rather than an edition that does not exist', () => {
   assert.equal(
-    buildCaption(record, { test: true }),
+    buildCaption(composed, { test: true, platform: 'facebook' }),
     'Test post: this will be deleted shortly.\n' +
-      'Refugees get 10 days to contest status termination\n' +
-      'A final work-permit rule takes effect, and San Antonio sues over a proposed detention site.\n\n' +
-      'Today’s Immigration Daybook, free every weekday morning: immigrationdaybook.com',
+      'Refugees now get 10 days to fight a status termination. Miss it, and the case is over.\n\n' +
+      'Today’s Immigration Daybook, free every weekday morning: immigrationdaybook.com\n\n' +
+      '#immigration #refugees #USCIS',
   );
   assert.equal(
-    buildCaption({ ...record, lang: 'es', title: 'Refugiados: 10 días para impugnar', description: '' }, { test: true }),
-    'Publicación de prueba: se borrará en breve.\n' +
-      'Refugiados: 10 días para impugnar\n\n' +
-      'El Immigration Daybook de hoy, gratis cada mañana entre semana: immigrationdaybook.com',
+    buildCaption({ ...record, lang: 'es', title: 'Refugiados: 10 días para impugnar' }, { test: true }),
+    'Publicación de prueba: se borrará en breve.\n' + 'Refugiados: 10 días para impugnar',
   );
 });
 

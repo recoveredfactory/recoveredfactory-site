@@ -46,6 +46,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { buildCaption, captionNotes } from './caption.mjs';
 import { INSTAGRAM_MAX_ITEMS, fitInstagram } from './instagram.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -174,8 +175,10 @@ export function postable(planned, rendered, posted, langs, broadcast = {}, optio
  * didn't load, copy that matched no story. They go in the manifest and at the
  * top of the script, with the slides Instagram's cut will leave off, because
  * the desk previews the deck from here and never sees the run's log.
+ * `caption` is Instagram's, as caption.mjs builds it from the same record; the
+ * script ends on it.
  */
-export function buildManifest({ base, prefix, date, lang, revision, files, renderedAt, script = [], stored = {}, warnings = [] }) {
+export function buildManifest({ base, prefix, date, lang, revision, files, renderedAt, script = [], stored = {}, warnings = [], caption = '' }) {
   const said = new Map(script.map(({ file, ...text }) => [file, text]));
   const slides = [...files].sort().map((file) => ({
     name: file.replace(/^\d+-/, '').replace(/\.(?:png|jpg)$/, ''),
@@ -190,9 +193,10 @@ export function buildManifest({ base, prefix, date, lang, revision, files, rende
     revision,
     rendered_at: renderedAt,
     slides,
+    ...(caption ? { caption } : {}),
     ...(warnings.length ? { warnings } : {}),
     ...(offInstagram.size ? { instagram_leaves_off: slides.flatMap((slide, i) => (offInstagram.has(slide) ? [i + 1] : [])) } : {}),
-    ...(said.size ? { script_md: scriptMarkdown(slides, { warnings, offInstagram }) } : {}),
+    ...(said.size ? { script_md: scriptMarkdown(slides, { warnings, offInstagram, caption }) } : {}),
   };
 }
 
@@ -201,7 +205,7 @@ export function buildManifest({ base, prefix, date, lang, revision, files, rende
  * slide's words, numbered, with a link to its image. og.mjs writes the words
  * (script.json) from the same deck it draws, so this is what will post.
  */
-export function scriptMarkdown(slides, { warnings = [], offInstagram = new Set() } = {}) {
+export function scriptMarkdown(slides, { warnings = [], offInstagram = new Set(), caption = '' } = {}) {
   const notes = [
     ...warnings,
     ...(offInstagram.size
@@ -223,6 +227,7 @@ export function scriptMarkdown(slides, { warnings = [], offInstagram = new Set()
       if (t.sources?.length) body.push(`Sources: ${t.sources.join(' · ')}`);
       return [head, ...body].join('\n');
     }),
+    ...(caption ? [`**Caption** (Facebook adds the edition’s link):\n${caption}`] : []),
   ].join('\n\n');
 }
 
@@ -301,7 +306,9 @@ async function main() {
       const drawn = renderDate({ date, langs, due, records, work });
       for (const { lang, revision, dir, files, script, warnings } of drawn) {
         const stored = Object.fromEntries(files.map((file) => [file, storedName(file, readFileSync(join(dir, file)))]));
-        const manifest = buildManifest({ base, prefix, date, lang, revision, files, script, stored, warnings, renderedAt: new Date().toISOString() });
+        const record = records[lang];
+        const caption = buildCaption(record);
+        const manifest = buildManifest({ base, prefix, date, lang, revision, files, script, stored, caption, warnings: [...warnings, ...captionNotes(record)], renderedAt: new Date().toISOString() });
 
         if (dryRun) {
           console.log(`${date} ${lang} r${revision}: would write`);

@@ -59,26 +59,24 @@
 // merged file under --record-dir at its bucket key ({record-dir}/social/… or
 // {record-dir}/test/social/…) and a follow-up job uploads it. See the workflow.
 //
-// The caption is built from the record, never by a model: title, description,
-// and the line that says where to read it.
+// The caption is the record's (caption.mjs): the composer's social.caption and
+// social.hashtags, with the edition's link on Facebook only.
 
 import { createHmac } from 'node:crypto';
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { pathToFileURL } from 'node:url';
 
-import { trimToClause } from './deck.mjs';
+import { buildCaption } from './caption.mjs';
 import { DEFAULT_BASE, prefixFor } from './deck-sync.mjs';
 import { fitInstagram } from './instagram.mjs';
 
-// They live in instagram.mjs so the preview (deck-sync.mjs) can say what the
-// cut leaves off without importing this file, which imports it.
+// They live in instagram.mjs and caption.mjs so the preview (deck-sync.mjs)
+// can show the cut and the caption without importing this file, which imports it.
 export { INSTAGRAM_MAX_ITEMS, fitInstagram } from './instagram.mjs';
+export { CAPTION_MAX, HASHTAG_MAX, buildCaption, captionNotes, hashtagsFor } from './caption.mjs';
 
 export const GRAPH_VERSION = 'v25.0';
-
-// Instagram's caption limit; Facebook's is far higher, so one caption serves both.
-export const CAPTION_MAX = 2200;
 
 // A carousel container is ready when its status_code is FINISHED. Meta suggests
 // checking about once a minute for no more than five; images are usually done
@@ -94,45 +92,7 @@ export const PAUSE_MS = 180_000;
 // translation and follows it.
 const LANG_ORDER = ['en', 'es'];
 
-const SITE = 'immigrationdaybook.com';
-
-const READ_LINE = {
-  en: (link) => `Today’s Immigration Daybook, free every weekday morning: ${link}`,
-  es: (link) => `El Immigration Daybook de hoy, gratis cada mañana entre semana: ${link}`,
-};
-
-// The first line of a --test-post caption, so nobody who sees it before it is
-// deleted takes it for an edition.
-const TEST_LINE = {
-  en: 'Test post: this will be deleted shortly.',
-  es: 'Publicación de prueba: se borrará en breve.',
-};
-
 // ── Pure parts (tested in deck-post.test.mjs) ─────────────────────────────
-
-/**
- * The post's caption: the title, the description, and where to read the
- * edition. Under CAPTION_MAX, the description gives way first, cut at a
- * sentence or clause; the title and the link line are never cut.
- *
- * A test post opens on a line saying so, and links to the site's home page:
- * a test edition does not exist on the live site, so its date path would 404.
- */
-export function buildCaption(record, { test = false, max = CAPTION_MAX } = {}) {
-  const lang = record.lang === 'es' ? 'es' : 'en';
-  const title = record.title.trim();
-  const head = test ? `${TEST_LINE[lang]}\n${title}` : title;
-  const read = READ_LINE[lang](test ? SITE : `${SITE}/${lang}/${record.date}`);
-  const fixed = `${head}\n\n${read}`;
-
-  let description = (record.description ?? '').trim();
-  const room = max - fixed.length - 1; // the newline under the title
-  if (description && description.length > room) description = room > 40 ? trimToClause(description, room - 1) : '';
-
-  const caption = description ? `${head}\n${description}\n\n${read}` : fixed;
-  return caption.length <= max ? caption : `${caption.slice(0, max - 1).replace(/\s+\S*$/, '')}…`;
-}
-
 
 /** Which platforms this deck should go to, given the resolved credentials and what posted.json already holds. */
 export function choosePlatforms(creds, posted, { force = false } = {}) {
@@ -327,7 +287,6 @@ const defaultSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
  * post is still recorded.
  */
 export async function postDeck({ deck, record, posted, env, creds, confirm, force = false, test = false, fetch = globalThis.fetch, now = () => new Date(), log = console.log, sleep }) {
-  const caption = buildCaption(record, { test });
   const outcome = [];
   const merged = { ...(posted ?? {}) };
   const accounts = creds ?? (await resolveCredentials({ env, fetch, log }));
@@ -342,6 +301,7 @@ export async function postDeck({ deck, record, posted, env, creds, confirm, forc
     }
 
     const platform = PLATFORMS[choice.name];
+    const caption = buildCaption(record, { test, platform: choice.name });
     const { slides, dropped } = platform.slides(deck.slides);
     if (dropped.length) {
       log(`WARNING: ${deck.date} ${deck.lang} ${choice.name}: ${deck.slides.length} slides is past its limit; ` + `left off ${dropped.map((s) => s.name).join(', ')}.`);
