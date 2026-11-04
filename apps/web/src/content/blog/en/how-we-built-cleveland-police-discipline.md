@@ -4,7 +4,6 @@ title: "How we built it: Cleveland Police Discipline"
 date: "2026-11-04"
 description: "The nuts and bolts behind Cleveland Police Discipline: Documenters enter the records, a model writes the summaries under strict rules and a light, offline-capable site borrows Signal Cleveland's look."
 type: "post"
-draft: true
 byline: "David Eads"
 editors:
   - "Tory Lysik"
@@ -22,9 +21,9 @@ previewImage: "/images/how-we-built-og.jpg"
   Source: Google Doc "Police discipline site: Notes for a post", tab "reorganized draft - how we did it" (Nov. 4),
   then a tightening and fact-check pass here (Nov. 4) that David backports to the doc. Fact checks against the
   cle-hearings-search code: /var/tmp/claude-1000/-home-eads-projects-cle-hearings-search/87f8c13c-5801-48ba-a936-28727b5a69ac/scratchpad/howto-handoff.md
-  Two claims depend on cle-hearings-search fixes David ordered Nov. 4: pages cached at the edge (LIVE Nov. 4,
-  cle-hearings-search #142/#144: s-maxage=86400, cleared on each deploy) and the CSV's action type column
-  (cle-hearings-search #143, blank in every row until its data refresh ships). Don't publish before #143 is live.
+  Two claims rest on cle-hearings-search fixes David ordered Nov. 4, both live that day: pages cached at the
+  edge (#142/#144: s-maxage=86400, cleared on each deploy) and the CSV's action_type column (#143/#145: the
+  Documenters' hearing type, filled in 1,709 of 1,733 rows; the blanks are 22 arbitrations and 2 untyped cases).
   Notice: CPD Divisional Notice 21-079, a 300 dpi scan the discipline site links as a source document; the 45
   cases are the ones its officerData.json links to that file. Alternative crop on disk, unused:
   how-we-built-cpd-notice-simko.png (the essay's example case). Preview image: the same page's letterhead.
@@ -154,7 +153,7 @@ It also lets readers do some investigating of their own. Many people come to the
 Every data refresh also writes analysis-friendly files, and they're public:
 
 - [officerData.json](https://cleveland-police-discipline.signalcleveland.org/data/officerData.json): officers, cases, summaries and glossary links. It's the same file the site uses.
-- [officer-actions.csv](https://cleveland-police-discipline.signalcleveland.org/data/officer-actions.csv): one row per case, with the action type, outcome, severity group and whether it ended in termination.
+- [officer-actions.csv](https://cleveland-police-discipline.signalcleveland.org/data/officer-actions.csv): one row per case, with the type of hearing, outcome, severity group and whether it ended in termination.
 - [officer-actions-categorized.csv](https://cleveland-police-discipline.signalcleveland.org/data/officer-actions-categorized.csv): one row per glossary term per case, for counting how often specific rules or issues come up.
 
 Reporters can filter, pivot and join these in Excel or a script without an Airtable account. The CSVs make it easy to spot patterns: who lost their job, which cases reached Group III and so on. And because the JSON is the same file the site uses, any data problem is visible to readers too. There's no gap between the "analysis data" and the "site data."

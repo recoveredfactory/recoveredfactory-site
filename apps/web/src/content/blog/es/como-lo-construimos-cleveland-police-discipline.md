@@ -4,7 +4,6 @@ title: "Cómo lo construimos: Cleveland Police Discipline"
 date: "2026-11-04"
 description: "Las piezas detrás de Cleveland Police Discipline: los Documenters ingresan los registros, un modelo escribe los resúmenes con reglas estrictas y un sitio liviano, que funciona sin conexión, toma prestado el aspecto de Signal Cleveland."
 type: "post"
-draft: true
 byline: "David Eads"
 editors:
   - "Tory Lysik"
@@ -142,7 +141,7 @@ También permite que los lectores investiguen por su cuenta. Mucha gente llega a
 Cada actualización de datos también genera archivos pensados para el análisis, y son públicos:
 
 - [officerData.json](https://cleveland-police-discipline.signalcleveland.org/data/officerData.json): agentes, casos, resúmenes y enlaces al glosario. Es el mismo archivo que usa el sitio.
-- [officer-actions.csv](https://cleveland-police-discipline.signalcleveland.org/data/officer-actions.csv): una fila por caso, con el tipo de acción, el resultado, el grupo de gravedad y si terminó en despido.
+- [officer-actions.csv](https://cleveland-police-discipline.signalcleveland.org/data/officer-actions.csv): una fila por caso, con el tipo de audiencia, el resultado, el grupo de gravedad y si terminó en despido.
 - [officer-actions-categorized.csv](https://cleveland-police-discipline.signalcleveland.org/data/officer-actions-categorized.csv): una fila por término del glosario por caso, para contar con qué frecuencia aparecen ciertas normas o temas.
 
 Los reporteros pueden filtrar, cruzar y combinar estos archivos en Excel o con un script, sin una cuenta de Airtable. Los CSV facilitan ver patrones: quién perdió su trabajo, qué casos llegaron al Grupo III, etc. Y como el JSON es el mismo archivo que usa el sitio, cualquier problema en los datos también queda a la vista de los lectores. No hay distancia entre los "datos de análisis" y los "datos del sitio".
