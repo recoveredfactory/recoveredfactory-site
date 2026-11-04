@@ -110,7 +110,7 @@ The homepage endpoint does most of the work of making the site feel like Signal'
   src="/images/how-we-built-cpd-header-mobile.png"
   alt="The tops of two phone screens, side by side, with a red box around each header. Left: Signal Cleveland's homepage, with a trending row above a Menu button, the Signal Cleveland logo and a Donate button, then a photo and the headline “Issues 10 and 11 pass, delivering more aid for Cuyahoga County’s safety net through property tax increase.” Right: the Cleveland Police Discipline Search site, with the same trending links above the Signal Cleveland logo, the site's title and a menu button, then a search box and the first officer cards."
   width={1400}
-  caption="Signal Cleveland's homepage (left) and the discipline site (right) on a phone. The discipline site pulls the trending links, and the menus behind its menu button, from Signal's homepage."
+  caption="Signal Cleveland's homepage (left) and the discipline site (right) on a phone. The discipline site pulls the trending links, and the menus behind its menu button, from Signal's homepage, then rearranges the header to make room for its own title."
   figureClass="my-6 max-w-2xl"
   class="rounded-lg"
 />
