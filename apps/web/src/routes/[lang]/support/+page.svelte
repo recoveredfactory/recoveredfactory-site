@@ -25,6 +25,7 @@
     { name: 'Immigration Daybook', url: 'https://immigrationdaybook.com', line: m.support_work_daybook() },
     { name: 'Missouri Vehicle Stops', url: 'https://vsr.recoveredfactory.net', line: m.support_work_vsr() },
     { name: 'Cleveland Police Discipline', url: `${SITE_URL}/police`, line: m.support_work_cleveland() },
+    { name: 'Mapas Cali', url: 'https://cali.recoveredfactory.net', line: m.support_work_cali() },
   ]);
   const label = 'text-xs font-semibold uppercase tracking-[0.3em] text-slate-500';
 </script>
