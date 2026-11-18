@@ -7,9 +7,11 @@
     source?: string;
     variant?: 'modal' | 'inline' | 'page';
     prefillEmail?: string;
+    // The support page writes its own headings and contact line around the levels.
+    bare?: boolean;
   };
 
-  let { source = 'modal', variant = 'modal', prefillEmail }: SupportOptionsProps = $props();
+  let { source = 'modal', variant = 'modal', prefillEmail, bare = false }: SupportOptionsProps = $props();
 
   const options = [
     {
@@ -56,7 +58,9 @@
 </script>
 
 <div class="space-y-6">
-  {#if isInline || variant === 'modal'}
+  {#if bare}
+    <!-- headings come from the page -->
+  {:else if isInline || variant === 'modal'}
     <div class="space-y-2 text-center">
       <h2 class="font-display text-xl font-semibold text-slate-900 sm:text-2xl">
         {m.support_prompt()}
@@ -94,7 +98,7 @@
     {/each}
   </div>
 
-  {#if SUPPORT_CONTACT_URL}
+  {#if SUPPORT_CONTACT_URL && !bare}
     <p class={`text-sm text-slate-600 ${isPage ? 'text-center' : 'text-center'}`}>
       <a
         class="font-semibold text-link transition hover:text-link/80"
