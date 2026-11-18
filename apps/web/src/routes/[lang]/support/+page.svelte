@@ -25,6 +25,7 @@
     { name: 'Immigration Daybook', url: 'https://immigrationdaybook.com', line: m.support_work_daybook() },
     { name: 'Missouri Vehicle Stops', url: 'https://vsr.recoveredfactory.net', line: m.support_work_vsr() },
     { name: 'Cleveland Police Discipline', url: `${SITE_URL}/police`, line: m.support_work_cleveland() },
+    { name: 'Mapas Cali', url: 'https://cali.recoveredfactory.net', line: m.support_work_cali() },
   ]);
   const label = 'text-xs font-semibold uppercase tracking-[0.3em] text-slate-500';
 </script>
@@ -80,16 +81,12 @@
       </ul>
     </section>
 
-    <section class="grid gap-3 sm:grid-cols-[minmax(0,0.45fr)_minmax(0,1fr)] sm:gap-8">
-      <p class={label}>{m.support_pays_heading()}</p>
-      <p class="text-lg text-slate-800">{m.support_pays_body()}</p>
-    </section>
-
     <section class="space-y-5 border-t-2 border-slate-900 pt-8">
-      <div class="space-y-2">
+      <div class="space-y-3">
         <h2 class="font-display text-3xl font-semibold text-slate-900 sm:text-4xl">
           {m.support_levels_heading()}
         </h2>
+        <p class="max-w-2xl text-lg text-slate-800">{m.support_pays_body()}</p>
         <p class="text-base text-slate-700">{m.support_subtitle()}</p>
       </div>
       <SupportOptions bare source="page" variant="page" />
