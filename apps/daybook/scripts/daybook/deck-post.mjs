@@ -254,25 +254,24 @@ export async function postFacebook({ api, account, caption, slides }) {
 /**
  * Instagram: an item container per slide, a CAROUSEL container over them with
  * the caption, a bounded wait for it to finish, then publish.
+ *
+ * A slide with `video` (an MP4's public URL) goes in as a VIDEO item, and its
+ * container is waited on before the carousel is made, since Meta transcodes it
+ * first. Its `url` is a still of the same card, which is what Facebook's
+ * multi-photo post gets: that post takes photos only. (David, 2026-11-19: the
+ * interstate-map card at the front of that day's deck.)
  */
 export async function postInstagram({ api, account, caption, slides, sleep = defaultSleep, pollMs = POLL_MS, pollMax = POLL_MAX }) {
   const children = [];
   for (const slide of slides) {
-    const item = await api.post(`${account.id}/media`, { image_url: slide.url, is_carousel_item: 'true' });
+    const item = slide.video
+      ? await api.post(`${account.id}/media`, { media_type: 'VIDEO', video_url: slide.video, is_carousel_item: 'true' })
+      : await api.post(`${account.id}/media`, { image_url: slide.url, is_carousel_item: 'true' });
+    if (slide.video) await waitFinished({ api, id: item.id, sleep, pollMs, pollMax });
     children.push(item.id);
   }
   const carousel = await api.post(`${account.id}/media`, { media_type: 'CAROUSEL', children: children.join(','), caption });
-
-  let status = null;
-  for (let i = 0; i < pollMax; i += 1) {
-    ({ status_code: status } = await api.get(carousel.id, 'status_code'));
-    if (status === 'FINISHED') break;
-    if (status === 'ERROR' || status === 'EXPIRED') throw new Error(`Instagram container ${carousel.id} is ${status}`);
-    await sleep(pollMs);
-  }
-  if (status !== 'FINISHED') {
-    throw new Error(`Instagram container ${carousel.id} not ready after ${(pollMax * pollMs) / 1000}s (last status ${status})`);
-  }
+  await waitFinished({ api, id: carousel.id, sleep, pollMs, pollMax });
 
   const published = await api.post(`${account.id}/media_publish`, { creation_id: carousel.id });
   const { permalink } = await api.get(published.id, 'permalink');
@@ -280,6 +279,18 @@ export async function postInstagram({ api, account, caption, slides, sleep = def
 }
 
 const defaultSleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** A container's bounded wait for FINISHED; ERROR or EXPIRED fails at once. */
+async function waitFinished({ api, id, sleep, pollMs, pollMax }) {
+  let status = null;
+  for (let i = 0; i < pollMax; i += 1) {
+    ({ status_code: status } = await api.get(id, 'status_code'));
+    if (status === 'FINISHED') return;
+    if (status === 'ERROR' || status === 'EXPIRED') throw new Error(`Instagram container ${id} is ${status}`);
+    await sleep(pollMs);
+  }
+  throw new Error(`Instagram container ${id} not ready after ${(pollMax * pollMs) / 1000}s (last status ${status})`);
+}
 
 /**
  * Post one deck everywhere it is due. Returns the merged posted.json and the

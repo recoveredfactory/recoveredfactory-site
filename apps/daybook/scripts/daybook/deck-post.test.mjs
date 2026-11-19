@@ -52,11 +52,12 @@ const env = {
 const withInstagram = { ...env, DAYBOOK_IG_USER_ID: '999' };
 
 /** A fake Graph API: answers by path, and keeps every call for the assertions. */
-function fakeGraph({ statuses = ['IN_PROGRESS', 'FINISHED'] } = {}) {
+function fakeGraph({ statuses = ['IN_PROGRESS', 'FINISHED'], itemStatuses = [] } = {}) {
   const calls = [];
   let photo = 0;
   let item = 0;
   const pending = [...statuses];
+  const pendingItems = [...itemStatuses];
   const fetch = async (url, init = {}) => {
     const u = new URL(url);
     const params = init.method === 'GET' ? u.searchParams : new URLSearchParams(init.body);
@@ -69,6 +70,7 @@ function fakeGraph({ statuses = ['IN_PROGRESS', 'FINISHED'] } = {}) {
     if (path === '999/media' && params.get('media_type') === 'CAROUSEL') return reply({ id: 'carousel1' });
     if (path === '999/media') return reply({ id: `item${(item += 1)}` });
     if (path === 'carousel1') return reply({ status_code: pending.shift() ?? 'FINISHED' });
+    if (/^item\d+$/.test(path)) return reply({ status_code: pendingItems.shift() ?? 'FINISHED' });
     if (path === '999/media_publish') return reply({ id: 'igmedia1' });
     if (path === 'igmedia1') return reply({ permalink: 'https://www.instagram.com/p/abc/' });
     return { ok: false, status: 400, json: async () => ({ error: { message: `unexpected ${path}` } }) };
@@ -237,6 +239,40 @@ test('Instagram gives up after a bounded wait, and what did post is still record
   assert.match(ig.result, /not ready after/);
   assert.equal(graph.calls.filter((c) => c.path === 'carousel1').length, 30);
   assert.equal(graph.calls.some((c) => c.path === '999/media_publish'), false);
+});
+
+test('a video slide: a VIDEO item on Instagram, waited on before the carousel; its still on Facebook', async () => {
+  const still = slide(0, 'map');
+  const withVideo = { ...deck, slides: [{ ...still, video: still.url.replace(/\.png$/, '.mp4') }, ...deck.slides] };
+  const graph = fakeGraph({ itemStatuses: ['IN_PROGRESS', 'FINISHED'] });
+  const slept = [];
+  const result = await postDeck({ deck: withVideo, record, posted: null, env: withInstagram, confirm: true, fetch: graph.fetch, log: quiet, sleep: async (ms) => slept.push(ms) });
+
+  const ig = graph.calls.filter((c) => c.path.startsWith('999/') || /^(item|carousel)/.test(c.path));
+  assert.deepEqual(ig.slice(0, 3).map((c) => `${c.method} ${c.path}`), ['POST 999/media', 'GET item1', 'GET item1']);
+  const { media_type, video_url, is_carousel_item, image_url } = ig[0].params;
+  assert.deepEqual({ media_type, video_url, is_carousel_item, image_url }, { media_type: 'VIDEO', video_url: withVideo.slides[0].video, is_carousel_item: 'true', image_url: undefined });
+  const images = graph.calls.filter((c) => c.path === '999/media' && c.params.image_url);
+  assert.deepEqual(images.map((c) => c.params.image_url), deck.slides.map((s) => s.url), 'every other slide is an image item');
+  const carousel = graph.calls.find((c) => c.params.media_type === 'CAROUSEL').params;
+  assert.equal(carousel.children.split(',')[0], 'item1', 'the video leads the carousel');
+  assert.equal(carousel.children.split(',').length, withVideo.slides.length);
+  assert.deepEqual(
+    graph.calls.filter((c) => c.path === '111/photos').map((c) => c.params.url),
+    withVideo.slides.map((s) => s.url),
+    'Facebook gets the still in the video’s place',
+  );
+  assert.ok(result.posted.instagram && result.posted.facebook);
+});
+
+test('a video slide that fails to process stops the Instagram post before the carousel', async () => {
+  const withVideo = { ...deck, slides: [{ ...slide(0, 'map'), video: 'https://bucket.s3.amazonaws.com/map.mp4' }, ...deck.slides] };
+  const graph = fakeGraph({ itemStatuses: ['ERROR'] });
+  const result = await postDeck({ deck: withVideo, record, posted: { facebook: { revision: 2, permalink: 'p' } }, env: withInstagram, confirm: true, fetch: graph.fetch, log: quiet, sleep: noSleep });
+  const ig = result.outcome.find((o) => o.platform === 'instagram');
+  assert.equal(ig.failed, true);
+  assert.match(ig.result, /item1 is ERROR/);
+  assert.equal(graph.calls.some((c) => c.params.media_type === 'CAROUSEL'), false);
 });
 
 test('an Instagram post of a long deck sends ten items', async () => {
