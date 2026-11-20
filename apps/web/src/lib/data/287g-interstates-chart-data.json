@@ -1,0 +1,129 @@
+{
+ "_source": "287(g) Watch interstates model on ICE's 287(g) list as of 2026-11-16 (post_graphics.py gfx.json); signings by month from data/287g-agencies-2026-11-16.csv",
+ "asOf": "2026-11-16",
+ "start": 6.03,
+ "overlap": {
+  "both": 21.95,
+  "patrolOnly": 22.4,
+  "localOnly": 7.97,
+  "none": 47.68
+ },
+ "months": [
+  {
+   "month": "2025-01",
+   "local": 6.03,
+   "signings": 2
+  },
+  {
+   "month": "2025-02",
+   "local": 7.84,
+   "signings": 83
+  },
+  {
+   "month": "2025-03",
+   "local": 9.8,
+   "signings": 117
+  },
+  {
+   "month": "2025-04",
+   "local": 10.81,
+   "signings": 101
+  },
+  {
+   "month": "2025-05",
+   "local": 13.03,
+   "signings": 87
+  },
+  {
+   "month": "2025-06",
+   "local": 14.8,
+   "signings": 98
+  },
+  {
+   "month": "2025-07",
+   "local": 16.97,
+   "signings": 114
+  },
+  {
+   "month": "2025-08",
+   "local": 18.48,
+   "signings": 72
+  },
+  {
+   "month": "2025-09",
+   "local": 19.19,
+   "signings": 63
+  },
+  {
+   "month": "2025-10",
+   "local": 20.68,
+   "signings": 49
+  },
+  {
+   "month": "2025-11",
+   "local": 21.72,
+   "signings": 86
+  },
+  {
+   "month": "2025-12",
+   "local": 22.93,
+   "signings": 75
+  },
+  {
+   "month": "2026-01",
+   "local": 23.74,
+   "signings": 101
+  },
+  {
+   "month": "2026-02",
+   "local": 24.11,
+   "signings": 108
+  },
+  {
+   "month": "2026-03",
+   "local": 24.62,
+   "signings": 110
+  },
+  {
+   "month": "2026-04",
+   "local": 25.65,
+   "signings": 141
+  },
+  {
+   "month": "2026-05",
+   "local": 25.88,
+   "signings": 117
+  },
+  {
+   "month": "2026-06",
+   "local": 26.49,
+   "signings": 156
+  },
+  {
+   "month": "2026-07",
+   "local": 27.52,
+   "signings": 169
+  },
+  {
+   "month": "2026-08",
+   "local": 28,
+   "signings": 179
+  },
+  {
+   "month": "2026-09",
+   "local": 28.82,
+   "signings": 165
+  },
+  {
+   "month": "2026-10",
+   "local": 29.79,
+   "signings": 129
+  },
+  {
+   "month": "2026-11",
+   "local": 29.92,
+   "signings": 38
+  }
+ ],
+ "partialFrom": "2026-10"
+}
