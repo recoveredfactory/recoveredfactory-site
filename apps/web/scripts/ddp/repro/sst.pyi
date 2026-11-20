@@ -6,6 +6,9 @@ class Resource:
     class App:
         name: str
         stage: str
+    class Daybook:
+        type: str
+        url: str
     class ImageResizerFn:
         name: str
         type: str
