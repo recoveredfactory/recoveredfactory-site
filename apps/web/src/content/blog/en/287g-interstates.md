@@ -59,7 +59,7 @@ State police and highway patrols do much of the policing on interstates and thei
 
 <InterstatesOverlapBar lang="en" />
 
-The next level is county and unsurprisingly, nearly all of the mileage attributable to local departments comes from county agencies — mostly sheriffs' offices. Towns add almost no reach of their own: just 0.2 points of the 30% covered by local agencies run through a 287(g) town in a county whose sheriff hasn't signed. The patchwork of agreements at different levels makes enforcement denser, not longer. A driver in Sarcoxie, Missouri could be pulled over by the [local police](https://287g.recoveredfactory.net/en/agency/sarcoxie-police-department-mo), [county sheriff](https://287g.recoveredfactory.net/en/agency/jasper-county-sheriffs-office-mo), [state highway patrol](https://287g.recoveredfactory.net/en/agency/missouri-highway-patrol-mo), or federal agents and face federal immigration enforcement.
+The next level is county and unsurprisingly, nearly all of the mileage attributable to local departments comes from county agencies — mostly sheriffs' offices. Towns add almost no reach of their own: just 0.2 points of the 30% covered by local agencies run through a 287(g) town in a county whose sheriff hasn't signed. The patchwork of agreements at different levels makes enforcement denser, not longer. A driver in [Sarcoxie, Missouri](https://287g.recoveredfactory.net/en/interstates?interstate=I-44) could be pulled over by the [local police](https://287g.recoveredfactory.net/en/agency/sarcoxie-police-department-mo), [county sheriff](https://287g.recoveredfactory.net/en/agency/jasper-county-sheriffs-office-mo), [state highway patrol](https://287g.recoveredfactory.net/en/agency/missouri-highway-patrol-mo), or federal agents and face federal immigration enforcement.
 
 Another complicating factor is that the size of the department has no relation to the scope of the agreement. These agreements cover only the officers their agency nominates and ICE trains. Some are small: Iowa [trained three troopers](https://www.iowapublicradio.org/2025-09-22/ice-police-midwest-immigration-raids-civil-rights), and North Carolina's patrol [limited its agreement to two units](https://www.wunc.org/2026-10-07/heres-how-the-nc-highway-patrol-will-collaborate-with-ice).
 
@@ -77,7 +77,7 @@ One number to watch: in 2025, the patrol's stops of Hispanic drivers fell 13%, w
 
 ## The short spike and long tail of immigration enforcement
 
-Interstate coverage from local agencies climbed fastest in the administration's first year, to 23% by January 2026. The wave of small departments that has signed on since April, which [we wrote about in July](/en/287g-network-expansion) and discussed on Instagram this week, added about six more points, more than making up for the miles lost when Maryland and New York banned the agreements.
+Interstate coverage from local agencies climbed fastest in the administration's first year, to 23% by January 2026. The wave of small departments that has signed on since April, which [we wrote about in July](/en/287g-network-expansion) and [discussed on Instagram](https://www.instagram.com/p/Df54ZI9g23T/) this week, added about six more points, more than making up for the miles lost when Maryland and New York banned the agreements.
 
 <InterstatesSpikeTailChart lang="en" />
 
