@@ -49,7 +49,7 @@ How much of the map counts depends on which agreements and which agencies you in
 | Task Force agreements | 19% (0% at the start of 2025) | 49% (0%) |
 | Any 287(g) agreement | 30% (6%) | 52% (6%) |
 
-For the remainder of this analysis, we'll focus on local agencies alone, which isolates the trends in local agencies and offers a conservative baseline for the spread of the program.
+For the remainder of this analysis, we'll mostly focus on local agencies alone, which isolates the trends in local agencies and offers a conservative baseline for the spread of the program.
 
 [Explore which routes do and don’t cross 287(g) jurisdictions](#explore) in our tool or read on for more about what we found.
 

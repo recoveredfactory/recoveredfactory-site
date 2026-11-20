@@ -5,10 +5,6 @@
 
 declare module "sst" {
   export interface Resource {
-    "Daybook": {
-      "type": "sst.aws.SvelteKit"
-      "url": string
-    }
     "ImageResizerFn": {
       "name": string
       "type": "sst.aws.Function"
