@@ -2,7 +2,7 @@
 id: "287g-watch-mcp"
 title: "You can now ask 287(g) Watch questions and do in-depth research with our MCP"
 date: "2026-11-24"
-description: "Connect 287(g) Watch to your AI assistant and ask about any agency, county or state in your own words. Every answer comes back with its sources attached."
+description: "Use your own AI tools to ask about any agency, county or state using natural language, and get answers with sources attached."
 type: "post"
 byline: "Tory Lysik"
 editors:
