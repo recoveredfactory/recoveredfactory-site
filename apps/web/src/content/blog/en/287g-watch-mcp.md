@@ -55,7 +55,7 @@ On March 17, a school district in Washington County, Oklahoma appeared on ICE's 
 
 Nobody in Caney Valley announced either event.
 
-ICE replaces its basic file sporadically and keeps no copy of the old one. We do. We've saved every daily version since 2021, the way newspapers used to keep a morgue, the room of old clippings a reporter checked before writing anything. A one-day entry from March is still in ours.
+ICE replaces its basic file sporadically and keeps no copy of the old one, but [Elijah Appelson](https://github.com/appelson/Tracking_287g) does. He has saved copies going back to 2021, and checked daily since May 2025, the way newspapers used to keep a morgue, the room of old clippings a reporter checked before writing anything, which is how we can detect a one-day entry in March.
 
 So we asked the MCP server what happened. It found the entry, gave ICE's dates, said the department was gone from the list by March 18, and said no agreement is on file. It reported ICE's label for the school police, "Municipality," as ICE's label. And it said the record can't tell you why it left.
 
